@@ -1,7 +1,7 @@
 {
   "name": "portafolio",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -9,10 +9,12 @@
     "preview": "astro preview",
     "astro": "astro",
     "prepare": "husky install",
-    "commitlint": "commitlint --edit"
+    "commitlint": "commitlint --edit",
+    "release": "standard-version"
   },
   "dependencies": {
     "@astrojs/mdx": "^1.1.2",
+    "@astrojs/partytown": "^2.0.1",
     "@astrojs/react": "^3.0.3",
     "@astrojs/rss": "^3.0.0",
     "@astrojs/sitemap": "^3.0.1",
@@ -24,6 +26,7 @@
     "@commitlint/config-conventional": "^17.8.0",
     "@typescript-eslint/parser": "^6.7.5",
     "autoprefixer": "^10.4.16",
+    "conventional-changelog-conventionalcommits": "^7.0.2",
     "eslint": "^8.51.0",
     "eslint-plugin-astro": "^0.29.1",
     "husky": "^8.0.3",
@@ -31,6 +34,7 @@
     "prettier": "^3.0.3",
     "prettier-plugin-astro": "^0.12.0",
     "prettier-plugin-tailwindcss": "^0.5.6",
+    "standard-version": "^9.5.0",
     "tailwindcss": "^3.0.24"
   }
 }
