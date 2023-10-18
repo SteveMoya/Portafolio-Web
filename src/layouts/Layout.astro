@@ -1,0 +1,41 @@
+---
+//Colocar  Base  Head
+---
+
+<slot>
+<style>
+    *{
+    padding: 0%;
+    margin: 0%;
+    box-sizing: border-box;
+}
+::-webkit-scrollbar{
+    width: 4px;
+    color:#c70039;
+    transition: all .4s ease;
+}
+::-webkit-scrollbar-thumb {
+    background: #c70039; 
+    border-radius: 4px;
+    width: 4px;
+    transition: all .4s ease;
+  }
+  ::-webkit-scrollbar-track {
+    background: #101010; 
+    border-radius: 4px;
+    width: 4px;
+  }
+  input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+  html{
+    background: #000000;
+  }
+</style>
