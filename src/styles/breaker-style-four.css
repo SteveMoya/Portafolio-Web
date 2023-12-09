@@ -1,19 +1,8 @@
 *{
-    padding: 0;
-    margin:0;
-    box-sizing: border-box;
+    @apply box-border m-0 p-0;
 }
 #breaker{
-    height: 200vh;
-    width: 200%;
-    background-color: #c70039;
-    opacity: 1;
-    animation: breakeranimate 2s linear;
-    display: none;
-    transition: all .4s ease;
-    border-radius: 5px;
-    z-index: 10;
-    position: fixed;
+    @apply h-[200vh] w-[200%] bg-[#c70039] opacity-100 animate-[breakeranimate_2s_linear] hidden transition-all duration-[0.4s] ease-[ease] z-10 fixed rounded-[5px];
 }
 @keyframes breakeranimate{
    0%{ transform : translateY(-100%)}
@@ -24,18 +13,8 @@
     0%{ transform : translateY(-100%) }
     50%{ transform : translateY(0%) }
     100%{ transform : translateY(100%) }
-}
-#breaker-two{
-    height: 0vh;
-    width: 200%;
-    background-color: #080808;
-    opacity: 1;
-    animation: breakeranimatetwo 2s linear;
-    display: none;
-    transition: all .4s ease;
-    z-index: 10;
-    border-radius: 25px;
-    position: fixed;
+}#breaker-two{
+    @apply h-[0vh] w-[200%] bg-[#080808] opacity-100 animate-[breakeranimatetwo_2s_linear] hidden transition-all duration-[0.4s] ease-[ease] z-10 fixed rounded-[25px];
 }
 @keyframes breakeranimatetwo{
    0%{ transform : translateX(-100%) translateY(100%) }
