@@ -1,14 +1,17 @@
 ---
+import Head from "./Head.astro";
+
 //Colocar  Base  Head
 ---
+<!DOCTYPE html>
+<html lang="es">
 
-<slot>
+  <Head />
+  <body>
+    <slot>
+  </body>
+  </html>
 <style>
-    *{
-    padding: 0%;
-    margin: 0%;
-    box-sizing: border-box;
-}
 ::-webkit-scrollbar{
     width: 4px;
     color:#c70039;

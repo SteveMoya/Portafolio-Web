@@ -450,14 +450,6 @@ button:hover .index{
     @apply h-auto w-full text-center items-center justify-center text-[45px] text-[whitesmoke] font-black pt-[60px] pb-[30px] p-2.5;
     font-family: Raleway, sans-serifway;
 }
-.cursor{
-    @apply h-[50px] w-[50px] block border pointer-events-none fixed top-[-25px] left-[-25px] z-10 opacity-60 transition-[scale] duration-[0.5s] ease-[ease] rounded-[50%] border-solid border-[whitesmoke];
-    background: transparent;
-}
-.cursor-small{
-    @apply h-[50px] w-[50px] block border pointer-events-none fixed top-[-25px] left-[-25px] z-10 opacity-60 transition-[scale] duration-[0.4s] ease-[ease] rounded-[50%] border-solid border-[whitesmoke];
-    background: transparent;
-}
 #blog{
     @apply hidden text-[whitesmoke] w-full h-auto;
     background: #101010;
