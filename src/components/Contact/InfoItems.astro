@@ -1,0 +1,23 @@
+---
+interface Props {
+    icon: string;
+    title: string;
+    description: string;
+}
+const { icon, title, description } = Astro.props
+---
+<div
+	class="contect-info-content-line relative z-[2] ml-5 flex h-auto flex-row items-center p-1 text-left md:ml-[100px]"
+>
+	<img
+		title="name-icon"
+		loading="lazy"
+		src={icon}
+		class="icon h-10 fill-[#c70039] text-[#c70039] opacity-80"
+		alt="name-icon"
+	/>
+	<div class="contact-info-icon-text p-[15px] ">
+		<h4>{title}</h4>
+		<p>{description}</p>
+	</div>
+</div>

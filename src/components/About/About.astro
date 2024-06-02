@@ -1,148 +1,125 @@
 ---
+import Button from '@components/ui/Button.astro'
+import Skill from './Skill.astro'
+import Header from '@components/Header.astro'
+import Card from '@components/ui/Card.astro'
+
+const services = [
+	{
+		title: 'Diseño Web',
+		description: 'Habilidades en la creación de diseños web atractivos.',
+		img: '/img/coding.svg'
+	},
+	{
+		title: 'Social Media',
+		description:
+			'Habilidades para la gestión de comunidades para mejorar el compromiso de los clientes.',
+		img: '/img/socialmedia.svg'
+	},
+	{
+		title: 'Diseño Creativo',
+		description:
+			'Habilidades en la creación de diseños atractivos para la comunicación visual.',
+		img: '/img/creative.svg'
+	}
+]
+
+const skills = [
+	{
+		title: 'HTML/CSS',
+		progress: 95
+	},
+	{
+		title: 'Google Analytics',
+		progress: 90
+	},
+	{
+		title: 'Social Media',
+		progress: 83
+	},
+	{
+		title: 'Adobe Creative Cloud',
+		progress: 84
+	},
+	{
+		title: 'Microsoft Office',
+		progress: 94
+	},
+	{
+		title: 'SEO',
+		progress: 84
+	}
+]
+
+import YoImg from '/public/img/Yo.webp'
+import OptimizatedPicture from '@components/OptimizatedPicture.astro'
 ---
-<!--about-->
-        <div id="about">
-            <!--about content-->
-            <div id="about-content">
-                <div class="about-header">
-                    Sobre <span class="color">Mi</span>
-                    <span class ="header-caption">Conoce <span class="color"> Me.</span></span>
-                </div>
-                <div class="about-main">
-            <div class="about-first-paragraph wow">
-            <!--about description-->
-               <span class="about-first-line">
-                    Soy un
-                    <span class="color">Pionero</span>
-                    En la tendencia de el Marketing 5.0 en Republica Dominicana </span>
-                     <br>
-               <span class="about-second-line">Con mas 2 años de experiencia en el área de marketing. 
-                Me considero un apasionado en el aprendizaje entorno al área de productos o servicios y satisfacer las necesidades de los clientes.</span>
-               <div class="cv">
-                <a title="Cv-Link" href="cv/CV.-Steve-Moya-Cepeda.pdf" target="_blank"><button>Descarga Mi <span class="colors">CV</span></button></a>
-            </div>
-            </div>
-            <!--about picture-->
-            <div class="about-img">
-                <img title="Steve-Moya-Cepeda" loading="lazy" src="/img/Yo.webp" alt="Steve-Moya-Cepeda">
-            </div>
-            </div>
-    
-            </div>
-            <!--services start-->
-            <div id="services">
-                
-            <!--services header-->
-                    <div class="services-heading wow">
-                        <span class="color">Mis</span> Conocimientos
-                    </div>
-            <!--services header end-->
-            <!--services content-->
-                    <div class="services-content">
-                           <div class="service-one service wow">
-                               <div class="service-img">
-                               <img title="Diseño-Web" loading="lazy" src="/img/coding.svg" alt="Diseño-Web">
-                               </div>
-                               <div class="service-description">
-                                <h2>Diseño Web</h2>
-                                <p>Habilidades en la creación de diseños web atractivos.</p>
-                               </div>
-                           </div>
-                           <div class="service-two service wow">
-                               <div class="service-img">
-                               <img title="Social-Media" loading="lazy" src="/img/socialmedia.svg" alt="Social-Media">
-                               </div>
-                               <div class="service-description">
-                                <h2>Social Media</h2>
-                                <p>Habilidades para la gestión de comunidades para mejorar el compromiso de los clientes.</p>
-                               </div>
-                           </div>
-                           <div class="service-three service wow">
-                            <div class="service-img">
-                               <img title="Diseño-Creativo" loading="lazy" src="/img/creative.svg" alt="Diseño-Creativo">
-                            </div>
-                            <div class="service-description">
-                                <h2>Diseño Creativo</h2>
-                                <p>Habilidades en la creación de diseños atractivos para la comunicación visual.</p>
-                            </div>
-                        </div>
-                    </div>
-            </div>
-            <!--services content end-->
-            <!--services end-->
-            <div id="skills">
-                <div class="skills-header">
-                     Mis <span class="color"> Hablilidades</span>
-                </div>
-                <div class="skills-content " style="text-align: center;">
-                    <div class="skill-html skill">
-                        <div class="skill-text">
-                    <div class="html">
-                        HTML/CSS
-                    </div>
-                        </div>
-                    <div class="html-prog wow prog">
-                 <div class="html-progress wow">95%</div>
-                    </div>
-                    </div>
-                    <div class="skill-html skill">
-                        <div class="skill-text">
-                    <div class="html">
-                      Google Analytics
-                    </div>
-                        </div>
-                    <div class="html-prog wow prog">
-                 <div class="js-progress wow">90%</div>
-                    </div>
-                    </div>
-                    <div class="skill-html skill">
-                        <div class="skill-text">
-                    <div class="html">
-                        Social Media
-                    </div>
-                        </div>
-                    <div class="html-prog wow prog">
-                 <div class="adobe-progress wow">83%</div>
-                    </div>
-                    </div>
-                    <div class="skill-html skill">
-                        <div class="skill-text">
-                    <div class="html">
-                        Adobe Creative Cloud
-                    </div>
-                        </div>
-                    <div class="html-prog wow prog">
-                 <div class="php-progress wow">87%</div>
-                    </div>
-                    </div>
-                    <div class="skill-html skill">
-                        <div class="skill-text">
-                    <div class="html">
-                        Microsoft Office
-                    </div>
-                        </div>
-                    <div class="html-prog wow prog">
-                 <div class="jquery-progress wow">94%</div>
-                    </div>
-                    </div>
-                    <div class="skill-html skill">
-                        <div class="skill-text">
-                    <div class="html">
-                        SEO
-                    </div>
-                        </div>
-                    <div class="html-prog wow prog">
-                 <div class="seo-progress wow">84%</div>
-                    </div>
-                    </div>
-                </div>
-            </div>
-    <!--copyright-section You Can Remove After Downloading-->
-            <div class="footer">
-             <div class="footer-text">
-                 <p>© Steve Moya Cepeda</p> 
-             </div>
-            </div>
-    <!--copyright-section-->
-        </div>
-        <!--about end-->
+
+<!--about--><!--about content-->
+<Header title="Sobre" titleCaption="Mi" description="Conoce" descriptionCaption="Me" />
+<div
+	class="max-w-screen flex h-auto w-full flex-col-reverse items-center justify-center px-4 md:flex-row"
+>
+	<div
+		class="about-first-paragraph flex w-[95%] flex-col items-center justify-center p-[30px] font-normal md:w-6/12"
+	>
+		<!--about description-->
+		<h2 class="about-first-line mb-2.5 block text-3xl font-bold opacity-100 md:text-5xl">
+			Soy un
+			<span class="font-extrabold text-[#c70039] transition-all duration-300 ease-in-out"
+				>Pionero</span
+			>
+			En la tendencia de el Marketing 5.0 en Republica Dominicana
+		</h2>
+		<br />
+		<h3 class="about-second-line text-xl font-extralight opacity-80">
+			Con mas 2 años de experiencia en el área de marketing. Me considero un apasionado en el
+			aprendizaje entorno al área de productos o servicios y satisfacer las necesidades de los
+			clientes.
+		</h3>
+		<div class="cv pt-10">
+			<a title="Cv-Link" href="cv/CV.-Steve-Moya-Cepeda.pdf" class="" target="_blank">
+				<Button type="button" variant="download">Descarga Mi CV</Button>
+			</a>
+		</div>
+	</div>
+	<!--about picture-->
+	<OptimizatedPicture
+		class="aspect-square max-h-[600px] max-w-[400] rounded-3xl object-cover"
+		src={YoImg}
+		alt="Steve-Moya-Cepeda"
+	/>
+</div>
+
+<section class="my-8 h-auto w-full">
+	<!--services header-->
+	<div
+		class="services-heading h-auto w-full items-center justify-center p-2.5 py-[30px] text-center font-raleway text-[45px] font-black"
+	>
+		<span class="font-extrabold text-[#c70039] transition-all duration-300 ease-in-out"
+			>Mis</span
+		> Conocimientos
+	</div>
+	<!--services content-->
+	<div class="flex h-fit w-full flex-wrap content-center justify-center gap-4 overflow-hidden">
+		{
+			services.map(({ title, description, img }) => (
+				<Card type="about" title={title} description={description} img={img} />
+			))
+		}
+	</div>
+</section>
+<!--services content end-->
+<!--services end-->
+<section class="my-8 h-auto w-full">
+	<div
+		class="skills-header h-auto w-full items-center justify-center p-2.5 py-[30px] text-center font-raleway text-[45px] font-black"
+	>
+		Mis <span class="font-extrabold text-[#c70039] transition-all duration-300 ease-in-out">
+			Hablilidades</span
+		>
+	</div>
+	<div class="mb-20 mt-5 h-auto w-full text-center">
+		{skills.map((skill) => <Skill {...skill} />)}
+	</div>
+</section>

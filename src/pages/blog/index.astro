@@ -1,111 +1,44 @@
 ---
-import BaseHead from '@src/layouts/BaseHead.astro';
-import Header from '@components/Header.astro';
-import Footer from '@components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
-import { getCollection } from 'astro:content';
-import FormattedDate from '@components/FormattedDate.astro';
+import Layout from '@src/layouts/Layout.astro'
+import Blog from '@components/Blog/Blog.astro'
+import { getPosts } from '@src/utils'
+import TitlePage from '@components/TitlePage.astro'
+import ListCategories from '@components/ListCategories.astro'
+import ListPosts from '@components/ListPosts.astro'
+import Header from '@components/Header.astro'
 
-const posts = (await getCollection('blog')).sort(
-	(a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf()
-);
+const MAX_POSTS = 5 // max number of posts to show on the home page
+const posts = await getPosts(MAX_POSTS)
 ---
 
-<!doctype html>
-<html lang="es">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<style>
-			main {
-				width: 960px;
+<Layout
+	title="Blog - Steve Moya Cepeda"
+	description="Este en mi blog donde podrar leer, mis articulos mas destacados"
+	image="images/marketing4.0-v.webp"
+>
+<Header title='Mis mas recientes' titleCaption='Blogs' description="Aqui puedes ver los los Articulos mas recientes de mi" descriptionCaption="Blog" />
+	<ListCategories />
+	<div>
+		<h2 class="text-end text-lg font-medium tracking-wide">Los mas recientes</h2>
+		<ListPosts FirstBig={true} posts={posts} />
+	</div>
+
+	<!-- <Blog /> -->
+</Layout>
+<script>
+	import { animate } from 'motion'
+	const showAnimations = localStorage.getItem('animations') === 'true'
+
+	if (showAnimations) {
+		animate(
+			'.title',
+			{ y: [80, 0], opacity: [0, 1] },
+			{
+				duration: 2.5,
+				opacity: { duration: 3 },
+
+				offset: [0, 0.55, 0.75]
 			}
-			ul {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 2rem;
-				list-style-type: none;
-				margin: 0;
-				padding: 0;
-			}
-			ul li {
-				width: calc(50% - 1rem);
-			}
-			ul li * {
-				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-			}
-			ul li a {
-				display: block;
-			}
-			.title {
-				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
-			}
-			.date {
-				margin: 0;
-				color: rgb(var(--gray));
-			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
-			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
-			}
-			@media (max-width: 720px) {
-				ul {
-					gap: 0.5em;
-				}
-				ul li {
-					width: 100%;
-					text-align: center;
-				}
-				ul li:first-child {
-					margin-bottom: 0;
-				}
-				ul li:first-child .title {
-					font-size: 1.563em;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
-			<section>
-				<ul>
-					{
-						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.slug}/`}>
-									<img width={720} height={360} src={post.data.heroImage} alt="" />
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
-							</li>
-						))
-					}
-				</ul>
-			</section>
-		</main>
-		<Footer />
-	</body>
-</html>
+		)
+	}
+</script>

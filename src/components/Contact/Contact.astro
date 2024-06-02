@@ -1,71 +1,81 @@
 ---
+import Header from '@components/Header.astro'
+import InfoItems from './InfoItems.astro'
+import Button from '@components/ui/Button.astro'
+import Input from '@components/ui/Input.astro'
+
+const contactInfoItems = [
+	{
+		icon: '/img/icon-name.svg',
+		title: 'Mi Nombre',
+		description: 'Steve Moya Cepeda'
+	},
+	{
+		icon: '/img/location.svg',
+		title: 'Ubicacion',
+		description: 'Santo Domingo, Republica Dominicana'
+	},
+	{
+		icon: '/img/call.svg',
+		title: 'Mi Numero',
+		description: '+1 (849) 751-1849'
+	},
+	{
+		icon: '/img/@.svg',
+		title: 'Mi Email',
+		description: 'steevnmc201666@gmail.com'
+	}
+]
+import { getImage } from 'astro:assets'
+import background from "/public/img/contact-back.webp"
+const optimizedBackground = await getImage({src: background, format: 'webp'});
 ---
-<div id="contact">
-         <div class="contact-header">Contacta <span class="color"> Me</span>
-        <div class="contact-header-caption"> <span class="color"> Escribe</span> Me.</div></div>
-        <div class="contact-content">
-            <!--Contact form-->
-             <div class="contact-form">
-                 <div class="form-header">
-                     Enviame un mensaje
-                 </div>
-                 <form id="myForm" action="https://formsubmit.co/stevenmc2015@hotmail.com" method="POST" target="_blank">
-                    <div class="input-line">
-                        <input name="name"  id="name" type="text" placeholder="Nombre" class="input-name">
-                        <input name="email" id="email" type="email" placeholder="E-mail"  class="input-name">
-                    </div>
-                    <input type="text" id="subject" placeholder="Asunto" class="input-subject">
-                    <textarea name="message" id ="body" class="input-textarea" placeholder="Mensaje"></textarea>
-                    <button class="btn" type="submit" id ="submit" value="Enviar">Enviar</button>
-                    
-                 </form>
-               
-             </div>
-            <!--Contact form-->
-            <!--Contact information-->
-             <div class="contact-info">
-                <div class="contact-info-header">
-                    Informacion de Contacto
-                </div>
-                <div class="contact-info-content">
-                <div class="contect-info-content-line">
-                    <img title="name-icon" loading="lazy" src=/img/icon-name.svg" class="icon" alt="name-icon">
-                    <div class="contact-info-icon-text">
-                        <h4>Mi Nombre</h4>
-                        <p>Steve Moya Cepeda</p>
-                  </div>
-                </div>
-                <div class="contect-info-content-line">
-                  <img title="location-icon" loading="lazy" src="/img/location.svg" class="icon" alt="location-icon">
-                  <div class="contact-info-icon-text">
-                      <h4>Ubicacion</h4>
-                      <p>Santo Domingo, Republica Dominicana</p>
-                </div>
-              </div>
-              <div class="contect-info-content-line">
-                  <img title="call-icon" loading="lazy" src=/img/call.svg" class="icon" alt="phone-icon">
-                  <div class="contact-info-icon-text">
-                      <h4>Mi Numero</h4>
-                      <p>+1 (849) 751-1849</p>
-                </div>
-              </div>
-              
-              <div class="contect-info-content-line">
-                  <img title="email-icon" loading="lazy" src=/img/@.svg" class="icon" alt="email-icon">
-                  <div class="contact-info-icon-text">
-                      <h4>Mi Email</h4>
-                      <p>Stevenmc2015@hotmail.com</p>
-                </div>
-              </div>
-                </div>
-            <!--Contact information end-->
-           </div>
-        </div>
-                    <!--copyright-section-->
-                    <div class="footer">
-                        <div class="footer-text">
-                            <p>© Steve Moya Cepeda</p>
-                        </div>
-                       </div>
-               <!--copyright-section-->
-     </div>
+
+<Header title="Contacta" titleCaption="Me" description="Escribe" descriptionCaption="Me" />
+
+<section
+	class="m-auto flex h-auto flex-col items-center justify-center px-4 md:flex-row"
+>
+	<!--Contact form-->
+	<div class="flex h-[550px] w-full flex-col">
+		<div class="form-header p-7 text-center text-2xl font-normal">Enviame un mensaje</div>
+		<form
+			class="flex h-auto w-auto flex-col items-center"
+			id="myForm"
+			action="https://formsubmit.co/stevenmc2015@hotmail.com"
+			method="POST"
+			target="_blank"
+		>
+			<div class="flex h-auto w-full flex-row items-center justify-center">
+				<Input name="name" id="name" placeholder="Nombre" />
+				<Input name="email" id="email" type="email" placeholder="E-mail" />
+			</div>
+			<Input id="subject" type="email" placeholder="Asunto" class="m-6 w-[84%]" />
+			<Input name="message" id="body" type="textarea" placeholder="Mensaje" />
+			<Button type="submit" variant="primary" value="Enviar">Enviar</Button>
+		</form>
+	</div>
+	<!--Contact form-->
+	<!--Contact information-->
+	<div
+		class="relative mb-[50px] h-[500px] w-full max-w-[600px] overflow-hidden rounded-2xl bg-cover bg-center bg-no-repeat
+		before:pointer-events-none
+		before:absolute
+		before:left-0
+		before:top-0
+		before:h-full
+		before:w-full
+		before:bg-[#101010]
+		before:opacity-80
+		before:content-['']"
+		style={`background-image: url(${optimizedBackground.src});`}
+	>
+		<div class="contact-info-header relative z-[2] p-[30px] text-center text-2xl font-normal">
+			Informacion de Contacto
+		</div>
+		<div class="contact-info-content">
+			{contactInfoItems.map((item) => <InfoItems {...item} />)}
+		</div>
+		<!--Contact information end-->
+	</div>
+</section>

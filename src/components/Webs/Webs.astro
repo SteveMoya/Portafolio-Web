@@ -1,0 +1,45 @@
+---
+import Card from '@components/ui/Card.astro'
+import Button from '@components/ui/Button.astro'
+
+import { getRepos, getRepoLanguages, fetchFirstImageFromReadme } from '@src/lib/github'
+import { formatDate } from '@src/utils'
+
+---
+
+<section class="flex flex-wrap items-center justify-center">
+	{
+		getRepos().then((repos) =>
+			repos.map(async (repo) => {
+				const imageUrl = await fetchFirstImageFromReadme(repo.name)
+				const languages = await getRepoLanguages(repo.name)
+				return (
+					<Card
+						type="blog"
+						title={repo.name}
+						description={repo.description || 'Sin descripcion'}
+						img={imageUrl ? imageUrl : '#'}
+						href={repo.homepage || repo.html_url}
+						date={formatDate(repo.pushed_at as unknown as Date)}
+					>
+						<ul>
+							{languages?.map((lang) => (
+								<li class="">{lang.name}</li>
+							))}
+						</ul>
+						{repo.homepage && (
+							<a href={repo.homepage}>
+								<Button type="button">Ver Demo</Button>
+							</a>
+						)}
+						{repo.html_url && (
+							<a href={repo.html_url}>
+								<Button type="button">Ver Código</Button>
+							</a>
+						)}
+					</Card>
+				)
+			})
+		)
+	}
+</section>

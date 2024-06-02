@@ -1,0 +1,34 @@
+---
+import { getTags, getPostByTag, formatDate } from '@src/utils'
+import ListPosts from '@components/ListPosts.astro'
+import TitlePage from '@components/TitlePage.astro'
+import Layout from '@layouts/Layout.astro'
+import Card from '@components/ui/Card.astro'
+import Header from '@components/Header.astro'
+
+
+export async function getStaticPaths() {
+	const tags = await getTags()
+
+	return tags.map((tag: string) => ({
+		params: { tag },
+		props: { tag }
+	}))
+}
+
+const { tag } = Astro.props
+
+const posts = await getPostByTag(tag as string)
+
+---
+
+<Layout title={tag as string}>
+	<Header title="Articulos de" titleCaption={tag} description='Aqui puedes ver mis articulos de' descriptionCaption={tag}  />
+	<section class='flex flex-wrap justify-center content-center'>
+		{
+			posts.map((post) => (
+				<Card type="blog" title={post.data.title} description={post.data.description} img={post.data.heroImage.src} href={`/blog/${post.slug}`} date={formatDate(post.data.updateDate || post.data.pubDate)} />
+			))
+		}
+	</section>
+</Layout>

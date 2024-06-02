@@ -1,0 +1,23 @@
+---
+interface Props {
+	title: string
+	progress: number
+}
+const { title, progress } = Astro.props
+---
+
+<div class="relative inline-block h-auto w-[45%] p-[1.5%]">
+	<div class="skill-text relative h-[50px] w-4/5">
+		<div class="html absolute left-[5%] top-[30%] inline-block">{title}</div>
+	</div>
+	<div
+		class="relative h-10 w-full overflow-hidden rounded-[10px] bg-[#191919] shadow-[0px_0px_25px_rgb(0,0,0,0.1)]"
+	>
+		<div
+			class={` absolute left-[1%] top-[10%] flex h-4/5 items-center justify-center rounded-[10px] bg-[#c70039] transition-all duration-300 ease-in-out `}
+			style=`width: ${progress}%;`
+		>
+			{progress}%
+		</div>
+	</div>
+</div>

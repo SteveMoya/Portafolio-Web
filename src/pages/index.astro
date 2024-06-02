@@ -1,79 +1,13 @@
 ---
-//import '@js/index'
-//import '@js/gsap'
-//import '@js/jquery'
-//import '@js/particles'
-//import '@js/particles.min'
-
-import '@styles/index.css'
-// import '@styles/breaker-style-focus'
-// import '@styles/breaker-style-one'
-// import '@styles/breaker-style-three'
-// import '@styles/breaker-style-two'
-
-import Hero from '@components/Hero/Hero.astro';
-import Navbar from '@components/Navbar/Navbar.astro';
-import About from '@components/Navbar/Navbar.astro';
-import Portafolio from '@components/Portafolio/Portafolio.astro';
-import Blogindex from '@components/BlogIndex/Blogindex.astro';
-import Contact from '@components/Contact/Contact.astro';
-import Head from '@layouts/Head.astro';
+import Hero from '@components/Hero/Hero.astro'
 
 
+import Layout from '@layouts/Layout.astro'
+
+const ogImage = '/img/Steve-Moya.webp'
+// import '@styles/index.css'
 ---
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <Head/>
-    <script is:inline src="/src/js/gsap.js" ></script>
-    <script is:inline src="/src/js/jquery.js" ></script>
-    <script is:inline src="/src/js/particles.js"></script>
-    <script is:inline src="/src/js/particles.min.js"></script>
-    <script is:inline src="/src/js/index.js"></script>
-</head>
-<body>
-    <!--contains all the div-->
-    <div id="all">
-        <!--Main-Section-->
-        <!--Navigator-fullscreen-->
-        <Navbar />
-        <!--Navigator-Fullscreen END-->
-          <!--Home Page-->
-        <!--Menubar-->
-        <div id="navigation-bar">
-            <img title="logo" loading="lazy" src="/img/logo.svg" alt="logo">
-            <div class="menubar">
-                <span class="first-span"></span>
-                <span class="second-span"></span>
-                <span class="third-span"></span>
-            </div>
-        </div>
-        <!--Menubar End-->
-          <!--Header-->
-        <Hero />
-           <!--Header End-->
-        <!--HomePage End-->
-        <!--Main-Section End-->
-        <!--about-->
-        <About />
-        <!--about end-->
-        <!--portfolio-->
-        <Portafolio />
-        <!--portfolio end-->
-        <!--blog-->
-        <Blogindex />
-        <!--blog end-->
-        <!--contact-->
-		<Contact />
-        <!--contact end-->
-    </div>
-    <!--all the divisions-->
-    <!--particles script-->
-</body>
-</html>
-<script is:inline>
- particlesJS("particles", {"particles":{"number":{"value":120,"density":{"enable":true,"value_area":800}},"color":{"value":"#ffffff"},"shape":{"type":"circle","stroke":{"width":0,"color":"#000000"},"polygon":{"nb_sides":5},"image":{"src":"img/github.svg","width":100,"height":100}},"opacity":{"value":0.5,"random":false,"anim":{"enable":true,"speed":1,"opacity_min":0.1,"sync":false}},"size":{"value":3,"random":true,"anim":{"enable":true,"speed":0,"size_min":0.1,"sync":false}},"line_linked":{"enable":false,"distance":0,"color":"#ffffff","opacity":0.24463576890600452,"width":1.2626362266116362},"move":{"enable":true,"speed":3,"direction":"none","random":false,"straight":false,"out_mode":"out","bounce":false,"attract":{"enable":false,"rotateX":600,"rotateY":1200}}},"interactivity":{"detect_on":"canvas","events":{"onhover":{"enable":false,"mode":"grab"},"onclick":{"enable":true,"mode":"push"},"resize":true},"modes":{"grab":{"distance":400,"line_linked":{"opacity":1}},"bubble":{"distance":400,"size":40,"duration":2,"opacity":8,"speed":3},"repulse":{"distance":200,"duration":0.4},"push":{"particles_nb":4},"remove":{"particles_nb":2}}},"retina_detect":true});
-</script>
-
-
+<Layout image={ogImage}>
+	<Hero />
+</Layout>

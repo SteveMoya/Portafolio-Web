@@ -1,30 +1,51 @@
 ---
-import ContactLinks from "../SocialLinks/ContactLinks.astro";
-import SocialLinks from "../SocialLinks/SocialLinks.astro";
+import { Picture } from 'astro:assets'
 
+import Particles from './Particles.astro'
+import TextRotate from './TextRotate.astro'
+
+import SteveImg from '/public/img/Steve-Moya.webp'
+import SocialLinks from '@components/SocialLinks.astro'
+import OptimizatedPicture from '@components/OptimizatedPicture.astro'
 ---
+
 <!--Header-->
-        <div id="header">
-            <div id="particles"></div>
-              <!--Social Media Links-->
-            <SocialLinks />
-            <!--Social Media Links end-->
-            <div class="header-content">
-                <div class="header-content-box">
-                <h1 class="firstline"><span class="color">Steve </span>Moya</h1>
-                <div class="secondline">
-                Soy
-            <span class="txt-rotate color" data-period="1200"data-rotate='[ " Diseñador.", " Fotógrafo.", " Marketer." ]'></span>
-            <span class="slash">|</span>
-        </div>
-                    <ContactLinks />  
-            </div>
-            </div>
-            <!--header image-->
-            <div class="header-image ">
-            <img title="Steve-Moya-Cepeda" src="/img/Steve-Moya.webp" alt="Steve-moya">
-            
-            </div>
-            <!--header image end-->
-        </div>
-           <!--Header End-->
+<section
+	class="relative block h-screen w-screen animate-[scale_1.5s_ease] overflow-hidden bg-[#171717]"
+>
+	<Particles />
+	<!--Social Media Links-->
+	<SocialLinks />
+	<!--Social Media Links end-->
+	<div
+		class="absolute z-[1] float-left flex h-screen w-full flex-col items-center justify-center text-[50px] font-normal tracking-[1px]"
+	>
+		<div class="z-[2] h-auto w-auto pr-[60px] text-center">
+			<h1 class="firstline z-[2] text-[65px] font-bold">
+				<span class="font-extrabold text-[#c70039] transition-all duration-300 ease-in-out"
+					>Steve
+				</span>Moya
+			</h1>
+			<div class="z-[2] pt-5 text-[32px] font-normal text-[rgb(255,255,255,0.8)]">
+				Soy
+				<TextRotate
+					period="1200"
+					color="#c70039"
+					text={[' Diseñador.', ' Fotógrafo.', ' Marketer.']}
+				/>
+			</div>
+		</div>
+	</div>
+	<!--header image-->
+	<div
+		class="header-image float-right h-auto w-full bg-cover bg-center object-cover object-right"
+	>
+		<OptimizatedPicture
+			class="float-right h-screen w-full object-cover"
+			src={SteveImg}
+			alt="Steve-moya"
+		/>
+	</div>
+	<!--header image end-->
+</section>
+<!--Header End-->

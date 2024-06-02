@@ -1,44 +1,145 @@
 ---
-import Head from "./Head.astro";
+import Navbar from './NavBar/Navbar.astro'
+import Footer from './Footer/Footer.astro'
+import Head from './Head.astro'
+import Cursor from '@src/layouts/Cursor.astro'
 
-//Colocar  Base  Head
+import TwSizeIndicator from '@components/TwSizeIndicator.astro'
+import EditBlog from '@components/editBlog.astro'
+
+interface Props {
+	title?: string
+	description?: string
+	image?: string
+	articleDate?: string | undefined
+	keywords?: string
+	canonicalURL?: string | URL
+}
+// Importacion global de las fuentes
+
+import '@fontsource/poppins'
+
+// Supports weights 100-900
+import '@fontsource-variable/raleway'
+// Supports weights 100-900
+import '@fontsource-variable/raleway/wght-italic.css'
 ---
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="es">
+	<Head {...Astro.props} />
+	<body
+		class="body h-auto w-full overflow-x-hidden text-wrap bg-[#101010] font-poppins text-[whitesmoke]"
+		
+	>
+		<Cursor />
+		<Navbar />
+		<main class="h-auto w-full overflow-hidden">
+			<slot />
+		</main>
+		<TwSizeIndicator />
+		<EditBlog />
+		<Footer />
+		<style is:global>
+			::-webkit-scrollbar {
+				width: 4px;
+				color: #c70039;
+				transition: all 0.4s ease;
+			}
+			::-webkit-scrollbar-thumb {
+				background: #c70039;
+				border-radius: 4px;
+				width: 4px;
+				transition: all 0.4s ease;
+			}
+			::-webkit-scrollbar-track {
+				background: #101010;
+				border-radius: 4px;
+				width: 4px;
+			}
 
-  <Head />
-  <body>
-    <slot>
-  </body>
-  </html>
-<style>
-::-webkit-scrollbar{
-    width: 4px;
-    color:#c70039;
-    transition: all .4s ease;
-}
-::-webkit-scrollbar-thumb {
-    background: #c70039; 
-    border-radius: 4px;
-    width: 4px;
-    transition: all .4s ease;
-  }
-  ::-webkit-scrollbar-track {
-    background: #101010; 
-    border-radius: 4px;
-    width: 4px;
-  }
-  input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
+			@keyframes breakeranimate {
+				0% {
+					transform: translateX(-100%);
+				}
+				50% {
+					transform: translateX(0%);
+				}
+				100% {
+					transform: translateX(100%);
+				}
+			}
+			@-webkit-keyframes breakeranimate {
+				0% {
+					transform: translateX(-100%);
+				}
+				50% {
+					transform: translateX(0%);
+				}
+				100% {
+					transform: translateX(100%);
+				}
+			}
+			@keyframes scale {
+				0% {
+					transform: scale(0.6);
+				}
+				100% {
+					transform: scale(1);
+				}
+			}
+			@-webkit-keyframes breakeranimate {
+				0% {
+					transform: scale(0.6);
+				}
+				100% {
+					transform: scale(1);
+				}
+			}
+			@keyframes rotate {
+				0% {
+					transform: rotate(0deg);
+					-webkit-transform: rotate(0deg);
+					-moz-transform: rotate(0deg);
+					-ms-transform: rotate(0deg);
+					-o-transform: rotate(0deg);
+				}
+				100% {
+					transform: rotate(360deg);
+					-webkit-transform: rotate(360deg);
+					-moz-transform: rotate(360deg);
+					-ms-transform: rotate(360deg);
+					-o-transform: rotate(360deg);
+				}
+			}
+			@-webkit-keyframes rotate {
+				0% {
+					transform: rotate(0deg);
+					-webkit-transform: rotate(0deg);
+					-moz-transform: rotate(0deg);
+					-ms-transform: rotate(0deg);
+					-o-transform: rotate(0deg);
+				}
+				100% {
+					transform: rotate(360deg);
+					-webkit-transform: rotate(360deg);
+					-moz-transform: rotate(360deg);
+					-ms-transform: rotate(360deg);
+					-o-transform: rotate(360deg);
+				}
+			}
 
-/* Firefox */
-input[type=number] {
-  -moz-appearance: textfield;
-}
-  html{
-    background: #000000;
-  }
-</style>
+			@-webkit-keyframes grow {
+				0%,
+				100% {
+					border: 2px solid #d81159;
+					background: rgba(159, 255, 245, 0.2);
+				}
+				50% {
+					border: 8px solid #d81159;
+					background: rgba(159, 255, 245, 1);
+				}
+			}
+		</style>
+	</body>
+</html>

@@ -19,9 +19,6 @@
       "@utils/*": [
         "src/utils/*"
       ],
-      "@schemas/*": [
-        "src/schemas/*"
-      ],
       "@hooks/*": [
         "src/hooks/*"
       ],

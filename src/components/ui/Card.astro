@@ -1,0 +1,98 @@
+---
+import OptimizatedPicture from '@components/OptimizatedPicture.astro'
+import Button from './Button.astro'
+import { Image } from 'astro:assets'
+
+// import { twMerge } from 'tailwind-merge'
+
+interface Props {
+	class?: string
+	type?: 'blog' | 'about' | 'portafolio'
+	title?: string
+	img?: string
+	description?: string
+	href?: string
+	date?: string
+}
+
+const { class: className = '', type, title, img, description, href, date } = Astro.props
+---
+
+{
+	type === 'about' && (
+		<article class="group  m-4 scale-105 animate-[opacity_1.4s_ease] overflow-hidden rounded-[10px] bg-[#191919] text-center shadow-[0px_0px_25px_rgb(0,0,0,0.05)] transition-all duration-[0.8s] ease-in-out   sm:w-1/2 md:w-1/4 ">
+			<div class="flex justify-center text-center">
+				<span class="absolute top-10 -z-10 h-20 w-20 rounded-full bg-[#c70039] transition-all duration-300  group-hover:scale-[10]" />
+				<img
+					title={title}
+					class="m-5 inline-block h-[100px] rounded-2xl  bg-[#c70039] p-2.5 shadow-[0px_0px_0px_0px_#c70039] transition-all duration-[0.8s] ease-in-out  group-hover:scale-[1.1]"
+					loading="lazy"
+					src={img}
+					alt={`${title} logo`}
+				/>
+			</div>
+			<div class="inline-block p-5">
+				<h2 class="m-[5px] p-2.5 text-[25px] font-extralight capitalize">{title}</h2>
+				<p class="p-2.5 text-base font-extralight opacity-80">{description}</p>
+			</div>
+		</article>
+	)
+}
+{
+	type === 'blog' && (
+		<article class="group  m-5 h-[420px] w-[450px] overflow-hidden rounded-lg">
+			<a title={`Ver ${title}`} href={href}>
+				<div class="relative h-4/5 w-full overflow-hidden transition-all duration-[0.65s] ease-in-out  group-hover:translate-y-[-70%]">
+					<img
+						src={img}
+						alt={`${title} Imagen`}
+						class="aspect-square h-full w-full object-cover object-center transition-all duration-[0.65s]"
+					/>
+					<time
+						data-time={date}
+						class=" absolute bottom-0 left-0 h-auto w-3/12 rounded-t-md bg-[#c70039] p-[3px] text-center text-lg font-normal transition-all duration-300 ease-in-out "
+					>
+						{date}
+					</time>
+				</div>
+				<div class="h-4/5 w-full content-center bg-[#050505] text-center transition-all duration-500 ease-in-out  group-hover:translate-y-[-70%]">
+					<h3 class="h-1/5 p-5 text-[28px] font-medium capitalize tracking-[1px]">
+						{title}
+					</h3>
+					<p class="h-4/5 p-[30px] text-lg font-normal tracking-[1px] opacity-90">
+						{description}
+					</p>
+					<slot />
+				</div>
+			</a>
+		</article>
+	)
+}
+{
+	type === 'portafolio' && (
+		<article class=" flex h-auto w-full flex-col items-center justify-center p-[1.5%] pb-10 pr-[3%] pt-[50px] lg:flex-row">
+			<div class="w-[95%] max-w-[600px] lg:w-2/5">
+				<img
+					class="relative aspect-square h-full max-h-[400px] w-full object-cover before:absolute before:left-0 before:top-0 before:z-[2] before:h-full before:w-full before:bg-[#c70039] before:opacity-80 before:transition-all before:duration-300 before:ease-in-out  before:content-['']"
+					title={title}
+					loading="lazy"
+					src={img}
+					alt={`${title} Imagen`}
+				/>
+			</div>
+			<div class=" mt-15 z-[3] max-w-[600px] bg-[#080808] py-2.5  opacity-100  transition-all duration-300 ease-in-out  md:m-[1%] md:mt-0 md:w-[95%] md:rounded-[10px] md:border md:border-solid md:border-[#c70039] md:pb-10 md:pt-10 md:opacity-80 md:shadow-[10px] md:hover:z-[4] md:hover:translate-x-[-2px] md:hover:translate-y-[-2px] md:hover:rotate-[-1deg] md:hover:skew-x-[-1deg] md:hover:skew-y-[-1deg] md:hover:scale-[1.02] md:hover:transform md:hover:border md:hover:border-solid md:hover:border-[#c70039] md:hover:opacity-100 md:hover:shadow-[10px] md:hover:transition-all md:hover:duration-300 md:hover:ease-in-out ">
+				<h2 class="p-5 text-4xl font-bold capitalize text-[#c70039] transition-all duration-300 ease-in-out">
+					{title}
+				</h2>
+				<p class="p-5 text-base font-extralight opacity-80">{description}</p>
+				<div class="button text-center">
+					<a title={`${title}-link`} href={`portafolio/${href}`}>
+						<Button variant="slash" type="button">
+							Ver
+						</Button>
+					</a>
+				</div>
+			</div>
+		</article>
+	)
+}

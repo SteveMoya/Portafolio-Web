@@ -1,0 +1,41 @@
+---
+const socialMediaLinks = [
+	{
+		name: 'Instagram',
+		url: 'https://www.instagram.com/steve_moya_cepeda/',
+		icon: '/img/instagram-icon.svg'
+	},
+	{
+		name: 'Facebook',
+		url: 'https://www.facebook.com/steven.cepeda.35/',
+		icon: '/img/facebook-icon.svg'
+	},
+	{
+		name: 'Linkedin',
+		url: 'https://www.linkedin.com/in/steve-moya-cepeda-549469227/',
+		icon: '/img/linkedin-icon.svg'
+	},
+	{
+		name: 'Github',
+		url: 'https://github.com/SteveMoya',
+		icon: '/img/github-icon.svg'
+	}
+]
+---
+
+<!--Social Media Links-->
+<div class="absolute bottom-0 left-0 flex h-auto w-full flex-row items-center justify-center p-2.5">
+	{
+		socialMediaLinks.map(({ name, url, icon }) => (
+			<a title={`${name}-link`} href={url} target="_blank">
+				<img
+					title={`${name}-icon`}
+					src={icon}
+					class="social-media m-2 w-[21px] opacity-60 transition-all duration-300 ease-in-out  hover:scale-110 hover:opacity-100"
+					alt={`${name}-logo`}
+				/>
+			</a>
+		))
+	}
+</div>
+<!--Social Media Links end-->

@@ -1,0 +1,64 @@
+---
+const url = Astro.url.pathname
+
+const { page } = Astro.props
+---
+
+<div class="flex items-center justify-between gap-5 p-2 md:gap-1">
+	<!-- Previous Button -->
+	{
+		page.start > 0 ? (
+			<a
+				href={page.url.prev}
+				class={`flex h-10 items-center justify-center rounded-lg border border-gray-300 bg-white px-8 text-base font-medium text-black opacity-50 hover:bg-gray-100 hover:text-gray-700 md:px-4 dark:border-gray-700 dark:bg-transparent dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white`}
+				title="Página anterior no disponible"
+			>
+				&larr; Anterior
+			</a>
+		) : (
+			<span class="flex h-10 cursor-not-allowed items-center justify-center rounded-lg border border-gray-300 bg-white px-8 text-base font-medium text-black opacity-50 hover:bg-gray-100 hover:text-gray-700 md:px-4 dark:border-gray-700 dark:bg-transparent dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+				&larr; Anterior
+			</span>
+		)
+	}
+
+	<!-- Page Numbers -->
+	<ul class="flex items-center gap-x-1">
+		{
+			Array.from({ length: page.lastPage }).map((_, index) => (
+				<li>
+					{
+						page.currentPage === index + 1 ? (
+							<span class="flex h-10 items-center justify-center rounded-lg border border-gray-300 bg-white px-8 text-base font-medium text-black hover:bg-gray-100 hover:text-gray-700 md:px-4 dark:border-gray-700 dark:bg-transparent dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+								{index + 1}
+							</span>
+						) : (
+							<a
+								href={`${index + 1}`}
+								class="flex h-10 items-center justify-center rounded-lg border border-gray-300 bg-white px-8 text-base font-medium text-black hover:bg-gray-100 hover:text-gray-700 md:px-4 dark:border-gray-700 dark:bg-transparent dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+							>
+								{index + 1}
+							</a>
+						)
+					}
+				</li>
+			))
+		}
+	</ul>
+
+	<!-- Next Button -->
+	{
+		page.currentPage < page.lastPage ? (
+			<a
+				href={page.url.next}
+				class="flex h-10 items-center justify-center rounded-lg border border-gray-300 bg-white px-8 text-base font-medium text-black hover:bg-gray-100 hover:text-gray-700 md:px-4 dark:border-gray-700 dark:bg-transparent dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+			>
+				Siguiente &rarr;
+			</a>
+		) : (
+			<span class="flex h-10 cursor-not-allowed items-center justify-center rounded-lg border border-gray-300 bg-white px-8 text-base font-medium text-black opacity-50 hover:bg-gray-100 hover:text-gray-700 md:px-4 dark:border-gray-700 dark:bg-transparent dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+				Siguiente &rarr;
+			</span>
+		)
+	}
+</div>

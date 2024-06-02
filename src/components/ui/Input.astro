@@ -1,0 +1,45 @@
+---
+import { twMerge } from 'tailwind-merge'
+
+const {
+	variant = 'primary',
+	class: className = '',
+	autocomplete,
+	placeholder,
+	value,
+	name,
+	type = 'text',
+	...rest
+} = Astro.props
+
+const variants = {
+	primary: 'm-3.5 w-2/5 rounded-lg border-[none] bg-[#050505] px-5 py-2.5 text-lg outline-none ',
+	secondary: 'btn-secondary'
+}
+---
+
+{
+	type === 'textarea' ? (
+		<textarea
+			{...rest}
+			class={twMerge(
+				'm-[15px] h-[150px] w-[84%] resize-none overflow-hidden rounded-lg border-[none] bg-[#050505] px-5 py-2.5 text-lg outline-none transition-all duration-300 ease-in-out  hover:opacity-100 focus:opacity-100',
+				className
+			)}
+			placeholder={placeholder}
+			value={value}
+			name={name}
+			autocomplete={autocomplete ? 'on' : 'off'}
+		/>
+	) : (
+		<input
+			{...rest}
+			class={twMerge(variants[variant] || '', className)}
+			placeholder={placeholder}
+			value={value}
+			name={name}
+			type={type}
+			autocomplete={autocomplete ? 'on' : 'off'}
+		/>
+	)
+}

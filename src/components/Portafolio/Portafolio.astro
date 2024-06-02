@@ -1,56 +1,34 @@
 ---
+import Card from '@components/ui/Card.astro'
+
+const portafolios = [
+	{
+		title: '🚧Marketing🚧',
+		img: '/img/marketing.webp',
+		description: '🚧Todavia Trabajando en ello🚧',
+		href: 'marketing'
+	},
+	{
+		title: 'Fotografía',
+		img: '/img/Fotografia.webp',
+		description: 'Puedes darle un vistazo pero todavia estoy Trabajando en ello',
+		href: 'fotografia'
+	},
+	{
+		title: 'Web',
+		img: '/img/web.webp',
+		description: 'Puedes darle un vistazo pero todavia estoy Trabajando en ello',
+		href: 'webs'
+	},
+	{
+		title: 'Diseño Gráfico',
+		img: '/img/diseño.webp',
+		description: 'Todavia Trabajando en ello',
+		href: 'diseno'
+	}
+]
 ---
-<div id="portfolio"> 
-            <div class="portfolio-header"> <span class="color"> Mi </span> Portfolio
-            <span class ="header-caption"> Mira un poco de mis <span class="color"> Trabajos</span></span></div>
-             <div id="portfolio-content">
-                 <div class="portfolio portfolio-first">
-                     <div class="portfolio-image">
-                        <img title="Marketing" loading="lazy" src="/img/marketing.webp" alt="Marketing">
-                     </div>
-                     <div class="portfolio-text">
-                         <h2>Marketing</h2>
-                         <p>Todavia Trabajando en ello</p>
-                         <div class="button"><a title="Marketing-link" href="home_proyectos/Marketing.html"><button><span class="index"> Ver <i class="gg-arrow-right"></i></span></button></a></div>
-                     </div>
-                 </div>
-                 <div class="portfolio portfolio-second">
-                    <div class="portfolio-image">
-                        <img title="Fotografía" loading="lazy" src="/img/Fotografia.webp" alt="Fotografia">
-                    </div>
-                    <div class="portfolio-text">
-                        <h2>Fotografía</h2>
-                        <p>Puedes darle un vistazo pero todavia estoy Trabajando en ello</p>
-                        <div class="button"><a title="Fotografía-link" href="home_proyectos/Fotografia.html"><button><span class="index"> Ver <i class="gg-arrow-right"></i></span></button></a></div>
-                    </div>
-                </div>
-             
-                <div class="portfolio portfolio-third">
-                    <div class="portfolio-image">
-                        <img title="Web" loading="lazy" src="/img/web.webp" alt="Web">
-                    </div>
-                    <div class="portfolio-text">
-                        <h2>Web</h2>
-                        <p>Puedes darle un vistazo pero todavia estoy Trabajando en ello</p>
-                        <div class="button"><a title="Web-link" href="home_proyectos/Web.html"><button><span class="index"> Ver <i class="gg-arrow-right"></i></span></button></a></div>
-                    </div>
-                </div>
-                <div class="portfolio portfolio-fourth">
-                    <div class=" portfolio-image">
-                        <img title="Diseño-Gráfico" loading="lazy" src="/img/diseño.webp" alt="Diseño-Gráfico">
-                    </div>
-                    <div class="portfolio-text">
-                        <h2>Diseño Gráfico</h2>
-                        <p>Todavia Trabajando en ello</p>
-                        <div class="button"><a title="Diseño-Gráfico-link" href="home_proyectos/Diseño-Grafico.html"><button><span class="index"> Ver <i class="gg-arrow-right"></i></span></button></a></div>
-                    </div>
-                </div>
-                 </div>
-                    <!--copyright-section You Can Remove After Downloading-->
-            <div class="footer">
-                <div class="footer-text">
-                    <p>© Steve Moya Cepeda</p>
-                </div>
-               </div>
-       <!--copyright-section-->
-             </div>
+
+<section class="flex h-auto w-full flex-col justify-center overflow-hidden">
+	{portafolios.map((portafolio) => <Card type="portafolio" {...portafolio} />)}
+</section>

@@ -1,0 +1,14 @@
+---
+export interface Props {
+	tag: string
+}
+const { tag } = Astro.props
+---
+
+<a href={`/blog/tags/${tag.toLowerCase()}`} aria-label={tag}>
+	<span
+		class="w-fit rounded-full bg-indigo-600 px-2 py-1 text-sm font-semibold text-white shadow md:px-5 md:py-2 dark:bg-indigo-900 dark:text-white"
+	>
+		{tag ?? 'Blog Tag'}
+	</span>
+</a>

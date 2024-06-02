@@ -1,0 +1,35 @@
+---
+import Header from '@components/Header.astro'
+
+import Card from '@components/ui/Card.astro'
+import { formatDate } from '@src/utils'
+
+import { getCollection } from 'astro:content'
+
+
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf()
+)
+---
+
+<Header
+	title="Mi"
+	titleCaption="Blog"
+	description="Hecha un vistaso a"
+	descriptionCaption="Mis Articulos"
+/>
+<section class="blog-content flex flex-wrap items-center justify-center">
+	{
+		posts.map((post) => (
+			<Card
+				type="blog"
+				href={`/blog/${post.slug}/`}
+				title={post.data.title}
+				img={post.data.heroImage.src ? post.data.heroImage.src : ''}
+				date={formatDate(post.data.pubDate)}
+				description={post.data.description}
+			/>
+		))
+	}
+</section>

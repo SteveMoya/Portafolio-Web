@@ -1,0 +1,18 @@
+---
+interface Props {
+	title: string
+	href: string
+}
+const { title, href } = Astro.props
+---
+
+<li class="no-underline">
+	<a
+		class="p-1 font-sans text-3xl font-extrabold text-white no-underline opacity-70 transition-all duration-300 ease-in-out before:pointer-events-none before:absolute before:left-2/4 before:top-2/4 before:z-[1] before:flex before:-translate-x-2/4 before:-translate-y-2/4 before:items-center before:justify-center before:font-monoton before:text-[5em] before:font-normal before:tracking-[100px] before:text-[rgba(255,255,255,0.16)] before:opacity-0 before:transition-all before:duration-300 before:ease-in-out before:content-[''] hover:opacity-100 hover:before:tracking-[10px] hover:before:opacity-100 hover:before:content-[attr(data-text)]"
+		title={title}
+		href={href}
+		data-text={title}
+	>
+		{title}
+	</a>
+</li>

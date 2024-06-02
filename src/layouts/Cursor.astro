@@ -1,0 +1,13 @@
+<div
+	class="fixed left-[-25px] top-[-25px] z-50 block h-[50px] w-[50px] rounded-full border border-[whitesmoke] bg-transparent opacity-60"
+	id="cursor"
+>
+</div>
+<script >
+	const cursor = document.getElementById('cursor')
+
+	document.addEventListener('mousemove', function (evento) {
+		cursor!.style.top = evento.clientY + 'px'
+		cursor!.style.left = evento.clientX + 'px'
+	})
+</script>

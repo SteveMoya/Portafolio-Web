@@ -1,0 +1,60 @@
+---
+import { sluglify, unsluglify, getCategories, getPosts, formatDate } from '@utils/index'
+import { siteConfig } from '@src/data/config'
+import Pagination from '@components/Pagination.astro'
+import ListCategories from '@components/ListCategories.astro'
+import Layout from '@layouts/Layout.astro'
+import Card from '@components/ui/Card.astro'
+import Header from '@components/Header.astro'
+
+export async function getStaticPaths({ paginate }: any) {
+	const categories = await getCategories()
+	const allPosts = await getPosts()
+
+	return categories.flatMap((category: string) => {
+		const unsluglifyNameCategory = unsluglify(category!.toLowerCase())
+		const filteredPosts = allPosts.filter(
+			(post) => post.data.category.toLowerCase() === unsluglifyNameCategory
+		)
+
+		return paginate(filteredPosts, {
+			params: {
+				category: sluglify(category.toLowerCase())
+			},
+			pageSize: siteConfig.paginationSize
+		})
+	})
+}
+const params = Astro.params
+const { page } = Astro.props
+
+const unsluglifyNameCategory = unsluglify(params.category!.toLowerCase())
+const posts = page.data
+
+---
+
+<Layout title={params.category}>
+	<Header
+		title="Posts de"
+		titleCaption={unsluglifyNameCategory}
+		description="Estos son todos los posts de la categoria de"
+		descriptionCaption={unsluglifyNameCategory}
+	/>
+	<ListCategories activeCategory={params.category} />
+	
+	<section class="flex flex-wrap content-center justify-center">
+		{
+			posts.map((post) => (
+				<Card
+					type="blog"
+					title={post.data.title}
+					description={post.data.description}
+					img={post.data.heroImage.src}
+					href={`/blog/${post.slug}`}
+					date={formatDate(post.data.updateDate || post.data.pubDate)}
+				/>
+			))
+		}
+	</section>
+	<Pagination page={page} />
+</Layout>
