@@ -21,6 +21,6 @@ export const siteConfig: SiteConfig = {
      // Description to display in the meta tags
     lang: 'es-DO',
     ogLocale: 'es_DO',
-    shareMessage: 'Share this post', // Message to share a post on social media
+    shareMessage: 'Comparte este Post', // Social share message
     paginationSize: 6 // Number of posts per page
 }

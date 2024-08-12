@@ -2,13 +2,19 @@
 import '@pagefind/default-ui/css/ui.css'
 // Aqui hacemos que solo se muestre en el path de blog
 if (!Astro.url.pathname.includes('/blog')) {
-  return
+	return
 }
+
+import { Icon } from 'astro-icon/components'
 ---
 
 <site-search id="search" class="ms-auto">
-	<button data-open-modal disabled class="flex items-center justify-center gap-1 rounded-md p-2  bg-[#c70039] transition-all opacity-85 hover:opacity-100">
-		🔍
+	<button
+		data-open-modal
+		disabled
+		class="flex items-center justify-center gap-1 rounded-md bg-[#c70039] p-2 opacity-85 transition-all hover:opacity-100 text-sm"
+	>
+		<Icon name="mdi:search" />
 	</button>
 	<dialog
 		aria-label="search"

@@ -1,6 +1,7 @@
 ---
 import { siteConfig } from "@src/data/config"
 
+import {Icon} from "astro-icon/components"
 
 const message = siteConfig.shareMessage
 
@@ -8,21 +9,28 @@ const URL = Astro.url.href
 ---
 
 <div class='flex flex-col gap-2'>
-	<span class='mb-1 font-bold text-2xl'>Share</span>
-	<ul class='flex gap-3 text-black dark:text-white'>
-		<li>
-			<a
-				href={`https://twitter.com/intent/tweet?text=${message + ' ' + URL}`}
-				aria-label='Share on Twitter'>Twitter Icon</a
-			>
-		</li>
+	<span class='mb-1 font-bold text-2xl'>Compatir</span>
+	<ul class='flex gap-2 text-white text-2xl'>
 		<li>
 			<a
 				href={`https://www.linkedin.com/shareArticle?mini=true&url=${URL}`}
-				aria-label='Share on LinkedIn'
+				aria-label='Compartir en LinkedIn'
 			>
-				Linkedin Icon</a
+			<Icon name="mdi:linkedin" />
+		</li>
+		<li>
+			<a
+				href={`https://www.facebook.com/sharer/sharer.php?u=${URL}`}
+				aria-label='Compartir en Facebook'
 			>
+			<Icon name="mdi:facebook" />
+		</li>
+		<li>
+			<a
+				href={`https://wa.me/?text=${message + ' ' + URL}`}
+				aria-label='Compartir en WhatsApp'
+			>
+			<Icon name="mdi:whatsapp" />
 		</li>
 	</ul>
 </div>
