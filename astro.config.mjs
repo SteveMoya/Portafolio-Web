@@ -11,25 +11,29 @@ import pagefind from "astro-pagefind";
 
 // import metaTags from "astro-meta-tags";
 
+import metaTags from "astro-meta-tags";
+import pageInsight from "astro-page-insight";
+
+import devtoolbarTailwind from "astro-devtoolbar-tailwind";
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://stevemoya.me',
   prefetch: {
     prefetchAll: true,
-    defaultStrategy: 'viewport',
+    defaultStrategy: 'viewport'
   },
-
   experimental: {
-    contentCollectionCache: true,
+    contentCollectionCache: true
   },
   image: {
-    service: passthroughImageService(),
+    service: passthroughImageService()
   },
-  integrations: [mdx(), sitemap(), tailwind(), partytown(), icon(), robotsTxt(), pagefind(),
+  integrations: [mdx(), sitemap(), tailwind(), partytown(), icon(), robotsTxt(), pagefind()
   // devtoolbarTailwind(), 
   // lighthouse(),
   //  metaTags()
-],
+  , metaTags(), pageInsight(), devtoolbarTailwind()],
   //Static is default
   output: "static"
 });
