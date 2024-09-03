@@ -11,14 +11,16 @@ const {
 } = Astro.props
 ---
 
-<article class="group grid min-h-full grid-rows-[300px_auto] md:grid-rows-[300px_220px]">
-	<a class="relative overflow-hidden" href={`/blog/${slug}/`}>
+<article
+	class="group grid max-h-[420px] min-h-full grid-rows-[300px_auto] rounded-lg bg-[#050505] shadow-2xl md:grid-rows-[300px_220px]"
+>
+	<a class="relative overflow-hidden" href={`/blog/${slug}/`} title={`Ver ${title}`}>
 		<Image
 			src={heroImage}
 			width={600}
 			height={200}
 			format="webp"
-			class="h-full min-w-full rounded-[2px] object-cover transition-all duration-200 hover:scale-[101%]"
+			class="duration-[0.65s]] aspect-square h-full w-full rounded-lg object-cover object-center transition-all duration-200 hover:scale-[101%]"
 			alt={`img of ${title}`}
 		/>
 
@@ -30,62 +32,28 @@ const {
 					<span class="text-sm"> {readTime}</span>
 				</div>
 
-				<span class="pb-4">{category}</span>
+				<span
+					class="absolute bottom-0 right-0 h-auto rounded-t-md bg-[#c70039] p-2 text-center text-lg font-normal transition-all duration-300 ease-in-out"
+					>{category}</span
+				>
 			</div>
 		</div>
 	</a>
 
-	<div class="flex flex-col justify-between gap-4 py-6 pl-1 md:gap-0">
-		<div class="flex flex-col gap-3">
+	<div class="flex flex-col gap-4 py-6  md:gap-0">
+		<div class="flex flex-col gap-3 text-center">
 			<div class="flex flex-col gap-2">
-				<a class="text-2xl font-semibold -tracking-wider capitalize" href={`/blog/${slug}/`}>
+				<a
+					class="text-2xl font-semibold capitalize -tracking-wider"
+					href={`/blog/${slug}/`}
+				>
 					{title}
 				</a>
 			</div>
 
-			<p
-				class="mb-5 line-clamp-3 overflow-hidden font-[400] text-gray-700 md:pr-[15%] dark:text-white"
-			>
+			<p class="mb-5 line-clamp-3 font-[400] text-gray-700 dark:text-white max-h-6">
 				{description}
 			</p>
 		</div>
-
-		<footer class="flex items-center justify-between">
-			<a
-				href={`/blog/${slug}/`}
-				class="group flex items-center justify-center gap-1 rounded-full font-semibold transition-transform duration-150 ease-in-out hover:translate-x-1 dark:text-white"
-				aria-label={`go to ${title}`}
-			>
-				Read Post <span
-					class="duration-250 mt-[1px] transition-transform ease-in-out group-hover:rotate-45"
-					>ArrowUp</span
-				>
-			</a>
-		</footer>
 	</div>
 </article>
-
-<script>
-	import { animate } from 'motion'
-
-	const images = document.querySelectorAll('img')
-
-	document.addEventListener('DOMContentLoaded', function () {
-		const showAnimations = localStorage.getItem('animations') === 'true'
-
-		if (showAnimations) {
-			animate(
-				'.effect',
-				{
-					opacity: [0, 1],
-					clipPath: ['circle(0% at 0% 0%)', 'circle(100% at 50% 50%)']
-				},
-				{ duration: 2, easing: 'ease' }
-			)
-		} else {
-			images.forEach((img) => {
-				img.classList.remove('opacity-0')
-			})
-		}
-	})
-</script>
