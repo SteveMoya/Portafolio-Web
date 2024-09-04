@@ -56,13 +56,13 @@ const { Content, headings, remarkPluginFrontmatter } = await post.render()
 
 		<!-- post -->
 		<article class="w-full max-w-full">
-			<div class="prose prose-lg md:prose-xl dark:prose-invert mb-12 min-w-full">
+			<div class="prose prose-lg md:prose-xl prose-invert mb-12 min-w-full">
 				<Content components={{ pre: Code, SButton }} />
 			</div>
 
 			<!-- related posts -->
 			<footer>
-				<h2 class="mb-6 text-lg font-bold dark:text-white">Related Posts</h2>
+				<h2 class="mb-6 text-lg font-bold text-white">Related Posts</h2>
 				<ListRelatedPosts posts={relatedPosts} />
 			</footer>
 		</article>

@@ -16,9 +16,9 @@ const isActive =
 		? '/blog/todos-los-blogs/1'
 		: sluglify(`/blog/category/${unsluglifyNameCategory}/1`)}
 	class={cn(
-		`   pb-2.5 first-letter:uppercase font-medium border-b-2 border-opacity-0 dark:border-opacity-0 border-black dark:border-white dark:hover:border-white hover:border-opacity-100 transition-colors duration-150 ease-linear  `,
+		`   w-fit rounded-full bg-[#c70039]/70 px-2 py-1 text-sm font-semibold text-white shadow md:px-5 md:py-2 hover:bg-[#c70039] hover:bg-opacity-100 hover:text-white hover:shadow-lg`,
 		isActive &&
-			`border-black border-b-2 text-black z-10  dark:border-white dark:text-white dark:border-opacity-100 border-opacity-100`
+			`bg-[#c70039] text-white shadow-lg hover:bg-[#c70039] hover:bg-opacity-100 hover:text-white hover:shadow-lg`
 	)}>
 	{name}
 </a>
