@@ -1,7 +1,6 @@
 ---
 import { type CollectionEntry, getCollection } from 'astro:content'
 
-
 import Code from '@components/mdx/Code.astro'
 import ListRelatedPosts from '@components/ListRelatedPosts.astro'
 import Share from '@components/Share.astro'
@@ -35,15 +34,13 @@ const getRelatedPosts = (post: Props) => {
 const relatedPosts = getRelatedPosts(post)
 
 const { Content, headings, remarkPluginFrontmatter } = await post.render()
-
 ---
 
-<BlogLayout 
+<BlogLayout
 	id={post.id}
 	data={post.data}
 	headings={headings}
-	readTime={remarkPluginFrontmatter.minutesRead}
-	
+	readTime={remarkPluginFrontmatter.pubDate}
 >
 	<div class="mt-8 grid grid-cols-1 gap-10 md:grid-cols-[20%_auto]">
 		<!-- aside  -->
@@ -62,7 +59,7 @@ const { Content, headings, remarkPluginFrontmatter } = await post.render()
 
 			<!-- related posts -->
 			<footer>
-				<h2 class="mb-6 text-lg font-bold text-white">Related Posts</h2>
+				<h2 class="mb-6 text-lg font-bold">Posts Relacionados</h2>
 				<ListRelatedPosts posts={relatedPosts} />
 			</footer>
 		</article>

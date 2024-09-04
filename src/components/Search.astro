@@ -12,18 +12,18 @@ import { Icon } from 'astro-icon/components'
 	<button
 		data-open-modal
 		disabled
-		class="flex items-center justify-center gap-1 rounded-md bg-[#c70039] p-2 opacity-85 transition-all hover:opacity-100 text-sm"
+		class="flex items-center justify-center gap-1 rounded-md bg-[#c70039] p-2 text-sm opacity-85 transition-all hover:opacity-100"
 	>
 		<Icon name="mdi:search" />
 	</button>
 	<dialog
 		aria-label="search"
-		class="h-full max-h-full w-full max-w-full border border-zinc-400 bg-white opacity-0 shadow backdrop:backdrop-blur sm:mx-auto sm:mb-auto sm:mt-16 sm:h-max sm:max-h-[calc(100%-8rem)] sm:min-h-[15rem] sm:w-5/6 sm:max-w-[48rem] sm:rounded-md bg-[#0a0910ec]"
+		class="h-full max-h-full w-full max-w-full border border-zinc-400 bg-[#0a0910ec] opacity-0 shadow backdrop:backdrop-blur sm:mx-auto sm:mb-auto sm:mt-16 sm:h-max sm:max-h-[calc(100%-8rem)] sm:min-h-[15rem] sm:w-5/6 sm:max-w-[48rem] sm:rounded-md"
 	>
 		<div class="dialog-frame flex flex-col gap-4 p-6 pt-12 sm:pt-6">
 			<button
 				data-close-modal
-				class="ms-auto cursor-pointer rounded-full px-4 py-2 bg-white text-black"
+				class="ms-auto cursor-pointer rounded-full bg-white px-4 py-2 text-black"
 				>Cerrar</button
 			>
 			{
@@ -38,7 +38,7 @@ import { Icon } from 'astro-icon/components'
 					</div>
 				) : (
 					<div class="search-container text-white">
-						<div id="pagefind__search" ></div>
+						<div id="pagefind__search" />
 					</div>
 				)
 			}
@@ -133,10 +133,19 @@ import { Icon } from 'astro-icon/components'
 
 <style is:global>
 	.dark {
-		--pagefind-ui-primary: whitesmoke;
-		--pagefind-ui-text: whitesmoke;
+		--pagefind-ui-primary: white;
+		--pagefind-ui-text: white;
 		--pagefind-ui-background: #152028;
 		--pagefind-ui-border: #152028;
 		--pagefind-ui-tag: #152028;
+	}
+	.pagefind-ui__results-area {
+		color: white;
+	}
+	.pagefind-ui__result-link {
+		color: white;
+	}.pagefind-ui__result-excerpt {
+		color: whitesmoke;
+		opacity: 98;
 	}
 </style>

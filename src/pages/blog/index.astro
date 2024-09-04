@@ -1,8 +1,8 @@
 ---
 import Layout from '@src/layouts/Layout.astro'
-import Blog from '@components/Blog/Blog.astro'
+
 import { getPosts } from '@src/utils'
-import TitlePage from '@components/TitlePage.astro'
+
 import ListCategories from '@components/ListCategories.astro'
 import ListPosts from '@components/ListPosts.astro'
 import Header from '@components/Header.astro'
@@ -18,27 +18,9 @@ const posts = await getPosts(MAX_POSTS)
 >
 <Header title='Mis mas recientes' titleCaption='Blogs' description="Aqui puedes ver los los Articulos mas recientes de mi" descriptionCaption="Blog" />
 	<ListCategories />
-	<div>
-		<h2 class="text-end text-lg font-medium tracking-wide">Los mas recientes</h2>
+	<div class="mx-10">
+		<h2 class="md:text-end text-center text-lg font-bold tracking-wide ml-4 mt-4">Los mas recientes</h2>
 		<ListPosts FirstBig={true} posts={posts} />
 	</div>
 
-	<!-- <Blog /> -->
 </Layout>
-<script>
-	import { animate } from 'motion'
-	const showAnimations = localStorage.getItem('animations') === 'true'
-
-	if (showAnimations) {
-		animate(
-			'.title',
-			{ y: [80, 0], opacity: [0, 1] },
-			{
-				duration: 2.5,
-				opacity: { duration: 3 },
-
-				offset: [0, 0.55, 0.75]
-			}
-		)
-	}
-</script>

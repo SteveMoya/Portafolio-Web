@@ -1,10 +1,9 @@
 ---
-import FormattedDate from '@components/FormattedDate.astro'
 import Layout from './Layout.astro'
 import Tag from '@components/Tag.astro'
 import type { CollectionEntry } from 'astro:content'
 import type { MarkdownHeading } from 'astro'
-import { Image } from 'astro:assets'
+import { Image, Picture } from 'astro:assets'
 
 type Props = {
 	id?: CollectionEntry<'blog'>['id']
@@ -16,10 +15,14 @@ type Props = {
 const { data, readTime, headings, id } = Astro.props
 const { title, description, pubDate, heroImage, tags } = data
 
-const articleDate = pubDate.toISOString()
 ---
 
-<Layout title={title} description={description} image={heroImage.src} articleDate={articleDate}>
+<Layout
+	title={title}
+	description={description}
+	image={heroImage.src}
+	articleDate={pubDate.toISOString()}
+>
 	<section
 		class="mt-4 grid gap-12 overflow-hidden px-5 antialiased sm:mx-auto sm:max-w-2xl sm:px-8 md:max-w-6xl md:overflow-visible lg:px-0"
 		data-pagefind-body
@@ -29,10 +32,13 @@ const articleDate = pubDate.toISOString()
 				<div class="flex flex-col gap-2">
 					<div class="flex items-center justify-center gap-x-1">
 						<p class="text-center text-sm text-opacity-50">
-							Publicado <FormattedDate date={pubDate} />
-						</p>
-						<p class="text-center text-sm font-bold text-opacity-50">
-							- {readTime}
+							Publicado el{' '}{
+								pubDate.toLocaleDateString('es-Es', {
+									year: 'numeric',
+									month: 'long',
+									day: 'numeric'
+								})
+							}
 						</p>
 					</div>
 					<h1 class="text-center text-4xl font-semibold md:pb-2.5 md:text-6xl">
@@ -48,14 +54,13 @@ const articleDate = pubDate.toISOString()
 			<>
 				{
 					heroImage && (
-						<Image
+						<Picture
 							src={heroImage}
 							width={1000}
 							height={500}
-							quality={100}
-							format="jpg"
+							formats={['webp', 'avif', 'jpg']}
 							loading="eager"
-							class="my-8 max-h-[300px] w-full  rounded-md object-cover md:max-h-[500px]"
+							class="my-8 max-h-[300px] w-full rounded-md object-cover md:max-h-[500px]"
 							alt={`Imagen de ${title}`}
 						/>
 					)

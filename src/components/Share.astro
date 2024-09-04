@@ -1,36 +1,50 @@
 ---
-import { siteConfig } from "@src/data/config"
+import { siteConfig } from '@src/data/config'
 
-import {Icon} from "astro-icon/components"
+import { Icon } from 'astro-icon/components'
 
 const message = siteConfig.shareMessage
 
 const URL = Astro.url.href
+
+const shareItems = [
+	{
+		name: 'LinkedIn',
+		url: `https://www.linkedin.com/shareArticle?mini=true&url=${URL}`,
+		icon: 'mdi:linkedin',
+		color: 'blue-500',
+	},
+	{
+		name: 'Facebook',
+		url: `https://www.facebook.com/sharer/sharer.php?u=${URL}`,
+		icon: 'mdi:facebook',
+		color: 'blue-800',
+	},
+	{
+		name: 'WhatsApp',
+		url: `https://wa.me/?text=${message + ' ' + URL}`,
+		icon: 'mdi:whatsapp',
+		color: 'green-500',
+	},
+]
+
 ---
 
-<div class='flex flex-col gap-2'>
-	<span class='mb-1 font-bold text-2xl'>Compatir</span>
-	<ul class='flex gap-2 text-white text-2xl'>
-		<li>
-			<a
-				href={`https://www.linkedin.com/shareArticle?mini=true&url=${URL}`}
-				aria-label='Compartir en LinkedIn'
-			>
-			<Icon name="mdi:linkedin" />
-		</li>
-		<li>
-			<a
-				href={`https://www.facebook.com/sharer/sharer.php?u=${URL}`}
-				aria-label='Compartir en Facebook'
-			>
-			<Icon name="mdi:facebook" />
-		</li>
-		<li>
-			<a
-				href={`https://wa.me/?text=${message + ' ' + URL}`}
-				aria-label='Compartir en WhatsApp'
-			>
-			<Icon name="mdi:whatsapp" />
-		</li>
+<div class="flex flex-col gap-2">
+	<span class="mb-1 text-2xl font-bold">Compatir</span>
+	<ul class="flex gap-2 text-2xl text-white">
+		{
+			shareItems.map((item) => (
+				<li>
+					<a
+						class={`transition-all duration-300 ease-in-out hover:scale-110 hover:text-${item.color}`}
+						href={item.url}
+						aria-label={`Compartir en ${item.name}`}
+					>
+						<Icon name={item.icon} />
+					</a>
+				</li>
+			))
+		}
 	</ul>
 </div>
