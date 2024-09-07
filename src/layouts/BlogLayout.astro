@@ -14,7 +14,6 @@ type Props = {
 
 const { data, readTime, headings, id } = Astro.props
 const { title, description, pubDate, heroImage, tags } = data
-
 ---
 
 <Layout
@@ -88,7 +87,7 @@ const { title, description, pubDate, heroImage, tags } = data
 					index?.classList.remove('bg-slate-200', 'dark:bg-slate-800') // remove bg
 					index?.classList.add(
 						'bg-indigo-600',
-						'dark:bg-indigo-700',
+						'dark:bg-red-800',
 						'text-white',
 						'font-bold',
 						'transition-colors',
@@ -98,7 +97,7 @@ const { title, description, pubDate, heroImage, tags } = data
 					index?.classList.add('bg-slate-200', 'dark:bg-slate-800') // add bg
 					index?.classList.remove(
 						'bg-indigo-600',
-						'dark:bg-indigo-700',
+						'dark:bg-red-800',
 						'text-white',
 						'font-bold',
 						'transition-colors',
