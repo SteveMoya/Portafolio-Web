@@ -4,7 +4,7 @@ export const CATEGORIES = [
 	'Tecnologia',
 	'Programación',
 	'Marketing',
-	'Diseno',
+	'Diseño',
 	'Productividad',
 	'Fotografia',
 	'Otros'

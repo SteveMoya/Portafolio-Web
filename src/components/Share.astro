@@ -12,22 +12,21 @@ const shareItems = [
 		name: 'LinkedIn',
 		url: `https://www.linkedin.com/shareArticle?mini=true&url=${URL}`,
 		icon: 'mdi:linkedin',
-		color: 'blue-500',
+		color: 'hover:text-blue-500'
 	},
 	{
 		name: 'Facebook',
 		url: `https://www.facebook.com/sharer/sharer.php?u=${URL}`,
 		icon: 'mdi:facebook',
-		color: 'blue-800',
+		color: 'hover:text-blue-800'
 	},
 	{
 		name: 'WhatsApp',
 		url: `https://wa.me/?text=${message + ' ' + URL}`,
 		icon: 'mdi:whatsapp',
-		color: 'green-500',
-	},
+		color: 'hover:text-green-500'
+	}
 ]
-
 ---
 
 <div class="flex flex-col gap-2">
@@ -37,7 +36,10 @@ const shareItems = [
 			shareItems.map((item) => (
 				<li>
 					<a
-						class={`transition-all duration-300 ease-in-out hover:scale-110 hover:text-${item.color}`}
+						class:list={[
+							'transition-all duration-300 ease-in-out hover:scale-110',
+							item.color
+						]}
 						href={item.url}
 						aria-label={`Compartir en ${item.name}`}
 					>

@@ -1,5 +1,4 @@
 ---
-import '@fontsource/monoton'
 import NavItem from './NavItem.astro'
 const NavLinks = [
 	{
@@ -21,14 +20,14 @@ const NavLinks = [
 ]
 import navLogo from '/public/img/nav-logo.svg'
 import logo from '/public/img/logo.svg'
-import { Picture, Image } from 'astro:assets'
+import { Picture } from 'astro:assets'
 import Search from '@components/Search.astro'
 ---
 
 <!--Navigator-fullscreen-->
 <div
 	id="navigation-content"
-	class="fixed z-40 flex h-screen w-full translate-y-[-200%] flex-col items-center justify-center border-b bg-[#020202] bg-opacity-95 transition-transform duration-1000 ease-in-out"
+	class="fixed z-50 flex h-screen w-full translate-y-[-200%] flex-col items-center justify-center border-b bg-[#020202] bg-opacity-95 transition-transform duration-1000 ease-in-out"
 >
 	<div class="">
 		<a title="logo" href="/">
@@ -57,7 +56,7 @@ import Search from '@components/Search.astro'
 	</ul>
 </div>
 <!--Navigator-Fullscreen END-->
-<nav class="fixed z-[3] h-[100px] w-full overflow-hidden bg-transparent p-2.5">
+<nav class="fixed z-40 h-[100px] w-full overflow-hidden bg-transparent p-2.5">
 	<Picture
 		class="absolute left-[2.5%] top-[15%] h-20 opacity-80 transition-all duration-300 ease-in-out hover:-rotate-45 hover:opacity-100"
 		title="logo"
