@@ -9,11 +9,11 @@ type Props = {
 	id?: CollectionEntry<'blog'>['id']
 	data: CollectionEntry<'blog'>['data']
 	headings?: MarkdownHeading[]
-	readTime?: string
+	updateDate?: string
 }
 
-const { data, readTime, headings, id } = Astro.props
-const { title, description, pubDate, heroImage, tags } = data
+const { data, headings, id } = Astro.props
+const { title, description, pubDate, heroImage, tags, updateDate } = data
 ---
 
 <Layout
@@ -29,7 +29,7 @@ const { title, description, pubDate, heroImage, tags } = data
 		<article class="min-w-full sm:max-w-none md:max-w-none md:py-4">
 			<header class="mb-3 flex flex-col items-center justify-center gap-6">
 				<div class="flex flex-col gap-2">
-					<div class="flex items-center justify-center gap-x-1">
+					<div class="flex items-center justify-center flex-col gap-x-1 gap-y-2">
 						<p class="text-center text-sm text-opacity-50">
 							Publicado el{' '}{
 								pubDate.toLocaleDateString('es-Es', {
@@ -39,8 +39,19 @@ const { title, description, pubDate, heroImage, tags } = data
 								})
 							}
 						</p>
+						{updateDate && (
+							<p class="text-center text-sm text-opacity-50">
+								Actualizado el{' '}{
+									new Date(updateDate).toLocaleDateString('es-Es', {
+										year: 'numeric',
+										month: 'long',
+										day: 'numeric'
+									})
+								}
+							</p>
+						)}
 					</div>
-					<h1 class="text-center text-4xl font-semibold md:pb-2.5 md:text-6xl">
+					<h1 class="text-center text-4xl font-semibold md:pb-2 md:text-6xl capitalize">
 						{title}
 					</h1>
 				</div>
