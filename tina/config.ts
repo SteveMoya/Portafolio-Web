@@ -93,7 +93,7 @@ export default defineConfig({
 						name: 'SButton',
 						isBody: true,
 						templates: [
-							// Custom Components
+							// Custom Components aqui se pueden colocar los compónentes personalizados de MDX que gustes
 							{
 								label: 'SButton',
 								name: 'SButton',
