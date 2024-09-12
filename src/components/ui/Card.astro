@@ -40,7 +40,7 @@ const { class: className = '', type, title, img, description, href, date } = Ast
 }
 {
 	type === 'blog' && (
-		<article class="group m-5 h-[420px] w-[450px] overflow-hidden rounded-lg bg-[#c7c7c7]">
+		<article class="group m-5 lg:h-[420px] w-[450px] overflow-hidden rounded-lg bg-[#c7c7c7]">
 			<a title={`Ver ${title}`} href={href}>
 				<div class="relative h-4/5 w-full overflow-hidden transition-all duration-[0.65s] ease-in-out group-hover:translate-y-[-70%]">
 					<img
@@ -55,7 +55,7 @@ const { class: className = '', type, title, img, description, href, date } = Ast
 						{date}
 					</time>
 				</div>
-				<div class="h-4/5 w-full content-center bg-[#050505] text-center transition-all duration-500 ease-in-out group-hover:translate-y-[-70%]">
+				<div class="h-4/5 w-full content-center bg-[#050505] text-center transition-all duration-500 ease-in-out lg:group-hover:translate-y-[-70%]">
 					<h3 class="h-1/5 p-5 text-[28px] font-medium capitalize tracking-[1px]">
 						{title}
 					</h3>

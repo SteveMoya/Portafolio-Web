@@ -22,7 +22,7 @@ import { formatDate } from '@src/utils'
 						href={repo.homepage || repo.html_url}
 						date={formatDate(repo.pushed_at as unknown as Date)}
 					>
-						<ul>
+						<ul class="">
 							{languages?.map((lang) => (
 								<li class="">{lang.name}</li>
 							))}
