@@ -11,7 +11,7 @@ export async function getRepos() {
         if (process.env.NODE_ENV === 'development') {
             const repos = reposMock
             return repos
-        }else{
+        }
         const response = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos`, {
             headers: {
                 Authorization: `token ${GITHUB_TOKEN}`
@@ -19,7 +19,7 @@ export async function getRepos() {
         })
         const repos = await response.json()
         return repos
-        }
+        
     } catch (error) {
         console.error('Error al buscar los repositorios',error)
         return
@@ -31,7 +31,7 @@ export async function getRepoLanguages(repo: string) {
         if (process.env.NODE_ENV === 'development') {
             const languages = languajesMock
             return Object.entries(languages).map(([lang, size]) => ({ name: lang, size }))
-        } else {
+        } 
         const response = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${repo}/languages`, {
             headers: {
                 Authorization: `token ${GITHUB_TOKEN}`
@@ -39,7 +39,6 @@ export async function getRepoLanguages(repo: string) {
         })
         const languages = await response.json()
         return Object.entries(languages).map(([lang, size]) => ({ name: lang, size })) 
-    }
     } catch (error) {
         console.error("Error al obtener las tecnologias utilizadas",error)
         return   
@@ -57,7 +56,7 @@ export async function fetchFirstImageFromReadme(repo :string) {
             const firstImageURL = images.length > 0 ? images[0] : null
             return firstImageURL
 
-        } else{
+        }
             const response = await fetch(
                 `https://api.github.com/repos/${GITHUB_USERNAME}/${repo}/contents/README.md`,
                 {
@@ -77,7 +76,6 @@ export async function fetchFirstImageFromReadme(repo :string) {
             const images = [...readmeContent.matchAll(regex)].map((match) => match[1])
             const firstImageURL = images.length > 0 ? images[0] : null
             return firstImageURL
-        }
     } catch (error) {
         console.error('Error al buscar la imagen en el README.md', error)
         return

@@ -1,0 +1,40 @@
+---
+import { Icon } from 'astro-icon/components'
+
+interface Props {
+	tecnology: string
+	size?: unknown
+}
+const { tecnology, size } = Astro.props
+
+const tecnologyMap: Record<string, { color: string; icon: string }> = {
+	python: { color: 'yellow-500', icon: 'mdi:language-python' },
+	javascript: { color: 'yellow-500', icon: 'mdi:language-javascript' },
+	typescript: { color: 'blue-500', icon: 'mdi:language-typescript' },
+	html: { color: 'red-500', icon: 'mdi:language-html5' },
+	css: { color: 'blue-500', icon: 'mdi:language-css3' },
+	tailwindcss: { color: 'blue-500', icon: 'mdi:tailwindcss' },
+	react: { color: 'blue-500', icon: 'mdi:react' },
+	vue: { color: 'green-500', icon: 'mdi:vuejs' },
+	angular: { color: 'red-500', icon: 'mdi:angular' },
+	dockerfile: { color: 'blue-500', icon: 'mdi:docker' },
+	astro: { color: 'orange-600', icon: 'logos:astro-icon' },
+	mdx: { color: 'amber-400', icon: 'logos:mdx' },
+	markdown: { color: 'neutral-200', icon: 'mdi:language-markdown' },
+	shell: { color: 'blue-500', icon: 'mdi:powershell' }
+}
+
+const tecnologyName = tecnology.toLowerCase()
+
+const { color, icon } = tecnologyMap[tecnologyName] || {
+	color: 'gray-500',
+	icon: 'mdi:alert-circle'
+}
+---
+
+<li class:list={['rounded-full p-2 text-white', `bg-${color}`]}>
+	<span>
+		<Icon class="inline-block" name={icon} />
+		{tecnology}
+	</span>
+</li>
