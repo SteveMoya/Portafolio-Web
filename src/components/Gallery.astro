@@ -28,20 +28,20 @@ const images = await getImages()
 	>
 		{
 			images?.map((imagen, index) => (
-				<li class="li group overflow-hidden rounded-2xl bg-[#050505]  shadow-sm transition-all duration-300 ease-in-out ">
+				<li class="li group overflow-hidden rounded-2xl bg-[#050505] shadow-sm transition-all duration-300 ease-in-out">
 					<a href={`#${index + 1}`} class="a" title={`Imagen ${index + 1} `}>
 						<OptimizatedPicture
 							src={imagen.default as unknown as string}
 							alt={`Imagen ${index + 1} `}
-							class="img block aspect-[1/1] h-full min-h-[30vh] w-full max-w-full scale-100  object-cover object-center transition-all  duration-500 ease-in-out  group-hover:scale-125"
+							class="img block aspect-[1/1] h-full min-h-[30vh] w-full max-w-full scale-100 object-cover object-center transition-all duration-500 ease-in-out group-hover:scale-125"
 						/>
 					</a>
 					<div
 						id={`${index + 1}`}
-						class="pointer-events-auto fixed inset-0 z-10 hidden h-full w-full overflow-auto  rounded-[1em]  bg-black/75 p-10 opacity-100 shadow-lg transition-all duration-300 ease-in-out  target:flex target:flex-col target:items-center target:justify-center target:gap-4 target:overflow-auto target:rounded-[1em] target:bg-black/90 target:p-10 target:opacity-100 target:shadow-lg target:transition-all target:duration-300 target:ease-in-out "
+						class="pointer-events-auto fixed inset-0 z-50 hidden h-full w-full overflow-auto rounded-[1em] bg-black/75 p-10 opacity-100 shadow-lg transition-all duration-300 ease-in-out target:flex target:flex-col target:items-center target:justify-center target:gap-4 target:overflow-auto target:rounded-[1em] target:bg-black/90 target:p-10 target:opacity-100 target:shadow-lg target:transition-all target:duration-300 target:ease-in-out"
 					>
-						<a href="#">
-							<button class=" duration- mt-0  block h-[3em] w-[5em] cursor-pointer rounded-lg border-[none]  bg-[#BB0035] text-center text-xl  opacity-80 transition-all ease-in-out  hover:opacity-100 hover:transition-all hover:duration-300 hover:ease-in-out  ">
+						<a href="#" class="">
+							<button class="duration- mt-0 block h-[3em] w-[5em] cursor-pointer rounded-lg border-[none] bg-[#BB0035] text-center text-xl opacity-80 transition-all ease-in-out hover:opacity-100 hover:transition-all hover:duration-300 hover:ease-in-out">
 								Cerrar
 							</button>
 						</a>
@@ -49,7 +49,7 @@ const images = await getImages()
 						<OptimizatedPicture
 							src={imagen.default as unknown as string}
 							alt={`Imagen ${index + 1} `}
-							class="h-[80vh] max-h-fit w-full max-w-fit  rounded-lg object-cover object-center transition-all duration-500 ease-in-out "
+							class="h-[80vh] max-h-fit w-full max-w-fit rounded-lg object-cover object-center transition-all duration-500 ease-in-out"
 						/>
 					</div>
 				</li>
