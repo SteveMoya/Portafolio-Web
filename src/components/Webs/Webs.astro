@@ -1,0 +1,62 @@
+---
+import Card from '@components/ui/Card.astro'
+import Button from '@components/ui/Button.astro'
+
+import { getRepos, getRepoLanguages, fetchFirstImageFromReadme } from '@src/lib/github'
+import { formatDate } from '@src/utils'
+import ProjectTecnology from '@components/ProjectTecnology.astro'
+---
+
+<section class="flex flex-wrap items-center justify-center">
+	{
+		getRepos().then((repos) =>
+			repos.map(async (repo) => {
+				const imageUrl = await fetchFirstImageFromReadme(repo.name)
+				const languages = await getRepoLanguages(repo.name)
+				return (
+					<article class="m-5 w-[450px] rounded-lg bg-[#c7c7c7]">
+							<div class="relative w-full">
+								<img
+									src={imageUrl ? imageUrl : '/img/place-holder-image.jpg'}
+									alt={`${repo.name} Imagen`}
+									class="aspect-square h-full w-full object-cover object-center"
+								/>
+								<time
+									data-time={formatDate(repo.pushed_at as unknown as Date)}
+									class="absolute bottom-0 left-0 h-auto w-3/12 rounded-t-md bg-[#c70039] p-[3px] text-center text-lg font-normal transition-all duration-300 ease-in-out"
+								>
+									{formatDate(repo.pushed_at as unknown as Date)}
+								</time>
+							</div>
+							<div class="h-4/5 w-full content-center bg-[#050505] text-center">
+								<h3 class="h-1/5 p-5 text-[28px] font-medium capitalize tracking-[1px]">
+									{repo.name || 'Sin nombre'}
+								</h3>
+								<p class="h-4/5 p-[30px] text-lg font-normal tracking-[1px] opacity-90">
+									{repo.description || 'Sin descripcion'}
+								</p>
+								<ul class="flex flex-wrap justify-center gap-4">
+									{languages?.map(
+										(lang) => (
+											console.log(lang.name),
+											(<ProjectTecnology tecnology={lang.name} />)
+										)
+									)}
+								</ul>
+								{repo.homepage && (
+									<a href={repo.homepage} title={`Ver Demo de ${repo.name}`}>
+										<Button type="button">Ver Demo</Button>
+									</a>
+								)}
+								{repo.html_url && (
+									<a href={repo.html_url} title={`Ver Codigo de ${repo.name}`}>
+										<Button type="button">Ver Código</Button>
+									</a>
+								)}
+							</div>
+					</article>
+				)
+			})
+		)
+	}
+</section>

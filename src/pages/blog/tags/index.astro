@@ -1,0 +1,28 @@
+---
+import Header from '@components/Header.astro'
+import Layout from '@src/layouts/Layout.astro'
+import { getTags } from '@src/utils'
+
+const tags = await getTags()
+---
+
+<Layout title="Tags del Blog - Steve Moya Cepeda ">
+	<Header
+		title="Todos los"
+		titleCaption="Tags"
+		description="Estos son todos los "
+		descriptionCaption="Tags"
+	/>
+	<section class="flex flex-wrap justify-center gap-4">
+		{
+			tags.map((tag) => (
+				<a
+					href={`/blog/tags/${tag}`}
+					class="bg-[#c70039] mb-2  mr-2 inline-block rounded-full px-3 py-1 text-sm font-semibold text-gray-200"
+				>
+					#{tag}
+				</a>
+			))
+		}
+	</section>
+</Layout>

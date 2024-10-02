@@ -1,0 +1,52 @@
+---
+import { siteConfig } from '@src/data/config'
+
+import { Icon } from 'astro-icon/components'
+
+const message = siteConfig.shareMessage
+
+const URL = Astro.url.href
+
+const shareItems = [
+	{
+		name: 'LinkedIn',
+		url: `https://www.linkedin.com/shareArticle?mini=true&url=${URL}`,
+		icon: 'mdi:linkedin',
+		color: 'hover:text-blue-500'
+	},
+	{
+		name: 'Facebook',
+		url: `https://www.facebook.com/sharer/sharer.php?u=${URL}`,
+		icon: 'mdi:facebook',
+		color: 'hover:text-blue-800'
+	},
+	{
+		name: 'WhatsApp',
+		url: `https://wa.me/?text=${message + ' ' + URL}`,
+		icon: 'mdi:whatsapp',
+		color: 'hover:text-green-500'
+	}
+]
+---
+
+<div class="flex flex-col gap-2">
+	<span class="mb-1 text-2xl font-bold">Compatir</span>
+	<ul class="flex gap-2 text-2xl text-white">
+		{
+			shareItems.map((item) => (
+				<li>
+					<a
+						class:list={[
+							'transition-all duration-300 ease-in-out hover:scale-110',
+							item.color
+						]}
+						href={item.url}
+						aria-label={`Compartir en ${item.name}`}
+					>
+						<Icon name={item.icon} />
+					</a>
+				</li>
+			))
+		}
+	</ul>
+</div>

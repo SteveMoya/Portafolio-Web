@@ -1,20 +1,69 @@
 ---
-import { type CollectionEntry, getCollection } from 'astro:content';
-import BlogPost from '../../layouts/BlogPost.astro';
+import { type CollectionEntry, getCollection } from 'astro:content'
 
+import Code from '@components/mdx/Code.astro'
+import ListRelatedPosts from '@components/ListRelatedPosts.astro'
+import Share from '@components/Share.astro'
+import TableOfContents from '@components/TableOfContents.astro'
+import SButton from '@components/mdx/SButton.astro'
+import { getPosts } from '@src/utils'
+import BlogLayout from '@src/layouts/BlogLayout.astro'
+
+const posts = await getCollection('blog')
 export async function getStaticPaths() {
-	const posts = await getCollection('blog');
+	const posts = await getPosts()
+
 	return posts.map((post) => ({
 		params: { slug: post.slug },
-		props: post,
-	}));
+		props: post
+	}))
 }
-type Props = CollectionEntry<'blog'>;
+type Props = CollectionEntry<'blog'>
 
-const post = Astro.props;
-const { Content } = await post.render();
+const post = Astro.props
+console.log(post)
+
+const MAX_POSTS = 3
+const getRelatedPosts = (post: Props) => {
+	const lowercaseTags = post.data.tags.map((tag) => tag.toLowerCase())
+	const relatedPosts = posts.filter(
+		(p) =>
+			p.slug !== post.slug && p.data.tags.some((t) => lowercaseTags.includes(t.toLowerCase()))
+	)
+	return relatedPosts.slice(0, MAX_POSTS)
+}
+
+const relatedPosts = getRelatedPosts(post)
+
+const { Content, headings, remarkPluginFrontmatter } = await post.render()
 ---
 
-<BlogPost {...post.data}>
-	<Content />
-</BlogPost>
+<BlogLayout
+	id={post.id}
+	data={post.data}
+	headings={headings}
+	readTime={remarkPluginFrontmatter.pubDate}
+>
+	<div class="mt-8 grid grid-cols-1 gap-10 md:grid-cols-[20%_auto]">
+		<!-- aside  -->
+		<aside class="hidden flex-col gap-8 md:flex">
+			<Share />
+			<div class="sticky top-24 hidden self-start transition-all duration-200 md:block">
+				{headings && headings.length > 0 && <TableOfContents {headings} />}
+			</div>
+		</aside>
+
+		<!-- post -->
+		<article class="w-full max-w-full">
+			<div class="prose prose-lg md:prose-xl prose-invert mb-12 min-w-full">
+				<Content components={{ pre: Code, SButton }} />
+			</div>
+
+			<!-- related posts -->
+			<footer>
+				<h2 class="mb-6 text-lg font-bold">Posts Relacionados</h2>
+				<ListRelatedPosts posts={relatedPosts} />
+			</footer>
+		</article>
+	</div>
+</BlogLayout>

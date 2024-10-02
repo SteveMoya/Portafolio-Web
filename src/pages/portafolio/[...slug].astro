@@ -1,0 +1,80 @@
+---
+import Portafolio from '@components/Portafolio/Portafolio.astro'
+import Layout from '@src/layouts/Layout.astro'
+import Header from '@components/Header.astro'
+import Gallery from '@components/Gallery.astro'
+import Webs from '@components/Webs/Webs.astro'
+
+export async function getStaticPaths() {
+	const pages = [
+		{
+			slug: undefined,
+			title: 'Portafolio - Steve Moya Cepeda',
+			text: 'Este es mi Portafolio, hecho con mucho amor y cariño',
+			titleText: 'Mi',
+			titleCaption: 'Portafolio',
+			description: 'Mira un poco de mis',
+			descriptionCaption: 'Trabajos'
+		},
+		{
+			slug: 'diseno',
+			title: 'Diseño Grafico - Steve Moya Cepeda',
+			text: 'Mira un poco de mis diseños, expresar arte',
+			titleText: 'Mis',
+			titleCaption: 'Diseños',
+			description: 'Aquí encontrarás diseños que he realizado para expresar',
+			descriptionCaption: 'arte y creatividad.'
+		},
+		{
+			slug: 'fotografia',
+			title: 'Fotos - Steve Moya Cepeda',
+			text: 'Estas son fotos que he podido tomar',
+			titleText: 'Mis',
+			titleCaption: 'Fotos',
+			description: 'Aquí encontrarás fotos que he podido tomar en diferentes',
+			descriptionCaption: 'momentos y lugares.'
+		},
+		{
+			slug: 'marketing',
+			title: 'Casos de Estudio de Marketing - Steve Moya Cepeda',
+			text: 'Aqui podras ver mis casos de estudios de Marketing e incluso proyectos de marketing realizados',
+			titleText: 'Mis',
+			titleCaption: 'Casos',
+			description: 'Mira mis',
+			descriptionCaption: 'Casos de Estudio'
+		},
+		{
+			slug: 'webs',
+			title: 'Mis paginas webs - Steve Moya Cepeda',
+			text: 'Aqui hay unas paginas webs realizadas con mucho amor',
+			titleText: 'Mis',
+			titleCaption: 'Webs',
+			description: 'Hechale un vistazo a mis',
+			descriptionCaption: 'Webs y su codigo'
+		}
+	]
+	return pages.map(
+		({ slug, title, text, titleText, titleCaption, description, descriptionCaption }) => {
+			return {
+				params: { slug },
+				props: { title, text, titleText, titleCaption, description, descriptionCaption }
+			}
+		}
+	)
+}
+const { title, text, titleText, titleCaption, description, descriptionCaption } = Astro.props
+const { slug } = Astro.params
+---
+
+<Layout title={title} description={text}>
+	<Header
+		title={titleText}
+		titleCaption={titleCaption}
+		description={description}
+		descriptionCaption={descriptionCaption}
+	/>
+	{slug === undefined ? <Portafolio /> : ''}
+	{slug === 'diseno' ? <Gallery path={slug} /> : ''}
+	{slug === 'fotografia' ? <Gallery path={slug} /> : ''}
+	{slug === 'webs' ? <Webs /> : ''} 
+</Layout>

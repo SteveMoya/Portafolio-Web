@@ -1,0 +1,86 @@
+---
+interface Props {
+	period: string
+	text: string[]
+	color: string
+}
+const { text, color } = Astro.props
+---
+
+<span
+	class={`txt-rotate font-extrabold text-[${color}] transition-all duration-300 ease-in-out `}
+	id="typewriter"
+	data-rotate={JSON.stringify([...text])}></span>
+<span class="slash">|</span>
+
+<div class="flex h-full w-full items-center justify-center">
+	<h1 id="typewriter" class="text-4xl font-bold"></h1>
+</div>
+
+<style>
+	.slash {
+		animation-name: animateslash;
+		animation-duration: 0.8s;
+		animation-iteration-count: infinite;
+		animation-play-state: running;
+	}
+	@keyframes animateslash {
+		0% {
+			opacity: 1;
+			z-index: 2;
+		}
+		100% {
+			opacity: 0;
+			z-index: 0;
+		}
+	}
+	@-webkit-keyframes animateslash {
+		0% {
+			opacity: 1;
+			z-index: 2;
+		}
+		100% {
+			opacity: 0;
+			z-index: 0;
+		}
+	}
+</style>
+
+<script>
+	const rotate: string | null =
+		document.getElementById('typewriter')?.getAttribute('data-rotate') ?? null
+	const words = [...JSON.parse(rotate ?? '[]')]
+	let i = 0
+	let j = 0
+	let currentWord = ''
+	let isDeleting = false
+
+	function type() {
+		currentWord = words[i]
+		if (isDeleting) {
+			const typewriterElement = document.getElementById('typewriter')
+			if (typewriterElement) {
+				typewriterElement.textContent = currentWord.substring(0, j - 1)
+			}
+			j--
+			if (j == 0) {
+				isDeleting = false
+				i++
+				if (i == words.length) {
+					i = 0
+				}
+			}
+		} else {
+			const typewriterElement = document.getElementById('typewriter')
+			if (typewriterElement) {
+				typewriterElement.textContent = currentWord.substring(0, j + 1)
+			}
+			j++
+			if (j == currentWord.length) {
+				isDeleting = true
+			}
+		}
+		setTimeout(type, 200)
+	}
+	type()
+</script>

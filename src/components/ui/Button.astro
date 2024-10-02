@@ -1,0 +1,94 @@
+---
+import { Icon } from 'astro-icon/components'
+import { twMerge } from 'tailwind-merge'
+
+interface Props {
+	variant?: keyof typeof variants
+	target?: string
+	text?: string
+	icon?: string
+	class?: string
+	type?: 'button' | 'submit' | 'reset'
+	iconposition?: 'left' | 'right'
+	value?: string
+	id?: string
+}
+
+const {
+	variant = 'primary',
+	target,
+	text = Astro.slots.render('default'),
+	icon = '',
+	class: className = '',
+	type,
+	iconposition,
+	value,
+	id
+} = Astro.props
+
+const variants = {
+	primary:
+		'btn m-5 cursor-pointer rounded-lg border-[none] bg-[#BB0035] px-6 py-2 text-xl opacity-80 transition-all duration-300 ease-in-out  hover:opacity-100',
+	slash: 'group relative m-5 cursor-pointer overflow-hidden border-[1.5px] border-solid border-[#c70039] px-5 py-2.5 text-base font-extralight text-[#c70039] opacity-80 outline-none transition-all duration-300 ease-in-out  before:absolute before:left-0 before:top-0 before:z-[3] before:h-[200%] before:w-[0%] before:-translate-y-2 before:rotate-[-15deg] before:bg-[#c70039] before:transition-all before:duration-[0.7s] before:ease-in-out  before:content-[""] hover:text-[whitesmoke] hover:opacity-100 hover:before:w-[120%] hover:before:opacity-100',
+	download:
+		'rounded bg-[#c70039] px-[30px] py-[15px] text-xl font-normal transition-all duration-300 ease-in-out  hover:scale-105 hover:opacity-100'
+}
+---
+
+{
+	type === 'button' || type === 'submit' || type === 'reset' ? (
+		<button
+			type={type}
+			class={twMerge(variants[variant] || '', className)}
+			id={id}
+			value={value}
+		>
+			{variant === 'slash' ? (
+				<span class="group-hover:relative group-hover:z-[4]">
+					{icon && iconposition === 'left' && (
+						<Icon
+							name={icon}
+							class="-mr-1.5 ml-1 inline-block h-5 w-5 rtl:-ml-1.5 rtl:mr-1"
+						/>
+					)}
+					<Fragment set:html={text} />
+					{icon && iconposition === 'right' && (
+						<Icon
+							name={icon}
+							class="-mr-1.5 ml-1 inline-block h-5 w-5 rtl:-ml-1.5 rtl:mr-1"
+						/>
+					)}
+				</span>
+			) : (
+				<>
+					{icon && iconposition === 'left' && (
+						<Icon
+							name={icon}
+							class="-mr-1.5 ml-1 inline-block h-5 w-5 rtl:-ml-1.5 rtl:mr-1"
+						/>
+					)}
+					<Fragment set:html={text} />
+					{icon && iconposition === 'right' && (
+						<Icon
+							name={icon}
+							class="-mr-1.5 ml-1 inline-block h-5 w-5 rtl:-ml-1.5 rtl:mr-1"
+						/>
+					)}
+				</>
+			)}
+		</button>
+	) : (
+		<a
+			class={twMerge(variants[variant] || '', className)}
+			{...(target ? { target: target, rel: 'noopener noreferrer' } : {})}
+		>
+			{icon && iconposition === 'left' && (
+				<Icon name={icon} class="-mr-1.5 ml-1 inline-block h-5 w-5 rtl:-ml-1.5 rtl:mr-1" />
+			)}
+			<Fragment set:html={text} />
+			{icon && iconposition === 'right' && (
+				<Icon name={icon} class="-mr-1.5 ml-1 inline-block h-5 w-5 rtl:-ml-1.5 rtl:mr-1" />
+			)}
+		</a>
+	)
+}

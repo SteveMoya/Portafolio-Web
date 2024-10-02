@@ -1,0 +1,40 @@
+---
+import { Icon } from 'astro-icon/components'
+
+const socialMediaLinks = [
+	{
+		name: 'Instagram',
+		url: 'https://www.instagram.com/steve_moya_cepeda/',
+		icon: 'mdi:instagram'
+		
+	},
+	{
+		name: 'Facebook',
+		url: 'https://www.facebook.com/steven.cepeda.35/',
+		icon: 'mdi:facebook'
+	},
+	{
+		name: 'Linkedin',
+		url: 'https://www.linkedin.com/in/steve-moya-cepeda-549469227/',
+		icon: 'mdi:linkedin'
+	},
+	{
+		name: 'Github',
+		url: 'https://github.com/SteveMoya',
+		icon: 'mdi:github'
+	}
+]
+---
+
+<div class="absolute bottom-0 left-0 flex h-auto w-full flex-row items-center justify-center p-2.5 mb-4">
+	{
+		socialMediaLinks.map(({ name, url, icon }) => (
+			<a title={`${name}-link`} class={` opacity-100 transition-all duration-300 ease-in-out hover:scale-110  hover:text-[#c70039] hover:-translate-y-6 z-20`} href={url} target="_blank">
+				<Icon
+					name={icon}
+					class={`m-2 size-10 text-2xl`}
+				/>
+			</a>
+		))
+	}
+</div>
