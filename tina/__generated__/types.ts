@@ -217,8 +217,20 @@ export type PostSButtonSButtonFilter = {
   children?: InputMaybe<RichTextFilter>;
 };
 
+export type PostSButtonLiteYoutubeFilter = {
+  videoId?: InputMaybe<StringFilter>;
+  title?: InputMaybe<StringFilter>;
+  backgroundImage?: InputMaybe<ImageFilter>;
+};
+
+export type PostSButtonSvgFilter = {
+  svg?: InputMaybe<StringFilter>;
+};
+
 export type PostSButtonFilter = {
   SButton?: InputMaybe<PostSButtonSButtonFilter>;
+  LiteYoutube?: InputMaybe<PostSButtonLiteYoutubeFilter>;
+  SVG?: InputMaybe<PostSButtonSvgFilter>;
 };
 
 export type PostFilter = {

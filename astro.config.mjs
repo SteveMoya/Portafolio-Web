@@ -9,10 +9,11 @@ import lighthouse from 'astro-lighthouse';
 
 import metaTags from "astro-meta-tags";
 
-import metaTags from "astro-meta-tags";
 import pageInsight from "astro-page-insight";
 
-import devtoolbarTailwind from "astro-devtoolbar-tailwind";
+
+import react from "@astrojs/react";
+
 
 // https://astro.build/config
 export default defineConfig({
@@ -23,8 +24,18 @@ export default defineConfig({
   image: {
     service: passthroughImageService()
   },
-  integrations: [mdx(), sitemap(), tailwind(), icon(), pagefind(), 
-  lighthouse(), metaTags(), pageInsight(), devtoolbarTailwind()],
+  integrations: [
+    mdx(),
+    sitemap(),
+    tailwind(),
+    icon(),
+    pagefind(),
+    lighthouse(),
+    metaTags(),
+    pageInsight(),
+    devtoolbarTailwind(),
+    react()
+  ],
   //Static is default
   output: "static"
 });

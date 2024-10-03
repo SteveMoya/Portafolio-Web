@@ -57,12 +57,12 @@ export default defineConfig({
 						label: 'Fecha de publicacion',
 						required: true
 					},
-          {
-            type: "datetime",
-            name: "updateDate",
-            label: "Fecha de actualizacion",
-            required: false,
-          },
+					{
+						type: "datetime",
+						name: "updateDate",
+						label: "Fecha de actualizacion",
+						required: false,
+					},
 					{
 						name: 'draft',
 						label: 'Borrador',
@@ -105,9 +105,49 @@ export default defineConfig({
 										isBody: true
 									}
 								]
+							},
+							{
+								label: "LiteYoutube",
+								name: "LiteYoutube",
+								fields: [
+									{
+										type: "string",
+										label: "Id del video",
+										name: "videoId",
+										description: "Id del video de youtube",
+										required: true,
+									},
+									{
+										type: "string",
+										label: "Titulo",
+										name: "title",
+										description: "Titulo del video",
+										required: true,
+									},
+									{
+										type: "image",
+										label: "Imagen de portada",
+										name: "backgroundImage",
+										description: "Imagen de portada del video",
+									}
+									
+								],
+							},
+							{
+								label: "SVG",
+								name: "SVG",
+								fields: [
+									{
+										type: "string",
+										label: "SVG",
+										name: "svg",
+										description: "Coloca el SVG aqui",
+										required: true,
+									},
+								]
 							}
 						]
-					}
+					},
 				]
 			}
 		]

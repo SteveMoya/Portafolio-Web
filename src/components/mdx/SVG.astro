@@ -1,0 +1,11 @@
+---
+interface Props {
+	svg: SVGAElement
+}
+
+const { svg } = Astro.props
+---
+
+<div>
+	<slot set:html={svg} />
+</div>

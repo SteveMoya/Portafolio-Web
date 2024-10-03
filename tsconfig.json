@@ -28,6 +28,8 @@
       "@constants/*": [
         "src/constants/*"
       ]
-    }
+    },
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
   }
 }

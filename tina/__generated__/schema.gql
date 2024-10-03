@@ -138,8 +138,20 @@ input PostSButtonSButtonFilter {
   children: RichTextFilter
 }
 
+input PostSButtonLiteYoutubeFilter {
+  videoId: StringFilter
+  title: StringFilter
+  backgroundImage: ImageFilter
+}
+
+input PostSButtonSVGFilter {
+  svg: StringFilter
+}
+
 input PostSButtonFilter {
   SButton: PostSButtonSButtonFilter
+  LiteYoutube: PostSButtonLiteYoutubeFilter
+  SVG: PostSButtonSVGFilter
 }
 
 input PostFilter {

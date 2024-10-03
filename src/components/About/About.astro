@@ -1,6 +1,6 @@
 ---
 import Button from '@components/ui/Button.astro'
-import Skill from './Skill.astro'
+
 import Header from '@components/Header.astro'
 import Card from '@components/ui/Card.astro'
 
@@ -21,33 +21,6 @@ const services = [
 		description:
 			'Habilidades en la creación de diseños atractivos para la comunicación visual.',
 		img: '/img/creative.svg'
-	}
-]
-
-const skills = [
-	{
-		title: 'HTML/CSS',
-		progress: 95
-	},
-	{
-		title: 'Google Analytics',
-		progress: 90
-	},
-	{
-		title: 'Social Media',
-		progress: 83
-	},
-	{
-		title: 'Adobe Creative Cloud',
-		progress: 84
-	},
-	{
-		title: 'Microsoft Office',
-		progress: 94
-	},
-	{
-		title: 'SEO',
-		progress: 84
 	}
 ]
 
@@ -78,7 +51,7 @@ import OptimizatedPicture from '@components/OptimizatedPicture.astro'
 			clientes.
 		</h3>
 		<div class="cv pt-10">
-			<a title="Cv-Link" href="cv/CV.-Steve-Moya-Cepeda.pdf" class="" target="_blank">
+			<a title="Cv-Link" href="/CV.-Steve-Moya-Cepeda.pdf" class="" target="_blank">
 				<Button type="button" variant="download">Descarga Mi CV</Button>
 			</a>
 		</div>
@@ -110,16 +83,4 @@ import OptimizatedPicture from '@components/OptimizatedPicture.astro'
 	</div>
 </section>
 <!--services content end-->
-<!--services end-->
-<section class="my-8 h-auto w-full">
-	<div
-		class="skills-header h-auto w-full items-center justify-center p-2.5 py-[30px] text-center font-raleway text-[45px] font-black"
-	>
-		Mis <span class="font-extrabold text-[#c70039] transition-all duration-300 ease-in-out">
-			Hablilidades</span
-		>
-	</div>
-	<div class="mb-20 mt-5 h-auto w-full text-center">
-		{skills.map((skill) => <Skill {...skill} />)}
-	</div>
-</section>
+
