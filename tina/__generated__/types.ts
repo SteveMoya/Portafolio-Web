@@ -166,25 +166,18 @@ export type DocumentNode = Post | Folder;
 
 export type Post = Node & Document & {
   __typename?: 'Post';
-  heroImage: Scalars['String']['output'];
-  category: Scalars['String']['output'];
+  title: Scalars['String']['output'];
   description: Scalars['String']['output'];
+  heroImage: Scalars['String']['output'];
+  draft?: Maybe<Scalars['Boolean']['output']>;
+  category: Scalars['String']['output'];
   pubDate: Scalars['String']['output'];
   updateDate?: Maybe<Scalars['String']['output']>;
-  draft?: Maybe<Scalars['Boolean']['output']>;
   tags: Array<Scalars['String']['output']>;
-  title: Scalars['String']['output'];
   SButton?: Maybe<Scalars['JSON']['output']>;
   id: Scalars['ID']['output'];
   _sys: SystemInfo;
   _values: Scalars['JSON']['output'];
-};
-
-export type ImageFilter = {
-  startsWith?: InputMaybe<Scalars['String']['input']>;
-  eq?: InputMaybe<Scalars['String']['input']>;
-  exists?: InputMaybe<Scalars['Boolean']['input']>;
-  in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 export type StringFilter = {
@@ -194,9 +187,8 @@ export type StringFilter = {
   in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
-export type DatetimeFilter = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
+export type ImageFilter = {
+  startsWith?: InputMaybe<Scalars['String']['input']>;
   eq?: InputMaybe<Scalars['String']['input']>;
   exists?: InputMaybe<Scalars['Boolean']['input']>;
   in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
@@ -205,6 +197,14 @@ export type DatetimeFilter = {
 export type BooleanFilter = {
   eq?: InputMaybe<Scalars['Boolean']['input']>;
   exists?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type DatetimeFilter = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  eq?: InputMaybe<Scalars['String']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 export type RichTextFilter = {
@@ -234,14 +234,14 @@ export type PostSButtonFilter = {
 };
 
 export type PostFilter = {
-  heroImage?: InputMaybe<ImageFilter>;
-  category?: InputMaybe<StringFilter>;
+  title?: InputMaybe<StringFilter>;
   description?: InputMaybe<StringFilter>;
+  heroImage?: InputMaybe<ImageFilter>;
+  draft?: InputMaybe<BooleanFilter>;
+  category?: InputMaybe<StringFilter>;
   pubDate?: InputMaybe<DatetimeFilter>;
   updateDate?: InputMaybe<DatetimeFilter>;
-  draft?: InputMaybe<BooleanFilter>;
   tags?: InputMaybe<StringFilter>;
-  title?: InputMaybe<StringFilter>;
   SButton?: InputMaybe<PostSButtonFilter>;
 };
 
@@ -324,25 +324,25 @@ export type DocumentMutation = {
 };
 
 export type PostMutation = {
-  heroImage?: InputMaybe<Scalars['String']['input']>;
-  category?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  heroImage?: InputMaybe<Scalars['String']['input']>;
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
   pubDate?: InputMaybe<Scalars['String']['input']>;
   updateDate?: InputMaybe<Scalars['String']['input']>;
-  draft?: InputMaybe<Scalars['Boolean']['input']>;
   tags?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  title?: InputMaybe<Scalars['String']['input']>;
   SButton?: InputMaybe<Scalars['JSON']['input']>;
 };
 
-export type PostPartsFragment = { __typename: 'Post', heroImage: string, category: string, description: string, pubDate: string, updateDate?: string | null, draft?: boolean | null, tags: Array<string>, title: string, SButton?: any | null };
+export type PostPartsFragment = { __typename: 'Post', title: string, description: string, heroImage: string, draft?: boolean | null, category: string, pubDate: string, updateDate?: string | null, tags: Array<string>, SButton?: any | null };
 
 export type PostQueryVariables = Exact<{
   relativePath: Scalars['String']['input'];
 }>;
 
 
-export type PostQuery = { __typename?: 'Query', post: { __typename: 'Post', id: string, heroImage: string, category: string, description: string, pubDate: string, updateDate?: string | null, draft?: boolean | null, tags: Array<string>, title: string, SButton?: any | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
+export type PostQuery = { __typename?: 'Query', post: { __typename: 'Post', id: string, title: string, description: string, heroImage: string, draft?: boolean | null, category: string, pubDate: string, updateDate?: string | null, tags: Array<string>, SButton?: any | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
 
 export type PostConnectionQueryVariables = Exact<{
   before?: InputMaybe<Scalars['String']['input']>;
@@ -354,19 +354,19 @@ export type PostConnectionQueryVariables = Exact<{
 }>;
 
 
-export type PostConnectionQuery = { __typename?: 'Query', postConnection: { __typename?: 'PostConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'PostConnectionEdges', cursor: string, node?: { __typename: 'Post', id: string, heroImage: string, category: string, description: string, pubDate: string, updateDate?: string | null, draft?: boolean | null, tags: Array<string>, title: string, SButton?: any | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
+export type PostConnectionQuery = { __typename?: 'Query', postConnection: { __typename?: 'PostConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'PostConnectionEdges', cursor: string, node?: { __typename: 'Post', id: string, title: string, description: string, heroImage: string, draft?: boolean | null, category: string, pubDate: string, updateDate?: string | null, tags: Array<string>, SButton?: any | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
 
 export const PostPartsFragmentDoc = gql`
     fragment PostParts on Post {
   __typename
-  heroImage
-  category
+  title
   description
+  heroImage
+  draft
+  category
   pubDate
   updateDate
-  draft
   tags
-  title
   SButton
 }
     `;

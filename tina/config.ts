@@ -29,13 +29,33 @@ export default defineConfig({
 				format: 'mdx',
 				fields: [
 					{
+						type: 'string',
+						name: 'title',
+						label: 'Titulo',
+						isTitle: true,
+						required: true
+					},
+
+					{
+						type: 'string',
+						label: 'Descripcion',
+						required: true,
+						name: 'description',
+						description: 'Una breve descripcion del post'
+					},
+					{
 						type: 'image',
 						label: 'Imagen de portada',
 						required: true,
 						name: 'heroImage',
 						description: 'La imagen usada en la portada del post'
 					},
-
+					{
+						name: 'draft',
+						label: 'Borrador',
+						type: 'boolean',
+						description: 'Si esta marcado, el post no se mostrara en la pagina principal',
+					},
 					{
 						type: 'string',
 						required: true,
@@ -43,13 +63,6 @@ export default defineConfig({
 						label: 'Categoria',
 						description: 'Seleciona una categoria para el post',
 						options: [...CATEGORIES]
-					},
-					{
-						type: 'string',
-						label: 'Descripcion',
-						required: true,
-						name: 'description',
-						description: 'Una breve descripcion del post'
 					},
 					{
 						type: 'datetime',
@@ -64,12 +77,6 @@ export default defineConfig({
 						required: false,
 					},
 					{
-						name: 'draft',
-						label: 'Borrador',
-						type: 'boolean',
-						description: 'Si esta marcado, el post no se mostrara en la pagina principal',
-					},
-					{
 						type: 'string',
 						name: 'tags',
 						required: true,
@@ -79,13 +86,6 @@ export default defineConfig({
 						ui: {
 							component: 'tags'
 						}
-					},
-					{
-						type: 'string',
-						name: 'title',
-						label: 'Titulo',
-						isTitle: true,
-						required: true
 					},
 					{
 						type: 'rich-text',

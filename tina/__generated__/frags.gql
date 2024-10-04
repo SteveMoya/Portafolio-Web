@@ -1,12 +1,12 @@
 fragment PostParts on Post {
   __typename
-  heroImage
-  category
+  title
   description
+  heroImage
+  draft
+  category
   pubDate
   updateDate
-  draft
   tags
-  title
   SButton
 }

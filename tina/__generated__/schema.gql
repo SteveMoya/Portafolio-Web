@@ -87,25 +87,18 @@ type Collection {
 union DocumentNode = Post | Folder
 
 type Post implements Node & Document {
-  heroImage: String!
-  category: String!
+  title: String!
   description: String!
+  heroImage: String!
+  draft: Boolean
+  category: String!
   pubDate: String!
   updateDate: String
-  draft: Boolean
   tags: [String!]!
-  title: String!
   SButton: JSON
   id: ID!
   _sys: SystemInfo!
   _values: JSON!
-}
-
-input ImageFilter {
-  startsWith: String
-  eq: String
-  exists: Boolean
-  in: [String]
 }
 
 input StringFilter {
@@ -115,9 +108,8 @@ input StringFilter {
   in: [String]
 }
 
-input DatetimeFilter {
-  after: String
-  before: String
+input ImageFilter {
+  startsWith: String
   eq: String
   exists: Boolean
   in: [String]
@@ -126,6 +118,14 @@ input DatetimeFilter {
 input BooleanFilter {
   eq: Boolean
   exists: Boolean
+}
+
+input DatetimeFilter {
+  after: String
+  before: String
+  eq: String
+  exists: Boolean
+  in: [String]
 }
 
 input RichTextFilter {
@@ -155,14 +155,14 @@ input PostSButtonFilter {
 }
 
 input PostFilter {
-  heroImage: ImageFilter
-  category: StringFilter
+  title: StringFilter
   description: StringFilter
+  heroImage: ImageFilter
+  draft: BooleanFilter
+  category: StringFilter
   pubDate: DatetimeFilter
   updateDate: DatetimeFilter
-  draft: BooleanFilter
   tags: StringFilter
-  title: StringFilter
   SButton: PostSButtonFilter
 }
 
@@ -197,14 +197,14 @@ input DocumentMutation {
 }
 
 input PostMutation {
-  heroImage: String
-  category: String
+  title: String
   description: String
+  heroImage: String
+  draft: Boolean
+  category: String
   pubDate: String
   updateDate: String
-  draft: Boolean
   tags: [String]
-  title: String
   SButton: JSON
 }
 
