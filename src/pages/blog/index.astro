@@ -6,8 +6,8 @@ import { getPosts } from '@src/utils'
 import ListCategories from '@components/ListCategories.astro'
 import ListPosts from '@components/ListPosts.astro'
 import Header from '@components/Header.astro'
+import { MAX_POSTS } from '@src/consts'
 
-const MAX_POSTS = 5 // max number of posts to show on the home page
 const posts = await getPosts(MAX_POSTS)
 ---
 
@@ -16,11 +16,10 @@ const posts = await getPosts(MAX_POSTS)
 	description="Este en mi blog donde podrar leer, mis articulos mas destacados"
 	image="images/marketing4.0-v.webp"
 >
-<Header title='Mis mas recientes' titleCaption='Blogs' description="Aqui puedes ver los los Articulos mas recientes de mi" descriptionCaption="Blog" />
+<Header title='Mis mas recientes' titleCaption='Articulos' description="Aqui puedes ver los los Articulos mas recientes de mi" descriptionCaption="Blog" />
 	<ListCategories />
-	<div class="mx-10">
+	<section class="mx-10">
 		<h2 class="md:text-end text-center text-lg font-bold tracking-wide ml-4 mt-4">Los mas recientes</h2>
 		<ListPosts FirstBig={true} posts={posts} />
-	</div>
-
+	</section>
 </Layout>

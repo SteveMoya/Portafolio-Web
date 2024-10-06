@@ -3,16 +3,9 @@ import type { APIRoute } from 'astro';
 const robotsTxt = `
 User-agent: *
 Allow: /
-Disallow: /terminos-y-condiciones
-Disallow: /politicas-de-privacidad
-Disallow: /app/
-Disallow: /admin/
-Disallow: /api/
-Disallow: /auth/
 Disallow: /404.html
 Disallow: /500.html
 Disallow: /favicon.ico
-Disallow: /registrarse
 
 User-agent: Amazonbot
 Disallow: /

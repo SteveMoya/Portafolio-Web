@@ -30,18 +30,17 @@ const { page } = Astro.props
 
 const unsluglifyNameCategory = unsluglify(params.category!.toLowerCase())
 const posts = page.data
-
 ---
 
 <Layout title={params.category}>
 	<Header
-		title="Posts de"
+		title="Articulos de"
 		titleCaption={unsluglifyNameCategory}
-		description="Estos son todos los posts de la categoria de"
+		description="Estos son todos los articulos de la categoria de"
 		descriptionCaption={unsluglifyNameCategory}
 	/>
 	<ListCategories activeCategory={params.category} />
-	
+
 	<section class="flex flex-wrap content-center justify-center">
 		{
 			posts.map((post) => (
