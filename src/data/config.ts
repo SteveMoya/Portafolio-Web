@@ -17,7 +17,7 @@ export const siteConfig: SiteConfig = {
     description: 'Steve Moya - Personal Web Personal, Este es mi portafolio con mucho amor y dedicacion.Hecho por un marketero amante a la tecnologia',
     keywords: 'blog, Steve Moya Cepeda, Marketer, Steve  Moya, creative, creative portfolio, cv, portafolio, professional cv, responsive portafolio',
     favicon: "/img/logo.svg",
-    ogImage: "/img/Steve-Moya.jpg",
+    ogImage: "/img/Steve-Moya-OG.jpg",
      // Description to display in the meta tags
     lang: 'es-DO',
     ogLocale: 'es_DO',
