@@ -1,6 +1,6 @@
 import {Tldraw} from 'tldraw'
 import 'tldraw/tldraw.css'
-import EntryJson from "./ingresa un diagrama.json"
+
 
 
 const Draw = ({shapes}) => {
