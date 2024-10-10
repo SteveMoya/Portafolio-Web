@@ -134,6 +134,18 @@ export default defineConfig({
 								],
 							},
 							{
+								label: "Diagrama",
+								name: "Diagram",
+								fields: [
+									{
+										type: "string",
+										name: "json",
+										label: "JSON",
+										description: "JSON del diagrama",
+									}
+								]
+							},
+							{
 								label: "SVG",
 								name: "SVG",
 								fields: [
@@ -145,7 +157,7 @@ export default defineConfig({
 										required: true,
 									},
 								]
-							}
+							},
 						]
 					},
 				]

@@ -1,0 +1,22 @@
+---
+import Draw from './Draw'
+import EntryJson from "./ingresa un diagrama.json"
+
+interface Props {
+	json: string
+}
+const { json } = Astro.props
+const jsonparse = json ? JSON.parse(json) : EntryJson
+const shapes = jsonparse.shapes.map(({ id, type, x, y, props, parentId }) => ({
+	id,
+	type,
+	x,
+	y,
+	props,
+	parentId
+}))
+---
+
+<div class="z-0! mx-auto h-[400px] w-[500px]">
+	<Draw client:only shapes={shapes} />
+</div>

@@ -223,6 +223,10 @@ export type PostSButtonLiteYoutubeFilter = {
   backgroundImage?: InputMaybe<ImageFilter>;
 };
 
+export type PostSButtonDiagramFilter = {
+  json?: InputMaybe<StringFilter>;
+};
+
 export type PostSButtonSvgFilter = {
   svg?: InputMaybe<StringFilter>;
 };
@@ -230,6 +234,7 @@ export type PostSButtonSvgFilter = {
 export type PostSButtonFilter = {
   SButton?: InputMaybe<PostSButtonSButtonFilter>;
   LiteYoutube?: InputMaybe<PostSButtonLiteYoutubeFilter>;
+  Diagram?: InputMaybe<PostSButtonDiagramFilter>;
   SVG?: InputMaybe<PostSButtonSvgFilter>;
 };
 

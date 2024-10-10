@@ -35,7 +35,5 @@ export default defineConfig({
     pageInsight(),
     devtoolbarTailwind(),
     react()
-  ],
-  //Static is default
-  output: "static"
+  ]
 });
