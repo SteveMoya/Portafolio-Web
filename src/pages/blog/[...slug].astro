@@ -1,5 +1,4 @@
 ---
-import { type CollectionEntry, getCollection } from 'astro:content'
 
 import Code from '@components/mdx/Code.astro'
 import SVG from '@components/mdx/SVG.astro'
@@ -8,11 +7,10 @@ import Share from '@components/Share.astro'
 import TableOfContents from '@components/TableOfContents.astro'
 import SButton from '@components/mdx/SButton.astro'
 import LiteYoutube from '@components/mdx/LiteYoutube.astro'
-import { getPosts } from '@src/utils'
+import { getPosts, getRelatedPosts } from '@src/utils'
 import BlogLayout from '@src/layouts/BlogLayout.astro'
 import Diagram from '@components/mdx/Diagram.astro'
 
-const posts = await getCollection('blog')
 export async function getStaticPaths() {
 	const posts = await getPosts()
 
@@ -21,20 +19,10 @@ export async function getStaticPaths() {
 		props: post
 	}))
 }
-type Props = CollectionEntry<'blog'>
 
 const post = Astro.props
 
-const getRelatedPosts = (post: Props) => {
-	const lowercaseTags = post.data.tags.map((tag) => tag.toLowerCase())
-	const relatedPosts = posts.filter(
-		(p) =>
-			p.slug !== post.slug && p.data.tags.some((t) => lowercaseTags.includes(t.toLowerCase()))
-	)
-	return relatedPosts.slice(0, 3)
-}
-
-const relatedPosts = getRelatedPosts(post)
+const relatedPosts = await getRelatedPosts(post)
 
 const { Content, headings, remarkPluginFrontmatter } = await post.render()
 ---
@@ -52,7 +40,7 @@ const { Content, headings, remarkPluginFrontmatter } = await post.render()
 		<!-- post -->
 		<article class="w-full max-w-full">
 			<div class="prose prose-lg prose-invert mb-12 min-w-full md:prose-xl">
-				<Content components={{ pre: Code, SButton, LiteYoutube,SVG, Diagram }} />
+				<Content components={{ pre: Code, SButton, LiteYoutube, SVG, Diagram }} />
 			</div>
 
 			<!-- related posts -->
