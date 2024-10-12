@@ -1,0 +1,248 @@
+---
+title: Los Archivos Markdown
+description: ' Aprende los fundamentos de la sintaxis Markdown para escribir contenido web de forma eficiente. Ejemplos y explicaciones de encabezados, listas, imágenes, tablas y más.'
+heroImage: /public/blog/markdown lanscape.webp
+category: Programación
+pubDate: 2024-10-14T04:00:00.000Z
+tags:
+  - guía
+  - formato de texto
+  - markdown
+---
+
+## Introducción:
+
+Markdown es un lenguaje de marcado ligero que simplifica la creación de contenido web. Este artículo te guiará a través de los elementos básicos de Markdown, con ejemplos prácticos para que puedas empezar a escribir de inmediato.
+
+### ¿En donde y en que se utiliza este formato?
+
+Markdown se utiliza en una variedad de contextos debido a su simplicidad, legibilidad y flexibilidad. Aquí te presento algunos de los usos más comunes y las razones por las que se prefiere en esas situaciones:
+
+#### Plataformas online:
+
+* **Plataformas de desarrollo colaborativo (GitHub, GitLab, Bitbucket):** Para archivos README, documentación de proyectos, comentarios en issues y pull requests. Se usa porque permite formatear texto fácilmente dentro de estas plataformas, haciendo que la información sea más clara y organizada.
+* **Foros de discusión (Reddit, Stack Overflow):** Para dar formato a las preguntas y respuestas, haciendo que el contenido sea más legible y comprensible. Su sintaxis ligera evita la complejidad de HTML y facilita la participación.
+* **Blogs y sistemas de gestión de contenido (CMS):** Algunos CMS soportan Markdown para escribir entradas de blog, páginas web y otros tipos de contenido. Facilita la escritura y edición de contenido, especialmente para aquellos que no están familiarizados con HTML.
+* **Herramientas de toma de notas (Notion, Obsidian, Bear):** Para organizar notas, crear listas, añadir enlaces y dar formato al texto de manera sencilla y visualmente atractiva.
+* **Mensajería instantánea y correo electrónico:** Aunque no universalmente soportado, algunos clientes de correo electrónico y aplicaciones de mensajería permiten el uso de Markdown para dar formato a los mensajes.
+
+#### Creación de documentos:
+
+* **Escritura de documentación:** Su formato simple y legible lo hace ideal para crear documentación técnica, tutoriales y guías.
+* **Redacción de libros y artículos:** Se puede usar para escribir borradores y luego convertirlos a otros formatos como PDF o HTML. Facilita la concentración en el contenido sin distracciones de formato complejo.
+* **Creación de presentaciones:** Algunas herramientas permiten crear presentaciones a partir de Markdown, ofreciendo una alternativa minimalista a las presentaciones tradicionales.
+
+#### Ventajas del uso de Markdown:
+
+* Simplicidad: Fácil de aprender y usar, incluso para personas sin experiencia en programación o maquetación web.
+* Legibilidad: El texto en Markdown es fácil de leer y entender, tanto en su forma original como en su versión formateada.
+* Flexibilidad: Se puede convertir fácilmente a HTML y otros formatos.
+* Control de versiones: Al ser texto plano, se integra bien con sistemas de control de versiones como Git, facilitando el seguimiento de cambios y la colaboración.
+* Portabilidad: Los archivos Markdown son portables y se pueden abrir y editar en cualquier editor de texto.
+* Eficiencia: Permite escribir y formatear contenido rápidamente, sin necesidad de usar un editor WYSIWYG o aprender HTML.
+
+## Encabezados
+
+Los siguientes elementos HTML`<h1>`—`<h6>`representan seis niveles de encabezados de sección.`<h1>` es el nivel de sección más alto, mientras que `<h6>`es el más bajo.
+
+# H1
+
+## H2
+
+### H3
+
+#### H4
+
+##### H5
+
+###### H6
+
+## Párrafo
+
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+
+Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.
+
+## Imágenes
+
+#### Sintaxis
+
+```markdown
+![Alt text](/blog/marketing4.0-v.webp)
+```
+
+#### Output
+
+![blog placeholder](/blog/marketing4.0-v.webp)
+
+## Citas en bloque
+
+El elemento blockquote representa contenido citado de otra fuente, opcionalmente con una cita que debe estar dentro de un pie de página o elemento de cita, y opcionalmente con cambios en línea como anotaciones y abreviaturas.
+
+### Cita en bloque sin atribución
+
+#### Sintaxis
+
+```markdown
+> Tiam, ad mint andaepu dandae nostion secatur sequo quae.  
+> **Nota** que puedes usar sintaxis Markdown dentro de una cita en bloque.
+```
+
+#### Salida
+
+> Tiam, ad mint andaepu dandae nostion secatur sequo quae.\
+> **Note** que puedes usar sintaxis Markdown dentro de una cita en bloque.
+
+### Cita en bloque con atribución
+
+#### Sintaxis
+
+```markdown
+> No te comuniques compartiendo memoria, comparte memoria comunicándote.<br>
+> — <cite>Rob Pike[^1]</cite>
+```
+
+#### Salida
+
+> No te comuniques compartiendo memoria, comparte memoria comunicándote.<br />
+> — <cite>Rob Pike[^1]</cite>
+
+\[^1]\:La cita anterior es un extracto de la [charla](https://www.youtube.com/watch?v=PAAkCSZUG1c) de Rob Pike durante el Gopherfest, 18 de noviembre de 2015.
+
+## Tablas
+
+#### Sintaxis
+
+```markdown
+| Cursiva   | Negrita  | Código |
+| --------- | -------- | ------ |
+| _italics_ | **bold** | `code` |
+```
+
+#### Salida
+
+| Cursiva   | Negrita  | Código |
+| --------- | -------- | ------ |
+| *italics* | **bold** | `code` |
+
+## Bloques de código
+
+#### Sintaxis
+
+Podemos usar 3 comillas invertidas \`\`\` en una nueva línea y escribir el fragmento y cerrar con 3 comillas invertidas en una nueva línea y para resaltar la sintaxis específica del lenguaje, escribe una palabra del nombre del lenguaje después de las primeras 3 comillas invertidas, por ejemplo. html, javascript, css, markdown, typescript, txt, bash
+
+````markdown
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Ejemplo de Documento HTML5 </title>
+  </head>
+  <body>
+    <p>Test</p>
+  </body>
+</html>
+```
+````
+
+#### Salida
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Ejemplo de Documento HTML5</title>
+  </head>
+  <body>
+    <p>Test</p>
+  </body>
+</html>
+```
+
+## Tipos de lista
+
+### Lista ordenada
+
+#### Sintaxis
+
+```markdown
+1. Primer elemento
+2. Segundo elemento
+3. Tercer elemento
+```
+
+#### Salida
+
+1. Primer elemento
+2. Segundo elemento
+3. Tercer elemento
+
+### Lista desordenada
+
+#### Sintaxis
+
+```markdown
+- Elemento de la lista
+- Otro elemento
+- Y otro elemento
+```
+
+#### Salida
+
+* Elemento de la lista
+* Otro elemento
+* Y otro elemento
+
+### Lista anidada
+
+#### Sintaxis
+
+```markdown
+- Fruta
+  - Manzana
+  - Naranja
+  - Banana
+- Lácteos
+  - Leche
+  - Queso
+```
+
+#### Salida
+
+* Fruta
+  * Manzana
+  * Naranga
+  * Banana
+* Lácteos
+  * Leche
+  * Queso
+
+## Otros elementos — abbr, sub, sup, kbd, mark
+
+#### Sintaxis
+
+```markdown
+<abbr title="Graphics Interchange Format">GIF</abbr> es un formato de imagen de mapa de bits.
+
+H<sub>2</sub>O
+
+X<sup>n</sup> + Y<sup>n</sup> = Z<sup>n</sup>
+
+Presiona <kbd><kbd>CTRL</kbd>+<kbd>ALT</kbd>+<kbd>Supr</kbd></kbd> para finalizar la sesión.
+
+La mayoría de las <mark>salamandras</mark> son nocturnas y cazan insectos, gusanos y otras criaturas pequeñas.
+```
+
+#### Salida
+
+<abbr title="Graphics Interchange Format">GIF</abbr> es un formato de imagen de mapa de bits.
+
+H<sub>2</sub>O
+
+X<sup>n</sup> + Y<sup>n</sup> = Z<sup>n</sup>
+
+Presiona <kbd><kbd>CTRL</kbd>+<kbd>ALT</kbd>+<kbd>Supr</kbd></kbd> para finalizar la sesión.
+
+La mayoría de las <mark>salamandras</mark> son nocturnas y cazan insectos, gusanos y otras criaturas pequeñas.
