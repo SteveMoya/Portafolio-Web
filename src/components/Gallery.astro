@@ -28,7 +28,7 @@ const images = await getImages()
 	>
 		{
 			images?.map((imagen, index) => (
-				<li class="li group overflow-hidden rounded-2xl bg-[#050505] shadow-sm transition-all duration-300 ease-in-out">
+				<li class="li group overflow-hidden rounded-2xl bg-[#050505] shadow-sm transition-all duration-300 ease-in-out [content-visibility:auto]">
 					<a href={`#${index + 1}`} class="a" title={`Imagen ${index + 1} `}>
 						<OptimizatedPicture
 							src={imagen.default as unknown as string}

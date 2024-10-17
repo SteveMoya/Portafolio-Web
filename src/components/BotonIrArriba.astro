@@ -1,0 +1,60 @@
+---
+import { Icon } from 'astro-icon/components'
+if (!Astro.url.pathname.includes('/blog')) {
+	return
+}
+---
+
+<a
+	class="ir-arriba pointer-events-none fixed bottom-20 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-[#808080] opacity-0 shadow-lg transition-all  duration-300 ease-in-out hover:shadow-xl"
+	href="javascript:void(0)"
+	title="Volver arriba"
+	aria-label="Volver arriba"
+>
+	<Icon name="mdi:arrow-up" class="h-6 w-6 text-white" />
+</a>
+
+<script>
+	document.addEventListener('DOMContentLoaded', () => {
+		const irArriba = document.querySelector('.ir-arriba') as HTMLElement
+
+		// Función para el comportamiento de scroll hacia arriba
+		irArriba.addEventListener('click', (e) => {
+			e.preventDefault() // Evitar el comportamiento predeterminado
+			const targetPosition = 0 // Posición a la que se quiere desplazar
+			const startPosition = window.scrollY // Posición actual
+			const distance = targetPosition - startPosition // Distancia total a recorrer
+			const duration = 800 // Duración de la animación en milisegundos
+			let startTime: number | null = null
+
+			const animation = (currentTime: number) => {
+				if (!startTime) startTime = currentTime
+				const timeElapsed = currentTime - startTime
+				const run = easeInOutCubic(timeElapsed, startPosition, distance, duration)
+				window.scrollTo(0, run)
+				if (timeElapsed < duration) requestAnimationFrame(animation)
+			}
+
+			requestAnimationFrame(animation)
+
+			// Función de easing
+			function easeInOutCubic(t: number, b: number, c: number, d: number): number {
+				t /= d / 2
+				if (t < 1) return (c / 2) * t * t * t + b
+				t -= 2
+				return (c / 2) * (t * t * t + 2) + b
+			}
+		})
+
+		// Mostrar u ocultar el botón según el scroll
+		window.addEventListener('scroll', () => {
+			if (window.scrollY > 100) {
+				irArriba.style.opacity = '1'
+				irArriba.style.pointerEvents = 'auto'
+			} else {
+                irArriba.style.opacity = '0'
+				irArriba.style.pointerEvents = 'none'
+			}
+		})
+	})
+</script>

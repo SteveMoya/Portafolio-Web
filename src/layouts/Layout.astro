@@ -26,8 +26,8 @@ import '@fontsource-variable/raleway/wght-italic.css'
 
 // Suppoer weights 600
 import '@fontsource/monoton'
-
-
+import BotonFlotante from '@components/BotonFlotante.astro'
+import BotonIrArriba from '@components/BotonIrArriba.astro'
 ---
 
 <!doctype html>
@@ -35,12 +35,22 @@ import '@fontsource/monoton'
 	<Head {...Astro.props} />
 	<body
 		class="body h-auto w-full overflow-x-hidden text-wrap bg-[#101010] font-poppins text-[whitesmoke]"
-		
 	>
 		<Cursor />
 		<Navbar />
 		<main class="h-auto w-full overflow-hidden">
 			<slot />
+			<BotonIrArriba />
+			{
+				Astro.url.pathname !== "/" && (
+
+					<BotonFlotante
+						icon="mdi:whatsapp"
+						link="https://api.whatsapp.com/send/?phone=18497511849&text&type=phone_number&app_absent=0"
+						text="contactame por whatsapp"
+					/>
+				)
+			}
 		</main>
 		<TwSizeIndicator />
 		<EditBlog />

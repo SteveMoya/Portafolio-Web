@@ -53,34 +53,34 @@ const { text, color } = Astro.props
 	let i = 0
 	let j = 0
 	let currentWord = ''
-	let isDeleting = false
+	let fullText = '' // Almacena el texto completo para ir agregando palabra por palabra
 
 	function type() {
-		currentWord = words[i]
-		if (isDeleting) {
-			const typewriterElement = document.getElementById('typewriter')
-			if (typewriterElement) {
-				typewriterElement.textContent = currentWord.substring(0, j - 1)
-			}
-			j--
-			if (j == 0) {
-				isDeleting = false
-				i++
-				if (i == words.length) {
-					i = 0
-				}
-			}
-		} else {
-			const typewriterElement = document.getElementById('typewriter')
-			if (typewriterElement) {
-				typewriterElement.textContent = currentWord.substring(0, j + 1)
-			}
-			j++
-			if (j == currentWord.length) {
-				isDeleting = true
-			}
+		// Si ya hemos terminado de escribir todas las palabras, no repetimos
+		if (i >= words.length) {
+			return
 		}
-		setTimeout(type, 200)
+
+		currentWord = words[i]
+
+		// Agrega la palabra actual
+		const typewriterElement = document.getElementById('typewriter')
+		if (typewriterElement) {
+			typewriterElement.textContent = fullText + currentWord.substring(0, j + 1)
+		}
+		j++
+
+		// Si la palabra actual se ha escrito completamente
+		if (j == currentWord.length) {
+			fullText += currentWord + ' ' // Agrega la palabra completa al texto final
+			i++ // Pasamos a la siguiente palabra
+			j = 0 // Reiniciamos el contador de caracteres para la próxima palabra
+		}
+
+		// Continuar escribiendo mientras haya palabras
+		if (i < words.length) {
+			setTimeout(type, 200)
+		}
 	}
 	type()
 </script>

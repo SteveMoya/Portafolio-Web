@@ -3,6 +3,10 @@ import Button from '@components/ui/Button.astro'
 
 import Header from '@components/Header.astro'
 import Card from '@components/ui/Card.astro'
+import YoImg from '/public/img/Yo.webp'
+import OptimizatedPicture from '@components/OptimizatedPicture.astro'
+import ValueItem from './ValueItem.astro'
+import { Icon } from 'astro-icon/components'
 
 const services = [
 	{
@@ -24,8 +28,32 @@ const services = [
 	}
 ]
 
-import YoImg from '/public/img/Yo.webp'
-import OptimizatedPicture from '@components/OptimizatedPicture.astro'
+const values = [
+	{
+		icon: 'mdi:creation',
+		text: 'Innovación constante'
+	},
+	{
+		icon: 'mdi:flash',
+		text: 'Excelencia técnica'
+	},
+	{
+		icon: 'mdi:heart',
+		text: 'Colaboración y trabajo en equipo'
+	},
+	{
+		icon: 'mdi:target',
+		text: 'Integridad y ética profesional'
+	},
+	{
+		icon: 'mdi:book',
+		text: 'Aprendizaje continuo'
+	},
+	{
+		icon: 'mdi:eye',
+		text: 'Responsabilidad social'
+	}
+]
 ---
 
 <!--about--><!--about content-->
@@ -51,7 +79,7 @@ import OptimizatedPicture from '@components/OptimizatedPicture.astro'
 			clientes.
 		</h3>
 		<div class="cv pt-10">
-			<a title="Cv-Link" href="/CV.-Steve-Moya-Cepeda.pdf" class="" target="_blank">
+			<a title="Cv-Link" href="/CV.-Steve-Moya-Cepeda.pdf" target="_blank">
 				<Button type="button" variant="download">Descarga Mi CV</Button>
 			</a>
 		</div>
@@ -60,7 +88,7 @@ import OptimizatedPicture from '@components/OptimizatedPicture.astro'
 	<OptimizatedPicture
 		class="aspect-square max-h-[600px] max-w-[400] rounded-3xl object-cover"
 		src={YoImg}
-		loading='eager'
+		loading="eager"
 		alt="Steve-Moya-Cepeda"
 	/>
 </div>
@@ -68,7 +96,7 @@ import OptimizatedPicture from '@components/OptimizatedPicture.astro'
 <section class="my-8 h-auto w-full">
 	<!--services header-->
 	<div
-		class="services-heading h-auto w-full items-center justify-center p-2.5 py-[30px] text-center font-raleway text-[45px] font-black"
+		class="h-auto w-full items-center justify-center p-2.5 py-[30px] text-center font-raleway text-[45px] font-black"
 	>
 		<span class="font-extrabold text-[#c70039] transition-all duration-300 ease-in-out"
 			>Mis</span
@@ -84,4 +112,55 @@ import OptimizatedPicture from '@components/OptimizatedPicture.astro'
 	</div>
 </section>
 <!--services content end-->
+<section class="mx-4 my-8 h-auto w-full">
+	<!--services header-->
+	<div
+		class="h-auto w-full items-center justify-center p-2.5 py-[30px] text-center font-raleway text-[45px] font-black"
+	>
+		Mision, Vision y Valores
+	</div>
+	<!--services content-->
+	<div class="grid h-fit grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
+		{/* Misión */}
+		<div
+			class="row-span-2 flex flex-col justify-between rounded-lg bg-[#191919] p-6 md:col-span-2"
+		>
+			<div class="row-span-2 flex flex-col rounded-lg p-6 md:col-span-2">
+				<div class="mb-4 flex items-center">
+					<Icon name="mdi:target" class="mr-3 h-8 w-8 flex-shrink-0 text-[#c70039]" />
+					<h3 class="text-xl font-semibold">Misión</h3>
+				</div>
+				<p class="flex-grow"></p>
+			</div>
+		</div>
 
+		{/* Visión */}
+		<div
+			class="row-span-2 flex flex-col justify-between rounded-lg bg-[#191919] p-6 md:col-span-2"
+		>
+			<div class="row-span-2 flex flex-col rounded-lg p-6 md:col-span-2">
+				<div class="mb-4 flex items-center">
+					<Icon name="mdi:eye" class="mr-3 h-8 w-8 flex-shrink-0 text-[#c70039]" />
+					<h3 class="text-xl font-semibold">Visión</h3>
+				</div>
+				<p class="flex-grow"></p>
+			</div>
+		</div>
+
+		{/* Valores */}
+		<div
+			class="flex flex-col justify-between rounded-lg bg-[#191919] p-6 md:col-span-2 lg:col-span-4"
+		>
+			<div>
+				<div class="mb-4 flex items-center">
+					<Icon name="mdi:heart" class="mr-3 h-8 w-8 flex-shrink-0 text-[#c70039]" />
+
+					<h3 class="text-xl font-semibold">Valores</h3>
+				</div>
+				<div class="grid grid-cols-2 gap-4 md:grid-cols-3">
+					{values.map(({ icon, text }) => <ValueItem name={icon}>{text}</ValueItem>)}
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

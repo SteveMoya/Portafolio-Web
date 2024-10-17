@@ -20,30 +20,28 @@ import OptimizatedPicture from '@components/OptimizatedPicture.astro'
 	<div
 		class="absolute z-[1] float-left flex h-screen w-full flex-col items-center justify-center text-[50px] font-normal tracking-[1px]"
 	>
-		<div class="z-[2] h-auto w-auto pr-[60px] text-center">
-			<h1 class="firstline z-[2] text-[65px] font-bold">
-				<span class="font-extrabold text-[#c70039] transition-all duration-300 ease-in-out"
+		<div class="z-[2] h-auto w-auto text-center sm:pr-[70px] lg:pr-[700px]">
+			<h1 class="z-[2] text-[65px] font-bold">
+				<span class="font-extrabold text-[#b11141] transition-all duration-300 ease-in-out"
 					>Steve
 				</span>Moya
 			</h1>
-			<div class="z-[2] pt-5 text-[32px] font-normal text-[rgb(255,255,255,0.8)]">
+			<div class="z-[2] pt-5 text-[32px] font-bold text-[rgb(255,255,255,0.8)]">
 				Soy
 				<TextRotate
 					period="1200"
-					color="#c70039"
-					text={[' Diseñador.', ' Fotógrafo.', ' Marketer.']}
+					color="#b11141"
+					text={[' Diseñador,', ' Fotógrafo'," y", ' Marketer.']}
 				/>
 			</div>
 		</div>
 	</div>
 	<!--header image-->
-	<div
-		class="header-image float-right h-auto w-full bg-cover bg-center object-cover object-right"
-	>
+	<div class="float-right h-auto w-full bg-cover bg-center object-cover object-right">
 		<OptimizatedPicture
 			class="float-right h-screen w-full object-cover"
 			src={SteveImg}
-			loading='eager'
+			loading="eager"
 			alt="Steve-moya"
 		/>
 	</div>
