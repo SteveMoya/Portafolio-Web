@@ -7,17 +7,15 @@ if (!Astro.url.pathname.includes('/blog')) {
 
 <a
 	class="ir-arriba pointer-events-none fixed bottom-20 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-[#808080] opacity-0 shadow-lg transition-all  duration-300 ease-in-out hover:shadow-xl"
-	href="javascript:void(0)"
 	title="Volver arriba"
-	aria-label="Volver arriba"
->
+	aria-label="Volver arriba">
 	<Icon name="mdi:arrow-up" class="h-6 w-6 text-white" />
 </a>
 
 <script>
 	document.addEventListener('DOMContentLoaded', () => {
-		const irArriba = document.querySelector('.ir-arriba') as HTMLElement
-
+		const irArriba = document.querySelector('.ir-arriba')
+		if (!irArriba || !(irArriba instanceof HTMLElement)) return
 		// Función para el comportamiento de scroll hacia arriba
 		irArriba.addEventListener('click', (e) => {
 			e.preventDefault() // Evitar el comportamiento predeterminado
