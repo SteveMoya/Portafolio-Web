@@ -1,11 +1,10 @@
 import rss from '@astrojs/rss'
-import { getCollection } from 'astro:content'
 import { siteConfig } from '../data/config.ts'
 import type { APIRoute } from 'astro';
-
+import { getPosts } from '@src/utils/post.ts';
 
 export const GET: APIRoute = async () => {
-	const posts = await getCollection('blog')
+	const posts = await getPosts()
 	return rss({
 		title: siteConfig.title,
 		description: siteConfig.description,
