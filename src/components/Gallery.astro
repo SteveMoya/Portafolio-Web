@@ -35,7 +35,7 @@ const images = await getImages()
 							src={imagen.default as unknown as string}
 							alt={`Imagen ${index + 1} `}
 							class="img block aspect-[1/1] h-full min-h-[30vh] w-full max-w-full scale-100 object-cover object-center transition-all duration-500 ease-in-out group-hover:scale-125"
-							widths={[100, ]}
+							widths={[100]}
 							sizes={`(max-width: 360px) 100px, (max-width: 720px) 200px, 300px`}
 						/>
 					</a>
@@ -55,7 +55,10 @@ const images = await getImages()
 							src={imagen.default as unknown as string}
 							alt={`Imagen ${index + 1} `}
 							class="h-[80vh] max-h-fit w-full max-w-fit rounded-lg object-cover object-center transition-all duration-500 ease-in-out"
-							widths={[720,1080,1440, 1920,2560,]}
+							widths={[392, 700, 980, 1200
+							]}
+							sizes={`(max-width: 360px) 392px, (max-width: 720px) 700px, 980px`}
+							loading="lazy"
 						/>
 					</div>
 				</li>
