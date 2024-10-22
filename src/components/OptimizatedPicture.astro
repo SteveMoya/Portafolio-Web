@@ -10,6 +10,7 @@ interface Props {
 	fallbackFormat?: string
 	class?: string
 	loading?: 'lazy' | 'eager'
+	density?: number[]
 }
 
 const {
@@ -23,6 +24,7 @@ const {
 	formats = ['avif', 'webp', 'jpeg'],
 	fallbackFormat = 'jpeg',
 	loading = 'lazy',
+	density = 1,
 	class: className,
 } = Astro.props
 ---
@@ -35,6 +37,7 @@ const {
 	formats={formats}
 	fallbackFormat={fallbackFormat}
 	inferSize
+	density={density}
 	loading={loading}
 	class={className}
 />

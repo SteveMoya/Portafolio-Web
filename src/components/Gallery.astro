@@ -1,19 +1,21 @@
 ---
-import { Image } from 'astro:assets'
 import OptimizatedPicture from './OptimizatedPicture.astro'
-
+import type { ImageMetadata } from 'astro'
+import { Image, getImage } from 'astro:assets'
 const { path } = Astro.props
+
+// const images = await Astro.glob<{default: ImageMetada}>('/src/assets/diseno/*.{jpeg,jpg,png,gif,webp,avif}')
 
 async function getImages() {
 	if (path === 'diseno') {
 		const images = await Astro.glob<{ default: ImageMetadata }>(
-			`/public/diseno/*.{jpeg,jpg,png,gif,webp,avif}`
+			`/src/assets/diseno/*.{jpeg,jpg,png,gif,webp,avif}`
 		)
 		return images
 	}
 	if (path === 'fotografia') {
 		const images = await Astro.glob<{ default: ImageMetadata }>(
-			`/public/fotografia/*.{jpeg,jpg,png,gif,webp,avif}`
+			`/src/assets/fotografia/*.{jpeg,jpg,png,gif,webp,avif}`
 		)
 		return images
 	}
@@ -27,42 +29,61 @@ const images = await getImages()
 		class="ul mx-auto my-0 grid w-[95%] grid-cols-[repeat(auto-fit,minmax(10em,1fr))] gap-[2em] rounded-2xl bg-[#050505] p-4 shadow-sm transition-all duration-300 ease-in-out"
 	>
 		{
-			images?.map((imagen, index) => (
-				<li class="li group overflow-hidden rounded-2xl bg-[#050505] shadow-sm transition-all duration-300 ease-in-out">
-					<a href={`#${index + 1}`} class="a" title={`Imagen ${index + 1} `}>
-						{/* Mostrar un thumbnail en lugar de la imagen completa */}
-						<OptimizatedPicture
-							src={imagen.default as unknown as string}
-							alt={`Imagen ${index + 1} `}
-							class="img block aspect-[1/1] h-full min-h-[30vh] w-full max-w-full scale-100 object-cover object-center transition-all duration-500 ease-in-out group-hover:scale-125"
-							widths={[100]}
-							sizes={`(max-width: 360px) 100px, (max-width: 720px) 200px, 300px`}
-						/>
-					</a>
+			images?.map(async (imagen, index) => {
+				// const thumbnail = await getImage(
+				// 	{
 
-					<div
-						id={`${index + 1}`}
-						class="pointer-events-auto fixed inset-0 z-50 hidden h-full w-full overflow-auto rounded-[1em] bg-black/75 p-10 opacity-100 shadow-lg transition-all duration-300 ease-in-out target:flex target:flex-col target:items-center target:justify-center target:gap-4 target:overflow-auto target:rounded-[1em] target:bg-black/90 target:p-10 target:opacity-100 target:shadow-lg target:transition-all target:duration-300 target:ease-in-out"
-					>
-						<a href="#">
-							<button class="duration- mt-0 block h-[3em] w-[5em] cursor-pointer rounded-lg border-[none] bg-[#BB0035] text-center text-xl opacity-80 transition-all ease-in-out hover:opacity-100 hover:transition-all hover:duration-300 hover:ease-in-out">
-								Cerrar
-							</button>
+				// 		src: imagen.default.src,
+				// 		width: 300,
+				// 		quality: 50
+				// 	}
+				// );
+				return (
+					<li class="li group overflow-hidden rounded-2xl bg-[#050505] shadow-sm transition-all duration-300 ease-in-out">
+						<a href={`#${index + 1}`} class="a" title={`Imagen ${index + 1} `}>
+							{/* Mostrar un thumbnail en lugar de la imagen completa */}
+							<Image
+								src={{
+									height: imagen.default.height,
+									src: imagen.default.src,
+									width: imagen.default.width,
+									format: 'avif'
+								}}
+								alt={`Imagen ${index + 1} `}
+								class="block aspect-[1/1] h-full min-h-[30vh] w-full max-w-full scale-100 object-cover object-center transition-all duration-500 ease-in-out group-hover:scale-125"
+								quality={'low'}
+								format={'avif'}
+								width={imagen.default.width / 8}
+								densities={
+									[
+										3,
+										6,
+									]
+								}
+							/>
 						</a>
 
-						{/* Aquí cargas la imagen completa */}
-						<OptimizatedPicture
-							src={imagen.default as unknown as string}
-							alt={`Imagen ${index + 1} `}
-							class="h-[80vh] max-h-fit w-full max-w-fit rounded-lg object-cover object-center transition-all duration-500 ease-in-out"
-							widths={[392, 700, 980, 1200
-							]}
-							sizes={`(max-width: 360px) 392px, (max-width: 720px) 700px, 980px`}
-							loading="lazy"
-						/>
-					</div>
-				</li>
-			))
+						<div
+							id={`${index + 1}`}
+							class="pointer-events-auto fixed inset-0 z-50 hidden h-full w-full overflow-auto rounded-[1em] bg-black/75 p-10 opacity-100 shadow-lg transition-all duration-300 ease-in-out target:flex target:flex-col target:items-center target:justify-center target:gap-4 target:overflow-auto target:rounded-[1em] target:bg-black/90 target:p-10 target:opacity-100 target:shadow-lg target:transition-all target:duration-300 target:ease-in-out"
+						>
+							<a href="#">
+								<button class="duration- mt-0 block h-[3em] w-[5em] cursor-pointer rounded-lg border-[none] bg-[#BB0035] text-center text-xl opacity-80 transition-all ease-in-out hover:opacity-100 hover:transition-all hover:duration-300 hover:ease-in-out">
+									Cerrar
+								</button>
+							</a>
+
+							{/* Aquí cargas la imagen completa */}
+							<OptimizatedPicture
+								src={imagen.default as unknown as string}
+								alt={`Imagen ${index + 1} `}
+								class="h-[80vh] max-h-fit w-full max-w-fit rounded-lg object-cover object-center transition-all duration-500 ease-in-out"
+								widths={[720, 1080, 1440, 1920, 2560]}
+							/>
+						</div>
+					</li>
+				)
+			})
 		}
 	</ul>
 </section>

@@ -21,7 +21,18 @@ const blog = defineCollection({
 		})
 });
 
+const fotografia = defineCollection({
+	schema: ({ image }) => {
+		image: image(),
+	};
+})
+
+const diseno = defineCollection({
+	schema: ({ image }) => {
+		image: image(),
+	};
+})
 
 
 
-export const collections = { blog };
+export const collections = { blog, fotografia, diseno };
