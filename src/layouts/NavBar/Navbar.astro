@@ -18,9 +18,10 @@ const NavLinks = [
 		href: '/portafolio'
 	}
 ]
-import navLogo from '/public/img/nav-logo.svg'
-import logo from '/public/img/logo.svg'
-import { Picture } from 'astro:assets'
+import navLogo from '@/assets/img/nav-logo.svg'
+import logo from '@/assets/img/logo.svg'
+
+import { Picture, Image } from 'astro:assets'
 import Search from '@components/Search.astro'
 ---
 
@@ -34,7 +35,7 @@ import Search from '@components/Search.astro'
 			<img
 				class="absolute left-[2.5%] top-[3%] z-[2] block h-20 cursor-pointer opacity-80 transition-all duration-300 ease-in-out hover:-rotate-45 hover:opacity-100"
 				title="logo"
-				src={navLogo.src}
+				src="/img/nav-logo.svg"
 				alt="logo"
 			/>
 		</a>
@@ -60,14 +61,14 @@ import Search from '@components/Search.astro'
 	{
 		Astro.url.pathname !== '/' && (
 			<a href="/" title="Ir a Inicio">
-		<Picture
-			class="absolute left-[2.5%] top-[15%] h-20 opacity-80 transition-all duration-300 ease-in-out hover:-rotate-45 hover:opacity-100"
-			title="logo"
-			loading="lazy"
-			src={logo}
-			alt="logo"
-		/>
-	</a>
+				<img
+					class="absolute left-[2.5%] top-[15%] h-20 opacity-80 transition-all duration-300 ease-in-out hover:-rotate-45 hover:opacity-100"
+					title="logo"
+					loading="lazy"
+					src="/img/logo.svg"
+					alt="logo"
+				/>
+			</a>
 		)
 	}
 

@@ -9,7 +9,7 @@ interface Props {
 	class?: string
 	type?: 'blog' | 'about' | 'portafolio'
 	title?: string
-	img?: string
+	img?: string 
 	description?: string
 	href?: string
 	date?: string
@@ -40,7 +40,7 @@ const { class: className = '', type, title, img, description, href, date } = Ast
 }
 {
 	type === 'blog' && (
-		<article class="group m-5 lg:h-[420px] w-[450px] overflow-hidden rounded-lg bg-[#c7c7c7]">
+		<article class="group m-5 w-[450px] overflow-hidden rounded-lg bg-[#c7c7c7] lg:h-[420px]">
 			<a title={`Ver ${title}`} href={href}>
 				<div class="relative h-4/5 w-full overflow-hidden transition-all duration-[0.65s] ease-in-out group-hover:translate-y-[-70%]">
 					<img
@@ -72,7 +72,7 @@ const { class: className = '', type, title, img, description, href, date } = Ast
 	type === 'portafolio' && (
 		<article class="flex h-auto w-full flex-col items-center justify-center p-[1.5%] pb-10 pr-[3%] pt-[50px] lg:flex-row">
 			<div class="w-[95%] max-w-[600px] lg:w-2/5">
-				<img
+				<OptimizatedPicture
 					class="relative aspect-square h-full max-h-[400px] w-full object-cover before:absolute before:left-0 before:top-0 before:z-[2] before:h-full before:w-full before:bg-[#c70039] before:opacity-90 before:transition-all before:duration-300 before:ease-in-out before:content-['']"
 					title={title}
 					loading="lazy"

@@ -1,4 +1,4 @@
-import { defineConfig, passthroughImageService } from 'astro/config';
+import { defineConfig, passthroughImageService, squooshImageService } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tailwind from "@astrojs/tailwind";
@@ -22,10 +22,6 @@ export default defineConfig({
 
   experimental: {
     contentCollectionCache: true
-  },
-
-  image: {
-    service: passthroughImageService()
   },
 
   integrations: [

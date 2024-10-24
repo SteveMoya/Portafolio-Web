@@ -4,7 +4,7 @@ import Tag from '@components/Tag.astro'
 import type { CollectionEntry } from 'astro:content'
 import type { MarkdownHeading } from 'astro'
 import {  Picture } from 'astro:assets'
-import BotonIrArriba from '@components/BotonIrArriba.astro'
+
 
 type Props = {
 	id?: CollectionEntry<'blog'>['id']
@@ -61,21 +61,19 @@ const { title, description, pubDate, heroImage, tags, updateDate } = data
 				</div>
 			</header>
 
-			<>
 				{
 					heroImage && (
-						<Picture
-							src={heroImage}
+						<img
+							src={heroImage.src}
 							width={1000}
 							height={500}
-							formats={['webp', 'avif', 'jpg']}
 							loading="eager"
 							class="my-8 max-h-[300px] w-full rounded-md object-cover md:max-h-[500px]"
 							alt={`Imagen de ${title}`}
 						/>
 					)
 				}
-			</>
+		
 
 			<hr />
 

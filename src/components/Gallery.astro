@@ -39,27 +39,15 @@ const images = await getImages()
 				// 	}
 				// );
 				return (
-					<li class="li group overflow-hidden rounded-2xl bg-[#050505] shadow-sm transition-all duration-300 ease-in-out">
-						<a href={`#${index + 1}`} class="a" title={`Imagen ${index + 1} `}>
+					<li class="group overflow-hidden rounded-2xl bg-[#050505] shadow-sm transition-all duration-300 ease-in-out">
+						<a href={`#${index + 1}`} title={`Imagen ${index + 1} `}>
 							{/* Mostrar un thumbnail en lugar de la imagen completa */}
-							<Image
-								src={{
-									height: imagen.default.height,
-									src: imagen.default.src,
-									width: imagen.default.width,
-									format: 'avif'
-								}}
+							<OptimizatedPicture
+								src={imagen.default}
 								alt={`Imagen ${index + 1} `}
 								class="block aspect-[1/1] h-full min-h-[30vh] w-full max-w-full scale-100 object-cover object-center transition-all duration-500 ease-in-out group-hover:scale-125"
 								quality={'low'}
-								format={'avif'}
 								width={imagen.default.width / 8}
-								densities={
-									[
-										3,
-										6,
-									]
-								}
 							/>
 						</a>
 
