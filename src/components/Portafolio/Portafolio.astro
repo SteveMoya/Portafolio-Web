@@ -1,35 +1,66 @@
 ---
 import Card from '@components/ui/Card.astro'
 
+import marketingfoto from '/src/assets/img/marketing.webp'
+import fotografiafoto from '/src/assets/img/fotografia.webp'
+import webfoto from '/src/assets/img/web.webp'
+import diseñofoto from '/src/assets/img/diseño.webp'
 
-const portafolios = [
-	{
-		title: 'Marketing',
-		img: '/src/assets/img/marketing.webp',
-		description: 'Aqui todas mis estrategias de marketing y proyectos realizados',
-		href: '/blog/category/marketing/1'
-	},
-	{
-		title: 'Fotografía',
-		img: "/src/assets/img/fotografia.webp",
-		description: 'Puedes darle un vistazo pero todavia estoy Trabajando en ello',
-		href: '/portafolio/fotografia'
-	},
-	{
-		title: 'Web',
-		img: "/src/assets/img/web.webp",
-		description: 'Puedes darle un vistazo pero todavia estoy Trabajando en ello',
-		href: '/portafolio/webs'
-	},
-	{
-		title: 'Diseño Gráfico',
-		img: "/src/assets/img/diseño.webp",
-		description: 'Todavia Trabajando en ello',
-		href: '/portafolio/diseno'
-	}
-]
+// const portafolios = [
+// 	{
+// 		title: 'Marketing',
+// 		img: '/src/assets/img/marketing.webp',
+// 		description: 'Aqui todas mis estrategias de marketing y proyectos realizados',
+// 		href: '/blog/category/marketing/1'
+// 	},
+// 	{
+// 		title: 'Fotografía',
+// 		img: '/src/assets/img/fotografia.webp',
+// 		description: 'Aqui todas mis sesiones de fotos y proyectos fotográficos',
+// 		href: '/portafolio/fotografia'
+// 	},
+// 	{
+// 		title: 'Web',
+// 		img: '/src/assets/img/web.webp',
+// 		description: 'Aqui todas mis páginas web',
+// 		href: '/portafolio/webs'
+// 	},
+// 	{
+// 		title: 'Diseño Gráfico',
+// 		img: '/src/assets/img/diseño.webp',
+// 		description: 'Aqui todos mis diseños gráficos donde deje libre mi creatividad',
+// 		href: '/portafolio/diseno'
+// 	}
+// ]
 ---
 
 <section class="flex h-auto w-full flex-col justify-center overflow-hidden">
-	{portafolios.map((portafolio) => <Card type="portafolio" {...portafolio} />)}
+	<Card
+		type="portafolio"
+		title="Marketing"
+		img={marketingfoto}
+		description="Aqui todas mis estrategias de marketing y proyectos realizados"
+		href="/blog/category/marketing/1"
+	/>
+	<Card
+		type="portafolio"
+		title="Fotografía"
+		img={fotografiafoto}
+		description="Aqui todas mis sesiones de fotos y proyectos fotográficos"
+		href="/portafolio/fotografia"
+	/>
+	<Card
+		type="portafolio"
+		title="Web"
+		img={webfoto}
+		description="Aqui todas mis páginas web"
+		href="/portafolio/webs"
+	/>
+	<Card
+		type="portafolio"
+		title="Diseño Gráfico"
+		img={diseñofoto}
+		description="Aqui todos mis diseños gráficos donde deje libre mi creatividad"
+		href="/portafolio/diseno"
+	/>
 </section>
