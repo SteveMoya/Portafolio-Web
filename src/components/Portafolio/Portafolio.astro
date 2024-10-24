@@ -6,61 +6,41 @@ import fotografiafoto from '/public/img/fotografia.webp'
 import webfoto from '/public/img/web.webp'
 import diseñofoto from '/public/img/diseño.webp'
 
-// const portafolios = [
-// 	{
-// 		title: 'Marketing',
-// 		img: '/src/assets/img/marketing.webp',
-// 		description: 'Aqui todas mis estrategias de marketing y proyectos realizados',
-// 		href: '/blog/category/marketing/1'
-// 	},
-// 	{
-// 		title: 'Fotografía',
-// 		img: '/src/assets/img/fotografia.webp',
-// 		description: 'Aqui todas mis sesiones de fotos y proyectos fotográficos',
-// 		href: '/portafolio/fotografia'
-// 	},
-// 	{
-// 		title: 'Web',
-// 		img: '/src/assets/img/web.webp',
-// 		description: 'Aqui todas mis páginas web',
-// 		href: '/portafolio/webs'
-// 	},
-// 	{
-// 		title: 'Diseño Gráfico',
-// 		img: '/src/assets/img/diseño.webp',
-// 		description: 'Aqui todos mis diseños gráficos donde deje libre mi creatividad',
-// 		href: '/portafolio/diseno'
-// 	}
-// ]
+const portafolios = [
+	{
+		title: 'Marketing',
+		img: marketingfoto,
+		description: 'Aqui todas mis estrategias de marketing y proyectos realizados',
+		href: '/blog/category/marketing/1'
+	},
+	{
+		title: 'Fotografía',
+		img: fotografiafoto,
+		description: 'Aqui todas mis sesiones de fotos y proyectos fotográficos',
+		href: '/portafolio/fotografia'
+	},
+	{
+		title: 'Web',
+		img: webfoto,
+		description: 'Aqui todas mis páginas web',
+		href: '/portafolio/webs'
+	},
+	{
+		title: 'Diseño Gráfico',
+		img: diseñofoto,
+		description: 'Aqui todos mis diseños gráficos donde deje libre mi creatividad',
+		href: '/portafolio/diseno'
+	}
+]
 ---
 
 <section class="flex h-auto w-full flex-col justify-center overflow-hidden">
-	<Card
-		type="portafolio"
-		title="Marketing"
-		img={'/img/marketing.webp'}
-		description="Aqui todas mis estrategias de marketing y proyectos realizados"
-		href="/blog/category/marketing/1"
-	/>
-	<Card
-		type="portafolio"
-		title="Fotografía"
-		img={'/img/fotografia.webp'}
-		description="Aqui todas mis sesiones de fotos y proyectos fotográficos"
-		href="/portafolio/fotografia"
-	/>
-	<Card
-		type="portafolio"
-		title="Web"
-		img={'/img/web.webp'}
-		description="Aqui todas mis páginas web"
-		href="/portafolio/webs"
-	/>
-	<Card
-		type="portafolio"
-		title="Diseño Gráfico"
-		img={'/img/diseño.webp'}
-		description="Aqui todos mis diseños gráficos donde deje libre mi creatividad"
-		href="/portafolio/diseno"
-	/>
+	{
+		portafolios.map((portafolio) => (
+			<Card
+				type="portafolio"
+			{...portafolio}
+			/>
+		))
+	}
 </section>
