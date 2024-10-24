@@ -1,4 +1,4 @@
-import { defineConfig, passthroughImageService, squooshImageService } from 'astro/config';
+import { defineConfig, squooshImageService } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tailwind from "@astrojs/tailwind";

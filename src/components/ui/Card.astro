@@ -72,7 +72,7 @@ const { class: className = '', type, title, img, description, href, date } = Ast
 	type === 'portafolio' && (
 		<article class="flex h-auto w-full flex-col items-center justify-center p-[1.5%] pb-10 pr-[3%] pt-[50px] lg:flex-row">
 			<div class="w-[95%] max-w-[600px] lg:w-2/5">
-				<OptimizatedPicture
+				<Picture
 					class="relative aspect-square h-full max-h-[400px] w-full object-cover before:absolute before:left-0 before:top-0 before:z-[2] before:h-full before:w-full before:bg-[#c70039] before:opacity-90 before:transition-all before:duration-300 before:ease-in-out before:content-['']"
 					title={title}
 					loading="lazy"
