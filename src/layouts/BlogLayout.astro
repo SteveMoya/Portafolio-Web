@@ -63,12 +63,11 @@ const { title, description, pubDate, heroImage, tags, updateDate } = data
 
 				{
 					heroImage && (
-						<img
-							src={heroImage.src}
+						<Picture
+							src={heroImage}
 							width={1000}
 							height={500}
 							loading="eager"
-							
 							class="my-8 max-h-[300px] w-full rounded-md object-cover md:max-h-[500px]"
 							alt={`Imagen de ${title}`}
 						/>
