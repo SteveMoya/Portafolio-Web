@@ -4,6 +4,7 @@ query post($relativePath: String!) {
       _sys {
         filename
         basename
+        hasReferences
         breadcrumbs
         path
         relativePath
@@ -38,6 +39,7 @@ query postConnection($before: String, $after: String, $first: Float, $last: Floa
           _sys {
             filename
             basename
+            hasReferences
             breadcrumbs
             path
             relativePath
