@@ -3,18 +3,18 @@ import OptimizatedPicture from './OptimizatedPicture.astro'
 import type { ImageMetadata } from 'astro'
 import { Image, getImage, Picture } from 'astro:assets'
 const { path } = Astro.props
+import { CldImage } from 'astro-cloudinary'
+import { getCollection } from 'astro:content'
 
 async function getImages() {
 	if (path === 'diseno') {
-		const images = await Astro.glob<{ default: ImageMetadata }>(
-			`/src/assets/diseno/*.{jpeg,jpg,png,gif,webp,avif}`
-		)
+		const images = await getCollection('diseno')
+
 		return images
 	}
 	if (path === 'fotografia') {
-		const images = await Astro.glob<{ default: ImageMetadata }>(
-			`/src/assets/fotografia/*.{jpeg,jpg,png,gif,webp,avif}`
-		)
+		const images = await getCollection('fotografia')
+
 		return images
 	}
 }
@@ -30,19 +30,13 @@ const images = await getImages()
 			images?.map(async (imagen, index) => {
 				return (
 					<li class="group overflow-hidden rounded-2xl bg-[#050505] shadow-sm transition-all duration-300 ease-in-out">
-						<a
-							href={`#${index + 1}`}
-							data-astro-prefetch="tap"
-							title={`Imagen ${index + 1} `}
-						>
+						<a href={`#${index + 1}`} data-astro-prefetch="tap" title={`Imagen ${index + 1} `}>
 							{/* Mostrar un thumbnail en lugar de la imagen completa */}
-							<Picture
-								src={imagen.default}
+							<CldImage
+								src={imagen.data.public_id}
 								alt={`Imagen ${index + 1}`}
 								class="block aspect-[1/1] h-full min-h-[30vh] w-full max-w-full scale-100 object-cover object-center transition-all duration-500 ease-in-out group-hover:scale-125"
-								quality={'low'}
-								formats={['avif', 'webp']}
-								width={imagen.default.width / 2}
+								
 							/>
 						</a>
 
@@ -57,11 +51,10 @@ const images = await getImages()
 							</a>
 
 							{/* Aquí cargas la imagen completa */}
-							<OptimizatedPicture
-								src={imagen.default as unknown as string}
+							<CldImage
+								src={imagen.data.public_id}
 								alt={`Imagen ${index + 1} `}
 								class="h-[80vh] max-h-fit w-full max-w-fit rounded-lg object-cover object-center transition-all duration-500 ease-in-out"
-								widths={[1080, 1440, 1920, 2560]}
 							/>
 						</div>
 					</li>

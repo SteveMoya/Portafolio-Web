@@ -1,5 +1,6 @@
 import { CATEGORIES } from '@src/data/categories';
 import { defineCollection, z } from 'astro:content';
+import { cldAssetsLoader } from 'astro-cloudinary/loaders';
 
 const blog = defineCollection({
 	// Type-check frontmatter using a schema
@@ -21,6 +22,29 @@ const blog = defineCollection({
 		})
 });
 
+const fotografia = defineCollection({
+	loader: cldAssetsLoader({
+		folder: 'fotografia'
+	})
+});
+
+const diseno = defineCollection({
+	loader: cldAssetsLoader({
+		folder: 'diseño'
+	})
+})
+
+/*import { defineCollection } from 'astro:content';
+import { cldAssetsLoader } from 'astro-cloudinary/loaders';
+
+export const collections = {
+	assets: defineCollection({
+		loader: cldAssetsLoader({
+			folder: '<Folder>' // Optional, without loads root directory
+		})
+	}),
+};*/
+
 // const fotografia = defineCollection({
 // 	schema: ({ image }) => {
 // 		image: image(),
@@ -35,4 +59,4 @@ const blog = defineCollection({
 
 
 
-export const collections = { blog };
+export const collections = { blog, fotografia, diseno };

@@ -31,6 +31,7 @@
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "astro": "^5.2.5",
+    "astro-cloudinary": "^1.3.0",
     "astro-devtoolbar-tailwind": "^0.0.8",
     "astro-icon": "^1.1.5",
     "astro-lighthouse": "^0.1.3",
