@@ -1,12 +1,14 @@
 ---
-import { Picture } from 'astro:assets'
-
 import Particles from './Particles.astro'
 import TextRotate from './TextRotate.astro'
 
-import SteveImg from '/src/assets/img/Steve-Moya.webp'
 import SocialLinks from '@components/SocialLinks.astro'
-import OptimizatedPicture from '@components/OptimizatedPicture.astro'
+
+import { CldImage } from 'astro-cloudinary'
+import { getEntry } from 'astro:content'
+
+const heroimg = await getEntry('assets', 'assets/pvx4cb7kj9xxklvof54u')
+
 ---
 
 <!--Header-->
@@ -31,16 +33,16 @@ import OptimizatedPicture from '@components/OptimizatedPicture.astro'
 				<TextRotate
 					period="1200"
 					color="#b11141"
-					text={[' Diseñador,', ' Fotógrafo'," y", ' Marketer.']}
+					text={[' Diseñador,', ' Fotógrafo', ' y', ' Marketer.']}
 				/>
 			</div>
 		</div>
 	</div>
 	<!--header image-->
 	<div class="float-right h-auto w-full bg-cover bg-center object-cover object-right">
-		<Picture
+		<CldImage
 			class="float-right h-screen w-full object-cover"
-			src={SteveImg}
+			src={heroimg?.data.public_id || ''}
 			loading="eager"
 			alt="Steve-moya"
 		/>

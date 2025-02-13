@@ -8,23 +8,35 @@ import OptimizatedPicture from '@components/OptimizatedPicture.astro'
 import ValueItem from './ValueItem.astro'
 import { Icon } from 'astro-icon/components'
 
+import { CldImage } from 'astro-cloudinary'
+import { getEntry } from 'astro:content'
+
+const img = await getEntry('assets', 'assets/pvx4cb7kj9xxklvof54u')
+
+const images = {
+	Yo: YoImg,
+	codding: '/img/coding.svg',
+	socialmedia: '/img/socialmedia.svg',
+	creative: '/img/creative.svg'
+}
+
+
 const services = [
 	{
 		title: 'Diseño Web',
 		description: 'Habilidades en la creación de diseños web atractivos.',
-		img: '/img/coding.svg'
+		img: images.codding
 	},
 	{
 		title: 'Social Media',
 		description:
 			'Habilidades para la gestión de comunidades para mejorar el compromiso de los clientes.',
-		img: '/img/socialmedia.svg'
+		img: images.socialmedia
 	},
 	{
 		title: 'Diseño Creativo',
-		description:
-			'Habilidades en la creación de diseños atractivos para la comunicación visual.',
-		img: '/img/creative.svg'
+		description: 'Habilidades en la creación de diseños atractivos para la comunicación visual.',
+		img: images.creative
 	}
 ]
 
@@ -98,9 +110,7 @@ const values = [
 	<div
 		class="h-auto w-full items-center justify-center p-2.5 py-[30px] text-center font-raleway text-[45px] font-black"
 	>
-		<span class="font-extrabold text-[#c70039] transition-all duration-300 ease-in-out"
-			>Mis</span
-		> Conocimientos
+		<span class="font-extrabold text-[#c70039] transition-all duration-300 ease-in-out">Mis</span> Conocimientos
 	</div>
 	<!--services content-->
 	<div class="flex h-fit w-full flex-wrap content-center justify-center gap-4 overflow-hidden">
@@ -122,32 +132,29 @@ const values = [
 	<!--services content-->
 	<div class="grid h-fit grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
 		{/* Misión */}
-		<div
-			class="row-span-2 flex flex-col justify-between rounded-lg bg-[#191919] p-6 md:col-span-2"
-		>
+		<div class="row-span-2 flex flex-col justify-between rounded-lg bg-[#191919] p-6 md:col-span-2">
 			<div class="row-span-2 flex flex-col rounded-lg p-6 md:col-span-2">
 				<div class="mb-4 flex items-center">
 					<Icon name="mdi:target" class="mr-3 h-8 w-8 flex-shrink-0 text-[#c70039]" />
 					<h3 class="text-xl font-semibold">Misión</h3>
 				</div>
 				<p class="flex-grow">
-					Ofrecer soluciones de marketing digital y diseño web que permitan a las empresas
-					crecer y alcanzar sus objetivos de negocio. Aportando valor a través de la innovación. 
+					Ofrecer soluciones de marketing digital y diseño web que permitan a las empresas crecer y
+					alcanzar sus objetivos de negocio. Aportando valor a través de la innovación.
 				</p>
 			</div>
 		</div>
 
 		{/* Visión */}
-		<div
-			class="row-span-2 flex flex-col justify-between rounded-lg bg-[#191919] p-6 md:col-span-2"
-		>
+		<div class="row-span-2 flex flex-col justify-between rounded-lg bg-[#191919] p-6 md:col-span-2">
 			<div class="row-span-2 flex flex-col rounded-lg p-6 md:col-span-2">
 				<div class="mb-4 flex items-center">
 					<Icon name="mdi:eye" class="mr-3 h-8 w-8 flex-shrink-0 text-[#c70039]" />
 					<h3 class="text-xl font-semibold">Visión</h3>
 				</div>
 				<p class="flex-grow">
-					Ser una persona referente en el sector del marketing digital y diseño web, aportando valor a las empresas y ayudándolas a alcanzar sus objetivos de negocio.
+					Ser una persona referente en el sector del marketing digital y diseño web, aportando valor
+					a las empresas y ayudándolas a alcanzar sus objetivos de negocio.
 				</p>
 			</div>
 		</div>

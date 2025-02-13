@@ -22,6 +22,13 @@ const blog = defineCollection({
 		})
 });
 
+const assets = defineCollection({
+	loader: cldAssetsLoader({
+		folder: 'assets',
+		limit: 200
+	})
+})
+
 const fotografia = defineCollection({
 	loader: cldAssetsLoader({
 		folder: 'fotografia',
@@ -36,29 +43,22 @@ const diseno = defineCollection({
 	})
 })
 
-/*import { defineCollection } from 'astro:content';
-import { cldAssetsLoader } from 'astro-cloudinary/loaders';
 
-export const collections = {
-	assets: defineCollection({
-		loader: cldAssetsLoader({
-			folder: '<Folder>' // Optional, without loads root directory
-		})
-	}),
-};*/
+const about_images = defineCollection({
+	loader: cldAssetsLoader({
+		folder: 'about_images',
+	})
+});
 
-// const fotografia = defineCollection({
-// 	schema: ({ image }) => {
-// 		image: image(),
-// 	};
-// })
 
-// const diseno = defineCollection({
-// 	schema: ({ image }) => {
-// 		image: image(),
-// 	};
-// })
+const portafolio = defineCollection({
+	loader: cldAssetsLoader({
+		folder: 'portafolio',
+	})
+})
 
 
 
-export const collections = { blog, fotografia, diseno };
+
+
+export const collections = { blog, fotografia, diseno, about_images, portafolio, assets };

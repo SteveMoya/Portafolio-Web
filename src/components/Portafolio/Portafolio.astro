@@ -1,34 +1,38 @@
 ---
 import Card from '@components/ui/Card.astro'
+import { getEntry } from 'astro:content'
 
-import marketingfoto from '@/assets/img/marketing.webp'
-import fotografiafoto from '@/assets/img/Fotografia.webp'
-import webfoto from '@/assets/img/web.webp'
+const marketingimg = await getEntry('portafolio', 'portafolio/rmfvigaluuqqsybglhbd')
 
-import diseñofoto from '@/assets/img/diseño.webp'
+const webimg = await getEntry('portafolio', 'portafolio/izqsfrsjivj4qljolhfj')
+
+const fotografiaimg = await getEntry('portafolio', 'portafolio/ekshqf7dkcemzrhcvsvv')
+
+const disenoimg = await getEntry('portafolio', 'portafolio/zw2fdggeox7wjw3tmxov')
+
 
 const portafolios = [
 	{
 		title: 'Marketing',
-		img: marketingfoto,
+		img: marketingimg?.data.public_id,
 		description: 'Aqui todas mis estrategias de marketing y proyectos realizados',
 		href: '/blog/category/marketing/1'
 	},
 	{
 		title: 'Fotografía',
-		img: fotografiafoto,
+		img: fotografiaimg?.data.public_id,
 		description: 'Aqui todas mis sesiones de fotos y proyectos fotográficos',
 		href: '/portafolio/fotografia'
 	},
 	{
 		title: 'Web',
-		img: webfoto,
+		img: webimg?.data.public_id,
 		description: 'Aqui todas mis páginas web',
 		href: '/portafolio/webs'
 	},
 	{
 		title: 'Diseño Gráfico',
-		img: diseñofoto,
+		img: disenoimg?.data.public_id,
 		description: 'Aqui todos mis diseños gráficos donde deje libre mi creatividad',
 		href: '/portafolio/diseno'
 	}
@@ -36,12 +40,5 @@ const portafolios = [
 ---
 
 <section class="flex h-auto w-full flex-col justify-center overflow-hidden">
-	{
-		portafolios.map((portafolio) => (
-			<Card
-				type="portafolio"
-			{...portafolio}
-			/>
-		))
-	}
+	{portafolios.map((portafolio) => <Card type="portafolio" {...portafolio} />)}
 </section>

@@ -5,12 +5,15 @@ import Button from './Button.astro'
 // import { twMerge } from 'tailwind-merge'
 import { Picture, Image } from 'astro:assets'
 import type { ImageMetadata } from 'astro'
+import { CldImage } from 'astro-cloudinary'
+import { getCollection } from 'astro:content'
+
 
 interface Props {
 	class?: string
 	type?: 'blog' | 'about' | 'portafolio'
 	title?: string
-	img?: string | ImageMetadata
+	img?: any
 	description?: string
 	href?: string
 	date?: string
@@ -73,13 +76,11 @@ const { class: className = '', type, title, img = '', description, href, date } 
 	type === 'portafolio' && (
 		<article class="flex h-auto w-full flex-col items-center justify-center p-[1.5%] pb-10 pr-[3%] pt-[50px] lg:flex-row">
 			<div class="w-[95%] max-w-[600px] lg:w-2/5">
-				<OptimizatedPicture
+				<CldImage
 					class="relative aspect-square h-full max-h-[400px] w-full object-cover before:absolute before:left-0 before:top-0 before:z-[2] before:h-full before:w-full before:bg-[#c70039] before:opacity-90 before:transition-all before:duration-300 before:ease-in-out before:content-['']"
 					title={title}
-					loading="lazy"
 					src={img}
 					alt={`${title} Imagen`}
-					inferSize
 				/>
 			</div>
 			<div class="mt-15 z-[3] max-w-[600px] bg-[#080808] py-2.5 opacity-100 transition-all duration-300 ease-in-out md:m-[1%] md:mt-0 md:w-[95%] md:rounded-[10px] md:border md:border-solid md:border-[#c70039] md:pb-10 md:pt-10 md:opacity-80 md:shadow-[10px] md:hover:z-[4] md:hover:translate-x-[-2px] md:hover:translate-y-[-2px] md:hover:rotate-[-1deg] md:hover:skew-x-[-1deg] md:hover:skew-y-[-1deg] md:hover:scale-[1.02] md:hover:transform md:hover:border md:hover:border-solid md:hover:border-[#c70039] md:hover:opacity-100 md:hover:shadow-[10px] md:hover:transition-all md:hover:duration-300 md:hover:ease-in-out">
