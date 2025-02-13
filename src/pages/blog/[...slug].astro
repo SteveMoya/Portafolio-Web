@@ -1,5 +1,4 @@
 ---
-
 import Code from '@components/mdx/Code.astro'
 import SVG from '@components/mdx/SVG.astro'
 import ListRelatedPosts from '@components/ListRelatedPosts.astro'
@@ -10,6 +9,7 @@ import LiteYoutube from '@components/mdx/LiteYoutube.astro'
 import { getPosts, getRelatedPosts } from '@src/utils'
 import BlogLayout from '@src/layouts/BlogLayout.astro'
 import Diagram from '@components/mdx/Diagram.astro'
+import { CldImage } from 'astro-cloudinary'
 
 export async function getStaticPaths() {
 	const posts = await getPosts()
@@ -40,7 +40,7 @@ const { Content, headings, remarkPluginFrontmatter } = await post.render()
 		<!-- post -->
 		<article class="w-full max-w-full">
 			<div class="prose prose-lg prose-invert mb-12 min-w-full md:prose-xl">
-				<Content components={{ pre: Code, SButton, LiteYoutube, SVG, Diagram }} />
+				<Content components={{ pre: Code, SButton, LiteYoutube, SVG, Diagram, CldImage }} />
 			</div>
 
 			<!-- related posts -->
