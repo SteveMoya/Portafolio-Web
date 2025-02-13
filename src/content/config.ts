@@ -24,13 +24,15 @@ const blog = defineCollection({
 
 const fotografia = defineCollection({
 	loader: cldAssetsLoader({
-		folder: 'fotografia'
+		folder: 'fotografia',
+		limit: 80
 	})
 });
 
 const diseno = defineCollection({
 	loader: cldAssetsLoader({
-		folder: 'diseño'
+		folder: 'diseño',
+		limit: 80
 	})
 })
 
