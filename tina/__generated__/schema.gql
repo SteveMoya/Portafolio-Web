@@ -145,13 +145,6 @@ input PostSButtonLiteYoutubeFilter {
   backgroundImage: ImageFilter
 }
 
-input PostSButtonCldImageFilter {
-  src: StringFilter
-  alt: StringFilter
-  width: StringFilter
-  height: StringFilter
-}
-
 input PostSButtonDiagramFilter {
   json: StringFilter
 }
@@ -163,7 +156,6 @@ input PostSButtonSVGFilter {
 input PostSButtonFilter {
   SButton: PostSButtonSButtonFilter
   LiteYoutube: PostSButtonLiteYoutubeFilter
-  CldImage: PostSButtonCldImageFilter
   Diagram: PostSButtonDiagramFilter
   SVG: PostSButtonSVGFilter
 }

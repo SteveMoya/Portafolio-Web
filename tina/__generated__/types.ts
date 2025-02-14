@@ -224,13 +224,6 @@ export type PostSButtonLiteYoutubeFilter = {
   backgroundImage?: InputMaybe<ImageFilter>;
 };
 
-export type PostSButtonCldImageFilter = {
-  src?: InputMaybe<StringFilter>;
-  alt?: InputMaybe<StringFilter>;
-  width?: InputMaybe<StringFilter>;
-  height?: InputMaybe<StringFilter>;
-};
-
 export type PostSButtonDiagramFilter = {
   json?: InputMaybe<StringFilter>;
 };
@@ -242,7 +235,6 @@ export type PostSButtonSvgFilter = {
 export type PostSButtonFilter = {
   SButton?: InputMaybe<PostSButtonSButtonFilter>;
   LiteYoutube?: InputMaybe<PostSButtonLiteYoutubeFilter>;
-  CldImage?: InputMaybe<PostSButtonCldImageFilter>;
   Diagram?: InputMaybe<PostSButtonDiagramFilter>;
   SVG?: InputMaybe<PostSButtonSvgFilter>;
 };
