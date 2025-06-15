@@ -18,22 +18,19 @@ const NavLinks = [
 		href: '/portafolio'
 	}
 ]
-import navLogo from '@/assets/img/nav-logo.svg'
-import logo from '@/assets/img/logo.svg'
 
-import { Picture, Image } from 'astro:assets'
 import Search from '@components/Search.astro'
 ---
 
 <!--Navigator-fullscreen-->
 <div
 	id="navigation-content"
-	class="fixed z-50 flex h-screen w-full translate-y-[-200%] flex-col items-center justify-center border-b bg-[#020202] bg-opacity-95 transition-transform duration-1000 ease-in-out"
+	class="bg-opacity-95 close-nav fixed z-50 flex h-screen w-full translate-y-[-200%] flex-col items-center justify-center border-b bg-[#020202] transition-transform duration-1000 ease-in-out"
 >
 	<div class="">
 		<a title="logo" href="/">
 			<img
-				class="absolute left-[2.5%] top-[3%] z-[2] block h-20 cursor-pointer opacity-80 transition-all duration-300 ease-in-out hover:-rotate-45 hover:opacity-100"
+				class="absolute top-[3%] left-[2.5%] z-[2] block h-20 cursor-pointer opacity-80 transition-all duration-300 ease-in-out hover:-rotate-45 hover:opacity-100"
 				title="logo"
 				src="/img/nav-logo.svg"
 				alt="logo"
@@ -41,7 +38,7 @@ import Search from '@components/Search.astro'
 		</a>
 	</div>
 	<div
-		class="duration-in-out absolute right-[4%] top-[6%] cursor-pointer p-2.5 opacity-80 transition-[all.3s] hover:rotate-90 hover:opacity-100"
+		class="duration-in-out absolute top-[6%] right-[4%] cursor-pointer p-2.5 opacity-80 transition-[all.3s] hover:rotate-90 hover:opacity-100"
 		id="navigation-close"
 	>
 		<span
@@ -62,7 +59,7 @@ import Search from '@components/Search.astro'
 		Astro.url.pathname !== '/' && (
 			<a href="/" title="Ir a Inicio">
 				<img
-					class="absolute left-[2.5%] top-[15%] h-20 opacity-80 transition-all duration-300 ease-in-out hover:-rotate-45 hover:opacity-100"
+					class="absolute top-[15%] left-[2.5%] h-20 opacity-80 transition-all duration-300 ease-in-out hover:-rotate-45 hover:opacity-100"
 					title="logo"
 					loading="lazy"
 					src="/img/logo.svg"
@@ -73,42 +70,39 @@ import Search from '@components/Search.astro'
 	}
 
 	<div
-		class="group absolute right-[4%] top-[40%] cursor-pointer opacity-80 transition-all duration-1000 ease-in-out hover:opacity-100"
+		class="group absolute top-[40%] right-[4%] cursor-pointer opacity-80 transition-all duration-1000 ease-in-out hover:opacity-100"
 		id="menubar"
 	>
 		<span
-			class="relative m-1.5 block h-0.5 w-[35px] rounded-[20px] bg-transparent before:absolute before:right-0 before:top-0 before:h-full before:w-6/12 before:bg-[whitesmoke] before:transition-all before:duration-[0.3s] before:ease-in-out before:content-[''] group-hover:before:w-full"
+			class="relative m-1.5 block h-0.5 w-[35px] rounded-[20px] bg-transparent before:absolute before:top-0 before:right-0 before:h-full before:w-6/12 before:bg-[whitesmoke] before:transition-all before:duration-[0.3s] before:ease-in-out before:content-[''] group-hover:before:w-full"
 		></span>
 		<span
-			class="relative m-1.5 block h-0.5 w-[35px] rounded-[20px] bg-transparent before:absolute before:right-0 before:top-0 before:h-full before:w-9/12 before:bg-[whitesmoke] before:transition-all before:duration-[0.3s] before:ease-in-out before:content-[''] group-hover:before:w-full"
+			class="relative m-1.5 block h-0.5 w-[35px] rounded-[20px] bg-transparent before:absolute before:top-0 before:right-0 before:h-full before:w-9/12 before:bg-[whitesmoke] before:transition-all before:duration-[0.3s] before:ease-in-out before:content-[''] group-hover:before:w-full"
 		></span>
 		<span
-			class="relative m-1.5 block h-0.5 w-[35px] rounded-[20px] bg-transparent before:absolute before:right-0 before:top-0 before:h-full before:w-full before:bg-[whitesmoke] before:transition-all before:duration-[0.3s] before:ease-in-out before:content-[''] group-hover:before:w-full"
+			class="relative m-1.5 block h-0.5 w-[35px] rounded-[20px] bg-transparent before:absolute before:top-0 before:right-0 before:h-full before:w-full before:bg-[whitesmoke] before:transition-all before:duration-[0.3s] before:ease-in-out before:content-[''] group-hover:before:w-full"
 		></span>
 		<span class="sr-only">Show Menu</span>
 	</div>
-	<div class="absolute right-[15%] top-[40%] flex md:right-[8%]">
+	<div class="absolute top-[40%] right-[15%] flex md:right-[8%]">
 		<Search />
 	</div>
 </nav>
 
-<script>
-	const menubar: HTMLElement = document.querySelector('#menubar') as HTMLElement
-	const navigationContent: HTMLElement = document.querySelector(
-		'#navigation-content'
-	) as HTMLElement
-	const navigationClose: HTMLElement = document.querySelector('#navigation-close') as HTMLElement
-	if (window.onload) {
-		window.onload = () => {
-			navigationContent.style.transform = 'translateY(-100%)'
-		}
-	}
+<script is:inline>
+	const menubar = document.querySelector('#menubar')
+	const navigationContent = document.querySelector('#navigation-content')
+	const navigationClose = document.querySelector('#navigation-close')
 	function openNavigation() {
-		navigationContent.style.transform = 'translateY(0)'
+		navigationContent.classList.remove('close-nav')
+		navigationContent.classList.add('open-nav')
+		console.log('open')
 	}
 
 	function closeNavigation() {
-		navigationContent.style.transform = 'translateY(-100%)'
+		navigationContent.classList.add('close-nav')
+		navigationContent.classList.remove('open-nav')
+		console.log('close')
 	}
 
 	menubar.addEventListener('click', openNavigation)

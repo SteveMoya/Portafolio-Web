@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@config "../../tailwind.config.mjs";
+
+@plugin '@midudev/tailwind-animations';
+
+@plugin '@tailwindcss/typography';
+
+/* WEBSITE: https://scrolldriven.dev/  */
+@plugin '@adam.plesnik/tailwindcss-scroll-driven-animations';
+
+
+@plugin "@iconify/tailwind4";
+
+
+.open-nav {
+    @apply translate-y-0;
+}
+
+.close-nav {
+    @apply -translate-y-full;
+}
