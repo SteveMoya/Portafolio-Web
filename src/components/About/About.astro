@@ -20,7 +20,6 @@ const images = {
 	creative: '/img/creative.svg'
 }
 
-
 const services = [
 	{
 		title: 'Diseño Web',
@@ -35,7 +34,8 @@ const services = [
 	},
 	{
 		title: 'Diseño Creativo',
-		description: 'Habilidades en la creación de diseños atractivos para la comunicación visual.',
+		description:
+			'Habilidades en la creación de diseños atractivos para la comunicación visual.',
 		img: images.creative
 	}
 ]
@@ -71,7 +71,7 @@ const values = [
 <!--about--><!--about content-->
 <Header title="Sobre" titleCaption="Mi" description="Conoce" descriptionCaption="Me" />
 <div
-	class="max-w-screen flex h-auto w-full flex-col-reverse items-center justify-center px-4 md:flex-row"
+	class="max-w-screen container flex h-auto w-full flex-col-reverse items-center justify-center px-4 md:flex-row mx-auto"
 >
 	<div
 		class="about-first-paragraph flex w-[95%] flex-col items-center justify-center p-[30px] font-normal md:w-6/12"
@@ -105,12 +105,14 @@ const values = [
 	/>
 </div>
 
-<section class="my-8 h-auto w-full">
+<section class="container mx-auto my-8 h-auto w-full">
 	<!--services header-->
 	<div
 		class="h-auto w-full items-center justify-center p-2.5 py-[30px] text-center font-raleway text-[45px] font-black"
 	>
-		<span class="font-extrabold text-[#c70039] transition-all duration-300 ease-in-out">Mis</span> Conocimientos
+		<span class="font-extrabold text-[#c70039] transition-all duration-300 ease-in-out"
+			>Mis</span
+		> Conocimientos
 	</div>
 	<!--services content-->
 	<div class="flex h-fit w-full flex-wrap content-center justify-center gap-4 overflow-hidden">
@@ -122,7 +124,7 @@ const values = [
 	</div>
 </section>
 <!--services content end-->
-<section class="mx-4 my-8 h-auto w-full">
+<section class="container mx-auto my-8 h-auto w-full">
 	<!--services header-->
 	<div
 		class="h-auto w-full items-center justify-center p-2.5 py-[30px] text-center font-raleway text-[45px] font-black"
@@ -130,31 +132,37 @@ const values = [
 		Mision, Vision y Valores
 	</div>
 	<!--services content-->
-	<div class="grid h-fit grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
+	<div class="mx-auto grid h-fit grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
 		{/* Misión */}
-		<div class="row-span-2 flex flex-col justify-between rounded-lg bg-[#191919] p-6 md:col-span-2">
+		<div
+			class="row-span-2 flex flex-col justify-between rounded-lg bg-[#191919] p-6 md:col-span-2"
+		>
 			<div class="row-span-2 flex flex-col rounded-lg p-6 md:col-span-2">
 				<div class="mb-4 flex items-center">
 					<Icon name="mdi:target" class="mr-3 h-8 w-8 flex-shrink-0 text-[#c70039]" />
 					<h3 class="text-xl font-semibold">Misión</h3>
 				</div>
 				<p class="flex-grow">
-					Ofrecer soluciones de marketing digital y diseño web que permitan a las empresas crecer y
-					alcanzar sus objetivos de negocio. Aportando valor a través de la innovación.
+					Ofrecer soluciones de marketing digital y diseño web que permitan a las empresas
+					crecer y alcanzar sus objetivos de negocio. Aportando valor a través de la
+					innovación.
 				</p>
 			</div>
 		</div>
 
 		{/* Visión */}
-		<div class="row-span-2 flex flex-col justify-between rounded-lg bg-[#191919] p-6 md:col-span-2">
+		<div
+			class="row-span-2 flex flex-col justify-between rounded-lg bg-[#191919] p-6 md:col-span-2"
+		>
 			<div class="row-span-2 flex flex-col rounded-lg p-6 md:col-span-2">
 				<div class="mb-4 flex items-center">
 					<Icon name="mdi:eye" class="mr-3 h-8 w-8 flex-shrink-0 text-[#c70039]" />
 					<h3 class="text-xl font-semibold">Visión</h3>
 				</div>
 				<p class="flex-grow">
-					Ser una persona referente en el sector del marketing digital y diseño web, aportando valor
-					a las empresas y ayudándolas a alcanzar sus objetivos de negocio.
+					Ser una persona referente en el sector del marketing digital y diseño web,
+					aportando valor a las empresas y ayudándolas a alcanzar sus objetivos de
+					negocio.
 				</p>
 			</div>
 		</div>
