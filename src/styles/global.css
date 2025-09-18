@@ -1,0 +1,146 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@theme {
+    --primary: #c70039;
+    --secondary: #b11141;
+    --dark: #101010;
+    --light: whitesmoke;
+}
+
+@layer base {
+
+    /* Base styles */
+    :root {
+        /* Brand colors */
+        --primary: #c70039;
+        --secondary: #b11141;
+        --dark: #101010;
+        --light: whitesmoke;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply bg-[#101010] font-poppins text-[whitesmoke] overflow-x-hidden text-wrap;
+    }
+
+    /* Scrollbar styles */
+    ::-webkit-scrollbar {
+        @apply w-1 transition-all duration-300;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply bg-[#c70039] rounded-sm;
+    }
+
+    ::-webkit-scrollbar-track {
+        @apply bg-[#101010];
+    }
+}
+
+@layer components {
+
+    /* Common button styles */
+    .btn {
+        @apply m-5 cursor-pointer rounded-lg border-none px-6 py-2 text-xl transition-all duration-300 ease-in-out;
+    }
+
+    .btn-primary {
+        @apply bg-[#BB0035] hover:opacity-100;
+    }
+
+    /* Card styles */
+    .card {
+        @apply rounded-lg bg-[#c7c7c7];
+    }
+
+    /* Navigation styles */
+    .nav-link {
+        @apply transition-all duration-300 ease-in-out hover:text-[#c70039];
+    }
+
+    /* Category tags */
+    .category-tag {
+        @apply rounded-full bg-[#c70039]/70 px-2 py-1 text-sm font-semibold text-white shadow hover:bg-[#c70039] hover:bg-opacity-100 hover:text-white hover:shadow-lg md:px-5 md:py-2;
+    }
+}
+
+@layer utilities {
+
+    /* Animation utilities */
+    .animate-slide-up {
+        animation: slideUp 0.5s ease-out;
+    }
+
+    /* Custom gradient backgrounds */
+    .bg-gradient-dark {
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), #101010);
+    }
+
+    /* Typography utilities */
+    .text-balance {
+        text-wrap-balance: balance;
+    }
+}
+
+/* Custom animations */
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Dark mode overrides */
+.dark {
+    --pagefind-ui-primary: white;
+    --pagefind-ui-text: white;
+    --pagefind-ui-background: #152028;
+    --pagefind-ui-border: #152028;
+    --pagefind-ui-tag: #152028;
+}
+
+/* Prose styles for MDX content */
+.prose {
+    @apply max-w-none;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+    @apply text-[#c70039] font-bold;
+}
+
+.prose a {
+    @apply text-[#c70039] hover:underline;
+}
+
+.prose code {
+    @apply rounded bg-[#1f1f1f] px-1 py-0.5 text-[#c70039];
+}
+
+/* Font families */
+.font-monoton {
+    font-family: 'Monoton', cursive;
+}
+
+.font-poppins {
+    font-family: 'Poppins', sans-serif;
+}
+
+.font-raleway {
+    font-family: 'Raleway', sans-serif;
+}

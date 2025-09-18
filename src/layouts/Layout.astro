@@ -4,8 +4,10 @@ import Footer from './Footer/Footer.astro'
 import Head from './Head.astro'
 import Cursor from '@src/layouts/Cursor.astro'
 
-import TwSizeIndicator from '@components/TwSizeIndicator.astro'
-import EditBlog from '@components/editBlog.astro'
+import TwSizeIndicator from '@components/ui/TwSizeIndicator.astro'
+import EditBlog from '@components/ui/editBlog.astro'
+import BotonFlotante from '@components/ui/BotonFlotante.astro'
+import BotonIrArriba from '@components/ui/BotonIrArriba.astro'
 
 interface Props {
 	title?: string
@@ -15,6 +17,8 @@ interface Props {
 	keywords?: string
 	canonicalURL?: string | URL
 }
+import "@/styles/global.css"
+
 // Importacion global de las fuentes
 
 import '@fontsource/poppins'
@@ -26,15 +30,13 @@ import '@fontsource-variable/raleway/wght-italic.css'
 
 // Suppoer weights 600
 import '@fontsource/monoton'
-import BotonFlotante from '@components/BotonFlotante.astro'
-import BotonIrArriba from '@components/BotonIrArriba.astro'
 ---
 
 <!doctype html>
 <html lang="es">
 	<Head {...Astro.props} />
 	<body
-		class="body h-auto w-full overflow-x-hidden text-wrap bg-[#101010] font-poppins text-[whitesmoke]"
+		class="body h-auto w-full overflow-x-hidden text-wrap bg-dark font-poppins text-[whitesmoke]"
 	>
 		<Cursor />
 		<Navbar />

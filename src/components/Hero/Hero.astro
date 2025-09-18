@@ -7,14 +7,11 @@ import SocialLinks from '@components/SocialLinks.astro'
 import { CldImage } from 'astro-cloudinary'
 import { getEntry } from 'astro:content'
 
-const heroimg = await getEntry('assets', 'assets/pvx4cb7kj9xxklvof54u')
-
+const heroimg = await getEntry('assets', 'assets/50_vi8xgl_gaxgjr')
 ---
 
 <!--Header-->
-<section
-	class="relative block h-screen w-screen animate-[scale_1.5s_ease] overflow-hidden bg-[#171717]"
->
+<section class="relative block h-screen w-screen overflow-hidden ">
 	<Particles />
 	<!--Social Media Links-->
 	<SocialLinks />
@@ -28,12 +25,12 @@ const heroimg = await getEntry('assets', 'assets/pvx4cb7kj9xxklvof54u')
 					>Steve
 				</span>Moya
 			</h1>
-			<div class="z-[2] pt-5 text-[32px] font-bold text-[rgb(255,255,255,0.8)]">
+			<div class="z-[2] pt-5 text-[32px] font-bold text-whitesmoke">
 				Soy
 				<TextRotate
 					period="1200"
 					color="#b11141"
-					text={[' Diseñador,', ' Fotógrafo', ' y', ' Marketer.']}
+					text={['Web Master JR', ' y', ' Marketer.']}
 				/>
 			</div>
 		</div>
@@ -41,7 +38,7 @@ const heroimg = await getEntry('assets', 'assets/pvx4cb7kj9xxklvof54u')
 	<!--header image-->
 	<div class="float-right h-auto w-full bg-cover bg-center object-cover object-right">
 		<CldImage
-			class="float-right h-screen w-full object-cover"
+			class="float-right h-screen w-full object-cover [mask-image:linear-gradient(black_40%,transparent_100%)]"
 			src={heroimg?.data.public_id || ''}
 			loading="eager"
 			alt="Steve-moya"
