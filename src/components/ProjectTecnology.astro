@@ -5,7 +5,7 @@ interface Props {
 	tecnology: string
 	size?: unknown
 }
-const { tecnology, size } = Astro.props
+const { tecnology } = Astro.props
 
 const tecnologyMap: Record<string, { color: string; icon: string }> = {
 	python: { color: 'bg-yellow-500', icon: 'mdi:language-python' },

@@ -1,5 +1,4 @@
 ---
-import Card from '@components/ui/Card.astro'
 import Button from '@components/ui/Button.astro'
 import OptimizatedPicture from '@components/OptimizatedPicture.astro'
 
@@ -7,19 +6,31 @@ import { getRepos, getRepoLanguages, fetchFirstImageFromReadme } from '@src/lib/
 import { formatDate } from '@src/utils'
 import ProjectTecnology from '@components/ProjectTecnology.astro'
 import placehorderImage from '/public/img/place-holder-image.webp'
+
+interface repo {
+	name: string
+	description: string
+	html_url?: string
+	homepage?: string
+	pushed_at: string
+}
+interface repos {
+	[x: string]: any
+	repos: repo[]
+}
 ---
 
 <section class="flex flex-wrap items-center justify-center">
 	{
-		getRepos().then((repos) =>
-			repos.map(async (repo) => {
+		getRepos().then((repos: repo[]) =>
+			repos.map(async (repo: repo) => {
 				const imageUrl = await fetchFirstImageFromReadme(repo.name)
 				const languages = await getRepoLanguages(repo.name)
 				return (
 					<article class="m-5 w-[450px] rounded-lg bg-[#c7c7c7]">
 						<div class="relative w-full">
 							<OptimizatedPicture
-								src={imageUrl ? imageUrl : placehorderImage}
+								src={typeof imageUrl === 'string' ? imageUrl : imageUrl?.src || placehorderImage}
 								alt={`${repo.name} Imagen`}
 								class="aspect-square h-full w-full object-cover object-center"
 							/>

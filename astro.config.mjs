@@ -5,7 +5,6 @@ import tailwind from "@astrojs/tailwind";
 import icon from "astro-icon";
 import pagefind from "astro-pagefind";
 import devtoolbarTailwind from "astro-devtoolbar-tailwind";
-import lighthouse from 'astro-lighthouse';
 
 import metaTags from "astro-meta-tags";
 
@@ -28,7 +27,6 @@ export default defineConfig({
     tailwind(),
     icon(),
     pagefind(),
-    lighthouse(),
     metaTags(),
     pageInsight(),
     devtoolbarTailwind(),

@@ -1,6 +1,7 @@
 ---
-import Navbar from './NavBar/Navbar.astro'
-import Footer from './Footer/Footer.astro'
+// import Navbar from './NavBar/Navbar.astro' // Navbar anterior
+import NavbarMinimal from './Navbar.astro' // Nuevo navbar minimalista
+import Footer from './Footer.astro'
 import Head from './Head.astro'
 import Cursor from '@src/layouts/Cursor.astro'
 
@@ -17,7 +18,7 @@ interface Props {
 	keywords?: string
 	canonicalURL?: string | URL
 }
-import "@/styles/global.css"
+import '@/styles/global.css'
 
 // Importacion global de las fuentes
 
@@ -36,20 +37,16 @@ import '@fontsource/monoton'
 <html lang="es">
 	<Head {...Astro.props} />
 	<body
-		class="body h-auto w-full overflow-x-hidden text-wrap bg-dark font-poppins text-[whitesmoke]"
+		class="body bg-dark h-auto w-full overflow-x-hidden text-wrap pt-16 font-poppins text-[whitesmoke]"
 	>
 		<Cursor />
-		<Navbar />
+		<NavbarMinimal />
 		<main class="h-auto w-full overflow-hidden">
 			<slot />
+			{Astro.url.pathname.includes('/blog/') && <BotonIrArriba />}
+
 			{
-				Astro.url.pathname.includes('/blog/') && (
-					<BotonIrArriba />
-				)
-			}
-			
-			{
-				Astro.url.pathname !== "/" && (
+				Astro.url.pathname !== '/' && (
 					<BotonFlotante
 						icon="mdi:whatsapp"
 						link="https://api.whatsapp.com/send/?phone=18497511849&text&type=phone_number&app_absent=0"

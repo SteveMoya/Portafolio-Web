@@ -24,7 +24,7 @@ const post = Astro.props
 
 const relatedPosts = await getRelatedPosts(post)
 
-const { Content, headings, remarkPluginFrontmatter } = await post.render()
+const { Content, headings } = await post.render()
 ---
 
 <BlogLayout id={post.id} data={post.data} headings={headings}>
