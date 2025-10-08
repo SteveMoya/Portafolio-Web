@@ -11,7 +11,6 @@
     "check": "astro-check"
   },
   "dependencies": {
-    "@adam.plesnik/tailwindcss-scroll-driven-animations": "^0.2.7",
     "@astrojs/check": "^0.9.4",
     "@astrojs/mdx": "^4.3.5",
     "@astrojs/react": "^4.3.1",
@@ -23,7 +22,6 @@
     "@fontsource/poppins": "^5.2.7",
     "@iconify-json/logos": "^1.2.9",
     "@iconify-json/mdi": "^1.2.3",
-    "@midudev/tailwind-animations": "^0.1.0",
     "@pagefind/default-ui": "^1.4.0",
     "@types/react": "^18.3.24",
     "@types/react-dom": "^18.3.7",
