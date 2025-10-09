@@ -10,6 +10,7 @@ import { Icon } from 'astro-icon/components'
 
 import { CldImage } from 'astro-cloudinary'
 import { getEntry } from 'astro:content'
+import { Image } from 'astro:assets'
 
 const img = await getEntry('assets', 'assets/pvx4cb7kj9xxklvof54u')
 
@@ -97,7 +98,7 @@ const values = [
 		</div>
 	</div>
 	<!--about picture-->
-	<OptimizatedPicture
+	<Image
 		class="aspect-square max-h-[600px] max-w-[400] rounded-3xl object-cover"
 		src={YoImg}
 		loading="eager"

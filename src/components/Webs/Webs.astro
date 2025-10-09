@@ -6,6 +6,7 @@ import { getRepos, getRepoLanguages, fetchFirstImageFromReadme } from '@src/lib/
 import { formatDate } from '@src/utils'
 import ProjectTecnology from '@components/ProjectTecnology.astro'
 import placehorderImage from '/public/img/place-holder-image.webp'
+import { Image } from 'astro:assets'
 
 interface repo {
 	name: string
@@ -24,13 +25,13 @@ interface repos {
 	{
 		getRepos().then((repos: repo[]) =>
 			repos.map(async (repo: repo) => {
-				const imageUrl = await fetchFirstImageFromReadme(repo.name)
+				const imageUrl: string | { src: string } | null = await fetchFirstImageFromReadme(repo.name)
 				const languages = await getRepoLanguages(repo.name)
 				return (
 					<article class="m-5 w-[450px] rounded-lg bg-[#c7c7c7]">
 						<div class="relative w-full">
-							<OptimizatedPicture
-								src={typeof imageUrl === 'string' ? imageUrl : imageUrl?.src || placehorderImage}
+							<img
+								src={typeof imageUrl === 'string' ? imageUrl : (imageUrl && typeof imageUrl === 'object' && 'src' in imageUrl ? imageUrl.src : placehorderImage)}
 								alt={`${repo.name} Imagen`}
 								class="aspect-square h-full w-full object-cover object-center"
 							/>
