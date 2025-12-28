@@ -1,5 +1,6 @@
 ---
-import { Picture } from 'astro:assets'
+
+import { Picture, Image } from 'astro:assets'
 
 interface Props {
 	src: string
@@ -16,18 +17,16 @@ interface Props {
 const {
 	src,
 	alt,
-	formats = ['avif', 'webp', ],
+	formats = ['avif', 'webp'],
 	loading = 'lazy',
 	class: className,
 	quality
 } = Astro.props
 ---
 
-<Picture
+<img
 	src={src}
 	alt={alt}
-	formats={formats}
-	inferSize
 	loading={loading}
 	class={className}
 	quality={quality}
