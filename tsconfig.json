@@ -4,6 +4,9 @@
     "strictNullChecks": true,
     "baseUrl": ".",
     "paths": {
+      "@cv": [
+        "./cv.json"
+      ],
       "@/*": [
         "src/*"
       ],

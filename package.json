@@ -40,6 +40,7 @@
     "astro-page-insight": "^0.8.7",
     "astro-pagefind": "^1.8.0",
     "clsx": "^2.1.1",
+    "hotkeypad": "^1.0.2",
     "mdast-util-to-string": "^4.0.0",
     "motion": "^10.18.0",
     "pagefind": "^1.3.0",
