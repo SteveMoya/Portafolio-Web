@@ -33,10 +33,6 @@ User-agent: Diffbot
 Disallow: /
 User-agent: FacebookBot
 Disallow: /
-User-agent: Google-Extended
-Disallow: /
-User-agent: GPTBot
-Disallow: /
 User-agent: magpie-crawler
 Disallow: /
 User-agent: NewsNow
@@ -50,8 +46,6 @@ Disallow: /
 User-agent: peer39_crawler
 Disallow: /
 User-agent: peer39_crawler/1.0
-Disallow: /
-User-agent: PerplexityBot
 Disallow: /
 User-agent: Scrapy
 Disallow: /
