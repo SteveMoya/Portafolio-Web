@@ -2,29 +2,62 @@
 
 ![stevemoya me_](https://github.com/SteveMoya/Portafolio/assets/114698709/f4dd59b4-0153-444b-920f-698cfea4f566)
 
-
 ## Ejemplo en vivo
 
 [![Website](https://img.shields.io/badge/Portafolio-000000?style=for-the-badge&logo=About.me&logoColor=white)](https://stevemoya.000webhostapp.com/)
 
 ## Descripción 📑
 
-Este es  mi Portafolio Personal aqui te enseño todo lo que puedo llegar a hacer aunque todavia lo estoy construyendo pero ahi vamos
+Este es mi Portafolio Personal, construido con AstroJS, donde muestro mis proyectos y habilidades. Aunque está en constante evolución, aquí podrás ver una muestra de mi trabajo.
 
 ## Tecnologías 🛠
 <!-- Iconos sacados de: https://github.com/hendrasob/badges/blob/master/README.md y https://github.com/alexandresanlim/Badges4-README.md-Profile -->
 ![HTML](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 ![JS](https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E)
+![Astro](https://img.shields.io/badge/Astro-B354E1?style=for-the-badge&logo=astro&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 
 ## IDE 💻
 
 ![VisualStudioCode](https://img.shields.io/badge/VSCode-0078D4?style=for-the-badge&logo=visual%20studio%20code&logoColor=white)
 
-## Instalación 🏗️
-Este proyecto no necesita de instalación. Simplemente abre la carpeta o haz doble click en el .html
-<br>
+## Instalación y Uso 🚀
 
+Para trabajar con este proyecto localmente, sigue estos pasos:
+
+1.  **Clonar el repositorio:**
+    ```bash
+    git clone https://github.com/SteveMoya/Portafolio-Web.git
+    cd Portafolio-Web
+    ```
+
+2.  **Instalar dependencias:**
+    Utiliza `bun` (preferido) o `pnpm` para instalar las dependencias del proyecto.
+
+    ```bash
+    # Usando Bun
+    bun install
+    # O, usando pnpm
+    pnpm install
+    ```
+
+3.  **Ejecutar en modo desarrollo:**
+    ```bash
+    bun dev
+    # O, usando pnpm
+    pnpm dev
+    ```
+    Esto iniciará el servidor de desarrollo de Astro.
+
+4.  **Construir el proyecto para producción:**
+    ```bash
+    bun build
+    # O, usando pnpm
+    pnpm build
+    ```
+    Esto generará los archivos estáticos en el directorio `dist/`.
 
 ## Steve Moya Cepeda ✒️
 
