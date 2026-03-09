@@ -6,6 +6,7 @@ import icon from "astro-icon";
 import pagefind from "astro-pagefind";
 import devtoolbarTailwind from "astro-devtoolbar-tailwind";
 
+import vercel from "@astrojs/vercel";
 import metaTags from "astro-meta-tags";
 
 import pageInsight from "astro-page-insight";
@@ -15,14 +16,9 @@ import react from "@astrojs/react";
 
 
 
-import vercel from "@astrojs/vercel";
-
-
-
 // https://astro.build/config
 export default defineConfig({
   site: 'https://stevemoya.me',
-
   integrations: [
     mdx(),
     sitemap(),
