@@ -15,11 +15,13 @@ import react from "@astrojs/react";
 
 
 
+import vercel from "@astrojs/vercel";
+
+
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://stevemoya.me',
-
-  
 
   integrations: [
     mdx(),
@@ -32,5 +34,7 @@ export default defineConfig({
     devtoolbarTailwind(),
     react()
   ],
+
   output: "static",
+  adapter: vercel(),
 });
