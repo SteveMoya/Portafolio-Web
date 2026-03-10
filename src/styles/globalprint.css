@@ -1,0 +1,115 @@
+/* Print Styles */
+
+:root {
+  /* Colores del proyecto */
+  --color: 199, 0, 57;
+  --color-text-base: 245, 245, 245;
+  --color-text-muted: 200, 200, 200;
+  --color-text-inverted: 245, 245, 245;
+  --color-fill: 16, 16, 16;
+  --muted: 200, 200, 200;
+  --color-accent: 199, 0, 57;
+  --color-button-accent: 199, 0, 57;
+  --color-button-accent-hover: 177, 17, 65;
+  --color-button-muted: 180, 180, 180;
+  --color-nvim-blue: 95, 175, 215;
+  --color-nvim-green: 135, 215, 135;
+  
+  /* Aliases para compatibilidad */
+  --color-skin-base: var(--color-text-base);
+  --color-skin-muted: var(--color-text-muted);
+  --color-skin-inverted: var(--color-text-inverted);
+  --color-skin-fill: var(--color-fill);
+  --color-skin-hue: var(--color-accent);
+  --color-skin-hues: var(--color-accent);
+  --color-skin-button-accent: var(--color-button-accent);
+  --color-skin-button-accent-hover: var(--color-button-accent-hover);
+  --color-skin-button-muted: var(--color-button-muted);
+}
+
+.bg-dark {
+  background-color: #101010;
+}
+
+/* Estilos para vista normal (no imprimir) */
+body {
+  color: whitesmoke;
+}
+
+.text-skin-muted {
+  color: rgb(var(--color-text-muted));
+}
+
+.text-skin-base {
+  color: rgb(var(--color-text-base));
+}
+
+p, li, div, span {
+  color: whitesmoke;
+}
+
+@media print {
+  /* Variables para impresión */
+  :root {
+    --color-text-base: 0, 0, 0;
+    --color-text-muted: 60, 60, 60;
+    --color-fill: 255, 255, 255;
+  }
+
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+
+  .bg-dark {
+    background-color: white !important;
+  }
+  
+  /* Títulos y enlaces con acento rojo */
+  h1, h2, h3, h4, h5, h6 {
+    color: black !important;
+    font-weight: 600;
+  }
+
+  .text-skin-hue,
+  [class*="text-skin-hue"],
+  .prose a,
+  a {
+    color: #c70039 !important;
+  }
+
+  /* Fondos blancos para impresión */
+  main,
+  section,
+  div {
+    background-color: white !important;
+  }
+
+  /* Texto principal negro */
+  p, li, span, div, time {
+    color: black !important;
+  }
+
+  /* Texto secundario gris oscuro */
+  .text-skin-muted,
+  [class*="text-skin-muted"],
+  .text-xs,
+  .text-sm {
+    color: #3c3c3c !important;
+  }
+
+  /* Elementos con fondo de acento */
+  [class*="bg-[#c70039]"],
+  .category-tag,
+  .btn-primary,
+  .bg-skin-hue {
+    background-color: #c70039 !important;
+    color: white !important;
+  }
+
+  /* Bordes y líneas visibles */
+  .bg-skin-muted,
+  .before\\:bg-skin-muted::before {
+    background-color: #d0d0d0 !important;
+  }
+}

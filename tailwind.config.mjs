@@ -25,20 +25,22 @@ export default {
 				raleway : ['Raleway', 'sans-serif', defaultTheme.fontFamily.sans],
 			},
     colors: {
-        'nvim-bg': '#1c1c1c',
-        'nvim-fg': '#d0d0d0',
-        'nvim-gray': '#4e4e4e',
         'blue': '#5fafd7',
         'green': '#87d787',
-        'nvim-statusline': '#303030',
         skin: {
           hue: withOpacity("--color"),
           muted: withOpacity("--muted"),
-        },
-        nvim: {
-          blue: withOpacity("--color-nvim-blue"),
-          green: withOpacity("--color-nvim-green"),
+          base: withOpacity("--color-text-base"),
+          inverted: withOpacity("--color-text-inverted"),
         }
+      },
+      textColor: {
+        skin: {
+          base: withOpacity("--color-text-base"),
+          muted: withOpacity("--color-text-muted"),
+          inverted: withOpacity("--color-text-inverted"),
+          hue: withOpacity("--color"),
+        },
       },
       backgroundColor: {
         skin: {
@@ -46,6 +48,7 @@ export default {
           "button-accent": withOpacity("--color-button-accent"),
           "button-accent-hover": withOpacity("--color-button-accent-hover"),
           "button-muted": withOpacity("--color-button-muted"),
+          hue: withOpacity("--color"),
         },
       },
       ringColor: {

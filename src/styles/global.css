@@ -3,13 +3,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@theme {
-    --primary: #c70039;
-    --secondary: #b11141;
-    --dark: #101010;
-    --light: whitesmoke;
-}
-
 @layer base {
 
     /* Base styles */
@@ -19,6 +12,20 @@
         --secondary: #b11141;
         --dark: #101010;
         --light: whitesmoke;
+
+        /* Skin color variables */
+        --color: 199, 0, 57;
+        --color-text-base: 245, 245, 245;
+        --color-text-muted: 168, 162, 158;
+        --color-text-inverted: 245, 245, 245;
+        --color-fill: 16, 16, 16;
+        --muted: 45, 45, 45;
+        --color-accent: 199, 0, 57;
+        --color-button-accent: 199, 0, 57;
+        --color-button-accent-hover: 177, 17, 65;
+        --color-button-muted: 120, 113, 108;
+        --color-nvim-blue: 95, 175, 215;
+        --color-nvim-green: 135, 215, 135;
     }
 
     html {
@@ -145,52 +152,4 @@
     font-family: 'Raleway', sans-serif;
 }
 
-/* Print Styles */
 
-:root {
-  --color-text-base: #e7e5e4;
-  --color-text-muted: #a8a29e;
-  --color-text-inverted: #f5f5f5;
-  --color-fill: #1c1917;
-  --color-muted: #2d2d2d;
-  --color-accent: #f87171;
-  --color-button-accent: #f87171;
-  --color-button-accent-hover: #dc3246;
-  --color-button-muted: #78716c;
-    --color-skin-base: var(--color-text-base);
-  --color-skin-muted: var(--color-text-muted);
-  --color-skin-inverted: var(--color-text-inverted);
-  --color-skin-fill: var(--color-fill);
-  --color-skin-hue: var(--color-accent);
-  --color-skin-hues: var(--color-accent);
-  --color-skin-button-accent: var(--color-button-accent);
-  --color-skin-button-accent-hover: var(--color-button-accent-hover);
-  --color-skin-button-muted: var(--color-button-muted);
-}
-
-.bg-dark {
-  background-color: var(--color-fill);
-}
-
-@media print {
-  body,
-  .bg-dark {
-    background-color: white !important;
-    color: black !important;
-  }
-
-  * {
-    color: black !important;
-  }
-  
-  .text-skin-hue,
-  [class*="text-skin-hue"] {
-    color: var(--color-accent) !important;
-  }
-
-  main,
-  section,
-  div {
-    background-color: white !important;
-  }
-}

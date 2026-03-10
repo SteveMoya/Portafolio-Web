@@ -1,14 +1,12 @@
 ---
 import NavbarMinimal from './Navbar.astro' // Nuevo navbar minimalista
-import Footer from './Footer.astro'
 import Head from './Head.astro'
 import Cursor from '@src/layouts/Cursor.astro'
 
 import TwSizeIndicator from '@components/ui/TwSizeIndicator.astro'
-import EditBlog from '@components/ui/editBlog.astro'
 import BotonFlotante from '@components/ui/BotonFlotante.astro'
 import BotonIrArriba from '@components/ui/BotonIrArriba.astro'
-import "@/styles/global.css";
+import "@/styles/globalprint.css";
 
 interface Props {
 	title?: string
@@ -18,7 +16,7 @@ interface Props {
 	keywords?: string
 	canonicalURL?: string | URL
 }
-import '@/styles/global.css'
+import '@/styles/globalprint.css'
 
 // Importacion global de las fuentes
 
