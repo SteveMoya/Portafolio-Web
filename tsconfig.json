@@ -30,6 +30,9 @@
       ],
       "@constants/*": [
         "src/constants/*"
+      ],
+      "@cv": [
+        "./cv.json"
       ]
     },
     "jsx": "react-jsx",

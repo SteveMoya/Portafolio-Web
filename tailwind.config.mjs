@@ -3,6 +3,16 @@ import defaultTheme from 'tailwindcss/defaultTheme'
 import { addDynamicIconSelectors } from '@iconify/tailwind';
 // WEBSITE: https://tailwindcss-animations.vercel.app/
 
+
+function withOpacity(variableName) {
+  return ({ opacityValue }) => {
+    if (opacityValue !== undefined) {
+      return `rgba(var(${variableName}), ${opacityValue})`;
+    }
+    return `rgb(var(${variableName}))`;
+  };
+}
+
 /** @type {import('tailwindcss').Config} */
 export default {
 	content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
@@ -10,10 +20,45 @@ export default {
 		extend: {
 			fontFamily: {
 				monoton : ['Monoton', 'cursive', defaultTheme.fontFamily.mono],
+				mono	: ["JetBrains Mono", "monospace", defaultTheme.fontFamily.mono],
 				poppins : ['Poppins', 'sans-serif', defaultTheme.fontFamily.sans],
 				raleway : ['Raleway', 'sans-serif', defaultTheme.fontFamily.sans],
 			},
-		},
-	},
-	plugins: [addDynamicIconSelectors(),  require('@tailwindcss/typography')],
-}
+    colors: {
+        'nvim-bg': '#1c1c1c',
+        'nvim-fg': '#d0d0d0',
+        'nvim-gray': '#4e4e4e',
+        'blue': '#5fafd7',
+        'green': '#87d787',
+        'nvim-statusline': '#303030',
+        skin: {
+          hue: withOpacity("--color"),
+          muted: withOpacity("--muted"),
+        },
+        nvim: {
+          blue: withOpacity("--color-nvim-blue"),
+          green: withOpacity("--color-nvim-green"),
+        }
+      },
+      backgroundColor: {
+        skin: {
+          fill: withOpacity("--color-fill"),
+          "button-accent": withOpacity("--color-button-accent"),
+          "button-accent-hover": withOpacity("--color-button-accent-hover"),
+          "button-muted": withOpacity("--color-button-muted"),
+        },
+      },
+      ringColor: {
+        skin: {
+          fill: withOpacity("--color-fill"),
+        },
+      },
+      gradientColorStops: {
+        skin: {
+          hue: withOpacity("--color-fill"),
+        },
+      },
+    },
+  },
+  plugins: [addDynamicIconSelectors(), require('@tailwindcss/typography')],
+};
