@@ -1,0 +1,78 @@
+---
+import NavbarMinimal from './Navbar.astro' // Nuevo navbar minimalista
+import Footer from './Footer.astro'
+import Head from './Head.astro'
+import Cursor from '@src/layouts/Cursor.astro'
+
+import TwSizeIndicator from '@components/ui/TwSizeIndicator.astro'
+import EditBlog from '@components/ui/editBlog.astro'
+import BotonFlotante from '@components/ui/BotonFlotante.astro'
+import BotonIrArriba from '@components/ui/BotonIrArriba.astro'
+import "@/styles/global.css";
+
+interface Props {
+	title?: string
+	description?: string
+	image?: string
+	articleDate?: string | undefined
+	keywords?: string
+	canonicalURL?: string | URL
+}
+import '@/styles/global.css'
+
+// Importacion global de las fuentes
+
+import '@fontsource/poppins'
+
+// Supports weights 100-900
+import '@fontsource-variable/raleway'
+// Supports weights 100-900
+import '@fontsource-variable/raleway/wght-italic.css'
+
+// Suppoer weights 600
+import '@fontsource/monoton'
+---
+
+<!doctype html>
+<html lang="es">
+	<Head {...Astro.props} />
+	<body
+		class="body bg-dark h-auto w-full overflow-x-hidden text-wrap pt-16 font-poppins text-[whitesmoke]"
+	>
+		<Cursor />
+		<NavbarMinimal />
+		<main class="h-auto w-full overflow-hidden">
+			<slot />
+			{Astro.url.pathname.includes('/blog/') && <BotonIrArriba />}
+
+			{
+				Astro.url.pathname !== '/' && (
+					<BotonFlotante
+						icon="mdi:whatsapp"
+						link="https://api.whatsapp.com/send/?phone=18497511849&text&type=phone_number&app_absent=0"
+						text="contactame por whatsapp"
+					/>
+				)
+			}
+		</main>
+		<TwSizeIndicator />
+        <style is:global>
+			::-webkit-scrollbar {
+				width: 4px;
+				color: #c70039;
+				transition: all 0.4s ease;
+			}
+			::-webkit-scrollbar-thumb {
+				background: #c70039;
+				border-radius: 4px;
+				width: 4px;
+				transition: all 0.4s ease;
+			}
+			::-webkit-scrollbar-track {
+				background: #101010;
+				border-radius: 4px;
+				width: 4px;
+			}
+		</style>
+	</body>
+</html>
