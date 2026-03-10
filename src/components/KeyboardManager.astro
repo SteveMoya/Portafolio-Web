@@ -59,7 +59,7 @@ const profilesInfo = profiles.map(({ network, url }) => {
 });
 ---
 
-<footer id="normal-footer" class="no-print flex flex-col gap-2 print:hidden">
+<footer id="normal-footer" class="no-print flex flex-col gap-2 print:hidden text-center text-sm text-skin-muted py-4">
 	<div>
 		Press <kbd>Cmd</kbd> + <kbd>K</kbd> to open the command palette.
 	</div>
@@ -187,7 +187,7 @@ const profilesInfo = profiles.map(({ network, url }) => {
 	}
 
 	footer {
-		background-color: var(--color-button-accent);
+		background-color: #c70039;
 		position: fixed;
 		bottom: 0px;
 		width: 100%;
@@ -204,31 +204,32 @@ const profilesInfo = profiles.map(({ network, url }) => {
 	}
 
 	kbd {
-		background-color: var(--color-muted);
+		background-color: rgb(45, 45, 45);
 		border-radius: 4px;
 		padding: 2px 4px;
 		font-size: 12px;
+		color: rgb(245, 245, 245);
 	}
 
 	#hotkeypad {
-		--hotkeypad-bg-kbd: var(--color-muted);
-		--hotkeypad-bg-backdrop: var(--color-fill);
-		--hotkeypad-bg-container: var(--color-fill);
-		--hotkeypad-bg-item-hover: color-mix(in srgb, var(--color-text-base) 20%, transparent);
-		--hotkeypad-border-container: var(--color-muted);
-		--hotkeypad-border-container-hover: var(--color-fill);
-		--hotkeypad-fg-muted: var(--color-muted);
+		--hotkeypad-bg-kbd: rgb(45, 45, 45);
+		--hotkeypad-bg-backdrop: rgba(0, 0, 0, 0.75);
+		--hotkeypad-bg-container: rgb(28, 28, 28);
+		--hotkeypad-bg-item-hover: rgba(199, 0, 57, 0.2);
+		--hotkeypad-border-container: rgb(60, 60, 60);
+		--hotkeypad-border-container-hover: rgb(199, 0, 57);
+		--hotkeypad-fg-muted: rgb(168, 162, 158);
 	}
 
 	@media (prefers-color-scheme: dark) {
 		#hotkeypad {
-			--hotkeypad-bg-kbd: var(--color-muted);
-			--hotkeypad-bg-backdrop: var(--color-fill);
-			--hotkeypad-bg-container: var(--color-fill);
-			--hotkeypad-bg-item-hover: color-mix(in srgb, var(--color-accent) 10%, transparent);
-			--hotkeypad-border-container: var(--color-muted);
-			--hotkeypad-border-container-hover: var(--color-fill);
-			--hotkeypad-fg-muted: var(--color-text-base);
+			--hotkeypad-bg-kbd: rgb(45, 45, 45);
+			--hotkeypad-bg-backdrop: rgba(0, 0, 0, 0.75);
+			--hotkeypad-bg-container: rgb(28, 28, 28);
+			--hotkeypad-bg-item-hover: rgba(199, 0, 57, 0.2);
+			--hotkeypad-border-container: rgb(60, 60, 60);
+			--hotkeypad-border-container-hover: rgb(199, 0, 57);
+			--hotkeypad-fg-muted: rgb(200, 200, 200);
 		}
 	}
 </style>

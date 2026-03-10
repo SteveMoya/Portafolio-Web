@@ -51,6 +51,18 @@ export default {
           hue: withOpacity("--color"),
         },
       },
+      borderColor: {
+        skin: {
+          hue: withOpacity("--color"),
+          fill: withOpacity("--color-fill"),
+          muted: withOpacity("--muted"),
+        },
+      },
+      boxShadowColor: {
+        skin: {
+          hues: withOpacity("--color"),
+        },
+      },
       ringColor: {
         skin: {
           fill: withOpacity("--color-fill"),
