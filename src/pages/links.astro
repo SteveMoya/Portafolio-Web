@@ -57,7 +57,7 @@ const { author, profileImage } = siteConfig
 								href={link.url}
 								target={link.url.startsWith('https') ? '_blank' : '_self'}
 								rel={link.url.startsWith('https') ? 'noopenzer noreferrer' : ''}
-								class="flex h-10 w-10 items-center justify-center rounded-full bg-[#1f1f1f] text-white transition-all duration-300 hover:bg-[#c70039] hover:shadow-lg hover:shadow-[#c70039]/20"
+								class="flex h-10 w-10 items-center justify-center rounded-full bg-[#1f1f1f] text-white transition-all duration-300 hover:bg-[#c70039] hover:shadow-lg hover:shadow-[#c70039]/20 "
 								aria-label={link.title}
 								title={link.title}
 							>
@@ -159,7 +159,7 @@ const { author, profileImage } = siteConfig
 						}`}
 					>
 						{post.data.heroImage?.src ? (
-							<div class="relative flex-1 overflow-hidden">
+							<div class="relative flex-1 overflow-hidden ">
 								<img
 									src={post.data.heroImage.src}
 									alt={post.data.title}
@@ -178,7 +178,7 @@ const { author, profileImage } = siteConfig
 								</div>
 							</div>
 						) : (
-							<div class="flex h-full flex-col justify-between p-4">
+							<div class="flex h-full flex-col justify-between p-4 ">
 								<div>
 									<h3 class={`font-bold text-white group-hover:text-[#c70039] transition-colors ${
 										isFirstItem && hasMultiplePosts ? 'text-lg sm:text-xl' : 'text-base'

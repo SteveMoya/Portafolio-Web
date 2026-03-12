@@ -21,21 +21,19 @@ const { type, title, img = '', description, href, date } = Astro.props
 
 {
 	type === 'about' && (
-		<article class="group m-4 scale-105 animate-[opacity_1.4s_ease] overflow-hidden rounded-[10px] bg-[#191919] text-center shadow-[0px_0px_25px_rgb(0,0,0,0.05)] transition-all duration-[0.8s] ease-in-out sm:w-1/2 md:w-1/4">
-			<div class="flex justify-center text-center">
-				<span class="absolute top-10 -z-10 h-20 w-20 rounded-full bg-[#c70039] transition-all duration-300 group-hover:scale-[10]" />
+		<article class="group relative m-4 flex w-full max-w-[350px] flex-col items-center overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-8 text-center backdrop-blur-md transition-all duration-500 hover:-translate-y-2 hover:border-[#c70039]/50 hover:bg-white/10 hover:shadow-[0_8px_30px_rgb(199,0,57,0.2)] md:m-3 lg:w-[calc(33.333%-2rem)] ">
+			<div class="relative mb-6 flex h-24 w-24 items-center justify-center rounded-2xl bg-gradient-to-br from-[#c70039]/20 to-transparent p-4 shadow-inner ring-1 ring-white/10 transition-all duration-500 group-hover:scale-110 group-hover:from-[#c70039]/40 group-hover:ring-[#c70039]/50">
 				<img
 					title={title}
-					class="m-5 inline-block h-[100px] rounded-2xl bg-[#c70039] p-2.5 shadow-[0px_0px_0px_0px_#c70039] transition-all duration-[0.8s] ease-in-out group-hover:scale-[1.1]"
+					class="relative z-10 h-full w-full object-contain drop-shadow-md transition-transform duration-500 group-hover:rotate-6 group-hover:scale-110"
 					loading="lazy"
 					src={img}
 					alt={`${title} logo`}
 				/>
+				<div class="absolute inset-0 z-0 rounded-2xl bg-[#c70039] opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-30"></div>
 			</div>
-			<div class="inline-block p-5">
-				<h2 class="m-[5px] p-2.5 text-[25px] font-extralight capitalize">{title}</h2>
-				<p class="p-2.5 text-base font-extralight opacity-80">{description}</p>
-			</div>
+			<h2 class="mb-4 text-2xl font-bold tracking-wide text-white transition-colors duration-300 group-hover:text-[#c70039]">{title}</h2>
+			<p class="text-sm leading-relaxed text-gray-300 opacity-90">{description}</p>
 		</article>
 	)
 }

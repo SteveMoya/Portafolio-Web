@@ -20,6 +20,9 @@ const { title, description, pubDate, heroImage, tags, updateDate } = Astro.props
 	image={heroImage.src}
 	articleDate={pubDate.toISOString()}
 >
+	<!-- Reading Progress Bar via slot to escape ViewTransitions animation root -->
+	<div slot="header-progress" class="fixed top-0 left-0 z-[9999] h-1 w-full origin-left bg-[#c70039] animate-reading-progress mt-16 sm:mt-0"></div>
+
 	<section
 		class="mt-4 grid gap-12 overflow-hidden px-5 antialiased sm:mx-auto sm:max-w-2xl sm:px-8 md:max-w-6xl md:overflow-visible lg:px-0"
 		data-pagefind-body
@@ -133,3 +136,14 @@ const { title, description, pubDate, heroImage, tags, updateDate } = Astro.props
 	fnObserver()
 	document.addEventListener('astro:after-swap', fnObserver)
 </script>
+
+<style is:global>
+	@keyframes reading-progress {
+		0% { transform: scaleX(0); }
+		100% { transform: scaleX(1); }
+	}
+	.animate-reading-progress {
+		animation: reading-progress linear;
+		animation-timeline: scroll(root block);
+	}
+</style>

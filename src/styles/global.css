@@ -33,7 +33,7 @@
     }
 
     body {
-        @apply bg-[#101010] font-poppins text-[whitesmoke] overflow-x-hidden text-wrap;
+        @apply bg-[#101010] font-poppins text-[whitesmoke] overflow-x-clip text-wrap;
     }
 
     /* Scrollbar styles */
@@ -95,7 +95,6 @@
     }
 }
 
-/* Custom animations */
 @keyframes slideUp {
     from {
         transform: translateY(100%);
@@ -106,6 +105,26 @@
         transform: translateY(0);
         opacity: 1;
     }
+}
+
+/* Scroll reveal animations using native CSS Scroll-driven animations */
+@keyframes scroll-reveal {
+    0% {
+        opacity: 0;
+        transform: translateY(40px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.reveal {
+    /* Uses the view progress timeline provided by the browser */
+    animation: scroll-reveal linear both;
+    animation-timeline: view();
+    /* The animation occurs gracefully as the element enters from 5% to 20% of the viewport */
+    animation-range: entry 5% cover 25%;
 }
 
 /* Dark mode overrides */
