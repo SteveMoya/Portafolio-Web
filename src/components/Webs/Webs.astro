@@ -1,12 +1,10 @@
 ---
 import Button from '@components/ui/Button.astro'
-import OptimizatedPicture from '@components/OptimizatedPicture.astro'
 
 import { getRepos, getRepoLanguages, fetchFirstImageFromReadme } from '@src/lib/github'
 import { formatDate } from '@src/utils'
 import ProjectTecnology from '@components/ProjectTecnology.astro'
 import placehorderImage from '/public/img/place-holder-image.webp'
-import { Image } from 'astro:assets'
 
 interface repo {
 	name: string
@@ -15,23 +13,19 @@ interface repo {
 	homepage?: string
 	pushed_at: string
 }
-interface repos {
-	[x: string]: any
-	repos: repo[]
-}
 ---
 
 <section class="flex flex-wrap items-center justify-center">
 	{
 		getRepos().then((repos: repo[]) =>
 			repos.map(async (repo: repo) => {
-				const imageUrl: string | { src: string } | null = await fetchFirstImageFromReadme(repo.name)
+				const imageUrl: string | null = await fetchFirstImageFromReadme(repo.name)
 				const languages = await getRepoLanguages(repo.name)
 				return (
 					<article class="m-5 w-[450px] rounded-lg bg-[#c7c7c7]">
 						<div class="relative w-full">
 							<img
-								src={typeof imageUrl === 'string' ? imageUrl : (imageUrl && typeof imageUrl === 'object' && 'src' in imageUrl ? imageUrl.src : placehorderImage)}
+								src={imageUrl || (placehorderImage as unknown as string)}
 								alt={`${repo.name} Imagen`}
 								class="aspect-square h-full w-full object-cover object-center"
 							/>

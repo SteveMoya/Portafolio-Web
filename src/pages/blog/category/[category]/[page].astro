@@ -43,7 +43,7 @@ const posts = page.data
 
 	<section class="flex flex-wrap content-center justify-center">
 		{
-			posts.map((post) => (
+			posts.map((post: any) => (
 				<Card
 					type="blog"
 					title={post.data.title}

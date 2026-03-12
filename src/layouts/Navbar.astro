@@ -122,7 +122,6 @@ const isActive = (path: string) => {
 
 	// Handle scroll behavior - show shadow on scroll
 	const header = document.querySelector('header')
-	let lastScrollY = window.scrollY
 
 	window.addEventListener('scroll', () => {
 		if (window.scrollY > 20) {
@@ -130,7 +129,5 @@ const isActive = (path: string) => {
 		} else {
 			header?.classList.remove('shadow-md')
 		}
-
-		lastScrollY = window.scrollY
 	})
 </script>

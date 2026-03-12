@@ -23,7 +23,7 @@ const images = await getImages()
 		class="ul mx-auto my-0 grid w-[95%] grid-cols-[repeat(auto-fit,minmax(10em,1fr))] gap-[2em] rounded-2xl bg-[#050505] p-4 shadow-sm transition-all duration-300 ease-in-out"
 	>
 		{
-			images?.map(async (imagen, index) => {
+			images?.map((imagen: any, index: number) => {
 				return (
 					<li class="group overflow-hidden rounded-2xl bg-[#050505] shadow-sm transition-all duration-300 ease-in-out">
 						<a href={`#${index + 1}`} data-astro-prefetch="tap" title={`Imagen ${index + 1} `}>

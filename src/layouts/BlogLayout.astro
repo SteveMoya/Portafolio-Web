@@ -85,7 +85,7 @@ const { title, description, pubDate, heroImage, tags, updateDate } = Astro.props
 	const fnObserver = () => {
 		function handleIntersection(
 			entries: IntersectionObserverEntry[],
-			observer: IntersectionObserver
+			_observer: IntersectionObserver
 		) {
 			entries.forEach((entry) => {
 				const index = document.querySelector(`aside a[href="#${entry.target.id}"]`)
