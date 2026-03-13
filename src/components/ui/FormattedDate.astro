@@ -1,14 +1,15 @@
 ---
 interface Props {
 	date: Date
+	class?: string
 }
 
-const { date } = Astro.props
+const { date, class: className = '' } = Astro.props
 
 ---
 
 <time
-	class="absolute bottom-0 left-0 h-auto w-3/12 rounded-t-md bg-[#c70039] p-[3px] text-center text-lg font-normal transition-all duration-300 ease-in-out"
+	class={className}
 	datetime={date.toISOString()}
 >
 	{

@@ -18,6 +18,16 @@ export default {
 	content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
 	theme: {
 		extend: {
+			container: {
+				center: true,
+				screens: {
+					sm: '640px',
+					md: '768px',
+					lg: '1024px',
+					xl: '1400px',
+					'2xl': '1400px',
+				},
+			},
 			fontFamily: {
 				monoton : ['Monoton', 'cursive', defaultTheme.fontFamily.mono],
 				mono	: ["JetBrains Mono", "monospace", defaultTheme.fontFamily.mono],

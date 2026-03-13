@@ -9,7 +9,7 @@ const { activeCategory } = Astro.props
 
 ---
 
-<div class='flex flex-wrap mx-10 gap-4 justify-center'>
+<div class='flex flex-wrap max-w-screen-xl mx-auto px-4 gap-3 justify-center mb-12 mt-4'>
 	<Category />
 	{
 		categories.map((category: string) => (

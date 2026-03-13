@@ -28,9 +28,9 @@ function buildToc(headings: TableOfContent[]) {
 }
 ---
 
-<nav class='max-w-xs '>
-	<h1 class='font-bold mb-3 text-2xl '>Indice</h1>
-	<ul class='[text-wrap:balance] flex flex-col gap-1'>
+<nav class='max-w-xs'>
+	<h2 class='font-bold mb-4 text-xs tracking-widest text-white uppercase'>Índice</h2>
+	<ul class='flex flex-col border-l-[2px] border-white/5'>
 		{toc.map((heading) => <TableOfContentsHeading heading={heading} />)}
 	</ul>
 </nav>

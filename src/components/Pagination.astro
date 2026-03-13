@@ -2,20 +2,26 @@
 const { page } = Astro.props
 ---
 
-<div class="flex items-center justify-between gap-5 p-2 md:gap-1">
+<div class="flex items-center justify-between gap-5 p-2 md:gap-1 mt-10 border-t border-white/5 pt-8">
 	<!-- Previous Button -->
 	{
 		page.start > 0 ? (
 			<a
 				href={page.url.prev}
-				class={`flex h-10 items-center justify-center rounded-lg border border-gray-300 bg-white px-8 text-base font-medium text-black opacity-50 hover:bg-gray-100 hover:text-gray-700 md:px-4 dark:border-gray-700 dark:bg-transparent dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white`}
-				title="Página anterior no disponible"
+				class={`flex h-10 items-center justify-center rounded-xl bg-transparent px-4 text-sm font-medium text-white/70 transition-colors hover:text-white hover:bg-white/5`}
+				title="Página anterior"
 			>
-				&larr; Anterior
+				<svg class="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+				</svg>
+				Anterior
 			</a>
 		) : (
-			<span class="flex h-10 cursor-not-allowed items-center justify-center rounded-lg border border-gray-300 bg-white px-8 text-base font-medium text-black opacity-50 hover:bg-gray-100 hover:text-gray-700 md:px-4 dark:border-gray-700 dark:bg-transparent dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-				&larr; Anterior
+			<span class="flex h-10 cursor-not-allowed items-center justify-center rounded-xl bg-transparent px-4 text-sm font-medium text-white/30">
+				<svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+				</svg>
+				Anterior
 			</span>
 		)
 	}
@@ -27,13 +33,13 @@ const { page } = Astro.props
 				<li>
 					{
 						page.currentPage === index + 1 ? (
-							<span class="flex h-10 items-center justify-center rounded-lg border border-gray-300 bg-white px-8 text-base font-medium text-black hover:bg-gray-100 hover:text-gray-700 md:px-4 dark:border-gray-700 dark:bg-transparent dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+							<span class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-sm font-semibold text-white shadow-[0_0_15px_rgba(255,255,255,0.05)]">
 								{index + 1}
 							</span>
 						) : (
 							<a
 								href={`${index + 1}`}
-								class="flex h-10 items-center justify-center rounded-lg border border-gray-300 bg-white px-8 text-base font-medium text-black hover:bg-gray-100 hover:text-gray-700 md:px-4 dark:border-gray-700 dark:bg-transparent dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+								class="flex h-10 w-10 items-center justify-center rounded-full bg-transparent text-sm font-medium text-white/50 transition-colors hover:bg-white/5 hover:text-white"
 							>
 								{index + 1}
 							</a>
@@ -49,13 +55,19 @@ const { page } = Astro.props
 		page.currentPage < page.lastPage ? (
 			<a
 				href={page.url.next}
-				class="flex h-10 items-center justify-center rounded-lg border border-gray-300 bg-white px-8 text-base font-medium text-black hover:bg-gray-100 hover:text-gray-700 md:px-4 dark:border-gray-700 dark:bg-transparent dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+				class="group flex h-10 items-center justify-center rounded-xl bg-transparent px-4 text-sm font-medium text-white/70 transition-colors hover:text-white hover:bg-white/5"
 			>
-				Siguiente &rarr;
+				Siguiente
+				<svg class="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l7-7m-7 7h18"></path>
+				</svg>
 			</a>
 		) : (
-			<span class="flex h-10 cursor-not-allowed items-center justify-center rounded-lg border border-gray-300 bg-white px-8 text-base font-medium text-black opacity-50 hover:bg-gray-100 hover:text-gray-700 md:px-4 dark:border-gray-700 dark:bg-transparent dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-				Siguiente &rarr;
+			<span class="flex h-10 cursor-not-allowed items-center justify-center rounded-xl bg-transparent px-4 text-sm font-medium text-white/30">
+				Siguiente
+				<svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l7-7m-7 7h18"></path>
+				</svg>
 			</span>
 		)
 	}

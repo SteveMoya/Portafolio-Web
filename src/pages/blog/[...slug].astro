@@ -10,6 +10,7 @@ import { getPosts, getRelatedPosts } from '@src/utils'
 import BlogLayout from '@src/layouts/BlogLayout.astro'
 import Diagram from '@components/mdx/Diagram.astro'
 import { CldImage } from 'astro-cloudinary'
+import type { CollectionEntry } from 'astro:content'
 
 export async function getStaticPaths() {
 	const posts = await getPosts()
@@ -20,6 +21,8 @@ export async function getStaticPaths() {
 	}))
 }
 
+type Props = CollectionEntry<'blog'>
+
 const post = Astro.props
 
 const relatedPosts = await getRelatedPosts(post)
@@ -28,7 +31,7 @@ const { Content, headings } = await post.render()
 ---
 
 <BlogLayout id={post.id} data={post.data} headings={headings}>
-	<div class="mt-8 grid grid-cols-1 gap-10 md:grid-cols-[20%_auto]">
+	<div class="mt-8 grid grid-cols-1 gap-12 md:grid-cols-[20%_auto] lg:gap-16">
 		<!-- aside  -->
 		<aside class="hidden flex-col gap-8 md:flex">
 			<Share />
@@ -39,7 +42,7 @@ const { Content, headings } = await post.render()
 
 		<!-- post -->
 		<article class="w-full max-w-full">
-			<div class="prose prose-lg prose-invert mb-12 min-w-full md:prose-xl">
+			<div class="prose prose-lg prose-invert mb-12 min-w-full md:prose-xl prose-p:leading-relaxed prose-p:text-gray-300 prose-headings:font-bold prose-headings:text-white prose-a:text-[#c70039] hover:prose-a:text-white prose-a:transition-colors prose-img:rounded-2xl prose-img:shadow-xl prose-img:border prose-img:border-white/5">
 				<Content components={{ pre: Code, SButton, LiteYoutube, SVG, Diagram, CldImage }} />
 			</div>
 

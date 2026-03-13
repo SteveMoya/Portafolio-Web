@@ -18,7 +18,7 @@ const posts = await getPosts(MAX_POSTS)
 >
 <Header title='Mis mas recientes' titleCaption='Articulos' description="Aqui puedes ver los los Articulos mas recientes de mi" descriptionCaption="Blog" />
 	<ListCategories />
-	<section class="mx-10">
+	<section class="max-w-screen-xl mx-auto px-4">
 		<h2 class="md:text-end text-center text-lg font-bold tracking-wide ml-4 mt-4">Los mas recientes</h2>
 		<ListPosts FirstBig={true} posts={posts} />
 	</section>

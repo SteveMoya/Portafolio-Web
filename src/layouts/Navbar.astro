@@ -1,9 +1,10 @@
 ---
 import { Icon } from 'astro-icon/components'
 import Search from '@components/Search.astro'
-
+import { Image, Picture } from "astro:assets"
 const navItems = [
 	{ title: 'Inicio', href: '/' },
+	{	 title: 'Sobre mí', href: '/about' },
 	{ title: 'Blog', href: '/blog' },
 	{ title: 'Portafolio', href: '/portafolio' }
 ]
@@ -20,7 +21,7 @@ const isActive = (path: string) => {
 	>
 		<!-- Logo -->
 		<a href="/" class="flex items-center space-x-2">
-			<img
+			<Picture
 				src="/img/logo.svg"
 				alt="Steve Moya"
 				width="40"

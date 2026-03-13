@@ -21,18 +21,18 @@ const { title, description, pubDate, heroImage, tags, updateDate } = Astro.props
 	articleDate={pubDate.toISOString()}
 >
 	<!-- Reading Progress Bar via slot to escape ViewTransitions animation root -->
-	<div slot="header-progress" class="fixed top-0 left-0 z-[9999] h-1 w-full origin-left bg-[#c70039] animate-reading-progress mt-16 sm:mt-0"></div>
+	<div slot="header-progress" class="fixed top-0 left-0 z-[9999] h-[2px] w-full origin-left bg-[#c70039] animate-reading-progress mt-16 sm:mt-0 shadow-[0_0_10px_rgba(199,0,57,0.5)]"></div>
 
 	<section
 		class="mt-4 grid gap-12 overflow-hidden px-5 antialiased sm:mx-auto sm:max-w-2xl sm:px-8 md:max-w-6xl md:overflow-visible lg:px-0"
 		data-pagefind-body
 	>
 		<article class="min-w-full sm:max-w-none md:max-w-none md:py-4">
-			<header class="mb-3 flex flex-col items-center justify-center gap-6">
-				<div class="flex flex-col gap-2">
-					<div class="flex flex-col items-center justify-center gap-x-1 gap-y-2">
-						<p class="text-center text-sm text-opacity-50">
-							Publicado el{' '}{
+			<header class="mb-8 flex flex-col items-start justify-center gap-6 md:mb-10">
+				<div class="flex flex-col gap-4">
+					<div class="flex items-center gap-4 text-sm tracking-wide text-gray-400">
+						<p>
+							{
 								pubDate.toLocaleDateString('es-Es', {
 									year: 'numeric',
 									month: 'long',
@@ -42,37 +42,43 @@ const { title, description, pubDate, heroImage, tags, updateDate } = Astro.props
 						</p>
 						{
 							updateDate && (
-								<p class="text-center text-sm text-opacity-50">
-									Actualizado el{' '}
-									{new Date(updateDate).toLocaleDateString('es-Es', {
-										year: 'numeric',
-										month: 'long',
-										day: 'numeric'
-									})}
-								</p>
+								<>
+									<span class="h-1 w-1 rounded-full bg-gray-600"></span>
+									<p>
+										Actualizado el{' '}
+										{new Date(updateDate).toLocaleDateString('es-Es', {
+											year: 'numeric',
+											month: 'long',
+											day: 'numeric'
+										})}
+									</p>
+								</>
 							)
 						}
 					</div>
-					<h1 class="text-center text-4xl font-semibold capitalize md:pb-2 md:text-6xl">
+					<h1 class="text-left text-4xl font-bold leading-tight tracking-tight capitalize text-white md:text-5xl lg:text-5xl lg:leading-[1.1]">
 						{title}
 					</h1>
 				</div>
 
-				<div class="flex flex-wrap items-center justify-center gap-2 gap-y-4 md:gap-5">
+				<div class="flex flex-wrap items-center justify-start gap-3 mt-2">
 					{tags.map((tag) => <Tag tag={tag} />)}
 				</div>
 			</header>
 
 			{
 				heroImage && (
-					<Picture
-						src={heroImage}
-						width={1000}
-						height={500}
-						loading="eager"
-						class="my-8 max-h-[300px] w-full rounded-md object-cover md:max-h-[500px]"
-						alt={`Imagen de ${title}`}
-					/>
+					<div class="relative w-full overflow-hidden rounded-2xl border border-white/5 my-8 shadow-xl shadow-black/50">
+						<Picture
+							src={heroImage}
+							width={1200}
+							height={675}
+							loading="eager"
+							class="w-full aspect-video md:aspect-[21/9] object-cover"
+							alt={`Imagen de ${title}`}
+						/>
+						<div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none"></div>
+					</div>
 				)
 			}
 
@@ -94,24 +100,18 @@ const { title, description, pubDate, heroImage, tags, updateDate } = Astro.props
 				const index = document.querySelector(`aside a[href="#${entry.target.id}"]`)
 
 				if (entry.isIntersecting) {
-					index?.classList.remove('bg-slate-200', 'dark:bg-slate-800') // remove bg
+					index?.classList.remove('text-gray-500', 'border-transparent') // remove normal
 					index?.classList.add(
-						'bg-indigo-600',
-						'dark:bg-red-800',
 						'text-white',
-						'font-bold',
-						'transition-colors',
-						'duration-200'
+						'border-[#c70039]',
+						'font-medium'
 					)
 				} else {
-					index?.classList.add('bg-slate-200', 'dark:bg-slate-800') // add bg
+					index?.classList.add('text-gray-500', 'border-transparent') // add normal
 					index?.classList.remove(
-						'bg-indigo-600',
-						'dark:bg-red-800',
 						'text-white',
-						'font-bold',
-						'transition-colors',
-						'duration-200'
+						'border-[#c70039]',
+						'font-medium'
 					)
 				}
 			})
