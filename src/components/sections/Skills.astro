@@ -40,7 +40,7 @@ const SKILLS_ICONS: Record<string, any> = {
 };
 ---
 
-<Section className={Astro.props.className} title="Skills">
+<Section className={`${Astro.props.className} section-animate`} title="Skills">
 	<ul class="[&>li>svg]:text-skin-hue inline-flex flex-wrap gap-6 [&>li>svg]:size-5 [&>li]:text-sm">
 		{
 			skills.map(({ name }) => {

@@ -1,0 +1,54 @@
+---
+import TableOfContentsHeading from './TabletOfContentsHeading.astro'
+
+const { headings } = Astro.props
+
+type TableOfContent = {
+  depth: number
+  text: string
+  slug: string
+  subheadings: TableOfContent[]
+}
+
+const toc = buildToc(headings)
+function buildToc(headings: TableOfContent[]) {
+  let toc: TableOfContent[] = []
+  let parentHeadings = new Map()
+  headings.forEach((h) => {
+    let heading = { ...h, subheadings: [] }
+    parentHeadings.set(heading.depth, heading)
+    if (heading.depth === 1 || heading.depth === 2) {
+      toc.push(heading)
+    } else {
+      parentHeadings.get(heading.depth - 1).subheadings.push(heading)
+    }
+  })
+  return toc
+}
+---
+
+{toc.length > 0 && (
+  <div class="md:hidden mb-6 rounded-2xl border border-white/8 bg-white/[0.03] backdrop-blur-sm overflow-hidden">
+    <details class="group">
+      <summary class="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-sm font-semibold text-gray-300 select-none hover:text-white transition-colors duration-200">
+        <div class="flex items-center gap-2">
+          <span class="h-1.5 w-1.5 rounded-full bg-[#c70039] shadow-[0_0_6px_rgba(199,0,57,0.8)]"></span>
+          <span>Índice del artículo</span>
+        </div>
+        <svg
+          class="h-4 w-4 text-gray-500 transition-transform duration-300 group-open:rotate-180"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </summary>
+      <nav class="px-4 pb-4 pt-1 border-t border-white/5">
+        <ul class="flex flex-col border-l-[2px] border-white/10">
+          {toc.map((heading) => <TableOfContentsHeading heading={heading} />)}
+        </ul>
+      </nav>
+    </details>
+  </div>
+)}

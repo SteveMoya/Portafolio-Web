@@ -1,9 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content'
-
-
 import { Image } from 'astro:assets'
-import { cn } from '@src/utils'
 
 type Props = {
 	posts: CollectionEntry<'blog'>[]
@@ -12,32 +9,52 @@ type Props = {
 const { posts } = Astro.props
 ---
 
-<section class={cn(`flex flex-col md:flex-row sm:justify-between gap-8`)}>
-	{
-		posts.length > 0 ? (
-			posts.map((post) => {
-				return (
-					<div class='flex flex-wrap gap-2'>
-						<div class='min-h-full'>
-							<Image
-								src={post.data.heroImage}
-								width={200}
-								height={200}
-								format='webp'
-								class='w-16 h-16 object-cover rounded-full  '
-								alt={`img of ${post.data.title}`}
-							/>
-						</div>
-						<header class='flex justify-center items-center'>
-							<a class='font-medium  hover:underline' href={`/blog/${post.slug}/`}>
-								{post.data.title}
-							</a>
-						</header>
+{
+	posts.length > 0 ? (
+		<section class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+			{posts.map((post) => (
+				<a
+					href={`/blog/${post.slug}/`}
+					class="group relative flex flex-col overflow-hidden rounded-2xl border border-white/5 bg-white/[0.03] backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-white/15 hover:bg-white/[0.06] hover:shadow-xl hover:shadow-black/40"
+				>
+					{/* Imagen */}
+					<div class="relative aspect-[16/9] w-full overflow-hidden">
+						<Image
+							src={post.data.heroImage}
+							width={400}
+							height={225}
+							format="webp"
+							class="h-full w-full object-cover object-center transition-transform duration-500 ease-in-out group-hover:scale-105"
+							alt={`Imagen de ${post.data.title}`}
+						/>
+						<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 					</div>
-				)
-			})
-		) : (
-			<span class='text-gray-500'>No existen Articulos relacionados para este articulo 😢</span>
-		)
-	}
-</section>
+
+					{/* Contenido */}
+					<div class="flex flex-col gap-2 p-4">
+						<p class="text-xs text-gray-500 tracking-wide">
+							{post.data.pubDate.toLocaleDateString('es-Es', {
+								year: 'numeric',
+								month: 'short',
+								day: 'numeric'
+							})}
+						</p>
+						<h3 class="text-sm font-semibold leading-snug text-white line-clamp-2 transition-colors duration-200 group-hover:text-[#c70039]">
+							{post.data.title}
+						</h3>
+					</div>
+
+					{/* Borde inferior de acento en hover */}
+					<div class="absolute bottom-0 left-0 h-[2px] w-0 bg-gradient-to-r from-[#c70039] to-transparent transition-all duration-500 group-hover:w-full" />
+				</a>
+			))}
+		</section>
+	) : (
+		<div class="flex flex-col items-center justify-center gap-3 rounded-2xl border border-white/5 bg-white/[0.02] py-10 text-center">
+			<svg class="h-10 w-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+			</svg>
+			<p class="text-sm text-gray-500">No hay artículos relacionados por ahora</p>
+		</div>
+	)
+}

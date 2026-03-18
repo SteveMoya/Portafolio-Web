@@ -4,14 +4,13 @@ import FormattedDate from './ui/FormattedDate.astro'
 
 const {
 	data: { title, description, pubDate, heroImage, category },
-	readTime,
 	slug,
 	isFeatured = false
 } = Astro.props
 ---
 
 <article
-	class={`group relative flex h-full overflow-hidden rounded-2xl border border-white/5 bg-black/20 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-white/10 hover:bg-black/40 ${isFeatured ? 'flex-col md:flex-row md:col-span-2 shadow-2xl shadow-black/50' : 'flex-col shadow-lg shadow-black/20'}`}
+	class={`group relative flex h-full overflow-hidden rounded-2xl border border-white/5 bg-black/20 backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:border-[#c70039]/40 hover:bg-black/40 hover:shadow-[0_12px_40px_rgba(199,0,57,0.18)] ${isFeatured ? 'flex-col md:flex-row md:col-span-2 shadow-2xl shadow-black/50' : 'flex-col shadow-lg shadow-black/20'}`}
 >
 	<a class={`relative block overflow-hidden ${isFeatured ? 'w-full md:w-1/2 aspect-[16/9] md:aspect-auto' : 'w-full aspect-[16/9]'}`} href={`/blog/${slug}/`} title={`Ver ${title}`}>
 		<Image
@@ -26,18 +25,13 @@ const {
 		{/* Gradiente inferior para mejorar legibilidad sobre la imagen */}
 		<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-90 transition-opacity duration-500 group-hover:opacity-100"></div>
 
-		{/* Badges superiores (Categoría y Tiempo de lectura) */}
+		{/* Badges superiores (Categoría) */}
 		<div class="absolute top-4 left-4 right-4 flex items-start justify-between z-10">
 			<span
 				class="rounded-full bg-black/40 backdrop-blur-md border border-white/10 px-3 py-1 text-xs font-semibold tracking-wide text-white transition-colors duration-300 group-hover:border-white/30"
 			>
 				{category}
 			</span>
-			{readTime && (
-				<span class="rounded-full bg-black/40 backdrop-blur-md border border-white/10 px-3 py-1 text-xs font-medium text-gray-300 transition-colors duration-300 group-hover:text-white">
-					{readTime}
-				</span>
-			)}
 		</div>
 	</a>
 

@@ -1,0 +1,82 @@
+---
+interface Props {
+  slug: string
+}
+const { slug } = Astro.props
+---
+
+<div class="flex items-center gap-3 mt-6 pt-6 border-t border-white/5">
+  <button
+    id="like-btn"
+    data-slug={slug}
+    aria-label="Me gustó este artículo"
+    class="group flex items-center gap-2 rounded-xl border border-white/8 bg-white/[0.03] px-4 py-2.5 text-sm text-gray-400 transition-all duration-300 hover:border-[#c70039]/40 hover:bg-[#c70039]/10 hover:text-[#c70039] cursor-pointer select-none"
+  >
+    <span id="like-icon" class="text-xl transition-transform duration-300 group-hover:scale-125">👍</span>
+    <span id="like-label" class="font-medium">Me gustó</span>
+    <span id="like-count" class="ml-1 rounded-full bg-white/5 px-2 py-0.5 text-xs font-semibold">0</span>
+  </button>
+  <span id="like-feedback" class="hidden text-xs text-[#c70039] font-medium animate-fade-in">¡Gracias por tu reacción! 🎉</span>
+</div>
+
+<script>
+  const initLike = () => {
+    const btn = document.getElementById('like-btn') as HTMLButtonElement | null
+    if (!btn) return
+
+    const slug = btn.dataset.slug!
+    const storageKey = `like_${slug}`
+    const countKey = `like_count_${slug}`
+
+    const likeLabel = document.getElementById('like-label')
+    const likeCount = document.getElementById('like-count')
+    const likeIcon = document.getElementById('like-icon')
+    const likeFeedback = document.getElementById('like-feedback')
+
+    const liked = localStorage.getItem(storageKey) === 'true'
+    const count = parseInt(localStorage.getItem(countKey) ?? '0', 10)
+
+    const updateUI = (isLiked: boolean, n: number) => {
+      if (likeLabel) likeLabel.textContent = isLiked ? '¡Me gustó!' : 'Me gustó'
+      if (likeCount) likeCount.textContent = String(n)
+      if (likeIcon) likeIcon.textContent = isLiked ? '❤️' : '👍'
+      btn.classList.toggle('border-[#c70039]/40', isLiked)
+      btn.classList.toggle('bg-[#c70039]/10', isLiked)
+      btn.classList.toggle('text-[#c70039]', isLiked)
+    }
+
+    // Restore state on load
+    updateUI(liked, count)
+
+    btn.addEventListener('click', () => {
+      const wasLiked = localStorage.getItem(storageKey) === 'true'
+      const prevCount = parseInt(localStorage.getItem(countKey) ?? '0', 10)
+
+      if (wasLiked) {
+        // Toggle off
+        localStorage.setItem(storageKey, 'false')
+        const newCount = Math.max(0, prevCount - 1)
+        localStorage.setItem(countKey, String(newCount))
+        updateUI(false, newCount)
+        if (likeFeedback) likeFeedback.classList.add('hidden')
+      } else {
+        // Toggle on
+        localStorage.setItem(storageKey, 'true')
+        const newCount = prevCount + 1
+        localStorage.setItem(countKey, String(newCount))
+        updateUI(true, newCount)
+        if (likeIcon) {
+          likeIcon.classList.add('scale-150')
+          setTimeout(() => likeIcon.classList.remove('scale-150'), 300)
+        }
+        if (likeFeedback) {
+          likeFeedback.classList.remove('hidden')
+          setTimeout(() => likeFeedback.classList.add('hidden'), 3000)
+        }
+      }
+    })
+  }
+
+  initLike()
+  document.addEventListener('astro:after-swap', initLike)
+</script>
