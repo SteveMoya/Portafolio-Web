@@ -4,6 +4,8 @@ import SVG from '@components/mdx/SVG.astro'
 import ListRelatedPosts from '@components/ListRelatedPosts.astro'
 import Share from '@components/ui/Share.astro'
 import TableOfContents from '@components/TableOfContents.astro'
+import TableOfContentsMobile from '@components/TableOfContentsMobile.astro'
+import LikeButton from '@components/ui/LikeButton.astro'
 import SButton from '@components/mdx/SButton.astro'
 import LiteYoutube from '@components/mdx/LiteYoutube.astro'
 import { getPosts, getRelatedPosts } from '@src/utils'
@@ -31,26 +33,47 @@ const { Content, headings } = await post.render()
 ---
 
 <BlogLayout id={post.id} data={post.data} headings={headings}>
-	<div class="mt-8 grid grid-cols-1 gap-12 md:grid-cols-[20%_auto] lg:gap-16">
-		<!-- aside  -->
-		<aside class="hidden flex-col gap-8 md:flex">
-			<Share />
-			<div class="sticky top-24 hidden self-start transition-all duration-200 md:block">
+	<div class="mt-8 grid grid-cols-1 gap-8 md:grid-cols-[220px_1fr] lg:gap-12">
+
+		<!-- Aside: Panel glassmorphism con Share + TOC -->
+		<aside class="hidden md:flex flex-col">
+			<div class="sticky top-24 self-start w-full rounded-2xl border border-white/8 bg-white/[0.03] backdrop-blur-sm p-4 transition-all duration-200">
+				<Share />
 				{headings && headings.length > 0 && <TableOfContents {headings} />}
 			</div>
 		</aside>
 
-		<!-- post -->
-		<article class="w-full max-w-full">
-			<div class="prose prose-lg prose-invert mb-12 min-w-full md:prose-xl prose-p:leading-relaxed prose-p:text-gray-300 prose-headings:font-bold prose-headings:text-white prose-a:text-[#c70039] hover:prose-a:text-white prose-a:transition-colors prose-img:rounded-2xl prose-img:shadow-xl prose-img:border prose-img:border-white/5">
+		<!-- Artículo principal -->
+		<article class="w-full max-w-full min-w-0">
+
+			<!-- TOC Mobile (accordion, solo visible en móvil) -->
+			<TableOfContentsMobile {headings} />
+
+			<div class="prose prose-lg prose-invert mb-12 min-w-full md:prose-xl
+				prose-p:leading-relaxed prose-p:text-gray-300
+				prose-headings:font-bold prose-headings:text-white
+				prose-a:text-[#c70039] hover:prose-a:text-white prose-a:transition-colors prose-a:no-underline hover:prose-a:underline
+				prose-img:rounded-2xl prose-img:shadow-xl prose-img:border prose-img:border-white/5
+				prose-blockquote:border-l-[#c70039] prose-blockquote:bg-white/[0.03] prose-blockquote:rounded-r-xl prose-blockquote:py-1 prose-blockquote:not-italic
+				prose-code:text-[#c70039] prose-code:bg-white/[0.06] prose-code:rounded prose-code:px-1.5 prose-code:py-0.5 prose-code:font-normal prose-code:before:content-none prose-code:after:content-none
+				prose-hr:border-white/10
+			">
 				<Content components={{ pre: Code, SButton, LiteYoutube, SVG, Diagram, CldImage }} />
 			</div>
 
-			<!-- related posts -->
-			<footer>
-				<h2 class="mb-6 text-lg font-bold">Articulos Relacionados</h2>
+			<!-- Footer del artículo: Likes + Artículos Relacionados -->
+			<footer class="mt-4">
+				<LikeButton slug={post.slug} />
+
+				<div class="mt-8 mb-6 flex items-center gap-4">
+					<div class="h-[1px] flex-1 bg-gradient-to-r from-[#c70039]/50 via-white/10 to-transparent"></div>
+					<h2 class="text-sm font-semibold tracking-widest uppercase text-gray-400">Artículos Relacionados</h2>
+					<div class="h-[1px] w-12 bg-gradient-to-l from-transparent to-white/10"></div>
+				</div>
 				<ListRelatedPosts posts={relatedPosts} />
 			</footer>
 		</article>
+
 	</div>
 </BlogLayout>
+

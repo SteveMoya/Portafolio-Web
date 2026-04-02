@@ -7,6 +7,7 @@ interface Props {
 	description?: string
 	image?: string
 	articleDate?: string | undefined
+	articleUpdateDate?: string | undefined
 	keywords?: string
 	canonicalURL?: string | URL
 }
@@ -17,7 +18,8 @@ const {
 	keywords = siteConfig.keywords,
 	canonicalURL = new URL(Astro.url.pathname, Astro.site) || 'https://stevemoya.me/',
 	image = siteConfig.ogImage,
-	articleDate
+	articleDate,
+	articleUpdateDate
 } = Astro.props
 
 // Ensure absolute URL for OG Images
@@ -30,8 +32,11 @@ const schema = {
 	...(articleDate
 		? {
 				headline: title,
+				description: description,
 				image: [ogImageUrl],
+				url: canonicalURL.toString(),
 				datePublished: articleDate,
+				...(articleUpdateDate ? { dateModified: articleUpdateDate } : {}),
 				author: {
 					"@type": "Person",
 					name: siteConfig.author,

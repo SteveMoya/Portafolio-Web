@@ -27,7 +27,7 @@ const printInfo = [email, phone, linkedUrl].filter(Boolean).join(" • ");
 <Section>
 	<div class="flex flex-col-reverse gap-8">
 		<div class="info">
-			<h1>{name}</h1>
+			<h1><span class="shimmer-name">{name}</span></h1>
 			<h2>{label}</h2>
 			<div class="flex items-center gap-2 pt-2 text-sm text-skin-muted">
 				<WorldMap />
@@ -116,6 +116,35 @@ const printInfo = [email, phone, linkedUrl].filter(Boolean).join(" • ");
 		font-size: 2.25rem;
 		line-height: 2.5rem;
 		font-weight: 700;
+	}
+
+	.shimmer-name {
+		background: linear-gradient(
+			90deg,
+			#ffffff 0%,
+			#ffffff 30%,
+			#c70039 50%,
+			#ffffff 70%,
+			#ffffff 100%
+		);
+		background-size: 200% auto;
+		-webkit-background-clip: text;
+		background-clip: text;
+		-webkit-text-fill-color: transparent;
+		animation: shimmer 4s linear infinite;
+	}
+
+	@keyframes shimmer {
+		0% { background-position: 200% center; }
+		100% { background-position: -200% center; }
+	}
+
+	@media print {
+		.shimmer-name {
+			-webkit-text-fill-color: #000;
+			background: none;
+			animation: none;
+		}
 	}
 
 	@media print {

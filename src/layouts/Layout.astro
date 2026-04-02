@@ -51,7 +51,16 @@ import '@fontsource/monoton'
 			</div>
 			
 			<!-- Page Content Wrapper with Transition Animation -->
-			<div transition:animate="slide">
+			<div transition:animate={{
+				forwards: {
+					old: { name: 'page-out', duration: '0.25s', easing: 'ease-in', fillMode: 'both' },
+					new: { name: 'page-in', duration: '0.3s', easing: 'ease-out', fillMode: 'both' }
+				},
+				backwards: {
+					old: { name: 'page-out', duration: '0.25s', easing: 'ease-in', fillMode: 'both' },
+					new: { name: 'page-in', duration: '0.3s', easing: 'ease-out', fillMode: 'both' }
+				}
+			}}>
 				<slot />
 			</div>
 			{Astro.url.pathname.includes('/blog/') && <BotonIrArriba />}
@@ -87,6 +96,51 @@ import '@fontsource/monoton'
 				border-radius: 4px;
 				width: 4px;
 			}
+
+			/* ── Page transition animations ── */
+			@keyframes page-in {
+				from { opacity: 0; transform: translateY(14px); }
+				to   { opacity: 1; transform: translateY(0); }
+			}
+			@keyframes page-out {
+				from { opacity: 1; transform: translateY(0); }
+				to   { opacity: 0; transform: translateY(-10px); }
+			}
+
+			/* ── Section scroll-in animations ── */
+			.section-animate {
+				opacity: 0;
+				transform: translateY(28px);
+				transition: opacity 0.65s ease, transform 0.65s ease;
+			}
+			.section-animate.animate-in {
+				opacity: 1;
+				transform: translateY(0);
+			}
 		</style>
 	</body>
 </html>
+
+<script>
+	const initScrollAnimations = () => {
+		const elements = document.querySelectorAll('.section-animate')
+		if (!elements.length) return
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						entry.target.classList.add('animate-in')
+						observer.unobserve(entry.target)
+					}
+				})
+			},
+			{ threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+		)
+
+		elements.forEach((el) => observer.observe(el))
+	}
+
+	initScrollAnimations()
+	document.addEventListener('astro:after-swap', initScrollAnimations)
+</script>
