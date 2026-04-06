@@ -1,0 +1,354 @@
+{
+  "basics": {
+    "name": "Steve Moya",
+    "label": "Especialista en Marketing Digital",
+    "image": "/img/ProfileImage_Right.png",
+    "email": "steve@stevemoya.me",
+    "phone": "+1(849)-751-1849",
+    "url": "https://stevemoya.me",
+    "summary": "Especialista en Marketing Digital con experiencia en la creación y gestión de campañas digitales efectivas. Actualmente buscando oportunidades para aplicar mis habilidades en un entorno profesional.",
+    "theme": "default",
+    "location": {
+      "address": "",
+      "postalCode": "10102",
+      "city": "Santo Domingo",
+      "countryCode": "DO",
+      "region": "Dominican Republic"
+    },
+    "profiles": [
+      {
+        "network": "LinkedIn",
+        "username": "steve-moya-cepeda",
+        "url": "https://www.linkedin.com/in/steve-moya-cepeda/"
+      },
+      {
+        "network": "GitHub",
+        "username": "SteveMoya",
+        "url": "https://github.com/stevemoya"
+      }
+    ]
+  },
+  "work": [
+    {
+      "name": "International Contact Center (ICC)",
+      "position": "WebMaster Junior del Departamento de Marketing",
+      "location_type": "Presencial",
+      "location": "Santo Domingo, Dominican Republic",
+      "url": "https://icontactcenter.com/",
+      "startDate": "2025-09-09",
+      "endDate": null,
+      "phone": "+1(809) 290-9136",
+      "summary": "Crear y gestionar campañas digitales efectivas para nuestros clientes. Analizar el rendimiento de las campañas y ajustar las estrategias según sea necesario para maximizar los resultados.",
+      "highlights": [
+        "Asistir a Seguimientos de Estrategias Publicitarias",
+        "Gestionar solicitudes de proveedores y inventario",
+        "Realizar análisis de mercado y competencia para identificar oportunidades de crecimiento",
+        "Asistir en Reportes y Presupuestos mensuales y Qs"
+      ],
+      "responsibilities": [
+        "Gestinar Backups de los sitios web de nuestros clientes.",
+        "Actualizar y mantener los sitios web de nuestros clientes utilizando WordPress y otras plataformas de gestión de contenido.",
+        "Realizar Despliegues de sitios web.",
+        "Diseñar y desarrollar sitios web atractivos y funcionales para nuestros clientes utilizando tecnologías como HTML, CSS, JavaScript, Tailwind, TypeScript, Node y PHP.",
+        "Optimizar los sitios web para mejorar el rendimiento, la velocidad de carga y la experiencia del usuario, utilizando herramientas como Semrush, Google Analytics, Cpanel, WordPress y Cloudflare.",        
+        "Optimizar base de datos, imagenes, y otros recursos para mejorar el rendimiento de los sitios web."
+      ],
+      "achievements": [
+        "Automatizacion de reportes de rendimiento de los proyectos webs.",
+        "Automatizacion de Generacion de Backups de los sitios web."
+      ],
+      "skills": [
+        "SEO",
+        "GitHub",
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "Tailwind",
+        "TypeScript",
+        "Node",
+        "PHP",
+        "Web Development",
+        "Frontend",
+        "Backend",
+        "Semrush",
+        "Google Analytics",
+        "Cpanel",
+        "WordPress",
+        "Cloudflare"
+      ]
+    },
+    {
+      "name": "Planeta Azul S.A.",
+      "position": "Pasante del Departamento de Marketing",
+      "location_type": "Presencial",
+      "location": "Santo Domingo, Dominican Republic",
+      "url": "https://planetaazulrd.com/",
+      "startDate": "2025-04-01",
+      "endDate": "2025-08-01",
+      "phone": "+1(829) 762-2225",
+      "summary": "Crear y gestionar campañas digitales efectivas para nuestros clientes. Analizar el rendimiento de las campañas y ajustar las estrategias según sea necesario para maximizar los resultados.",
+      "highlights": [
+        "Asistir a Seguimientos de Estrategias Publicitarias",
+        "Gestionar solicitudes de proveedores y inventario",
+        "Realizar análisis de mercado y competencia para identificar oportunidades de crecimiento",
+        "Asistir en Reportes y Presupuestos mensuales y Qs"
+      ],
+      "responsibilities": [
+        "Desarrollar estrategias de marketing digital para nuestros clientes.",
+        "Gestionar campañas publicitarias con proveedores.",
+        "Analizar el rendimiento de las campañas y realizar ajustes para mejorar los resultados."
+      ],
+      "achievements": [
+        "Logre gestionar ordenes de proveedores atrasadas manteniendolas al dia con el ciclo contable.",
+        "Logre realizar un reporte de Market Share de los productos de la empresa frente a la competencia",
+        "Automatizacion de Reportes Mensuales de Market Share",
+        "Levantamiento de inventario de productos promocionales",
+        "Apoyo en el patrocinio de eventos deportivos y culturales para aumentar la visibilidad de la marca."
+      ],
+      "skills": [
+        "Google Ads",
+        "Facebook Ads",
+        "SEO",
+        "Análisis de Datos",
+        "Microsoft Office",
+        "Canva",
+        "SAP",
+        "Marketing Digital",
+        "Orden de Compra",
+        "Inventario",
+        "Market Share",
+        "Estrategias de Marketing"
+      ]
+    }
+  ],
+  "volunteer": [],
+  "education": [
+    {
+      "institution": "Universidad Autónoma de Santo Domingo (UASD)",
+      "url": "https://uasd.edu.do",
+      "area": "Licenciatura en Mercadotecnia",
+      "studyType": "Bachelor",
+      "startDate": "2020-09-01",
+      "endDate": null,
+      "score": "",
+      "courses": []
+    }
+  ],
+  "certificates": [
+    {
+      "name": "Digitaliza paso a paso tu negocio con herramientas de Google",
+      "date": "2022-08-24",
+      "issuer": "Google Activate",
+      "url": ""
+    },
+    {
+      "name": "Fundamentos de Marketing Digital",
+      "date": "2022-09-11",
+      "issuer": "Google Activate",
+      "url": ""
+    },
+    {
+      "name": "Protege tu Negocio: Ciberseguridad en el Teletrabajo ",
+      "date": "2022-08-25",
+      "issuer": "Google Activate ",
+      "url": ""
+    },
+    {
+      "name": "Competencias digitales para profesionales",
+      "date": "2022-09-11",
+      "issuer": "Google Activate",
+      "url": ""
+    },
+    {
+      "name": "Certificado en inbound",
+      "date": "2023-03-19",
+      "issuer": "HubSpot Academy",
+      "url": ""
+    }
+  ],
+  "skills": [
+    {
+      "name": "Figma",
+      "level": "Beginner",
+      "keywords": [
+        "Design", 
+        "UI"
+      ]
+    },
+    {
+      "name": "GitHub",
+      "level": "Intermediate",
+      "keywords": [
+        "Version Control",
+        "Collaboration",
+        "Source Code"
+      ]
+    },
+    {
+      "name": "HTML",
+      "level": "Intermediate",
+      "keywords": [
+        "Web Development",
+        "Frontend"
+      ]
+    },
+    {
+      "name": "CSS",
+      "level": "Intermediate",
+      "keywords": [
+        "Web Development",
+        "Frontend",
+        "Responsive Design"
+      ]
+    },
+    {
+      "name": "JavaScript",
+      "level": "Intermediate",
+      "keywords": [
+        "Web Development",
+        "Fullstack"
+      ]
+    },
+    {
+      "name": "Tailwind",
+      "level": "Intermediate",
+      "keywords": [
+        "Web Development",
+        "Frontend",
+        "CSS Framework",
+        "Responsive Design"
+      ]
+    },
+    {
+      "name": "TypeScript",
+      "level": "Intermediate",
+      "keywords": [
+        "Web Development",
+        "Frontend",
+        "Backend",
+        "JavaScript Superset"
+      ]
+    },
+    {
+      "name": "Node",
+      "level": "Intermediate",
+      "keywords": [
+        "Web Development",
+        "Backend",
+        "JavaScript",
+        "Server"
+      ]
+    },
+    {
+      "name": "GitHub",
+      "level": "Intermediate",
+      "keywords": [
+        "Version Control",
+        "Collaboration",
+        "Source Code",
+        "Git"
+      ]
+    },
+    {
+      "name": "Next.js",
+      "level": "Beginner",
+      "keywords": [
+        "Web Development",
+        "Frontend",
+        "React Framework",
+        "SSR",
+        "Static Generation"
+      ]
+    },
+    {
+      "name": "Astro.js",
+      "level": "Advanced",
+      "keywords": [
+        "Web Development",
+        "Backend",
+        "TypeScript Runtime"
+      ]
+    },
+    {
+      "name": "React",
+      "level": "Intermediate",
+      "keywords": [
+        "Web Development",
+        "Frontend",
+        "JavaScript Library",
+        "UI"
+      ]
+    },
+    {
+      "name": "Canva",
+      "level": "Intermediate",
+      "keywords": [
+        "Graphic Design",
+        "Content Creation",
+        "Marketing"
+      ]
+    },
+    {
+      "name": "Microsoft Office",
+      "level": "Intermediate",
+      "keywords": [
+        "Word",
+        "Excel",
+        "PowerPoint"
+      ]
+    },
+    {
+      "name": "Adobe Creative Cloud",
+      "level": "Beginner",
+      "keywords": [
+        "Photoshop",
+        "Illustrator",
+        "InDesign"
+      ]
+    },
+    {
+      "name": "Google Ads",
+      "level": "Intermediate",
+      "keywords": [
+        "PPC",
+        "SEM",
+        "Online Advertising"
+      ]
+    },
+    {
+      "name": "SEO",
+      "level": "Intermediate",
+      "keywords": [
+        "Search Engine Optimization",
+        "Organic Traffic",
+        "Keyword Research"
+      ]
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "fluency": "Intermediate"
+    },
+    {
+      "language": "Spanish",
+      "fluency": "Native Speaker"
+    }
+  ],
+  "interests": [
+    {
+      "name": "Technology",
+      "keywords": [
+        "AI",
+        "Blockchain"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "name": "Disponibles",
+      "reference": "A PETICIÓN"
+    }
+  ],
+  "projects": [ ]
+}

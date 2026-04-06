@@ -1,5 +1,5 @@
 ---
-import Card from '@components/ui/Card.astro'
+import PortafolioCard from '@components/PortafolioCard.astro'
 import { getEntry } from 'astro:content'
 
 const marketingimg = await getEntry('portafolio', 'portafolio/rmfvigaluuqqsybglhbd')
@@ -39,6 +39,6 @@ const portafolios = [
 ]
 ---
 
-<section class="flex h-auto w-full flex-col justify-center overflow-hidden">
-	{portafolios.map((portafolio) => <Card type="portafolio" {...portafolio} />)}
+<section class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 md:p-8 max-w-[1280px] mx-auto w-full">
+	{portafolios.map((portafolio) => <PortafolioCard {...portafolio} />)}
 </section>

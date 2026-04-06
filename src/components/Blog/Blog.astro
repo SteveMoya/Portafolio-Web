@@ -1,9 +1,7 @@
 ---
 import Header from '@components/Header.astro'
 
-import Card from '@components/ui/Card.astro'
-import { formatDate } from '@src/utils'
-
+import PostCard from '@components/PostCard.astro'
 import { getCollection } from 'astro:content'
 
 
@@ -19,17 +17,10 @@ const posts = (await getCollection('blog')).sort(
 	description="Hecha un vistaso a"
 	descriptionCaption="Mis Articulos"
 />
-<section class="blog-content flex flex-wrap items-center justify-center">
+<section class="mx-auto my-8 max-w-[1200px] px-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
 	{
 		posts.map((post) => (
-			<Card
-				type="blog"
-				href={`/blog/${post.slug}/`}
-				title={post.data.title}
-				img={post.data.heroImage.src ? post.data.heroImage.src : ''}
-				date={formatDate(post.data.pubDate)}
-				description={post.data.description}
-			/>
+			<PostCard {...post} />
 		))
 	}
 </section>

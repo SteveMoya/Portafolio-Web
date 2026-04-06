@@ -1,5 +1,4 @@
 ---
-
 import { siteConfig } from '@src/data/config'
 import { ViewTransitions } from 'astro:transitions'
 
@@ -8,6 +7,7 @@ interface Props {
 	description?: string
 	image?: string
 	articleDate?: string | undefined
+	articleUpdateDate?: string | undefined
 	keywords?: string
 	canonicalURL?: string | URL
 }
@@ -18,12 +18,45 @@ const {
 	keywords = siteConfig.keywords,
 	canonicalURL = new URL(Astro.url.pathname, Astro.site) || 'https://stevemoya.me/',
 	image = siteConfig.ogImage,
-	articleDate
+	articleDate,
+	articleUpdateDate
 } = Astro.props
+
+// Ensure absolute URL for OG Images
+const ogImageUrl = new URL(image, Astro.site || 'https://stevemoya.me').toString()
+
+// Dynamic Schema.org JSON-LD
+const schema = {
+	"@context": "https://schema.org",
+	"@type": articleDate ? "BlogPosting" : "Person",
+	...(articleDate
+		? {
+				headline: title,
+				description: description,
+				image: [ogImageUrl],
+				url: canonicalURL.toString(),
+				datePublished: articleDate,
+				...(articleUpdateDate ? { dateModified: articleUpdateDate } : {}),
+				author: {
+					"@type": "Person",
+					name: siteConfig.author,
+					url: Astro.site || 'https://stevemoya.me'
+				}
+		  }
+		: {
+				name: siteConfig.author,
+				url: Astro.site || 'https://stevemoya.me',
+				jobTitle: "Marketer & Desarrollador Web",
+				description: siteConfig.description,
+				image: ogImageUrl
+		  }
+	)
+}
 ---
 
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<ViewTransitions />
 
 <!-- Title: Recommended: 60 characters -->
 <title>{title}</title>
@@ -39,13 +72,12 @@ const {
 <link rel="canonical" href={canonicalURL} />
 
 <!-- Open Graph / Facebook -->
-<meta property="og:locale" content="es" />
+<meta property="og:locale" content={siteConfig.ogLocale || 'es_DO'} />
 <meta property="og:logo" content={siteConfig.favicon} />
-<meta property="og:type" content="website" />
 <meta property="og:url" content={canonicalURL} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={image} />
+<meta property="og:image" content={ogImageUrl} />
 
 <!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image" />
@@ -53,7 +85,7 @@ const {
 <meta property="twitter:url" content={canonicalURL} />
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
-<meta property="twitter:image" content={image} />
+<meta property="twitter:image" content={ogImageUrl} />
 
 {
 	articleDate && (
@@ -67,5 +99,8 @@ const {
 <!-- RSS auto-discovery -->
 <link rel="alternate" type="application/rss+xml" title={siteConfig.title} href="/rss.xml" />
 
-<meta name="robots" content="index, nosnippet" />
-<meta property="og:type" content="website" />
+<!-- Schema.org Script -->
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+<meta name="robots" content="index, follow" />
+<meta property="og:type" content={articleDate ? "article" : "website"} />

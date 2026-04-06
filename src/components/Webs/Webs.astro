@@ -1,69 +1,82 @@
 ---
-import Card from '@components/ui/Card.astro'
 import Button from '@components/ui/Button.astro'
-import OptimizatedPicture from '@components/OptimizatedPicture.astro'
 
 import { getRepos, getRepoLanguages, fetchFirstImageFromReadme } from '@src/lib/github'
 import { formatDate } from '@src/utils'
 import ProjectTecnology from '@components/ProjectTecnology.astro'
 import placehorderImage from '/public/img/place-holder-image.webp'
+
+interface repo {
+	name: string
+	description: string
+	html_url?: string
+	homepage?: string
+	pushed_at: string
+}
 ---
 
-<section class="flex flex-wrap items-center justify-center">
-	{
-		getRepos().then((repos) =>
-			repos.map(async (repo) => {
-				const imageUrl = await fetchFirstImageFromReadme(repo.name)
-				const languages = await getRepoLanguages(repo.name)
-				return (
-					<article class="m-5 w-[450px] rounded-lg bg-[#c7c7c7]">
-						<div class="relative w-full">
-							<OptimizatedPicture
-								src={imageUrl ? imageUrl : placehorderImage}
-								alt={`${repo.name} Imagen`}
-								class="aspect-square h-full w-full object-cover object-center"
-							/>
-							<time
-								data-time={formatDate(repo.pushed_at as unknown as Date)}
-								class="absolute bottom-0 left-0 h-auto w-3/12 rounded-t-md bg-[#c70039] p-[3px] text-center text-lg font-normal transition-all duration-300 ease-in-out"
-							>
-								{formatDate(repo.pushed_at as unknown as Date)}
-							</time>
-						</div>
-						<div class="h-4/5 w-full content-center bg-[#050505] text-center">
-							<h3 class="h-1/5 p-5 text-[28px] font-medium capitalize tracking-[1px]">
-								{repo.name || 'Sin nombre'}
-							</h3>
-							<p class="h-4/5 p-[30px] text-lg font-normal tracking-[1px] opacity-90">
-								{repo.description || 'Sin descripcion'}
-							</p>
-							<ul class="flex flex-wrap justify-center gap-4">
-								{languages?.map((lang) => (
-									<ProjectTecnology tecnology={lang.name} />
-								))}
-							</ul>
-							{repo.homepage && (
-								<a
-									href={repo.homepage}
-									title={`Ver Demo de ${repo.name}`}
-									aria-label={`Ver Demo de ${repo.name}`}
-								>
-									<Button type="button">Ver Demo</Button>
-								</a>
-							)}
-							{repo.html_url && (
-								<a
-									href={repo.html_url}
-									title={`Ver Codigo de ${repo.name}`}
-									aria-label={`Ver Codigo de ${repo.name}`}
-								>
-									<Button type="button">Ver Código</Button>
-								</a>
-							)}
-						</div>
-					</article>
-				)
-			})
-		)
-	}
+<section class="mx-auto w-full max-w-7xl px-4 py-8">
+    <div class="flex flex-wrap justify-center gap-8">
+        {
+            getRepos().then((repos: repo[]) =>
+                repos.map(async (repo: repo) => {
+                    const imageUrl: string | null = await fetchFirstImageFromReadme(repo.name)
+                    const languages = await getRepoLanguages(repo.name)
+                    return (
+                        <article class="w-full max-w-[450px] sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.333rem)] group relative flex flex-col overflow-hidden rounded-2xl bg-skin-fill shadow-sm ring-1 ring-skin-muted transition-all duration-500 hover:-translate-y-2 hover:shadow-xl hover:shadow-skin-hues/20 reveal reveal-delay-200">
+                            <div class="relative w-full overflow-hidden bg-skin-muted pb-[60%]">
+                                <img
+                                    src={imageUrl || (placehorderImage as unknown as string)}
+                                    alt={`${repo.name} Imagen`}
+                                    class="absolute left-0 top-0 h-full w-full object-cover object-center transition-transform duration-700 ease-in-out group-hover:scale-110"
+                                    loading="lazy"
+                                />
+                                <time
+                                    data-time={formatDate(repo.pushed_at as unknown as Date)}
+                                    class="absolute bottom-4 left-4 rounded-lg bg-skin-hue/90 px-3 py-1.5 text-xs font-semibold tracking-wide text-skin-inverted shadow-lg backdrop-blur-md transition-transform duration-300 group-hover:-translate-y-1"
+                                >
+                                    {formatDate(repo.pushed_at as unknown as Date)}
+                                </time>
+                            </div>
+                            <div class="flex flex-1 flex-col p-6 items-center text-center">
+                                <h3 class="mb-3 text-2xl font-bold tracking-tight text-skin-base transition-colors duration-300 group-hover:text-skin-hue line-clamp-1 capitalize">
+                                    {repo.name || 'Sin nombre'}
+                                </h3>
+                                <p class="mb-6 flex-1 text-sm text-skin-muted line-clamp-3">
+                                    {repo.description || 'Sin descripcion'}
+                                </p>
+                                <ul class="mb-6 flex flex-wrap justify-center items-center gap-2">
+                                    {languages?.map((lang) => (
+                                        <ProjectTecnology tecnology={lang.name} />
+                                    ))}
+                                </ul>
+                                <div class="mt-auto flex w-full justify-center items-center gap-3">
+                                    {repo.homepage && (
+                                        <a
+                                            href={repo.homepage}
+                                            title={`Ver Demo de ${repo.name}`}
+                                            aria-label={`Ver Demo de ${repo.name}`}
+                                            class="transition-transform duration-300 hover:scale-105"
+                                        >
+                                            <Button type="button">Ver Demo</Button>
+                                        </a>
+                                    )}
+                                    {repo.html_url && (
+                                        <a
+                                            href={repo.html_url}
+                                            title={`Ver Codigo de ${repo.name}`}
+                                            aria-label={`Ver Codigo de ${repo.name}`}
+                                            class="transition-transform duration-300 hover:scale-105"
+                                        >
+                                            <Button type="button">Ver Código</Button>
+                                        </a>
+                                    )}
+                                </div>
+                            </div>
+                        </article>
+                    )
+                })
+            )
+        }
+    </div>
 </section>

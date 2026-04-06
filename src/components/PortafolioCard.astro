@@ -1,0 +1,64 @@
+---
+import { CldImage } from 'astro-cloudinary'
+
+interface Props {
+	title: string
+	img?: any
+	description?: string
+	href?: string
+}
+
+const { title, img = '', description, href } = Astro.props
+---
+
+<article class="group relative w-full aspect-[4/3] md:aspect-[3/2] cursor-pointer">
+	{/* Efecto de Cartas Apiladas (Background Cards) - Hacia abajo, color principal con borde más claro para contraste y menor opacidad */}
+	{/* Carta 3 (Más profunda/lejana) */}
+	<div class="absolute inset-0 rounded-2xl bg-[#c70039] border border-white/5 z-0 transition-all duration-700 ease-out opacity-0 lg:group-hover:opacity-10 lg:group-hover:-translate-x-6 lg:group-hover:translate-y-6 lg:group-hover:rotate-[-3deg]"></div>
+	
+	{/* Carta 2 (Intermedia) */}
+	<div class="absolute inset-0 rounded-2xl bg-[#c70039] border border-white/10 z-0 transition-all duration-500 ease-out opacity-0 lg:group-hover:opacity-20 lg:group-hover:-translate-x-4 lg:group-hover:translate-y-4 lg:group-hover:rotate-[-2deg]"></div>
+	
+	{/* Carta 1 (Más cercana a la principal) */}
+	<div class="absolute inset-0 rounded-2xl bg-[#c70039] border border-white/20 z-0 transition-all duration-300 ease-out opacity-0 lg:group-hover:opacity-40 lg:group-hover:-translate-x-2 lg:group-hover:translate-y-2 lg:group-hover:rotate-[-1deg]"></div>
+
+	{/* Contenedor Principal de la Tarjeta */}
+	<div class="relative z-10 flex flex-col justify-end w-full h-full overflow-hidden rounded-2xl bg-[#0a0a0a] border border-white/10 shadow-xl transition-all duration-300 lg:group-hover:shadow-[0_8px_30px_rgb(199,0,57,0.4)] lg:group-hover:-translate-y-2 lg:group-hover:border-[#c70039]/80">
+		<a href={href} class="absolute inset-0 z-20" aria-label={`Ver sección de ${title}`}></a>
+		
+		<div class="absolute inset-0 w-full h-full overflow-hidden z-0">
+			<CldImage
+				class="w-full h-full object-cover object-center transition-transform duration-[800ms] ease-out lg:group-hover:scale-110"
+				src={img}
+				alt={`Fondo representativo de ${title}`}
+				width={800}
+				height={600}
+			/>
+		</div>
+		
+		{/* Gradiente multi-capa para asegurar legibilidad. Siempre visible en móvil/tablet, animado en lg */}
+		<div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent opacity-90 lg:opacity-80 z-10 transition-opacity duration-500 lg:group-hover:opacity-95"></div>
+		{/* Overlay rojo sutil al hacer hover (solo en desktop para no manchar el móvil siempre) */}
+		<div class="absolute inset-0 bg-[#c70039] opacity-0 mix-blend-multiply z-10 transition-opacity duration-500 lg:group-hover:opacity-20 hidden lg:block"></div>
+
+		<div class="relative z-20 flex flex-col p-6 sm:p-8 transform transition-transform duration-500 ease-out translate-y-0 lg:translate-y-4 lg:group-hover:translate-y-0">
+			<div class="flex items-center gap-3 mb-2">
+				<div class="w-10 h-1 bg-[#c70039] rounded-full transform origin-left transition-transform duration-500 ease-out scale-x-100 lg:scale-x-50 lg:group-hover:scale-x-100"></div>
+				<h2 class="text-3xl sm:text-4xl font-bold tracking-wide text-white drop-shadow-lg">
+					{title}
+				</h2>
+			</div>
+			
+			<p class="text-gray-300 font-light text-sm sm:text-base leading-relaxed opacity-100 translate-y-0 lg:opacity-0 lg:transform lg:translate-y-4 transition-all duration-500 delay-100 lg:group-hover:opacity-100 lg:group-hover:translate-y-0 max-w-[90%]">
+				{description}
+			</p>
+			
+			<div class="mt-4 flex items-center text-[#c70039] font-medium opacity-100 translate-x-0 lg:opacity-0 lg:transform lg:translate-x-4 transition-all duration-500 delay-200 lg:group-hover:opacity-100 lg:group-hover:translate-x-0">
+				<span>Explorar</span>
+				<svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+				</svg>
+			</div>
+		</div>
+	</div>
+</article>

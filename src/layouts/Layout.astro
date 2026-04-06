@@ -1,11 +1,14 @@
 ---
-import Navbar from './NavBar/Navbar.astro'
-import Footer from './Footer/Footer.astro'
+import NavbarMinimal from './Navbar.astro'
+import Footer from './Footer.astro'
 import Head from './Head.astro'
 import Cursor from '@src/layouts/Cursor.astro'
 
-import TwSizeIndicator from '@components/TwSizeIndicator.astro'
-import EditBlog from '@components/editBlog.astro'
+import TwSizeIndicator from '@components/ui/TwSizeIndicator.astro'
+import EditBlog from '@components/ui/editBlog.astro'
+import BotonFlotante from '@components/ui/BotonFlotante.astro'
+import BotonIrArriba from '@components/ui/BotonIrArriba.astro'
+import "@/styles/global.css";
 
 interface Props {
 	title?: string
@@ -15,6 +18,8 @@ interface Props {
 	keywords?: string
 	canonicalURL?: string | URL
 }
+import '@/styles/global.css'
+
 // Importacion global de las fuentes
 
 import '@fontsource/poppins'
@@ -26,28 +31,42 @@ import '@fontsource-variable/raleway/wght-italic.css'
 
 // Suppoer weights 600
 import '@fontsource/monoton'
-import BotonFlotante from '@components/BotonFlotante.astro'
-import BotonIrArriba from '@components/BotonIrArriba.astro'
 ---
 
 <!doctype html>
 <html lang="es">
 	<Head {...Astro.props} />
 	<body
-		class="body h-auto w-full overflow-x-hidden text-wrap bg-[#101010] font-poppins text-[whitesmoke]"
+		class="body bg-dark h-auto w-full overflow-x-clip text-wrap pt-16 font-poppins text-[whitesmoke]"
 	>
 		<Cursor />
-		<Navbar />
-		<main class="h-auto w-full overflow-hidden">
-			<slot />
-			{
-				Astro.url.pathname.includes('/blog/') && (
-					<BotonIrArriba />
-				)
-			}
+		<NavbarMinimal />
+		<slot name="header-progress" />
+		<main class="relative h-auto w-full overflow-clip">
+			<!-- Animated Background Spheres -->
+			<div class="pointer-events-none fixed inset-0 z-[-1] overflow-hidden">
+				<div class="absolute -top-[20%] -left-[10%] h-[600px] w-[600px] rounded-full bg-[#c70039] opacity-20 mix-blend-screen blur-[120px] transition-transform duration-1000"></div>
+				<div class="absolute top-[40%] -right-[10%] h-[500px] w-[500px] rounded-full bg-[#b11141] opacity-20 mix-blend-screen blur-[150px] transition-transform duration-1000"></div>
+				<div class="absolute -bottom-[20%] left-[20%] h-[700px] w-[700px] rounded-full bg-[#c70039] opacity-15 mix-blend-screen blur-[130px] transition-transform duration-1000"></div>
+			</div>
 			
+			<!-- Page Content Wrapper with Transition Animation -->
+			<div transition:animate={{
+				forwards: {
+					old: { name: 'page-out', duration: '0.25s', easing: 'ease-in', fillMode: 'both' },
+					new: { name: 'page-in', duration: '0.3s', easing: 'ease-out', fillMode: 'both' }
+				},
+				backwards: {
+					old: { name: 'page-out', duration: '0.25s', easing: 'ease-in', fillMode: 'both' },
+					new: { name: 'page-in', duration: '0.3s', easing: 'ease-out', fillMode: 'both' }
+				}
+			}}>
+				<slot />
+			</div>
+			{Astro.url.pathname.includes('/blog/') && <BotonIrArriba />}
+
 			{
-				Astro.url.pathname !== "/" && (
+				Astro.url.pathname !== '/' && (
 					<BotonFlotante
 						icon="mdi:whatsapp"
 						link="https://api.whatsapp.com/send/?phone=18497511849&text&type=phone_number&app_absent=0"
@@ -59,6 +78,7 @@ import BotonIrArriba from '@components/BotonIrArriba.astro'
 		<TwSizeIndicator />
 		<EditBlog />
 		<Footer />
+		
 		<style is:global>
 			::-webkit-scrollbar {
 				width: 4px;
@@ -76,6 +96,51 @@ import BotonIrArriba from '@components/BotonIrArriba.astro'
 				border-radius: 4px;
 				width: 4px;
 			}
+
+			/* ── Page transition animations ── */
+			@keyframes page-in {
+				from { opacity: 0; transform: translateY(14px); }
+				to   { opacity: 1; transform: translateY(0); }
+			}
+			@keyframes page-out {
+				from { opacity: 1; transform: translateY(0); }
+				to   { opacity: 0; transform: translateY(-10px); }
+			}
+
+			/* ── Section scroll-in animations ── */
+			.section-animate {
+				opacity: 0;
+				transform: translateY(28px);
+				transition: opacity 0.65s ease, transform 0.65s ease;
+			}
+			.section-animate.animate-in {
+				opacity: 1;
+				transform: translateY(0);
+			}
 		</style>
 	</body>
 </html>
+
+<script>
+	const initScrollAnimations = () => {
+		const elements = document.querySelectorAll('.section-animate')
+		if (!elements.length) return
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						entry.target.classList.add('animate-in')
+						observer.unobserve(entry.target)
+					}
+				})
+			},
+			{ threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+		)
+
+		elements.forEach((el) => observer.observe(el))
+	}
+
+	initScrollAnimations()
+	document.addEventListener('astro:after-swap', initScrollAnimations)
+</script>

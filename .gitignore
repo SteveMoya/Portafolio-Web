@@ -22,4 +22,10 @@ pnpm-debug.log*
 .DS_Store
 
 node_modules
-.env
+.vscode/
+.idea/
+.bun.lock
+.pnpm-lock.yaml
+
+TODO.md
+.vercel

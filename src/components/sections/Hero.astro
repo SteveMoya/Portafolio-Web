@@ -1,0 +1,251 @@
+---
+import { basics } from "@cv";
+import Section from "@/components/SectionPrint.astro";
+import Mail from "@/icons/Mail.astro";
+import Phone from "@/icons/Phone.astro";
+import X from "@/icons/X.astro";
+import LinkedIn from "@/icons/LinkedIn.astro";
+import GitHub from "@/icons/GitHub.astro";
+import WorldMap from "@/icons/WorldMap.astro";
+import type { SocialIcon } from "@/types";
+
+const { name, label, image, location, profiles, phone, email } = basics;
+const { city, region } = location;
+
+const SOCIAL_ICONS: SocialIcon = {
+	GitHub,
+	LinkedIn,
+	X,
+};
+
+const linkedInfo = profiles.find(({ network }) => network === "LinkedIn");
+const linkedUrl = linkedInfo?.url;
+
+const printInfo = [email, phone, linkedUrl].filter(Boolean).join(" • ");
+---
+
+<Section>
+	<div class="flex flex-col-reverse gap-8">
+		<div class="info">
+			<h1><span class="shimmer-name">{name}</span></h1>
+			<h2>{label}</h2>
+			<div class="flex items-center gap-2 pt-2 text-sm text-skin-muted">
+				<WorldMap />
+				{city}, {region}
+			</div>
+			<div class="flex flex-col gap-2">
+				<h3 class="text-lg font-semibold">Contacto</h3>
+				<ul class="flex flex-col gap-2">
+					{
+						email && (
+							<li class="flex items-center gap-2">
+								<Mail class="h-6 w-6" />
+								<a href={`mailto:${email}`} class="text-sm">
+									{email}
+								</a>
+							</li>
+						)
+					}
+					{
+						phone && (
+							<li class="flex items-center gap-2">
+								<Phone class="h-6 w-6" />
+								<a href={`tel:${phone}`} class="text-sm">
+									{phone}
+								</a>
+							</li>
+						)
+					}
+				</ul>
+				<h3 class="text-lg font-semibold mt-4">Redes Sociales</h3>
+				<ul class="flex flex-col gap-2">
+					{
+						profiles.map(({ network, url, username }) => {
+							const Icon = SOCIAL_ICONS[network];
+							return (
+								<li class="flex items-center gap-2">
+									<Icon class="h-6 w-6" />
+									<a href={url} target="_blank" rel="noopener noreferrer" class="text-sm">
+										{username}
+									</a>
+								</li>
+							);
+						})
+					}
+				</ul>
+			</div>
+		</div>
+		<figure class="print:hidden w-fit relative">
+			<img class="shadow-lg shadow-skin-hues" src={image} alt={name} />
+			<div class="pointer-events-none absolute -inset-2">
+				<div class="absolute -inset-y-8 right-0 w-px bg-skin-hue/50" style="-webkit-mask-image: linear-gradient(to top, transparent, white 4rem, white calc(100% - 4rem), transparent); mask-image: linear-gradient(to top, transparent, white 4rem, white calc(100% - 4rem), transparent);"></div>
+				<div class="absolute -inset-y-8 left-0 w-px bg-skin-hue/50" style="-webkit-mask-image: linear-gradient(to top, transparent, white 4rem, white calc(100% - 4rem), transparent); mask-image: linear-gradient(to top, transparent, white 4rem, white calc(100% - 4rem), transparent);"></div>
+				<div class="absolute -inset-x-8 bottom-0 h-px bg-skin-hue/50" style="-webkit-mask-image: linear-gradient(to left, transparent, white 4rem, white calc(100% - 4rem), transparent); mask-image: linear-gradient(to left, transparent, white 4rem, white calc(100% - 4rem), transparent);"></div>
+				<div class="absolute -inset-x-8 top-0 h-px bg-skin-hue/50" style="-webkit-mask-image: linear-gradient(to left, transparent, white 4rem, white calc(100% - 4rem), transparent); mask-image: linear-gradient(to left, transparent, white 4rem, white calc(100% - 4rem), transparent);"></div>
+			</div>
+		</figure>
+	</div>
+</Section>
+
+<style>
+	.info {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		padding-right: 2rem;
+	}
+
+	@media print {
+		.info {
+			gap: 0;
+			padding-right: 0;
+		}
+	}
+
+	h1 {
+		font-size: 2.25rem;
+		line-height: 2.5rem;
+		font-weight: 700;
+	}
+
+	.shimmer-name {
+		background: linear-gradient(
+			90deg,
+			#ffffff 0%,
+			#ffffff 30%,
+			#c70039 50%,
+			#ffffff 70%,
+			#ffffff 100%
+		);
+		background-size: 200% auto;
+		-webkit-background-clip: text;
+		background-clip: text;
+		-webkit-text-fill-color: transparent;
+		animation: shimmer 4s linear infinite;
+	}
+
+	@keyframes shimmer {
+		0% { background-position: 200% center; }
+		100% { background-position: -200% center; }
+	}
+
+	@media print {
+		.shimmer-name {
+			-webkit-text-fill-color: #000;
+			background: none;
+			animation: none;
+		}
+	}
+
+	@media print {
+		h1 {
+			font-size: 1.875rem;
+			line-height: 2.25rem;
+		}
+	}
+
+	h2 {
+		text-wrap: balance;
+		font-size: 1rem;
+		line-height: 1.5rem;
+		color: var(--color-text-muted);
+	}
+
+	@media print {
+		h2 {
+			font-size: 1.125rem;
+			line-height: 1.75rem;
+		}
+	}
+
+	img {
+		aspect-ratio: 1 / 1;
+		width: 8rem;
+		border-radius: 1rem;
+		background-size: cover;
+	}
+
+	span {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		font-size: 0.75rem;
+		line-height: 1rem;
+		color: var(--color-accent);
+	}
+
+	footer {
+		margin-top: 0.5rem;
+		display: flex;
+		gap: 0.25rem;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	footer a, footer button {
+		display: inline-flex;
+		width: 2rem;
+		height: 2rem;
+		align-items: center;
+		justify-content: center;
+		border-radius: 0.375rem;
+		padding: 0.25rem;
+		transition-property: all;
+		transition-timing-function: linear;
+		transition-duration: 500ms;
+		color: var(--color-accent);
+	}
+
+	footer a:hover, footer button:hover {
+		background-color: var(--color-button-accent);
+		color: var(--color-text-inverted);
+	}
+
+	@media (width <= 700px) {
+		.container {
+			flex-direction: column-reverse;
+		}
+
+		.info {
+			padding-right: 0;
+		}
+
+		h2 {
+			text-wrap: balance;
+		}
+	}
+
+	@media (min-width: 768px) {
+		@media (width <= 700px) {
+			.info {
+				align-items: center;
+				justify-content: center;
+			}
+
+			figure {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				margin-left: auto;
+				margin-right: auto;
+			}
+		}
+	}
+</style>
+
+<script>
+	// Handle print mode - remove dark theme when printing
+	const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+
+	window.addEventListener("beforeprint", () => {
+		document.documentElement.classList.remove("dark");
+	});
+
+	window.addEventListener("afterprint", () => {
+		const savedTheme = localStorage.getItem("theme") || "system";
+		const effectiveTheme = savedTheme === "system" ? systemTheme : savedTheme;
+		if (effectiveTheme === "dark") {
+			document.documentElement.classList.add("dark");
+		}
+	});
+</script>

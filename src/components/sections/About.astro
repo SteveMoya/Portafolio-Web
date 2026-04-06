@@ -1,0 +1,12 @@
+---
+import Section from "@/components/SectionPrint.astro";
+
+import { basics } from "@cv";
+const { summary } = basics;
+---
+
+<Section title="About">
+	<p>
+		{summary}
+	</p>
+</Section>

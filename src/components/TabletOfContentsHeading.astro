@@ -19,14 +19,20 @@ export interface Props {
 	<a
 		href={'#' + heading.slug}
 		class={cn(
-			`bg-slate-800 hover:bg-[#bb0000] hover:text-white  py-1 px-4 text-white rounded-full mb-2 first-letter:uppercase w-fit line-clamp-2`
+			`group relative text-gray-500 border-transparent`,
+			`hover:text-white hover:bg-white/[0.04] hover:border-white/20`,
+			`transition-all duration-200`,
+			`py-1.5 -ml-[2px] border-l-[2px]`,
+			`rounded-r-md`,
+			heading.depth > 2 ? 'pl-8 text-xs opacity-75' : 'pl-4 text-sm',
+			`line-clamp-2`
 		)}
 	>
 		{heading.text}
 	</a>
 	{
 		heading.subheadings.length > 0 && (
-			<ul class="ml-3">
+			<ul class="flex flex-col">
 				{heading.subheadings.map((subheading) => (
 					<Astro.self heading={subheading} />
 				))}

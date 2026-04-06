@@ -1,0 +1,39 @@
+{
+    "links": [
+        {
+            "title": "Portfolio Web",
+            "url": "/",
+            "icon": "mdi:web"
+        },
+        {
+            "title": "Blog",
+            "url": "/blog",
+            "icon": "mdi:post"
+        },
+        {
+            "title": "LinkedIn",
+            "url": "https://www.linkedin.com/in/stevemoya/",
+            "icon": "mdi:linkedin"
+        },
+        {
+            "title": "GitHub",
+            "url": "https://github.com/SteveMoya",
+            "icon": "mdi:github"
+        },
+        {
+            "title": "Twitter",
+            "url": "https://twitter.com/steve_moya",
+            "icon": "mdi:twitter"
+        },
+        {
+            "title": "Instagram",
+            "url": "https://instagram.com/stevemoya",
+            "icon": "mdi:instagram"
+        },
+        {
+            "title": "Email",
+            "url": "mailto:contacto@stevemoya.com",
+            "icon": "mdi:email"
+        }
+    ]
+}

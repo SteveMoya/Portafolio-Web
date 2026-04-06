@@ -9,6 +9,7 @@ interface SiteConfig {
     keywords: string
     favicon: string
     ogImage: string
+    profileImage?: string
 }
 
 export const siteConfig: SiteConfig = {
@@ -22,5 +23,6 @@ export const siteConfig: SiteConfig = {
     lang: 'es-DO',
     ogLocale: 'es_DO',
     shareMessage: 'Comparte este Post', // Social share message
-    paginationSize: 6 // Number of posts per page
+    paginationSize: 6, // Number of posts per page
+    profileImage: '/img/ProfileImage.jpg' // Author profile image
 }

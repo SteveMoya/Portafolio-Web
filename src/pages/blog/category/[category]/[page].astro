@@ -4,7 +4,7 @@ import { siteConfig } from '@src/data/config'
 import Pagination from '@components/Pagination.astro'
 import ListCategories from '@components/ListCategories.astro'
 import Layout from '@layouts/Layout.astro'
-import Card from '@components/ui/Card.astro'
+import PostCard from '@components/PostCard.astro'
 import Header from '@components/Header.astro'
 
 export async function getStaticPaths({ paginate }: any) {
@@ -41,19 +41,14 @@ const posts = page.data
 	/>
 	<ListCategories activeCategory={params.category} />
 
-	<section class="flex flex-wrap content-center justify-center">
+	<section class="mx-auto my-8 max-w-[1200px] px-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
 		{
-			posts.map((post) => (
-				<Card
-					type="blog"
-					title={post.data.title}
-					description={post.data.description}
-					img={post.data.heroImage.src}
-					href={`/blog/${post.slug}`}
-					date={formatDate(post.data.updateDate || post.data.pubDate)}
-				/>
+			posts.map((post: any) => (
+				<PostCard {...post} />
 			))
 		}
 	</section>
-	<Pagination page={page} />
+	<div class="mt-12">
+		<Pagination page={page} />
+	</div>
 </Layout>

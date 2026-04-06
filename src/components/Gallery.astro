@@ -1,6 +1,4 @@
 ---
-import OptimizatedPicture from './OptimizatedPicture.astro'
-import type { ImageMetadata } from 'astro'
 const { path } = Astro.props
 import { CldImage } from 'astro-cloudinary'
 import { getCollection } from 'astro:content'
@@ -12,7 +10,6 @@ async function getImages() {
 	}
 	if (path === 'fotografia') {
 		const images = await getCollection('fotografia')
-		console.log(images)
 		return images
 	}
 }
@@ -20,43 +17,220 @@ async function getImages() {
 const images = await getImages()
 ---
 
-<section class="p-4">
-	<ul
-		class="ul mx-auto my-0 grid w-[95%] grid-cols-[repeat(auto-fit,minmax(10em,1fr))] gap-[2em] rounded-2xl bg-[#050505] p-4 shadow-sm transition-all duration-300 ease-in-out"
-	>
+<section class="max-w-7xl mx-auto px-4 py-8">
+    <div class="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6">
 		{
-			images?.map(async (imagen, index) => {
+			images?.map((imagen: any, index: number) => {
 				return (
-					<li class="group overflow-hidden rounded-2xl bg-[#050505] shadow-sm transition-all duration-300 ease-in-out">
-						<a href={`#${index + 1}`} data-astro-prefetch="tap" title={`Imagen ${index + 1} `}>
-							{/* Mostrar un thumbnail en lugar de la imagen completa */}
+					<div class="break-inside-avoid relative group overflow-hidden rounded-2xl bg-skin-fill shadow-sm transition-all duration-500 ease-in-out hover:-translate-y-2 hover:shadow-xl ring-1 ring-skin-muted cursor-pointer" data-gallery-item={index}>
+						<div class="block w-full">
 							<CldImage
 								src={imagen.data.public_id}
 								alt={`Imagen ${index + 1}`}
-								class="block aspect-[1/1] h-full min-h-[30vh] w-full max-w-full scale-100 object-cover object-center transition-all duration-500 ease-in-out group-hover:scale-125"
+								class="block w-full h-auto object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
+                                loading="lazy"
 							/>
-						</a>
-
-						<div
-							id={`${index + 1}`}
-							class="pointer-events-auto fixed inset-0 z-50 hidden h-full w-full overflow-auto rounded-[1em] bg-black/75 p-10 opacity-100 shadow-lg transition-all duration-300 ease-in-out target:flex target:flex-col target:items-center target:justify-center target:gap-4 target:overflow-auto target:rounded-[1em] target:bg-black/90 target:p-10 target:opacity-100 target:shadow-lg target:transition-all target:duration-300 target:ease-in-out"
-						>
-							<a href="#">
-								<button class="duration- mt-0 block h-[3em] w-[5em] cursor-pointer rounded-lg border-[none] bg-[#BB0035] text-center text-xl opacity-80 transition-all ease-in-out hover:opacity-100 hover:transition-all hover:duration-300 hover:ease-in-out">
-									Cerrar
-								</button>
-							</a>
-
-							{/* Aquí cargas la imagen completa */}
-							<CldImage
-								src={imagen.data.public_id}
-								alt={`Imagen ${index + 1} `}
-								class="h-[80vh] max-h-fit w-full max-w-fit rounded-lg object-cover object-center transition-all duration-500 ease-in-out"
-							/>
+                            {/* Overlay en hover con icono de zoom */}
+                            <div class="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 z-10 pointer-events-none">
+                                <div class="bg-black/50 text-white p-3 rounded-full backdrop-blur-sm transform scale-50 transition-transform duration-300 group-hover:scale-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/><line x1="11" x2="11" y1="8" y2="14"/><line x1="8" x2="14" y1="11" y2="11"/>
+                                    </svg>
+                                </div>
+                            </div>
 						</div>
-					</li>
+					</div>
 				)
 			})
 		}
-	</ul>
+	</div>
+
+    {/* Lightbox Dialog Modal */}
+    <dialog id="lightbox-modal" class="backdrop:bg-black/90 backdrop:backdrop-blur-sm bg-transparent w-full h-full max-w-[100vw] max-h-[100vh] m-0 p-0 overscroll-none fixed inset-0 z-[100] outline-none">
+        
+        <div class="relative w-full h-full flex flex-col items-center justify-center p-4 sm:p-8">
+            {/* Close button */}
+            <button id="lightbox-close" class="absolute top-4 right-4 sm:top-6 sm:right-6 z-50 text-white/70 hover:text-white bg-black/40 hover:bg-black/80 transition-all duration-300 rounded-full p-2 group" aria-label="Cerrar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-300 group-hover:rotate-90"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+
+            {/* Prev button */}
+            <button id="lightbox-prev" class="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-50 text-white/70 hover:text-white bg-black/40 hover:bg-black/80 transition-all duration-300 rounded-full p-3 group transform hover:-translate-x-1" aria-label="Anterior">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+
+            {/* Next button */}
+            <button id="lightbox-next" class="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-50 text-white/70 hover:text-white bg-black/40 hover:bg-black/80 transition-all duration-300 rounded-full p-3 group transform hover:translate-x-1" aria-label="Siguiente">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+
+            {/* Image Container */}
+            <div class="relative w-full h-[85vh] flex items-center justify-center overflow-hidden touch-none select-none">
+                {/* Loader */}
+                <div id="lightbox-loader" class="absolute inset-0 flex items-center justify-center z-10 opacity-0 transition-opacity duration-300 hidden">
+                    <svg class="animate-spin h-10 w-10 text-white/50" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+                
+                <img id="lightbox-image" src="" alt="Vista ampliada" class="max-h-full max-w-full object-contain drop-shadow-2xl transition-all duration-300 rounded-md scale-95 opacity-0" />
+            </div>
+            
+            {/* Status Indicator */}
+            <div id="lightbox-status" class="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/90 bg-black/60 backdrop-blur-md px-5 py-2 rounded-full text-sm font-semibold tracking-widest shadow-lg">
+                1 / {images?.length || 0}
+            </div>
+        </div>
+    </dialog>
 </section>
+
+<script>
+    function setupGallery() {
+        const modal = document.getElementById('lightbox-modal') as HTMLDialogElement;
+        const modalImg = document.getElementById('lightbox-image') as HTMLImageElement;
+        const loader = document.getElementById('lightbox-loader');
+        const closeBtn = document.getElementById('lightbox-close');
+        const prevBtn = document.getElementById('lightbox-prev');
+        const nextBtn = document.getElementById('lightbox-next');
+        const statusText = document.getElementById('lightbox-status');
+        
+        const galleryItems = document.querySelectorAll('[data-gallery-item]');
+        const images = document.querySelectorAll('[data-gallery-item] img');
+        
+        let currentIndex = 0;
+        const totalImages = galleryItems.length;
+
+        if (!modal || totalImages === 0) return;
+
+        function openModal(index: number) {
+            currentIndex = index;
+            updateModalContent();
+            modal.showModal();
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        function closeModal() {
+            modal.close();
+            document.body.style.overflow = '';
+            
+            // Reset image state
+            modalImg.classList.remove('scale-100', 'opacity-100');
+            modalImg.classList.add('scale-95', 'opacity-0');
+        }
+
+        function updateModalContent() {
+            const currentImg = images[currentIndex] as HTMLImageElement;
+            if (currentImg) {
+                // Show loader, hide image temporarily
+                if (loader) {
+                    loader.classList.remove('hidden');
+                    setTimeout(() => loader.classList.add('opacity-100'), 10);
+                }
+                modalImg.classList.remove('scale-100', 'opacity-100');
+                modalImg.classList.add('scale-95', 'opacity-0');
+
+                // Update src and srcset
+                const newSrc = currentImg.src;
+                
+                // Set image content
+                modalImg.src = newSrc;
+                if (currentImg.srcset) {
+                    modalImg.srcset = currentImg.srcset;
+                    modalImg.sizes = "100vw";
+                } else {
+                    modalImg.removeAttribute('srcset');
+                    modalImg.removeAttribute('sizes');
+                }
+                modalImg.alt = currentImg.alt || `Imagen ${currentIndex + 1}`;
+                
+                // When loaded, reveal
+                modalImg.onload = () => {
+                    if (loader) {
+                        loader.classList.remove('opacity-100');
+                        setTimeout(() => loader.classList.add('hidden'), 300);
+                    }
+                    modalImg.classList.remove('scale-95', 'opacity-0');
+                    modalImg.classList.add('scale-100', 'opacity-100');
+                };
+
+                // Fallback if image is cached or load event doesn't fire
+                if (modalImg.complete) {
+                    modalImg.onload(new Event('load'));
+                }
+                
+                if (statusText) {
+                    statusText.textContent = `${currentIndex + 1} / ${totalImages}`;
+                }
+            }
+        }
+
+        function showNext() {
+            currentIndex = (currentIndex + 1) % totalImages;
+            updateModalContent();
+        }
+
+        function showPrev() {
+            currentIndex = (currentIndex - 1 + totalImages) % totalImages;
+            updateModalContent();
+        }
+
+        // Event Listeners
+        galleryItems.forEach((item, index) => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal(index);
+            });
+        });
+
+        closeBtn?.addEventListener('click', closeModal);
+        nextBtn?.addEventListener('click', (e) => { e.stopPropagation(); showNext(); });
+        prevBtn?.addEventListener('click', (e) => { e.stopPropagation(); showPrev(); });
+
+        // Close on backdrop click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (!modal.open) return;
+            
+            // Prevent default scrolling for arrows when modal is open
+            if (['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown', ' '].includes(e.key)) {
+                e.preventDefault();
+            }
+            
+            if (e.key === 'Escape') closeModal();
+            if (e.key === 'ArrowRight') showNext();
+            if (e.key === 'ArrowLeft') showPrev();
+        });
+
+        // Simple touch swipe support
+        let touchstartX = 0;
+        let touchendX = 0;
+
+        const imageContainer = document.querySelector('#lightbox-modal .relative.w-full');
+        if (imageContainer) {
+            imageContainer.addEventListener('touchstart', (e) => {
+                touchstartX = (e as TouchEvent).changedTouches[0].screenX;
+            }, { passive: true });
+
+            imageContainer.addEventListener('touchend', (e) => {
+                touchendX = (e as TouchEvent).changedTouches[0].screenX;
+                handleSwipe();
+            }, { passive: true });
+        }
+
+        function handleSwipe() {
+            const minSwipeDistance = 50;
+            if (touchendX < touchstartX - minSwipeDistance) showNext();
+            if (touchendX > touchstartX + minSwipeDistance) showPrev();
+        }
+    }
+
+    setupGallery();
+    document.addEventListener('astro:page-load', setupGallery);
+</script>

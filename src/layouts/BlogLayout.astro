@@ -3,8 +3,7 @@ import Layout from './Layout.astro'
 import Tag from '@components/Tag.astro'
 import type { CollectionEntry } from 'astro:content'
 import type { MarkdownHeading } from 'astro'
-import {  Picture } from 'astro:assets'
-
+import { Picture } from 'astro:assets'
 
 type Props = {
 	id?: CollectionEntry<'blog'>['id']
@@ -12,8 +11,7 @@ type Props = {
 	headings?: MarkdownHeading[]
 }
 
-const { data, headings, id } = Astro.props
-const { title, description, pubDate, heroImage, tags, updateDate } = data
+const { title, description, pubDate, heroImage, tags, updateDate, summary } = Astro.props.data
 ---
 
 <Layout
@@ -22,95 +20,120 @@ const { title, description, pubDate, heroImage, tags, updateDate } = data
 	image={heroImage.src}
 	articleDate={pubDate.toISOString()}
 >
+	<!-- Reading Progress Bar -->
+	<div slot="header-progress" class="fixed top-0 left-0 z-[9999] h-[2px] w-full origin-left bg-[#c70039] animate-reading-progress mt-16 sm:mt-0 shadow-[0_0_10px_rgba(199,0,57,0.5)]"></div>
+
 	<section
 		class="mt-4 grid gap-12 overflow-hidden px-5 antialiased sm:mx-auto sm:max-w-2xl sm:px-8 md:max-w-6xl md:overflow-visible lg:px-0"
 		data-pagefind-body
 	>
 		<article class="min-w-full sm:max-w-none md:max-w-none md:py-4">
-			<header class="mb-3 flex flex-col items-center justify-center gap-6">
-				<div class="flex flex-col gap-2">
-					<div class="flex items-center justify-center flex-col gap-x-1 gap-y-2">
-						<p class="text-center text-sm text-opacity-50">
-							Publicado el{' '}{
-								pubDate.toLocaleDateString('es-Es', {
-									year: 'numeric',
-									month: 'long',
-									day: 'numeric'
-								})
-							}
-						</p>
-						{updateDate && (
-							<p class="text-center text-sm text-opacity-50">
-								Actualizado el{' '}{
-									new Date(updateDate).toLocaleDateString('es-Es', {
-										year: 'numeric',
-										month: 'long',
-										day: 'numeric'
-									})
-								}
-							</p>
-						)}
-					</div>
-					<h1 class="text-center text-4xl font-semibold md:pb-2 md:text-6xl capitalize">
-						{title}
-					</h1>
+
+			<!-- Header del artículo -->
+			<header class="mb-8 flex flex-col items-start justify-center gap-5 md:mb-10">
+
+				<!-- Línea decorativa + meta -->
+				<div class="flex items-center gap-3 text-sm text-gray-500">
+					<span class="h-[1px] w-8 bg-[#c70039]"></span>
+					<p>
+						{
+							pubDate.toLocaleDateString('es-Es', {
+								year: 'numeric',
+								month: 'long',
+								day: 'numeric'
+							})
+						}
+					</p>
+					{
+						updateDate && (
+							<>
+								<span class="h-1 w-1 rounded-full bg-white/20"></span>
+								<span class="inline-flex items-center gap-1.5 rounded-full border border-[#c70039]/30 bg-[#c70039]/10 px-2.5 py-0.5 text-xs font-medium text-[#c70039]">
+									<svg class="h-2.5 w-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+									</svg>
+									Actualizado {new Date(updateDate).toLocaleDateString('es-Es', { month: 'short', day: 'numeric', year: 'numeric' })}
+								</span>
+							</>
+						)
+					}
 				</div>
 
-				<div class="flex flex-wrap items-center justify-center gap-2 gap-y-4 md:gap-5">
+				<!-- Título -->
+				<h1 class="text-left text-4xl font-bold leading-tight tracking-tight capitalize text-white md:text-5xl lg:text-5xl lg:leading-[1.1]">
+					{title}
+				</h1>
+
+				<!-- Tags -->
+				<div class="flex flex-wrap items-center justify-start gap-2">
 					{tags.map((tag) => <Tag tag={tag} />)}
 				</div>
 			</header>
 
-				{
-					heroImage && (
+			<!-- Hero Image -->
+			{
+				heroImage && (
+					<div class="relative w-full overflow-hidden rounded-2xl my-8 border border-[#c70039]/20 shadow-2xl shadow-black/60">
 						<Picture
 							src={heroImage}
-							width={1000}
-							height={500}
+							width={1200}
+							height={675}
 							loading="eager"
-							class="my-8 max-h-[300px] w-full rounded-md object-cover md:max-h-[500px]"
+							class="w-full aspect-video md:aspect-[21/9] object-cover"
 							alt={`Imagen de ${title}`}
 						/>
-					)
-				}
-		
+						<div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+					</div>
+				)
+			}
 
-			<hr />
+			<!-- Separador con gradiente -->
+			<div class="my-8 flex items-center gap-4">
+				<div class="h-[1px] flex-1 bg-gradient-to-r from-[#c70039]/40 via-white/10 to-transparent"></div>
+				<span class="h-1.5 w-1.5 rounded-full bg-[#c70039]/60"></span>
+				<div class="h-[1px] flex-1 bg-gradient-to-l from-transparent via-white/10 to-transparent"></div>
+			</div>
 
 			<div>
+				{summary && (
+					<div class="mb-8 rounded-2xl border-l-4 border-[#c70039] bg-[#c70039]/[0.06] px-5 py-4 backdrop-blur-sm">
+						<div class="mb-2 flex items-center gap-2">
+							<span class="text-xs font-bold uppercase tracking-widest text-[#c70039]">TL;DR</span>
+							<span class="h-px flex-1 bg-[#c70039]/30"></span>
+						</div>
+						<p class="text-sm leading-relaxed text-gray-300">{summary}</p>
+					</div>
+				)}
 				<slot />
 			</div>
 		</article>
 	</section>
 </Layout>
+
 <script>
 	const fnObserver = () => {
 		function handleIntersection(
 			entries: IntersectionObserverEntry[],
-			observer: IntersectionObserver
+			_observer: IntersectionObserver
 		) {
 			entries.forEach((entry) => {
 				const index = document.querySelector(`aside a[href="#${entry.target.id}"]`)
 
 				if (entry.isIntersecting) {
-					index?.classList.remove('bg-slate-200', 'dark:bg-slate-800') // remove bg
+					index?.classList.remove('text-gray-500', 'border-transparent')
 					index?.classList.add(
-						'bg-indigo-600',
-						'dark:bg-red-800',
 						'text-white',
-						'font-bold',
-						'transition-colors',
-						'duration-200'
+						'border-[#c70039]',
+						'bg-[#c70039]/[0.06]',
+						'font-medium'
 					)
 				} else {
-					index?.classList.add('bg-slate-200', 'dark:bg-slate-800') // add bg
+					index?.classList.add('text-gray-500', 'border-transparent')
 					index?.classList.remove(
-						'bg-indigo-600',
-						'dark:bg-red-800',
 						'text-white',
-						'font-bold',
-						'transition-colors',
-						'duration-200'
+						'border-[#c70039]',
+						'bg-[#c70039]/[0.06]',
+						'font-medium'
 					)
 				}
 			})
@@ -135,3 +158,231 @@ const { title, description, pubDate, heroImage, tags, updateDate } = data
 	fnObserver()
 	document.addEventListener('astro:after-swap', fnObserver)
 </script>
+
+<style is:global>
+	@keyframes reading-progress {
+		0% { transform: scaleX(0); }
+		100% { transform: scaleX(1); }
+	}
+	.animate-reading-progress {
+		animation: reading-progress linear;
+		animation-timeline: scroll(root block);
+	}
+
+	/* ── Dracula Code Theme ── */
+	div.prose pre {
+		background: #282a36 !important;
+		border: 1px solid rgba(255,255,255,0.06) !important;
+		border-radius: 12px !important;
+	}
+	div.prose pre code {
+		background: transparent !important;
+		color: #f8f8f2 !important;
+	}
+	/* Token colors */
+	div.prose pre .token.comment,
+	div.prose pre .token.prolog,
+	div.prose pre .token.doctype,
+	div.prose pre .token.cdata { color: #6272a4; }
+	div.prose pre .token.string,
+	div.prose pre .token.attr-value { color: #f1fa8c; }
+	div.prose pre .token.keyword,
+	div.prose pre .token.rule,
+	div.prose pre .token.operator { color: #ff79c6; }
+	div.prose pre .token.function,
+	div.prose pre .token.class-name { color: #50fa7b; }
+	div.prose pre .token.number,
+	div.prose pre .token.boolean { color: #bd93f9; }
+	div.prose pre .token.property,
+	div.prose pre .token.tag { color: #8be9fd; }
+	div.prose pre .token.selector,
+	div.prose pre .token.attr-name { color: #50fa7b; }
+	div.prose pre .token.punctuation { color: #f8f8f2; }
+
+	/* ============================================================
+	   PRINT STYLES — Ctrl+P / Imprimir
+	   ============================================================ */
+	@media print {
+		/* --- Reset de colores al modo papel --- */
+		*,
+		*::before,
+		*::after {
+			background: transparent !important;
+			color: #111 !important;
+			box-shadow: none !important;
+			text-shadow: none !important;
+			backdrop-filter: none !important;
+			-webkit-print-color-adjust: exact;
+			print-color-adjust: exact;
+		}
+
+		/* --- Ocultar todo lo que no es el artículo --- */
+		nav,
+		aside,
+		footer,
+		header > nav,
+		[data-cursor],
+		.animate-reading-progress,
+		[class*="BotonFlotante"],
+		[class*="BotonIrArriba"],
+		[class*="TwSizeIndicator"],
+		[class*="EditBlog"],
+		[class*="fixed"],
+		[class*="sticky"],
+		[class*="pointer-events-none"],
+		.blur-\[120px\],
+		.blur-\[150px\],
+		.blur-\[130px\] {
+			display: none !important;
+		}
+
+		/* --- Body y página --- */
+		html,
+		body {
+			background: #fff !important;
+			color: #111 !important;
+			font-size: 12pt;
+			line-height: 1.6;
+			width: 100%;
+		}
+
+		/* --- Layout del artículo: ancho completo --- */
+		section[data-pagefind-body] {
+			max-width: 100% !important;
+			padding: 0 !important;
+			margin: 0 !important;
+			overflow: visible !important;
+		}
+
+		/* --- Encabezado del artículo --- */
+		article header h1 {
+			font-size: 24pt !important;
+			color: #000 !important;
+			margin-bottom: 8pt;
+			page-break-after: avoid;
+		}
+
+		/* --- Imagen hero --- */
+		article img {
+			max-width: 100% !important;
+			height: auto !important;
+			border: 1px solid #ddd !important;
+			border-radius: 4px !important;
+			page-break-inside: avoid;
+		}
+
+		/* --- Separadores decorativos --- */
+		article [class*="bg-gradient"] {
+			display: none !important;
+		}
+
+		/* --- Prose: texto principal --- */
+		.prose,
+		.prose * {
+			color: #111 !important;
+			max-width: 100% !important;
+		}
+
+		.prose h1,
+		.prose h2,
+		.prose h3,
+		.prose h4 {
+			color: #000 !important;
+			page-break-after: avoid;
+			margin-top: 16pt;
+		}
+
+		.prose p {
+			orphans: 3;
+			widows: 3;
+		}
+
+		.prose a {
+			color: #c70039 !important;
+			text-decoration: underline !important;
+		}
+
+		/* Mostrar la URL real de los links al imprimir */
+		.prose a[href]::after {
+			content: " (" attr(href) ")";
+			font-size: 8pt;
+			color: #555 !important;
+			word-break: break-all;
+		}
+
+		/* No mostrar URL para links ancla internos */
+		.prose a[href^="#"]::after {
+			content: "" !important;
+		}
+
+		.prose blockquote {
+			border-left: 3px solid #c70039 !important;
+			padding-left: 12pt;
+			color: #333 !important;
+			page-break-inside: avoid;
+		}
+
+		.prose code {
+			background: #f5f5f5 !important;
+			color: #c70039 !important;
+			border: 1px solid #ddd !important;
+			padding: 1pt 4pt !important;
+			border-radius: 2px !important;
+			font-size: 9pt !important;
+		}
+
+		.prose pre {
+			background: #f8f8f8 !important;
+			border: 1px solid #ddd !important;
+			border-radius: 4px !important;
+			padding: 10pt !important;
+			font-size: 9pt !important;
+			white-space: pre-wrap !important;
+			word-break: break-word !important;
+			page-break-inside: avoid;
+		}
+
+		.prose pre code {
+			border: none !important;
+			padding: 0 !important;
+		}
+
+		.prose table {
+			width: 100%;
+			border-collapse: collapse;
+			page-break-inside: avoid;
+		}
+
+		.prose th,
+		.prose td {
+			border: 1px solid #ccc !important;
+			padding: 6pt !important;
+		}
+
+		/* --- Grid del slug: eliminar columnas, solo artículo --- */
+		.mt-8.grid {
+			display: block !important;
+		}
+
+		/* --- Artículos relacionados: ocultar en impresión --- */
+		article > footer {
+			display: none !important;
+		}
+
+		/* --- Saltos de página seguros --- */
+		article {
+			page-break-inside: auto;
+		}
+
+		/* --- URL canónica al final del documento --- */
+		article::after {
+			content: "Fuente: " attr(data-url);
+			display: block;
+			margin-top: 20pt;
+			font-size: 8pt;
+			color: #777 !important;
+			border-top: 1px solid #ddd;
+			padding-top: 8pt;
+		}
+	}
+</style>

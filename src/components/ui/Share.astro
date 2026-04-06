@@ -1,0 +1,103 @@
+---
+import { siteConfig } from '@src/data/config'
+import { Icon } from 'astro-icon/components'
+
+const message = siteConfig.shareMessage
+const URL = Astro.url.href
+
+const shareItems = [
+	{
+		name: 'LinkedIn',
+		url: `https://www.linkedin.com/shareArticle?mini=true&url=${URL}`,
+		icon: 'mdi:linkedin',
+		color: 'hover:border-blue-500/40 hover:bg-blue-500/10 hover:text-blue-400'
+	},
+	{
+		name: 'Facebook',
+		url: `https://www.facebook.com/sharer/sharer.php?u=${URL}`,
+		icon: 'mdi:facebook',
+		color: 'hover:border-blue-700/40 hover:bg-blue-700/10 hover:text-blue-500'
+	},
+	{
+		name: 'WhatsApp',
+		url: `https://wa.me/?text=${message + ' ' + URL}`,
+		icon: 'mdi:whatsapp',
+		color: 'hover:border-green-500/40 hover:bg-green-500/10 hover:text-green-400'
+	}
+]
+---
+
+<div class="flex flex-col gap-2">
+	<span class="mb-2 text-xs font-semibold tracking-widest uppercase text-gray-500">Compartir</span>
+	<ul class="flex flex-col gap-2">
+		{
+			shareItems.map((item) => (
+				<li>
+					<a
+						href={item.url}
+						target="_blank"
+						rel="noopener noreferrer"
+						aria-label={`Compartir en ${item.name}`}
+						class:list={[
+							'group flex items-center gap-3 rounded-xl border border-white/8 bg-white/[0.03] px-3 py-2.5',
+							'text-sm text-gray-400 transition-all duration-300',
+							'hover:-translate-y-[2px] hover:shadow-lg',
+							item.color
+						]}
+					>
+						<Icon name={item.icon} class="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:scale-110" />
+						<span class="font-medium">{item.name}</span>
+						<svg
+							class="ml-auto h-3 w-3 opacity-0 transition-all duration-300 group-hover:translate-x-0.5 group-hover:opacity-100"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+						</svg>
+					</a>
+				</li>
+			))
+		}
+
+		<!-- Copy Link button -->
+		<li>
+			<button
+				id="copy-link-btn"
+				aria-label="Copiar enlace"
+				class="group flex w-full items-center gap-3 rounded-xl border border-white/8 bg-white/[0.03] px-3 py-2.5 text-sm text-gray-400 transition-all duration-300 hover:-translate-y-[2px] hover:border-purple-500/40 hover:bg-purple-500/10 hover:text-purple-400 hover:shadow-lg cursor-pointer"
+			>
+				<Icon name="mdi:link-variant" class="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:scale-110" id="copy-icon" />
+				<Icon name="mdi:check" class="hidden h-4 w-4 shrink-0 text-green-400" id="check-icon" />
+				<span class="font-medium" id="copy-text">Copiar enlace</span>
+			</button>
+		</li>
+	</ul>
+</div>
+
+<script>
+	const setupCopyLink = () => {
+		const btn = document.getElementById('copy-link-btn')
+		const copyIcon = document.getElementById('copy-icon')
+		const checkIcon = document.getElementById('check-icon')
+		const copyText = document.getElementById('copy-text')
+
+		btn?.addEventListener('click', async () => {
+			try {
+				await navigator.clipboard.writeText(window.location.href)
+				copyIcon?.classList.add('hidden')
+				checkIcon?.classList.remove('hidden')
+				if (copyText) copyText.textContent = '¡Copiado!'
+				setTimeout(() => {
+					copyIcon?.classList.remove('hidden')
+					checkIcon?.classList.add('hidden')
+					if (copyText) copyText.textContent = 'Copiar enlace'
+				}, 2000)
+			} catch {
+				// fallback: select text
+			}
+		})
+	}
+	setupCopyLink()
+	document.addEventListener('astro:after-swap', setupCopyLink)
+</script>
