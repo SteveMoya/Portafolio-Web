@@ -1,12 +1,12 @@
 {
   "basics": {
     "name": "Steve Moya",
-    "label": "Especialista en Marketing Digital",
+    "label": "Digital Marketing Specialist",
     "image": "/img/ProfileImage_Right.png",
     "email": "steve@stevemoya.me",
     "phone": "+1(849)-751-1849",
     "url": "https://stevemoya.me",
-    "summary": "Especialista en Marketing Digital con experiencia en la creación y gestión de campañas digitales efectivas. Actualmente buscando oportunidades para aplicar mis habilidades en un entorno profesional.",
+    "summary": "Digital Marketing Specialist with experience in creating and managing effective digital campaigns. Currently seeking opportunities to apply my skills in a professional environment.",
     "theme": "default",
     "location": {
       "address": "",
@@ -31,31 +31,31 @@
   "work": [
     {
       "name": "International Contact Center (ICC)",
-      "position": "WebMaster Junior del Departamento de Marketing",
-      "location_type": "Presencial",
+      "position": "Junior WebMaster - Marketing Department",
+      "location_type": "On-site",
       "location": "Santo Domingo, Dominican Republic",
       "url": "https://icontactcenter.com/",
       "startDate": "2025-09-09",
       "endDate": null,
       "phone": "+1(809) 290-9136",
-      "summary": "Crear y gestionar campañas digitales efectivas para nuestros clientes. Analizar el rendimiento de las campañas y ajustar las estrategias según sea necesario para maximizar los resultados.",
+      "summary": "Create and manage effective digital campaigns for our clients. Analyze campaign performance and adjust strategies as needed to maximize results.",
       "highlights": [
-        "Asistir a Seguimientos de Estrategias Publicitarias",
-        "Gestionar solicitudes de proveedores y inventario",
-        "Realizar análisis de mercado y competencia para identificar oportunidades de crecimiento",
-        "Asistir en Reportes y Presupuestos mensuales y Qs"
+        "Attend Advertising Strategy Follow-up Meetings",
+        "Manage supplier requests and inventory",
+        "Conduct market and competitor analysis to identify growth opportunities",
+        "Assist in Monthly and Quarterly Reports and Budgets"
       ],
       "responsibilities": [
-        "Gestinar Backups de los sitios web de nuestros clientes.",
-        "Actualizar y mantener los sitios web de nuestros clientes utilizando WordPress y otras plataformas de gestión de contenido.",
-        "Realizar Despliegues de sitios web.",
-        "Diseñar y desarrollar sitios web atractivos y funcionales para nuestros clientes utilizando tecnologías como HTML, CSS, JavaScript, Tailwind, TypeScript, Node y PHP.",
-        "Optimizar los sitios web para mejorar el rendimiento, la velocidad de carga y la experiencia del usuario, utilizando herramientas como Semrush, Google Analytics, Cpanel, WordPress y Cloudflare.",        
-        "Optimizar base de datos, imagenes, y otros recursos para mejorar el rendimiento de los sitios web."
+        "Manage Backups for our clients' websites.",
+        "Update and maintain our clients' websites using WordPress and other content management platforms.",
+        "Perform Website Deployments.",
+        "Design and develop attractive and functional websites for our clients using technologies such as HTML, CSS, JavaScript, Tailwind, TypeScript, Node, and PHP.",
+        "Optimize websites to improve performance, loading speed, and user experience, using tools such as Semrush, Google Analytics, cPanel, WordPress, and Cloudflare.",
+        "Optimize databases, images, and other resources to improve website performance."
       ],
       "achievements": [
-        "Automatizacion de reportes de rendimiento de los proyectos webs.",
-        "Automatizacion de Generacion de Backups de los sitios web."
+        "Automation of web project performance reports.",
+        "Automation of Website Backup Generation."
       ],
       "skills": [
         "SEO",
@@ -72,52 +72,52 @@
         "Backend",
         "Semrush",
         "Google Analytics",
-        "Cpanel",
+        "cPanel",
         "WordPress",
         "Cloudflare"
       ]
     },
     {
       "name": "Planeta Azul S.A.",
-      "position": "Pasante del Departamento de Marketing",
-      "location_type": "Presencial",
+      "position": "Marketing Department Intern",
+      "location_type": "On-site",
       "location": "Santo Domingo, Dominican Republic",
       "url": "https://planetaazulrd.com/",
       "startDate": "2025-04-01",
       "endDate": "2025-08-01",
       "phone": "+1(829) 762-2225",
-      "summary": "Crear y gestionar campañas digitales efectivas para nuestros clientes. Analizar el rendimiento de las campañas y ajustar las estrategias según sea necesario para maximizar los resultados.",
+      "summary": "Create and manage effective digital campaigns for our clients. Analyze campaign performance and adjust strategies as needed to maximize results.",
       "highlights": [
-        "Asistir a Seguimientos de Estrategias Publicitarias",
-        "Gestionar solicitudes de proveedores y inventario",
-        "Realizar análisis de mercado y competencia para identificar oportunidades de crecimiento",
-        "Asistir en Reportes y Presupuestos mensuales y Qs"
+        "Attend Advertising Strategy Follow-up Meetings",
+        "Manage supplier requests and inventory",
+        "Conduct market and competitor analysis to identify growth opportunities",
+        "Assist in Monthly and Quarterly Reports and Budgets"
       ],
       "responsibilities": [
-        "Desarrollar estrategias de marketing digital para nuestros clientes.",
-        "Gestionar campañas publicitarias con proveedores.",
-        "Analizar el rendimiento de las campañas y realizar ajustes para mejorar los resultados."
+        "Develop digital marketing strategies for our clients.",
+        "Manage advertising campaigns with suppliers.",
+        "Analyze campaign performance and make adjustments to improve results."
       ],
       "achievements": [
-        "Logre gestionar ordenes de proveedores atrasadas manteniendolas al dia con el ciclo contable.",
-        "Logre realizar un reporte de Market Share de los productos de la empresa frente a la competencia",
-        "Automatizacion de Reportes Mensuales de Market Share",
-        "Levantamiento de inventario de productos promocionales",
-        "Apoyo en el patrocinio de eventos deportivos y culturales para aumentar la visibilidad de la marca."
+        "Successfully managed overdue supplier orders, keeping them up to date with the accounting cycle.",
+        "Successfully created a Market Share report of the company's products against competitors.",
+        "Automation of Monthly Market Share Reports.",
+        "Promotional products inventory assessment.",
+        "Assistance in sponsoring sports and cultural events to increase brand visibility."
       ],
       "skills": [
         "Google Ads",
         "Facebook Ads",
         "SEO",
-        "Análisis de Datos",
+        "Data Analysis",
         "Microsoft Office",
         "Canva",
         "SAP",
-        "Marketing Digital",
-        "Orden de Compra",
-        "Inventario",
+        "Digital Marketing",
+        "Purchase Orders",
+        "Inventory",
         "Market Share",
-        "Estrategias de Marketing"
+        "Marketing Strategies"
       ]
     }
   ],
@@ -126,7 +126,7 @@
     {
       "institution": "Universidad Autónoma de Santo Domingo (UASD)",
       "url": "https://uasd.edu.do",
-      "area": "Licenciatura en Mercadotecnia",
+      "area": "Bachelor's Degree in Marketing",
       "studyType": "Bachelor",
       "startDate": "2020-09-01",
       "endDate": null,
@@ -136,31 +136,31 @@
   ],
   "certificates": [
     {
-      "name": "Digitaliza paso a paso tu negocio con herramientas de Google",
+      "name": "Digitize your business step by step with Google tools",
       "date": "2022-08-24",
       "issuer": "Google Activate",
       "url": ""
     },
     {
-      "name": "Fundamentos de Marketing Digital",
+      "name": "Fundamentals of Digital Marketing",
       "date": "2022-09-11",
       "issuer": "Google Activate",
       "url": ""
     },
     {
-      "name": "Protege tu Negocio: Ciberseguridad en el Teletrabajo ",
+      "name": "Protect Your Business: Cybersecurity in Remote Work",
       "date": "2022-08-25",
-      "issuer": "Google Activate ",
+      "issuer": "Google Activate",
       "url": ""
     },
     {
-      "name": "Competencias digitales para profesionales",
+      "name": "Digital Skills for Professionals",
       "date": "2022-09-11",
       "issuer": "Google Activate",
       "url": ""
     },
     {
-      "name": "Certificado en inbound",
+      "name": "Inbound Certificate",
       "date": "2023-03-19",
       "issuer": "HubSpot Academy",
       "url": ""
@@ -171,7 +171,7 @@
       "name": "Figma",
       "level": "Beginner",
       "keywords": [
-        "Design", 
+        "Design",
         "UI"
       ]
     },
@@ -346,9 +346,9 @@
   ],
   "references": [
     {
-      "name": "Disponibles",
-      "reference": "A PETICIÓN"
+      "name": "Available upon request",
+      "reference": "UPON REQUEST"
     }
   ],
-  "projects": [ ]
+  "projects": []
 }
