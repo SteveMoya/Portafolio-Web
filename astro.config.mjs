@@ -1,4 +1,4 @@
-import { defineConfig } from 'astro/config';
+import { defineConfig, envField } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tailwind from "@astrojs/tailwind";
@@ -10,11 +10,7 @@ import vercel from "@astrojs/vercel";
 import metaTags from "astro-meta-tags";
 
 import pageInsight from "astro-page-insight";
-
-
 import react from "@astrojs/react";
-
-
 
 // https://astro.build/config
 export default defineConfig({
@@ -34,4 +30,14 @@ export default defineConfig({
   output: "static",
   adapter: vercel(),
   prefetch: true,
+
+  env: {
+    schema: {
+      GITHUB_USERNAME: envField.string({ context: "server", access: "public" }),
+      GITHUB_TOKEN: envField.string({ context: "server", access: "secret" }),
+      CLOUDINARY_CLOUD_NAME: envField.string({ context: "server", access: "public" }),
+      CLOUDINARY_API_KEY: envField.string({ context: "server", access: "secret" }),
+      CLOUDINARY_API_SECRET: envField.string({ context: "server", access: "secret" }),
+    },
+  },
 });

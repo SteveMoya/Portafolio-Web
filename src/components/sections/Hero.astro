@@ -34,7 +34,7 @@ const printInfo = [email, phone, linkedUrl].filter(Boolean).join(" • ");
 				{city}, {region}
 			</div>
 			<div class="flex flex-col gap-2">
-				<h3 class="text-lg font-semibold">Contacto</h3>
+				<h3 class="text-lg font-semibold">Contact</h3>
 				<ul class="flex flex-col gap-2">
 					{
 						email && (
@@ -57,7 +57,7 @@ const printInfo = [email, phone, linkedUrl].filter(Boolean).join(" • ");
 						)
 					}
 				</ul>
-				<h3 class="text-lg font-semibold mt-4">Redes Sociales</h3>
+				<h3 class="text-lg font-semibold mt-4">Social Networks</h3>
 				<ul class="flex flex-col gap-2">
 					{
 						profiles.map(({ network, url, username }) => {

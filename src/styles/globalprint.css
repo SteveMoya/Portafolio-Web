@@ -59,12 +59,66 @@ p, li, div, span {
   body {
     background-color: white !important;
     color: black !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   .bg-dark {
     background-color: white !important;
   }
   
+  /* Ocultar navbar, botones flotantes y elementos decorativos */
+  nav, 
+  .fixed,
+  [class*="TwSizeIndicator"],
+  [class*="BotonFlotante"],
+  [class*="BotonIrArriba"],
+  [class*="whatsapp"],
+  .ring {
+    display: none !important;
+  }
+
+  /* Ocultar elementos decorativos del timeline */
+  .before\\:-ml-6,
+  .before\\:w-px,
+  .before\\:absolute,
+  .before\\:bg-skin-muted,
+  .before\\:opacity-30,
+  .before\\:h-full,
+  .before\\:mt-2,
+  .absolute.w-2.h-2.bg-skin-hue.rounded-full {
+    display: none !important;
+  }
+
+  /* Ocultar dots decorativos */
+  [class*="absolute"][class*="w-2"][class*="h-2"][class*="rounded-full"] {
+    display: none !important;
+  }
+
+  /* Ocultar líneas decorativas de Hero */
+  [class*="-inset-y-8"][class*="w-px"],
+  [class*="-inset-x-8"][class*="h-px"] {
+    display: none !important;
+  }
+
+  /* Ocultar el cursor personalizado */
+  [class*="cursor"],
+  canvas {
+    display: none !important;
+  }
+
+  /* Ocultar Astro DevToolbar */
+  astro-devtoolbar,
+  [data-astro-devtoolbar],
+  .astro-devtoolbar {
+    display: none !important;
+  }
+
+  /* Ocultar scrollbar personalizada */
+  ::-webkit-scrollbar {
+    display: none !important;
+  }
+
   /* Títulos y enlaces con acento rojo */
   h1, h2, h3, h4, h5, h6 {
     color: black !important;
@@ -111,5 +165,29 @@ p, li, div, span {
   .bg-skin-muted,
   .before\\:bg-skin-muted::before {
     background-color: #d0d0d0 !important;
+  }
+
+  /* Forzar visibilidad de contenido controlado por Alpine.js x-show */
+  [x-show] {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Control de saltos de página */
+  li {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  section {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Evitar saltos de página after en títulos de sección */
+  h3 {
+    page-break-after: avoid;
+    break-after: avoid;
   }
 }
