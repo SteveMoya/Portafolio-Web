@@ -80,7 +80,7 @@ const { author, profileImage } = siteConfig
 				
 				<!-- Artículo más reciente destacado -->
 				<a
-					href={`/blog/${mostRecentPost.slug}`}
+					href={`/blog/${mostRecentPost.id}`}
 					class="group mb-6 w-full max-w-md overflow-hidden rounded-xl bg-[#1f1f1f]/80 shadow-lg transition-all duration-300 hover:shadow-xl hover:shadow-[#c70039]/10 border border-white/5"
 				>
 					{mostRecentPost.data.heroImage?.src && (
@@ -153,7 +153,7 @@ const { author, profileImage } = siteConfig
 				
 				return (
 					<a
-						href={`/blog/${post.slug}`}
+						href={`/blog/${post.id}`}
 						class={`group flex flex-col overflow-hidden rounded-xl bg-[#1f1f1f]/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-[#c70039]/10 border border-white/5 ${
 							isFirstItem && hasMultiplePosts ? 'sm:col-span-2 sm:aspect-[21/9]' : 'aspect-square sm:aspect-auto'
 						}`}

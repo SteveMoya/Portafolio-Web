@@ -22,7 +22,7 @@ export const getRelatedPosts = async (post: relatedPostsType) => {
 	const posts = await getPosts()
 	const relatedPosts = posts.filter(
 		(p) =>
-			p.slug !== post.slug &&
+			p.id !== post.id &&
 			p.data.tags.some((t) => lowercaseTags.includes(t.toLowerCase()))
 	)
 	return relatedPosts.slice(0, 3)

@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content'
+import { render } from 'astro:content'
 import PostCard from './PostCard.astro'
 
 type Props = {
@@ -21,13 +22,12 @@ const { posts, FirstBig = false } = Astro.props
 >
 	{
 		posts.map(async (post) => {
-			const { remarkPluginFrontmatter } = await post.render()
+			const { remarkPluginFrontmatter } = await render(post)
 
 			return (
 				<PostCard
 					id={post.id}
 					data={post.data}
-					slug={post.slug}
 					readTime={remarkPluginFrontmatter.minutesRead}
 				/>
 			)

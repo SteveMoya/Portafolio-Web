@@ -1,6 +1,6 @@
 ---
 import { siteConfig } from '@src/data/config'
-import { ViewTransitions } from 'astro:transitions'
+import { ClientRouter } from 'astro:transitions'
 
 interface Props {
 	title?: string
@@ -56,7 +56,7 @@ const schema = {
 
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<ViewTransitions />
+<ClientRouter />
 
 <!-- Title: Recommended: 60 characters -->
 <title>{title}</title>

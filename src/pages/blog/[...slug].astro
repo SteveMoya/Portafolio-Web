@@ -13,12 +13,13 @@ import BlogLayout from '@src/layouts/BlogLayout.astro'
 import Diagram from '@components/mdx/Diagram.astro'
 import { CldImage } from 'astro-cloudinary'
 import type { CollectionEntry } from 'astro:content'
+import { render } from 'astro:content'
 
 export async function getStaticPaths() {
 	const posts = await getPosts()
 
 	return posts.map((post) => ({
-		params: { slug: post.slug },
+		params: { slug: post.id },
 		props: post
 	}))
 }
@@ -29,7 +30,7 @@ const post = Astro.props
 
 const relatedPosts = await getRelatedPosts(post)
 
-const { Content, headings } = await post.render()
+const { Content, headings } = await render(post)
 ---
 
 <BlogLayout id={post.id} data={post.data} headings={headings}>
@@ -63,7 +64,7 @@ const { Content, headings } = await post.render()
 
 			<!-- Footer del artículo: Likes + Artículos Relacionados -->
 			<footer class="mt-4">
-				<LikeButton slug={post.slug} />
+				<LikeButton slug={post.id} />
 
 				<div class="mt-8 mb-6 flex items-center gap-4">
 					<div class="h-[1px] flex-1 bg-gradient-to-r from-[#c70039]/50 via-white/10 to-transparent"></div>

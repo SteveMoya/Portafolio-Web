@@ -1,20 +1,17 @@
 import { CATEGORIES } from '@src/data/categories';
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { glob } from 'astro/loaders';
+import { z } from 'astro/zod';
 import { cldAssetsLoader } from 'astro-cloudinary/loaders';
 
 const blog = defineCollection({
-	// Type-check frontmatter using a schema
-	type: "content",
+	loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
 	schema: ({ image }) =>
 		z.object({
 			title: z.string().max(80),
 			description: z.string(),
-			pubDate: z
-				.string()
-				.or(z.date())
-				.transform((val) => new Date(val)),
-			updateDate: z.string().or(z.date())
-				.transform((val) => new Date(val)).optional(),
+			pubDate: z.coerce.date(),
+			updateDate: z.coerce.date().optional(),
 			heroImage: image(),
 			category: z.enum(CATEGORIES),
 			tags: z.array(z.string()),
@@ -57,9 +54,6 @@ const portafolio = defineCollection({
 		folder: 'portafolio',
 	})
 })
-
-
-
 
 
 export const collections = { blog, fotografia, diseno, about_images, portafolio, assets };

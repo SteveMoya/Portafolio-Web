@@ -4,7 +4,7 @@ import FormattedDate from './ui/FormattedDate.astro'
 
 const {
 	data: { title, description, pubDate, heroImage, category },
-	slug,
+	id,
 	isFeatured = false
 } = Astro.props
 ---
@@ -12,7 +12,7 @@ const {
 <article
 	class={`group relative flex h-full overflow-hidden rounded-2xl border border-white/5 bg-black/20 backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:border-[#c70039]/40 hover:bg-black/40 hover:shadow-[0_12px_40px_rgba(199,0,57,0.18)] ${isFeatured ? 'flex-col md:flex-row md:col-span-2 shadow-2xl shadow-black/50' : 'flex-col shadow-lg shadow-black/20'}`}
 >
-	<a class={`relative block overflow-hidden ${isFeatured ? 'w-full md:w-1/2 aspect-[16/9] md:aspect-auto' : 'w-full aspect-[16/9]'}`} href={`/blog/${slug}/`} title={`Ver ${title}`}>
+	<a class={`relative block overflow-hidden ${isFeatured ? 'w-full md:w-1/2 aspect-[16/9] md:aspect-auto' : 'w-full aspect-[16/9]'}`} href={`/blog/${id}/`} title={`Ver ${title}`}>
 		<Image
 			src={heroImage}
 			width={600}
@@ -48,7 +48,7 @@ const {
 			</span>
 		</div>
 
-		<a class="block outline-none" href={`/blog/${slug}/`}>
+		<a class="block outline-none" href={`/blog/${id}/`}>
 			<h3 class={`mb-4 font-bold leading-tight text-white transition-colors duration-300 ease-in-out group-hover:text-[#c70039] line-clamp-2 ${isFeatured ? 'text-2xl md:text-3xl lg:text-4xl' : 'text-xl md:text-2xl'}`}>
 				{title}
 			</h3>
@@ -60,7 +60,7 @@ const {
 		
 		<div class="mt-auto pt-5 border-t border-white/5 transition-colors duration-300 group-hover:border-white/10">
 			<a 
-				href={`/blog/${slug}/`}
+				href={`/blog/${id}/`}
 				class="inline-flex items-center text-sm font-semibold tracking-wide text-white/50 transition-colors duration-300 group-hover:text-white"
 			>
 				Leer artículo
