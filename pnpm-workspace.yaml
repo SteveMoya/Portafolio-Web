@@ -1,0 +1,8 @@
+allowBuilds:
+  better-sqlite3: true
+  core-js: true
+  esbuild: true
+  puppeteer: true
+  sharp: true
+minimumReleaseAgeExclude:
+  - astro@7.1.1

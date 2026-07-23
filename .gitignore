@@ -23,9 +23,12 @@ pnpm-debug.log*
 
 node_modules
 .vscode/
+.vercel/
+dist/
 .idea/
-.bun.lock
-.pnpm-lock.yaml
+bun.lock
+pnpm-lock.yaml
+
 
 TODO.md
 .vercel
