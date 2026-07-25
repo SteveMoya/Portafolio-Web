@@ -1,0 +1,34 @@
+---
+import { Icon } from 'astro-icon/components'
+import type { ProjectBadge } from '@src/types/project'
+
+interface Props {
+	badge: ProjectBadge
+}
+
+const { badge } = Astro.props
+
+const badgeConfig: Record<ProjectBadge, { label: string; color: string; icon: string }> = {
+	private: { label: 'Privado', color: 'bg-gray-600', icon: 'mdi:lock' },
+	client: { label: 'Cliente', color: 'bg-purple-600', icon: 'mdi:account' },
+	company: { label: 'Empresa', color: 'bg-blue-600', icon: 'mdi:office-building' },
+	open_source: { label: 'Open Source', color: 'bg-green-600', icon: 'mdi:github' },
+	ai: { label: 'IA', color: 'bg-pink-600', icon: 'mdi:brain' },
+	devops: { label: 'DevOps', color: 'bg-orange-600', icon: 'mdi:cog' },
+	freelance: { label: 'Freelance', color: 'bg-teal-600', icon: 'mdi:laptop-account' },
+	work: { label: 'Trabajo', color: 'bg-indigo-600', icon: 'mdi:briefcase' },
+	personal: { label: 'Personal', color: 'bg-cyan-600', icon: 'mdi:account-star' }
+}
+
+const config = badgeConfig[badge]
+---
+
+<span
+	class:list={[
+		'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium text-white',
+		config.color
+	]}
+>
+	<Icon class="h-3 w-3" name={config.icon} />
+	{config.label}
+</span>
