@@ -7,7 +7,7 @@ technologies:
   - Vue.js
   - MySQL
   - Redis
-draft: false
+draft: true
 featured: true
 order: 2
 date: 2024-03-20
