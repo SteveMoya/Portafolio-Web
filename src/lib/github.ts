@@ -5,6 +5,8 @@ import reposMock from '../mock/repost.json'
 import languajesMock from '../mock/cervezamodeloMock.json'
 import responseMDMock from '../mock/responseMDMock.json'
 
+const EXCLUDED_REPOS = ['Portafolio-Web', 'SteveMoya', 'scripts']
+
 export interface GitHubRepo {
 	name: string
 	description: string | null
@@ -115,7 +117,7 @@ export async function getRepos(): Promise<GitHubRepo[]> {
 export async function getGithubProjects(): Promise<Project[]> {
 	const repos = await getRepos()
 
-	const filteredRepos = repos.filter((repo) => !repo.archived)
+	const filteredRepos = repos.filter((repo) => !repo.archived && !EXCLUDED_REPOS.includes(repo.name))
 
 	return Promise.all(
 		filteredRepos.map(async (repo) => {
