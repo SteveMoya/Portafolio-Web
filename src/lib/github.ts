@@ -11,6 +11,7 @@ export interface GitHubRepo {
 	html_url?: string
 	homepage?: string | null
 	pushed_at: string
+	archived?: boolean
 }
 
 interface GitHubLanguage {
@@ -114,8 +115,10 @@ export async function getRepos(): Promise<GitHubRepo[]> {
 export async function getGithubProjects(): Promise<Project[]> {
 	const repos = await getRepos()
 
+	const filteredRepos = repos.filter((repo) => !repo.archived)
+
 	return Promise.all(
-		repos.map(async (repo) => {
+		filteredRepos.map(async (repo) => {
 			const [languages, firstImage] = await Promise.all([
 				getRepoLanguages(repo.name),
 				fetchFirstImageFromReadme(repo.name)
