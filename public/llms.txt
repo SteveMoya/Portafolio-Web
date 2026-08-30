@@ -1,0 +1,17 @@
+# Steve Moya
+
+> Portafolio personal de Steve Moya, Digital Marketing Specialist y desarrollador web con base en Santo Domingo, República Dominicana. Especializado en campañas de marketing digital, desarrollo web (HTML, CSS, JavaScript, TypeScript, Astro) y optimización de sitios (rendimiento, SEO).
+
+Steve Moya trabaja actualmente como Junior WebMaster en el Departamento de Marketing de International Contact Center (ICC), diseñando y desarrollando sitios web para clientes y gestionando campañas de marketing digital.
+
+## Páginas principales
+
+- [Inicio](https://stevemoya.me/): Presentación y resumen profesional.
+- [Sobre mí](https://stevemoya.me/about): CV, experiencia laboral, educación y habilidades.
+- [Portafolio](https://stevemoya.me/portafolio): Proyectos de desarrollo web, diseño y fotografía.
+- [Blog](https://stevemoya.me/blog): Artículos sobre marketing digital y tecnología.
+
+## Contacto
+
+- LinkedIn: https://www.linkedin.com/in/steve-moya-cepeda/
+- GitHub: https://github.com/stevemoya

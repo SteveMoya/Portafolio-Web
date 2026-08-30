@@ -15,7 +15,7 @@ interface SiteConfig {
 export const siteConfig: SiteConfig = {
     author: 'Steve Moya', // Site author
     title: 'Steve Moya - Personal Portafolio Web', // Site title.
-    description: 'Steve Moya - Personal Web Personal, Este es mi portafolio con mucho amor y dedicacion.Hecho por un marketero amante a la tecnologia',
+    description: 'Portafolio personal de Steve Moya, marketer digital y desarrollador web. Descubre mis proyectos, artículos de marketing y experiencia profesional.',
     keywords: 'blog, Steve Moya Cepeda, Marketer, Steve  Moya, creative, creative portfolio, cv, portafolio, professional cv, responsive portafolio',
     favicon: "/img/logo.svg",
     ogImage: "/img/Steve-Moya-OG.jpg",
