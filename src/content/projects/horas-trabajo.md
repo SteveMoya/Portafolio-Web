@@ -4,6 +4,7 @@ description: "App Android para registrar entrada y salida, con geolocalización,
 imageUrl: "/img/projects/horas-trabajo.png"
 demo: "https://horas-trabajo.stevemoya.me"
 repository: "https://github.com/SteveMoya/horas-trabajo"
+draft: false
 technologies: ["Flutter", "Dart", "Material 3", "SQLite", "Geolocator", "Google Fonts"]
 featured: true
 order: 1
