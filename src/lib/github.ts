@@ -5,7 +5,7 @@ import reposMock from '../mock/repost.json'
 import languajesMock from '../mock/cervezamodeloMock.json'
 import responseMDMock from '../mock/responseMDMock.json'
 
-const EXCLUDED_REPOS = ['Portafolio-Web', 'SteveMoya', 'scripts']
+const EXCLUDED_REPOS = ['Portafolio-Web', 'SteveMoya', 'scripts', 'horas-trabajo', 'landing-horas-trabajo']
 
 export interface GitHubRepo {
 	name: string
