@@ -4,11 +4,11 @@ import { Icon } from 'astro-icon/components'
 const expertise = [
 	{
 		number: '01',
-		icon: 'mdi:bullhorn-outline',
-		title: 'Marketing Digital',
+		icon: 'mdi:robot-outline',
+		title: 'IA & Análisis de Datos',
 		description:
-			'Estrategia y ejecución de campañas digitales, desde la investigación de audiencia hasta la optimización continua de resultados.',
-		tags: ['SEO', 'Google Ads', 'Google Analytics', 'Redes Sociales', 'Estrategia de Contenido', 'Email Marketing']
+			'Formación técnica en inteligencia artificial y análisis de datos, aplicada a la toma de decisiones basada en evidencia.',
+		tags: ['Análisis de Datos', 'Fundamentos de IA', 'Modelos Predictivos', 'Estadística Aplicada', 'Automatización', 'Machine Learning']
 	},
 	{
 		number: '02',
@@ -20,11 +20,11 @@ const expertise = [
 	},
 	{
 		number: '03',
-		icon: 'mdi:robot-outline',
-		title: 'IA & Análisis de Datos',
+		icon: 'mdi:bullhorn-outline',
+		title: 'Marketing Digital',
 		description:
-			'Formación técnica en inteligencia artificial y análisis de datos, aplicada a la toma de decisiones basada en evidencia.',
-		tags: ['Análisis de Datos', 'Fundamentos de IA', 'Modelos Predictivos', 'Estadística Aplicada', 'Automatización', 'Machine Learning']
+			'Estrategia y ejecución de campañas digitales, desde la investigación de audiencia hasta la optimización continua de resultados.',
+		tags: ['SEO', 'Google Ads', 'Google Analytics', 'Redes Sociales', 'Estrategia de Contenido', 'Email Marketing']
 	}
 ]
 ---
@@ -63,6 +63,8 @@ const expertise = [
 								<div class="cube-face cube-face--front">
 									<Icon name={item.icon} class="cube-icon h-14 w-14" />
 								</div>
+								<div class="cube-face cube-face--back" />
+								<div class="cube-face cube-face--left" />
 							</div>
 						</div>
 					</div>
@@ -141,7 +143,7 @@ const expertise = [
 		width: 100%;
 		height: 100%;
 		transform-style: preserve-3d;
-		animation: cube-drift 8s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+		animation: cube-spin 16s linear infinite;
 	}
 
 	.cube-face {
@@ -171,6 +173,16 @@ const expertise = [
 		justify-content: center;
 		background: #050505;
 		transform: rotateY(90deg) translateZ(100px);
+	}
+
+	.cube-face--back {
+		background: #0a0a0a;
+		transform: rotateY(180deg) translateZ(100px);
+	}
+
+	.cube-face--left {
+		background: #050505;
+		transform: rotateY(-90deg) translateZ(100px);
 	}
 
 	.cube-number {
@@ -207,13 +219,12 @@ const expertise = [
 		}
 	}
 
-	@keyframes cube-drift {
-		0%,
-		100% {
-			transform: rotateX(-28deg) rotateY(calc(var(--tilt-sign) * 45deg));
+	@keyframes cube-spin {
+		0% {
+			transform: rotateX(-24deg) rotateY(calc(var(--tilt-sign) * 45deg));
 		}
-		50% {
-			transform: rotateX(-24deg) rotateY(calc(var(--tilt-sign) * 41deg));
+		100% {
+			transform: rotateX(-24deg) rotateY(calc(var(--tilt-sign) * 405deg));
 		}
 	}
 
