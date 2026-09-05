@@ -3,10 +3,9 @@ import type { Project, Technology } from '@src/types/project'
 
 export async function getContentProjects(): Promise<Project[]> {
 	const entries = await getCollection('projects')
-	const isDev = process.env.NODE_ENV === 'development'
 
 	return entries
-		.filter((entry) => isDev ? true : !entry.data.draft)
+		.filter((entry) => !entry.data.draft)
 		.map((entry) => {
 			const { data } = entry
 
