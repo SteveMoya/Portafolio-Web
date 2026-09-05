@@ -1,0 +1,64 @@
+---
+import { Icon } from 'astro-icon/components'
+
+const tools = [
+	{ name: 'GitHub', icon: 'logos:github-icon' },
+	{ name: 'HTML', icon: 'logos:html-5' },
+	{ name: 'CSS', icon: 'logos:css-3' },
+	{ name: 'JavaScript', icon: 'logos:javascript' },
+	{ name: 'TypeScript', icon: 'logos:typescript-icon' },
+	{ name: 'Tailwind CSS', icon: 'logos:tailwindcss-icon' },
+	{ name: 'Node.js', icon: 'logos:nodejs-icon' },
+	{ name: 'PHP', icon: 'logos:php' },
+	{ name: 'WordPress', icon: 'logos:wordpress-icon' },
+	{ name: 'Google Analytics', icon: 'logos:google-analytics' },
+	{ name: 'Google Ads', icon: 'logos:google-ads' },
+	{ name: 'Cloudflare', icon: 'logos:cloudflare-icon' },
+	{ name: 'SAP', icon: 'logos:sap' },
+	{ name: 'Canva', icon: 'mdi:palette-outline' },
+	{ name: 'SEO', icon: 'mdi:magnify' },
+	{ name: 'Análisis de Datos', icon: 'mdi:chart-line' }
+]
+---
+
+<section class="relative w-full overflow-hidden border-y border-white/10 bg-[#0a0a0a] py-10">
+	<p class="mb-8 px-6 text-center text-xs font-bold uppercase tracking-[0.3em] text-white/40 sm:px-10 lg:px-16">
+		Tech Stack &amp; Herramientas
+	</p>
+
+	<div class="marquee-track flex w-max items-center gap-14">
+		{
+			[...tools, ...tools].map((tool) => (
+				<div class="flex shrink-0 items-center gap-3 text-white/70">
+					<Icon name={tool.icon} class="h-8 w-8 shrink-0" />
+					<span class="whitespace-nowrap text-sm font-semibold uppercase tracking-wide">{tool.name}</span>
+				</div>
+			))
+		}
+	</div>
+</section>
+
+<style>
+	.marquee-track {
+		animation: marquee-scroll 36s linear infinite;
+	}
+
+	.marquee-track:hover {
+		animation-play-state: paused;
+	}
+
+	@keyframes marquee-scroll {
+		from {
+			transform: translateX(0);
+		}
+		to {
+			transform: translateX(-50%);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.marquee-track {
+			animation: none;
+		}
+	}
+</style>
