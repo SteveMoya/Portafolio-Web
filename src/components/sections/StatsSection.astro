@@ -1,5 +1,6 @@
 ---
 import { getAllProjects } from '@src/lib/projects'
+import { getRepos } from '@src/lib/github'
 import { work } from '@cv'
 
 const allProjects = await getAllProjects()
@@ -22,12 +23,13 @@ const monthsOfExperience = Math.max(
 )
 const yearsOfExperience = Math.max(1, Math.round(monthsOfExperience / 12))
 
-const githubRepos = allProjects.filter((p) => p.source === 'github').length
+const publicRepos = await getRepos()
+const githubRepos = publicRepos.length
 
 const stats = [
 	{ label: 'Proyectos completados', value: projectsCompleted, suffix: '+' },
 	{ label: 'Tecnologías dominadas', value: techCount, suffix: '+' },
-	{ label: 'Años de experiencia', value: yearsOfExperience, suffix: '' },
+	{ label: 'Años de experiencia', value: yearsOfExperience, suffix: '+' },
 	{ label: 'Repos en GitHub', value: githubRepos, suffix: '+' }
 ]
 ---
