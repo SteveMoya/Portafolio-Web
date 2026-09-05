@@ -53,11 +53,16 @@ const expertise = [
 						</div>
 					</div>
 
-					<div class="expertise-visual flex flex-1 items-center justify-center py-8" style="perspective: 1000px;">
-						<div class:list={['tilt-card-pair', index % 2 === 1 && 'tilt-card-pair--reverse']}>
-							<div class="tilt-card tilt-card--back" />
-							<div class="tilt-card tilt-card--front">
-								<Icon name={item.icon} class="tilt-card-icon h-12 w-12" />
+					<div class="expertise-visual flex flex-1 items-center justify-center py-8" style="perspective: 1400px;">
+						<div class:list={['cube-wrap', index % 2 === 1 && 'cube-wrap--reverse']}>
+							<div class="cube">
+								<div class="cube-face cube-face--top" />
+								<div class="cube-face cube-face--side">
+									<span class="cube-number">{item.number}</span>
+								</div>
+								<div class="cube-face cube-face--front">
+									<Icon name={item.icon} class="cube-icon h-14 w-14" />
+								</div>
 							</div>
 						</div>
 					</div>
@@ -71,127 +76,150 @@ const expertise = [
 	.expertise-text {
 		animation: expertise-text-in linear both;
 		animation-timeline: view();
-		animation-range: entry 0% cover 30%;
+		animation-range: cover 0% cover 100%;
 	}
 
 	.expertise-visual {
 		animation: expertise-visual-in linear both;
 		animation-timeline: view();
-		animation-range: entry 0% cover 30%;
+		animation-range: cover 0% cover 100%;
 	}
 
 	@keyframes expertise-text-in {
-		from {
+		0% {
 			opacity: 0;
-			transform: translateY(40px);
+			transform: translateY(70px);
 		}
-		to {
+		25% {
 			opacity: 1;
-			transform: translateY(0);
+			transform: translateY(20px);
+		}
+		75% {
+			opacity: 1;
+			transform: translateY(-20px);
+		}
+		100% {
+			opacity: 0;
+			transform: translateY(-70px);
 		}
 	}
 
 	@keyframes expertise-visual-in {
-		from {
+		0% {
 			opacity: 0;
-			transform: translateY(-24px) scale(0.92);
+			transform: translateY(-50px) scale(0.92);
 		}
-		to {
+		25% {
 			opacity: 1;
-			transform: translateY(0) scale(1);
+			transform: translateY(-15px) scale(1);
+		}
+		75% {
+			opacity: 1;
+			transform: translateY(15px) scale(1);
+		}
+		100% {
+			opacity: 0;
+			transform: translateY(50px) scale(0.92);
 		}
 	}
 
-	.tilt-card-pair {
+	.cube-wrap {
 		--tilt-sign: -1;
 		position: relative;
-		width: 220px;
-		height: 220px;
-		animation: tilt-float 8s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+		width: 200px;
+		height: 200px;
+		animation: cube-float 8s cubic-bezier(0.37, 0, 0.63, 1) infinite;
 	}
 
-	.tilt-card-pair--reverse {
+	.cube-wrap--reverse {
 		--tilt-sign: 1;
 		animation-delay: -4s;
 	}
 
-	.tilt-card {
+	.cube {
+		position: relative;
+		width: 100%;
+		height: 100%;
+		transform-style: preserve-3d;
+		animation: cube-drift 8s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+	}
+
+	.cube-face {
 		position: absolute;
 		inset: 0;
-		border-radius: 1.5rem;
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		transform-style: preserve-3d;
+		border: 1px solid rgba(255, 255, 255, 0.12);
 	}
 
-	.tilt-card--back {
-		background: linear-gradient(135deg, rgba(199, 0, 57, 0.25), rgba(199, 0, 57, 0.05));
-		animation: tilt-back-drift 8s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+	.cube-face--top {
+		background: linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.02));
+		transform: rotateX(90deg) translateZ(100px);
 	}
 
-	.tilt-card--front {
+	.cube-face--front {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		background: #0f0f0f;
-		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 		color: #c70039;
-		transition: box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-		animation: tilt-front-drift 8s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+		transform: translateZ(100px);
 	}
 
-	.tilt-card-icon {
+	.cube-face--side {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: #050505;
+		transform: rotateY(90deg) translateZ(100px);
+	}
+
+	.cube-number {
+		font-family: 'Poppins', sans-serif;
+		font-size: 2.5rem;
+		font-weight: 900;
+		color: rgba(255, 255, 255, 0.1);
+	}
+
+	.cube-icon {
 		transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
-	.tilt-card-pair:hover .tilt-card--front {
-		box-shadow: 0 28px 80px rgba(199, 0, 57, 0.35);
+	.cube-wrap:hover .cube-face--front {
+		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 50px rgba(199, 0, 57, 0.35);
 	}
 
-	.tilt-card-pair:hover .tilt-card-icon {
-		transform: scale(1.15) translateZ(10px);
+	.cube-wrap:hover .cube-icon {
+		transform: scale(1.15);
 	}
 
-	@keyframes tilt-float {
+	@keyframes cube-float {
 		0% {
 			transform: translateY(0) scale(1);
 		}
 		30% {
-			transform: translateY(-10px) scale(1.008);
+			transform: translateY(-8px) scale(1.006);
 		}
 		60% {
-			transform: translateY(-16px) scale(1.015);
+			transform: translateY(-13px) scale(1.012);
 		}
 		100% {
 			transform: translateY(0) scale(1);
 		}
 	}
 
-	@keyframes tilt-back-drift {
+	@keyframes cube-drift {
 		0%,
 		100% {
-			transform: rotateY(calc(var(--tilt-sign) * -18deg)) rotateX(8deg) translateZ(-30px)
-				translate(calc(var(--tilt-sign) * 24px), 24px);
+			transform: rotateX(-28deg) rotateY(calc(var(--tilt-sign) * 45deg));
 		}
 		50% {
-			transform: rotateY(calc(var(--tilt-sign) * -22deg)) rotateX(11deg) translateZ(-36px)
-				translate(calc(var(--tilt-sign) * 27px), 19px);
-		}
-	}
-
-	@keyframes tilt-front-drift {
-		0%,
-		100% {
-			transform: rotateY(calc(var(--tilt-sign) * -18deg)) rotateX(8deg);
-		}
-		50% {
-			transform: rotateY(calc(var(--tilt-sign) * -14deg)) rotateX(5deg);
+			transform: rotateX(-24deg) rotateY(calc(var(--tilt-sign) * 41deg));
 		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.tilt-card-pair,
-		.tilt-card--back,
-		.tilt-card--front,
+		.cube-wrap,
+		.cube,
 		.expertise-text,
 		.expertise-visual {
 			animation: none;
