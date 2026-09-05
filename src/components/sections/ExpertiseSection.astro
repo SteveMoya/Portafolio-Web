@@ -1,0 +1,128 @@
+---
+import { Icon } from 'astro-icon/components'
+
+const expertise = [
+	{
+		number: '01',
+		icon: 'mdi:bullhorn-outline',
+		title: 'Marketing Digital',
+		description:
+			'Estrategia y ejecución de campañas digitales, desde la investigación de audiencia hasta la optimización continua de resultados.',
+		tags: ['SEO', 'Google Ads', 'Google Analytics', 'Redes Sociales', 'Estrategia de Contenido', 'Email Marketing']
+	},
+	{
+		number: '02',
+		icon: 'mdi:code-tags',
+		title: 'Desarrollo Web',
+		description:
+			'Construcción de sitios y aplicaciones a medida, del diseño de interfaz a la puesta en producción, con foco en rendimiento.',
+		tags: ['HTML / CSS / JS', 'TypeScript', 'Astro', 'Tailwind CSS', 'APIs REST', 'WordPress']
+	},
+	{
+		number: '03',
+		icon: 'mdi:robot-outline',
+		title: 'IA & Análisis de Datos',
+		description:
+			'Formación técnica en inteligencia artificial y análisis de datos, aplicada a la toma de decisiones basada en evidencia.',
+		tags: ['Análisis de Datos', 'Fundamentos de IA', 'Modelos Predictivos', 'Estadística Aplicada', 'Automatización', 'Machine Learning']
+	}
+]
+---
+
+<section class="reveal relative bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16">
+	<div class="mx-auto flex max-w-[1400px] flex-col gap-24">
+		{
+			expertise.map((item, index) => (
+				<div class:list={['flex flex-col items-center gap-12 md:flex-row', index % 2 === 1 && 'md:flex-row-reverse']}>
+					<div class="flex-1">
+						<div class="mb-6 flex items-center gap-4">
+							<span class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">Feature — {item.number}</span>
+							<span class="h-px flex-1 max-w-[80px] bg-white/20" />
+						</div>
+
+						<h3 class="font-poppins text-3xl font-black uppercase tracking-tight text-white sm:text-4xl">{item.title}</h3>
+
+						<p class="mt-4 max-w-md text-sm leading-relaxed text-white/60">{item.description}</p>
+
+						<div class="mt-8 flex flex-wrap gap-2">
+							{item.tags.map((tag) => (
+								<span class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-white/60">
+									{tag}
+								</span>
+							))}
+						</div>
+					</div>
+
+					<div class="flex flex-1 items-center justify-center py-8" style="perspective: 1000px;">
+						<div class:list={['tilt-card-pair', index % 2 === 1 && 'tilt-card-pair--reverse']}>
+							<div class="tilt-card tilt-card--back" />
+							<div class="tilt-card tilt-card--front">
+								<Icon name={item.icon} class="h-12 w-12" />
+							</div>
+						</div>
+					</div>
+				</div>
+			))
+		}
+	</div>
+</section>
+
+<style>
+	.tilt-card-pair {
+		position: relative;
+		width: 220px;
+		height: 220px;
+		animation: tilt-float 5s ease-in-out infinite;
+	}
+
+	.tilt-card-pair--reverse {
+		animation-delay: -2.5s;
+	}
+
+	.tilt-card {
+		position: absolute;
+		inset: 0;
+		border-radius: 1.5rem;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		transform-style: preserve-3d;
+	}
+
+	.tilt-card--back {
+		background: linear-gradient(135deg, rgba(199, 0, 57, 0.25), rgba(199, 0, 57, 0.05));
+		transform: rotateY(-18deg) rotateX(8deg) translateZ(-30px) translate(24px, 24px);
+	}
+
+	.tilt-card--front {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: #0f0f0f;
+		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+		transform: rotateY(-18deg) rotateX(8deg);
+		color: #c70039;
+	}
+
+	.tilt-card-pair--reverse .tilt-card--back {
+		transform: rotateY(18deg) rotateX(8deg) translateZ(-30px) translate(-24px, 24px);
+	}
+
+	.tilt-card-pair--reverse .tilt-card--front {
+		transform: rotateY(18deg) rotateX(8deg);
+	}
+
+	@keyframes tilt-float {
+		0%,
+		100% {
+			transform: translateY(0);
+		}
+		50% {
+			transform: translateY(-14px);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.tilt-card-pair {
+			animation: none;
+		}
+	}
+</style>
