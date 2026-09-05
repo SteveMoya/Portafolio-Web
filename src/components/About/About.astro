@@ -1,182 +1,147 @@
 ---
 import Button from '@components/ui/Button.astro'
-
-import Header from '@components/Header.astro'
-import Card from '@components/ui/Card.astro'
-import YoImg from '@/assets/img/Yo.webp'
 import ValueItem from './ValueItem.astro'
 import { Icon } from 'astro-icon/components'
 
+import YoImg from '@/assets/img/Yo.webp'
 import { Image } from 'astro:assets'
 
-const images = {
-	Yo: YoImg,
-	codding: '/img/coding.svg',
-	socialmedia: '/img/socialmedia.svg',
-	creative: '/img/creative.svg'
-}
-
-const services = [
+const skills = [
 	{
-		title: 'Diseño Web',
-		description: 'Habilidades en la creación de diseños web atractivos.',
-		img: images.codding
+		icon: 'mdi:bullhorn-outline',
+		title: 'Marketing Digital',
+		description: 'Campañas, estrategia de contenido y gestión de comunidades orientadas a resultados.'
 	},
 	{
-		title: 'Social Media',
-		description:
-			'Habilidades para la gestión de comunidades para mejorar el compromiso de los clientes.',
-		img: images.socialmedia
+		icon: 'mdi:code-tags',
+		title: 'Desarrollo Web',
+		description: 'Sitios y aplicaciones a medida, del diseño a la puesta en producción.'
 	},
 	{
-		title: 'Diseño Creativo',
-		description:
-			'Habilidades en la creación de diseños atractivos para la comunicación visual.',
-		img: images.creative
+		icon: 'mdi:robot-outline',
+		title: 'IA & Análisis de Datos',
+		description: 'Formación técnica en inteligencia artificial y análisis de datos aplicados a problemas reales.'
 	}
 ]
 
 const values = [
-	{
-		icon: 'mdi:creation',
-		text: 'Innovación constante'
-	},
-	{
-		icon: 'mdi:flash',
-		text: 'Excelencia técnica'
-	},
-	{
-		icon: 'mdi:heart',
-		text: 'Colaboración y trabajo en equipo'
-	},
-	{
-		icon: 'mdi:target',
-		text: 'Integridad y ética profesional'
-	},
-	{
-		icon: 'mdi:book',
-		text: 'Aprendizaje continuo'
-	},
-	{
-		icon: 'mdi:eye',
-		text: 'Responsabilidad social'
-	}
+	{ icon: 'mdi:creation', text: 'Innovación constante' },
+	{ icon: 'mdi:flash', text: 'Excelencia técnica' },
+	{ icon: 'mdi:heart', text: 'Colaboración y trabajo en equipo' },
+	{ icon: 'mdi:target', text: 'Integridad y ética profesional' },
+	{ icon: 'mdi:book', text: 'Aprendizaje continuo' },
+	{ icon: 'mdi:eye', text: 'Responsabilidad social' }
 ]
 ---
 
-<!--about--><!--about content-->
-<section class="w-full bg-[#050505] py-12 md:py-20 mt-8 mb-8 border-y border-white/[0.02] shadow-[inset_0_0_80px_rgba(0,0,0,0.3)]">
-	<Header title="Sobre" titleCaption="Mi" level="h2"/>
-	<div
-		class="max-w-screen container flex h-auto w-full flex-col-reverse items-center justify-center px-4 md:flex-row mx-auto"
-	>
-	<div
-		class="about-first-paragraph reveal flex w-[95%] flex-col items-center justify-center p-[30px] font-normal md:w-6/12"
-	>
-		<!--about description-->
-		<h2 class="about-first-line mb-2.5 block text-3xl font-bold opacity-100 md:text-5xl">
-			Soy un
-			<span class="font-extrabold text-[#c70039] transition-all duration-300 ease-in-out"
-				>Pionero</span
-			>
-			En la tendencia de el Marketing 5.0 en Republica Dominicana
-		</h2>
-		<br />
-		<h3 class="about-second-line text-xl font-extralight opacity-80">
-			Con mas 2 años de experiencia en el área de marketing. Me considero un apasionado en el
-			aprendizaje entorno al área de productos o servicios y satisfacer las necesidades de los
-			clientes.
-		</h3>
-		<div class="cv pt-10">
-			<a title="Cv-Link" href="/CV.-Steve-Moya-Cepeda.pdf" target="_blank">
+<section id="about" class="reveal relative w-full bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16">
+	<div class="mx-auto grid max-w-[1680px] gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+		<!-- Blueprint quote card -->
+		<div class="dotted-card relative rounded-2xl border border-white/10 p-8 sm:p-12">
+			<span class="corner-tick corner-tick--tl"></span>
+			<span class="corner-tick corner-tick--tr"></span>
+			<span class="corner-tick corner-tick--bl"></span>
+			<span class="corner-tick corner-tick--br"></span>
+
+			<p class="mb-6 text-xs font-bold uppercase tracking-[0.3em] text-[#c70039]">Sobre mí</p>
+
+			<blockquote class="text-2xl font-medium leading-snug text-white sm:text-3xl lg:text-4xl">
+				<span class="font-black">Marketing digital</span> y{' '}
+				<span class="font-black">desarrollo web</span>,{' '}
+				<em class="font-serif italic text-white/70">ahora sumando</em>{' '}
+				<span class="font-black text-[#c70039]">inteligencia artificial</span> y{' '}
+				<span class="font-black text-[#c70039]">análisis de datos</span>.
+			</blockquote>
+
+			<div class="mt-10 grid gap-8 border-t border-white/10 pt-8 sm:grid-cols-2">
+				<div>
+					<p class="mb-2 text-[10px] font-bold uppercase tracking-[0.25em] text-white/40">Enfoque</p>
+					<p class="text-sm leading-relaxed text-white/60">
+						Más de 2 años diseñando y ejecutando campañas y productos digitales, aprendiendo a
+						sostener lo que construyo en el tiempo.
+					</p>
+				</div>
+				<div>
+					<p class="mb-2 text-[10px] font-bold uppercase tracking-[0.25em] text-white/40">Formación técnica</p>
+					<p class="text-sm leading-relaxed text-white/60">
+						Técnico en Inteligencia Artificial y Análisis de Datos, aplicando esa base a proyectos
+						reales de marketing y desarrollo.
+					</p>
+				</div>
+			</div>
+
+			<a title="Cv-Link" href="/CV.-Steve-Moya-Cepeda.pdf" target="_blank" class="mt-10 inline-block">
 				<Button type="button" variant="download">Descarga Mi CV</Button>
 			</a>
 		</div>
-	</div>
-	<!--about picture-->
-	<Image
-		class="aspect-square max-h-[600px] max-w-[400] rounded-3xl object-cover shadow-[0_0_30px_rgba(0,0,0,0.5)] reveal reveal-delay-200"
-		src={YoImg}
-		loading="eager"
-		alt="Steve-Moya-Cepeda"
-	/>
-	</div>
-</section>
 
-<section class="container mx-auto my-16 h-auto w-full">
-	<!--services header-->
-	<div
-		class="h-auto w-full items-center justify-center p-2.5 py-[30px] text-center font-raleway text-[45px] font-black reveal"
-	>
-		<span class="font-extrabold text-[#c70039] transition-all duration-300 ease-in-out"
-			>Mis</span
-		> Conocimientos
+		<!-- Photo -->
+		<Image
+			class="aspect-[4/5] w-full rounded-2xl object-cover grayscale transition-all duration-700 hover:grayscale-0"
+			src={YoImg}
+			loading="eager"
+			alt="Steve Moya Cepeda"
+		/>
 	</div>
-	<!--services content-->
-	<div class="flex h-fit w-full flex-wrap content-center justify-center gap-4 overflow-hidden reveal reveal-delay-200">
-		{
-			services.map(({ title, description, img }) => (
-				<Card type="about" title={title} description={description} img={img} />
-			))
-		}
-	</div>
-</section>
-<!--services content end-->
-<section class="w-full bg-[#050505] py-16 md:py-24 mt-16 border-y border-white/[0.02] shadow-[inset_0_0_80px_rgba(0,0,0,0.3)]">
-	<div class="container mx-auto h-auto w-full px-4">
-		<!--services header-->
-		<div
-			class="h-auto w-full items-center justify-center p-2.5 pb-[40px] text-center font-raleway text-[45px] font-black reveal"
-		>
-			Mision, Vision y Valores
+
+	<!-- Skills -->
+	<div class="mx-auto mt-20 max-w-[1680px]">
+		<p class="mb-8 text-xs font-bold uppercase tracking-[0.3em] text-white/40">Áreas de trabajo</p>
+		<div class="grid gap-4 sm:grid-cols-3">
+			{
+				skills.map((skill) => (
+					<div class="dotted-card relative rounded-2xl border border-white/10 p-6 transition-colors duration-300 hover:border-[#c70039]/40">
+						<span class="corner-tick corner-tick--tl" />
+						<span class="corner-tick corner-tick--br" />
+						<Icon name={skill.icon} class="mb-4 h-6 w-6 text-[#c70039]" />
+						<h3 class="mb-2 text-lg font-bold text-white">{skill.title}</h3>
+						<p class="text-sm leading-relaxed text-white/50">{skill.description}</p>
+					</div>
+				))
+			}
 		</div>
-		<!--services content-->
-		<div class="mx-auto grid h-fit w-full max-w-[1146px] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-		{/* Misión */}
-		<div
-			class="group relative row-span-2 flex flex-col justify-between overflow-hidden rounded-2xl border border-white/5 bg-white/5 p-8 backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:border-[#c70039]/30 hover:bg-white/10 hover:shadow-[0_8px_30px_rgb(0,0,0,0.5)] md:col-span-2 reveal"
-		>
-			<div class="absolute inset-0 z-0 bg-gradient-to-br from-[#c70039]/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
-			<div>
-				<div class="mb-4 flex items-center">
-					<Icon name="mdi:target" class="mr-3 h-8 w-8 flex-shrink-0 text-[#c70039]" />
-					<h3 class="text-xl font-semibold">Misión</h3>
+	</div>
+
+	<!-- Misión, Visión y Valores -->
+	<div class="mx-auto mt-20 max-w-[1680px]">
+		<p class="mb-8 text-xs font-bold uppercase tracking-[0.3em] text-white/40">Misión, Visión y Valores</p>
+		<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+			<div class="dotted-card relative flex flex-col justify-between rounded-2xl border border-white/10 p-8 md:col-span-2">
+				<span class="corner-tick corner-tick--tl" />
+				<span class="corner-tick corner-tick--br" />
+				<div>
+					<div class="mb-4 flex items-center gap-3">
+						<Icon name="mdi:target" class="h-6 w-6 shrink-0 text-[#c70039]" />
+						<h3 class="text-xl font-semibold text-white">Misión</h3>
+					</div>
+					<p class="text-white/60">
+						Construir soluciones de marketing, software e IA que ayuden a las empresas a crecer,
+						aportando valor a través de la innovación.
+					</p>
 				</div>
-				<p class="flex-grow">
-					Ofrecer soluciones de marketing digital y diseño web que permitan a las empresas
-					crecer y alcanzar sus objetivos de negocio. Aportando valor a través de la
-					innovación.
-				</p>
 			</div>
-		</div>
 
-		{/* Visión */}
-		<div
-			class="group relative row-span-2 flex flex-col justify-between overflow-hidden rounded-2xl border border-white/5 bg-white/5 p-8 backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:border-[#c70039]/30 hover:bg-white/10 hover:shadow-[0_8px_30px_rgb(0,0,0,0.5)] md:col-span-2 reveal reveal-delay-200"
-		>
-			<div class="absolute inset-0 z-0 bg-gradient-to-br from-[#c70039]/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
-			<div>
-				<div class="mb-4 flex items-center">
-					<Icon name="mdi:eye" class="mr-3 h-8 w-8 flex-shrink-0 text-[#c70039]" />
-					<h3 class="text-xl font-semibold">Visión</h3>
+			<div class="dotted-card relative flex flex-col justify-between rounded-2xl border border-white/10 p-8 md:col-span-2">
+				<span class="corner-tick corner-tick--tl" />
+				<span class="corner-tick corner-tick--br" />
+				<div>
+					<div class="mb-4 flex items-center gap-3">
+						<Icon name="mdi:eye-outline" class="h-6 w-6 shrink-0 text-[#c70039]" />
+						<h3 class="text-xl font-semibold text-white">Visión</h3>
+					</div>
+					<p class="text-white/60">
+						Ser un referente en la intersección entre marketing, desarrollo e inteligencia
+						artificial, ayudando a las empresas a alcanzar sus objetivos de negocio.
+					</p>
 				</div>
-				<p class="flex-grow">
-					Ser una persona referente en el sector del marketing digital y diseño web,
-					aportando valor a las empresas y ayudándolas a alcanzar sus objetivos de
-					negocio.
-				</p>
 			</div>
-		</div>
 
-		{/* Valores */}
-		<div
-			class="flex flex-col justify-between rounded-lg bg-[#191919] p-6 md:col-span-2 lg:col-span-4 reveal reveal-delay-200"
-		>
-			<div>
-				<div class="mb-4 flex items-center">
-					<Icon name="mdi:heart" class="mr-3 h-8 w-8 flex-shrink-0 text-[#c70039]" />
-
-					<h3 class="text-xl font-semibold">Valores</h3>
+			<div class="dotted-card relative rounded-2xl border border-white/10 p-8 md:col-span-2 lg:col-span-4">
+				<span class="corner-tick corner-tick--tl" />
+				<span class="corner-tick corner-tick--br" />
+				<div class="mb-4 flex items-center gap-3">
+					<Icon name="mdi:heart-outline" class="h-6 w-6 shrink-0 text-[#c70039]" />
+					<h3 class="text-xl font-semibold text-white">Valores</h3>
 				</div>
 				<div class="grid grid-cols-2 gap-4 md:grid-cols-3">
 					{values.map(({ icon, text }) => <ValueItem name={icon}>{text}</ValueItem>)}
@@ -184,5 +149,39 @@ const values = [
 			</div>
 		</div>
 	</div>
-	</div>
 </section>
+
+<style>
+	.dotted-card {
+		background-color: #0a0a0a;
+		background-image: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0.5px, transparent 0.5px);
+		background-size: 16px 16px;
+	}
+
+	.corner-tick {
+		position: absolute;
+		width: 6px;
+		height: 6px;
+		background: #c70039;
+	}
+
+	.corner-tick--tl {
+		top: -3px;
+		left: -3px;
+	}
+
+	.corner-tick--tr {
+		top: -3px;
+		right: -3px;
+	}
+
+	.corner-tick--bl {
+		bottom: -3px;
+		left: -3px;
+	}
+
+	.corner-tick--br {
+		bottom: -3px;
+		right: -3px;
+	}
+</style>
