@@ -16,20 +16,20 @@ const { name, label } = basics;
 <PrintLayout title={`${name} Portafolio - ${label}`}>
 	<main class="relative grid max-w-7xl items-start gap-6 p-8 max-sm:py-16 md:grid-cols-6 md:p-16 xl:gap-8 print:max-w-none print:grid-cols-6 print:gap-x-8 print:gap-y-2">
 		<div class="dotted-card relative space-y-6 self-start rounded-2xl border border-white/10 p-6 md:col-span-2 print:col-span-2 print:space-y-2 print:rounded-none print:border-none print:bg-transparent print:p-0">
-			<span class="corner-tick corner-tick--tl print:hidden"></span>
-			<span class="corner-tick corner-tick--br print:hidden"></span>
 			<Hero />
 			<AboutSection />
-		</div>
-		<div class="dotted-card relative space-y-12 self-start rounded-2xl border border-white/10 p-6 md:col-span-4 print:col-span-4 print:space-y-2 print:rounded-none print:border-none print:bg-transparent print:p-0">
 			<span class="corner-tick corner-tick--tl print:hidden"></span>
 			<span class="corner-tick corner-tick--br print:hidden"></span>
+		</div>
+		<div class="dotted-card relative space-y-12 self-start rounded-2xl border border-white/10 p-6 md:col-span-4 print:col-span-4 print:space-y-2 print:rounded-none print:border-none print:bg-transparent print:p-0">
 			<Experience />
 			{
 				projects.length > 0 && <Projects className="print:hidden" />
 			}
 			<Skills className="print:hidden" />
 			<Education className="order-first" />
+			<span class="corner-tick corner-tick--tl print:hidden"></span>
+			<span class="corner-tick corner-tick--br print:hidden"></span>
 		</div>
 	</main>
 
