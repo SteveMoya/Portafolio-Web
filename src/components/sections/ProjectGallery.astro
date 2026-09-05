@@ -1,0 +1,134 @@
+---
+import { getAllProjects } from '@src/lib/projects'
+import { formatDate } from '@src/utils'
+import placeholderImage from '/public/img/place-holder-image.webp'
+
+const PREVIEW_COUNT = 6
+const allProjects = await getAllProjects()
+const projects = allProjects.slice(0, PREVIEW_COUNT)
+---
+
+<section class="relative bg-[#0a0a0a]" style={`height: ${projects.length * 100}vh`} data-gallery-section>
+	<div class="sticky top-0 flex h-screen flex-col justify-center overflow-hidden">
+		<p class="reveal mb-6 px-6 text-xs font-bold uppercase tracking-[0.3em] text-white/40 sm:px-10 lg:px-16">
+			Proyectos
+		</p>
+
+		<div class="flex" data-gallery-track>
+			{
+				projects.map((project, index) => (
+					<div class="w-screen shrink-0 px-6 sm:px-10 lg:px-16">
+						<div class="mx-auto grid max-w-[1400px] items-center gap-10 md:grid-cols-[auto_1fr]">
+							<div class="flex items-baseline gap-4 md:flex-col md:gap-2">
+								<span class="font-poppins text-5xl font-black text-white/10 sm:text-7xl">
+									{String(index + 1).padStart(2, '0')}
+								</span>
+								<span class="text-xs font-bold uppercase tracking-[0.2em] text-white/40">
+									{project.technologies?.[0]?.name || 'Proyecto'}
+								</span>
+							</div>
+
+							<div>
+								<div class="device-frame overflow-hidden rounded-xl border border-white/10 bg-[#111]">
+									<div class="flex items-center gap-1.5 border-b border-white/10 bg-[#0a0a0a] px-3 py-2">
+										<span class="h-2 w-2 rounded-full bg-white/20" />
+										<span class="h-2 w-2 rounded-full bg-white/20" />
+										<span class="h-2 w-2 rounded-full bg-white/20" />
+									</div>
+									<img
+										src={project.image || (placeholderImage as unknown as string)}
+										alt={`${project.title} imagen`}
+										class="aspect-[16/9] w-full object-cover"
+										loading="lazy"
+									/>
+								</div>
+
+								<div class="mt-6 flex flex-wrap items-end justify-between gap-4">
+									<div>
+										<h3 class="text-2xl font-bold text-white sm:text-3xl">{project.title}</h3>
+										<p class="mt-1 max-w-lg text-sm text-white/50">{project.description}</p>
+									</div>
+									<div class="flex items-center gap-4">
+										<span class="text-xs font-semibold uppercase tracking-[0.2em] text-white/40">
+											{formatDate(project.updatedAt)}
+										</span>
+										{project.demo && (
+											<a
+												href={project.demo}
+												target="_blank"
+												rel="noopener noreferrer"
+												class="text-xs font-bold uppercase tracking-[0.2em] text-[#c70039] transition-colors hover:text-white"
+											>
+												Ver más &rarr;
+											</a>
+										)}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				))
+			}
+		</div>
+
+		<div class="mt-10 flex items-center gap-4 px-6 sm:px-10 lg:px-16">
+			<div class="h-px flex-1 bg-white/10">
+				<div class="h-px bg-[#c70039] transition-all duration-150" data-gallery-progress style="width: 0%"></div>
+			</div>
+			<span class="shrink-0 text-xs font-semibold tracking-[0.2em] text-white/40" data-gallery-page>
+				01 / {String(projects.length).padStart(2, '0')}
+			</span>
+			<a href="/portafolio/webs" class="shrink-0 text-xs font-bold uppercase tracking-[0.2em] text-white/60 transition-colors hover:text-[#c70039]">
+				Ver todos &rarr;
+			</a>
+		</div>
+	</div>
+</section>
+
+<script>
+	function initGallery(section: Element) {
+		const track = section.querySelector<HTMLElement>('[data-gallery-track]')
+		const progressBar = section.querySelector<HTMLElement>('[data-gallery-progress]')
+		const pageLabel = section.querySelector<HTMLElement>('[data-gallery-page]')
+		if (!track || !progressBar || !pageLabel) return
+
+		const total = track.children.length
+
+		const onScroll = () => {
+			const rect = section.getBoundingClientRect()
+			const scrollable = rect.height - window.innerHeight
+			if (scrollable <= 0) return
+
+			const progress = Math.min(1, Math.max(0, -rect.top / scrollable))
+			const maxTranslate = (track.scrollWidth - window.innerWidth) || 0
+
+			track.style.transform = `translateX(-${progress * maxTranslate}px)`
+			progressBar.style.width = `${progress * 100}%`
+
+			const page = Math.min(total, Math.floor(progress * total) + 1)
+			pageLabel.textContent = `${String(page).padStart(2, '0')} / ${String(total).padStart(2, '0')}`
+		}
+
+		window.addEventListener('scroll', onScroll, { passive: true })
+		onScroll()
+	}
+
+	function initAllGalleries() {
+		document.querySelectorAll('[data-gallery-section]').forEach(initGallery)
+	}
+
+	initAllGalleries()
+	document.addEventListener('astro:after-swap', initAllGalleries)
+</script>
+
+<style>
+	[data-gallery-track] {
+		will-change: transform;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.device-frame img {
+			transition: none;
+		}
+	}
+</style>
