@@ -9,6 +9,15 @@ const navItems = [
 	{ title: 'Portafolio', href: '/portafolio' }
 ]
 
+const aboutMenu = [
+	{ title: 'CV completo', description: 'Mi trayectoria profesional', href: '/about', icon: 'mdi:file-document-outline' },
+	{ title: 'Experiencia', description: 'Dónde he trabajado', href: '/about', icon: 'mdi:briefcase-outline' },
+	{ title: 'Habilidades', description: 'Herramientas que domino', href: '/about', icon: 'mdi:lightning-bolt-outline' },
+	{ title: 'Educación', description: 'Formación académica', href: '/about', icon: 'mdi:school-outline' },
+	{ title: 'Proyectos', description: 'Lo último en lo que trabajé', href: '/portafolio', icon: 'mdi:rocket-launch-outline' },
+	{ title: 'Contacto', description: 'Hablemos de tu proyecto', href: 'mailto:steve@stevemoya.me', icon: 'mdi:email-outline' }
+]
+
 const isActive = (path: string) => {
 	const currentPath = Astro.url.pathname
 	return currentPath === path || (path !== '/' && currentPath.startsWith(path))
@@ -20,26 +29,66 @@ const isActive = (path: string) => {
 		class="bg-dark/70 mx-auto flex h-16 max-w-screen-xl items-center justify-between px-4 backdrop-blur-md"
 	>
 		<!-- Logo -->
-		<a href="/" class="flex items-center space-x-2">
+		<a href="/" class="flex items-center">
 			<Picture
 				src="/img/logo.svg"
 				alt="Steve Moya"
-				width="40"
-				height="40"
+				width="32"
+				height="32"
 				class="transition-transform duration-300 hover:scale-110"
 			/>
 		</a>
 
 		<!-- Desktop Navigation -->
-		<nav class="hidden items-center space-x-6 md:flex print:hidden no-print">
+		<nav class="hidden items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] p-1 md:flex print:hidden no-print">
+			<a
+				href="/"
+				class={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-300 ${
+					isActive('/') ? 'bg-white text-black' : 'text-white/70 hover:text-white'
+				}`}
+			>
+				Inicio
+			</a>
+
+			<nav-dropdown class="relative">
+				<button
+					type="button"
+					aria-expanded="false"
+					class={`flex items-center gap-1 rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-300 ${
+						isActive('/about') ? 'bg-white text-black' : 'text-white/70 hover:text-white'
+					}`}
+				>
+					Sobre mí
+					<Icon name="mdi:chevron-down" class="h-4 w-4 transition-transform duration-300" data-chevron />
+				</button>
+
+				<div
+					data-panel
+					class="pointer-events-none absolute left-1/2 top-[calc(100%+0.75rem)] grid w-[340px] -translate-x-1/2 translate-y-1 grid-cols-2 gap-2 rounded-2xl border border-white/10 bg-[#0a0a0a] p-3 opacity-0 shadow-2xl shadow-black/60 transition-all duration-200"
+				>
+					{
+						aboutMenu.map((item) => (
+							<a
+								href={item.href}
+								class="group flex flex-col gap-1.5 rounded-xl p-3 transition-colors duration-200 hover:bg-white/[0.06]"
+							>
+								<Icon name={item.icon} class="h-4 w-4 text-white/50 transition-colors duration-200 group-hover:text-[#c70039]" />
+								<span class="text-sm font-semibold text-white">{item.title}</span>
+								<span class="text-xs text-white/40">{item.description}</span>
+							</a>
+						))
+					}
+				</div>
+			</nav-dropdown>
+
 			{
-				navItems.map((item) => (
+				navItems.slice(2).map((item) => (
 					<a
 						href={item.href}
-						class={`text-sm font-medium transition-colors duration-300 ${
+						class={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-300 ${
 							isActive(item.href)
-								? 'text-[#c70039]'
-								: 'text-white/80 hover:text-[#c70039]'
+								? 'bg-white text-black'
+								: 'text-white/70 hover:text-white'
 						}`}
 					>
 						{item.title}
@@ -134,4 +183,43 @@ const isActive = (path: string) => {
 			header?.classList.remove('shadow-md')
 		}
 	})
+
+	class NavDropdown extends HTMLElement {
+		connectedCallback() {
+			const button = this.querySelector<HTMLButtonElement>('button')!
+			const panel = this.querySelector<HTMLElement>('[data-panel]')!
+			const chevron = this.querySelector<HTMLElement>('[data-chevron]')!
+
+			const open = () => {
+				panel.classList.remove('pointer-events-none', 'opacity-0', 'translate-y-1')
+				panel.classList.add('translate-y-0')
+				chevron.classList.add('rotate-180')
+				button.setAttribute('aria-expanded', 'true')
+			}
+
+			const close = () => {
+				panel.classList.add('pointer-events-none', 'opacity-0', 'translate-y-1')
+				panel.classList.remove('translate-y-0')
+				chevron.classList.remove('rotate-180')
+				button.setAttribute('aria-expanded', 'false')
+			}
+
+			const toggle = (event: MouseEvent) => {
+				event.stopPropagation()
+				const isOpen = button.getAttribute('aria-expanded') === 'true'
+				isOpen ? close() : open()
+			}
+
+			button.addEventListener('click', toggle)
+			document.addEventListener('click', (event) => {
+				if (!this.contains(event.target as Node)) close()
+			})
+			document.addEventListener('keydown', (event) => {
+				if (event.key === 'Escape') close()
+			})
+			document.addEventListener('astro:after-swap', close)
+		}
+	}
+
+	customElements.define('nav-dropdown', NavDropdown)
 </script>

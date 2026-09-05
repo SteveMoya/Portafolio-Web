@@ -1,49 +1,266 @@
 ---
-import Particles from './Particles.astro'
-import TextRotate from './TextRotate.astro'
+import { Icon } from 'astro-icon/components'
+import { basics } from '@cv'
 
-import SocialLinks from '@components/SocialLinks.astro'
+const { name, label, location } = basics
+const year = new Date().getFullYear()
 
-import { CldImage } from 'astro-cloudinary'
-import { getEntry } from 'astro:content'
-
-const heroimg = await getEntry('assets', 'assets/50_vi8xgl_gaxgjr')
+const socialLinks = {
+	github: 'https://github.com/SteveMoya',
+	linkedin: 'https://www.linkedin.com/in/steve-moya-cepeda-549469227/',
+	instagram: 'https://www.instagram.com/steve_moya_cepeda/'
+}
 ---
 
-<!--Header-->
-<section class="relative block h-screen w-screen overflow-hidden ">
-	<Particles />
-	<!--Social Media Links-->
-	<SocialLinks />
-	<!--Social Media Links end-->
+<section class="relative flex h-screen w-screen flex-col overflow-hidden bg-[#0a0a0a]">
+	<!-- Background: dot grid + rotating light spotlight (from PersonalBlog's HeroVisual) -->
+	<div class="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle,_#444_0.5px,_transparent_0.5px)] opacity-20 [background-size:24px_24px]"></div>
+	<div class="spotlight-drift pointer-events-none absolute inset-0 z-0">
+		<div class="spotlight-beam spotlight-beam--1"></div>
+		<div class="spotlight-beam spotlight-beam--2"></div>
+		<div class="spotlight-beam spotlight-beam--3"></div>
+	</div>
+
+	<!-- Availability tag, rotated on the left edge -->
 	<div
-		class="absolute z-[1] float-left flex h-screen w-full flex-col items-center justify-center text-[50px] font-normal tracking-[1px]"
+		class="tag-hover absolute left-0 top-1/2 z-[2] hidden -translate-y-1/2 -rotate-90 items-center gap-2 rounded-b-md border border-t-0 border-white/10 bg-white/[0.03] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-white/50 transition-transform duration-300 sm:flex"
+		style="transform-origin: top left; translate: 0 -100%;"
 	>
-		<div class="z-[2] h-auto w-auto text-center sm:pr-[70px] lg:pr-[700px]">
-			<h1 class="z-[2] text-[65px] font-bold">
-				<span class="font-extrabold text-[#b11141] transition-all duration-300 ease-in-out"
-					>Steve
-				</span>Moya
-			</h1>
-			<div class="z-[2] pt-5 text-[32px] font-bold text-whitesmoke">
-				Soy
-				<TextRotate
-					period="1200"
-					color="#b11141"
-					text={['Desarrolador Web', ' y', 'Marketer Digital Specialis.']}
-				/>
+		<span class="h-1.5 w-1.5 rounded-full bg-[#c70039]"></span>
+		Disponible para proyectos
+	</div>
+
+	<div class="relative z-[2] mx-auto flex w-full max-w-[1680px] flex-1 flex-col justify-center gap-4 px-6 pt-16 sm:px-10 lg:px-16">
+		<!-- Line 1: MARKETING [icon] DIGITAL -->
+		<div class="relative items-center gap-8 md:flex">
+			<p class="line-in mb-2 max-w-[200px] text-right text-[10px] font-medium uppercase leading-relaxed tracking-[0.2em] text-white/50 md:mb-0" style="animation-delay: 0.2s">
+				Hola, soy {name}. Marketing, desarrollo, IA y datos.
+			</p>
+			<div class="relative">
+				<a
+					href={socialLinks.github}
+					target="_blank"
+					rel="noopener noreferrer"
+					title="GitHub"
+					aria-label="GitHub"
+					class="icon-entrance icon-float--y absolute -top-4 right-0 z-20 hidden text-white/40 transition-colors duration-300 hover:text-[#c70039] md:right-2 md:block"
+					style="animation-delay: 0.3s"
+				>
+					<Icon name="mdi:github" class="h-7 w-7" />
+				</a>
+				<h1 class="line-in flex items-center whitespace-nowrap font-poppins text-[13vw] font-black uppercase leading-[0.85] tracking-tighter sm:text-[8vw] lg:text-[6.2vw]" style="animation-delay: 0s">
+					<span class="text-shiny">Marketing</span>
+					<Icon name="mdi:bullhorn-outline" class="mx-[0.05em] h-[0.7em] w-[0.7em] shrink-0 text-[#c70039]" />
+					<span class="text-shiny">Digital</span>
+				</h1>
 			</div>
 		</div>
+
+		<!-- Line 2: DESARROLLO [icon] WEB -->
+		<div class="relative items-center gap-8 md:flex">
+			<div class="relative">
+				<a
+					href={socialLinks.linkedin}
+					target="_blank"
+					rel="noopener noreferrer"
+					title="LinkedIn"
+					aria-label="LinkedIn"
+					class="icon-entrance icon-float--y-reverse absolute -top-8 left-4 z-20 hidden text-white/40 transition-colors duration-300 hover:text-[#c70039] md:block"
+					style="animation-delay: 0.4s"
+				>
+					<Icon name="mdi:linkedin" class="h-7 w-7" />
+				</a>
+				<a
+					href={socialLinks.instagram}
+					target="_blank"
+					rel="noopener noreferrer"
+					title="Instagram"
+					aria-label="Instagram"
+					class="icon-entrance icon-float--x absolute -bottom-10 right-16 z-20 hidden text-white/40 transition-colors duration-300 hover:text-[#c70039] md:right-24 md:block"
+					style="animation-delay: 0.5s"
+				>
+					<Icon name="mdi:instagram" class="h-7 w-7" />
+				</a>
+				<h1 class="line-in flex items-center whitespace-nowrap font-poppins text-[13vw] font-black uppercase leading-[0.85] tracking-tighter sm:text-[8vw] lg:text-[6.2vw]" style="animation-delay: 0.1s">
+					<span class="text-shiny">Desarrollo</span>
+					<Icon name="mdi:code-tags" class="mx-[0.05em] h-[0.7em] w-[0.7em] shrink-0 text-[#c70039]" />
+					<span class="text-shiny">Web</span>
+				</h1>
+			</div>
+		</div>
+
+		<!-- Line 3: IA [icon] DATOS -->
+		<div class="relative items-center gap-8 md:flex">
+			<h1 class="line-in flex items-center whitespace-nowrap font-poppins text-[13vw] font-black uppercase leading-[0.85] tracking-tighter sm:text-[8vw] lg:text-[6.2vw]" style="animation-delay: 0.2s">
+				<span class="text-shiny">IA</span>
+				<Icon name="mdi:robot-outline" class="mx-[0.05em] h-[0.7em] w-[0.7em] shrink-0 text-[#c70039]" />
+				<span class="text-shiny">Datos</span>
+			</h1>
+
+			<p class="line-in mt-2 max-w-[220px] text-[10px] font-medium uppercase leading-relaxed tracking-[0.2em] text-white/50 md:mt-4" style="animation-delay: 0.6s">
+				Abierto a nuevas oportunidades, sin importar ubicación o modalidad.
+			</p>
+		</div>
+
+		<p class="line-in mt-6 text-sm font-medium text-white/60 sm:text-base" style="animation-delay: 0.7s">
+			{label}
+		</p>
 	</div>
-	<!--header image-->
-	<div class="float-right h-auto w-full bg-cover bg-center object-cover object-right">
-		<CldImage
-			class="float-right h-screen w-full object-cover [mask-image:linear-gradient(black_40%,transparent_100%)]"
-			src={heroimg?.data.public_id || ''}
-			loading="eager"
-			alt="Steve-moya"
-		/>
+
+	<div class="relative z-[2] mx-auto flex w-full max-w-[1680px] items-center justify-between gap-6 border-t border-white/10 px-6 py-5 sm:px-10 lg:px-16">
+		<span class="text-xs font-semibold uppercase tracking-[0.2em] text-white/40">
+			{location.city}, {location.countryCode} &mdash; {year}
+		</span>
+
+		<a
+			href="/about"
+			aria-label="Ver CV completo"
+			class="resume-button group flex h-11 shrink-0 items-center overflow-hidden rounded-full bg-white text-black shadow-lg transition-[width] duration-500"
+		>
+			<span class="resume-button__label whitespace-nowrap pl-5 pr-1 text-[10px] font-black uppercase tracking-widest opacity-0 transition-opacity duration-200">
+				Ver CV
+			</span>
+			<span class="flex h-11 w-11 shrink-0 items-center justify-center transition-transform duration-500 group-hover:rotate-45">
+				<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M7 17L17 7M17 7H8M17 7V16" />
+				</svg>
+			</span>
+		</a>
 	</div>
-	<!--header image end-->
 </section>
-<!--Header End-->
+
+<style>
+	/* ── Entrance animations ── */
+	@keyframes line-in {
+		from {
+			opacity: 0;
+			transform: translateY(30px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.line-in {
+		animation: line-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+	}
+
+	@keyframes icon-entrance {
+		from {
+			opacity: 0;
+			transform: translateY(40px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.icon-entrance {
+		animation: icon-entrance 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+	}
+
+	/* ── Continuous float loops (composes with the parent's icon-entrance transform since it's the same element's own additional keyframe target: translate only, run after entrance via delay) ── */
+	@keyframes icon-float-y {
+		50% {
+			transform: translateY(-10px);
+		}
+	}
+
+	@keyframes icon-float-y-reverse {
+		50% {
+			transform: translateY(10px);
+		}
+	}
+
+	@keyframes icon-float-x {
+		50% {
+			transform: translateX(10px);
+		}
+	}
+
+	.icon-float--y {
+		animation: icon-entrance 1s cubic-bezier(0.16, 1, 0.3, 1) both, icon-float-y 2s ease-in-out infinite 1s;
+	}
+
+	.icon-float--y-reverse {
+		animation: icon-entrance 1s cubic-bezier(0.16, 1, 0.3, 1) both, icon-float-y-reverse 2.5s ease-in-out infinite 1s;
+	}
+
+	.icon-float--x {
+		animation: icon-entrance 1s cubic-bezier(0.16, 1, 0.3, 1) both, icon-float-x 3s ease-in-out infinite 1s;
+	}
+
+	/* ── Availability tag hover ── */
+	.tag-hover:hover {
+		transform: translate(6px, -100%) rotate(-90deg);
+	}
+
+	/* ── Resume button: circle that widens to a pill on hover ── */
+	.resume-button {
+		width: 2.75rem;
+	}
+
+	.resume-button:hover {
+		width: 8rem;
+	}
+
+	.resume-button:hover .resume-button__label {
+		opacity: 1;
+		transition-delay: 150ms;
+	}
+
+	/* ── Spotlight beams (adapted from PersonalBlog's Spotlight component) ── */
+	.spotlight-drift {
+		animation: spotlight-drift 7s ease-in-out infinite alternate;
+	}
+
+	.spotlight-beam {
+		position: absolute;
+		top: 0;
+		left: 0;
+		transform-origin: top left;
+	}
+
+	.spotlight-beam--1 {
+		width: 560px;
+		height: 1380px;
+		transform: translateY(-350px) rotate(-45deg);
+		background: radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(255, 255, 255, 0.15) 0, rgba(255, 255, 255, 0.05) 50%, transparent 80%);
+	}
+
+	.spotlight-beam--2 {
+		width: 240px;
+		height: 1380px;
+		transform: rotate(-45deg) translate(5%, -50%);
+		background: radial-gradient(50% 50% at 50% 50%, rgba(255, 255, 255, 0.1) 0, rgba(255, 255, 255, 0.02) 80%, transparent 100%);
+	}
+
+	.spotlight-beam--3 {
+		width: 240px;
+		height: 1380px;
+		transform: rotate(-45deg) translate(-180%, -70%);
+		background: radial-gradient(50% 50% at 50% 50%, rgba(255, 255, 255, 0.08) 0, transparent 80%);
+	}
+
+	@keyframes spotlight-drift {
+		from {
+			transform: translateX(0);
+		}
+		to {
+			transform: translateX(120px);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.line-in,
+		.icon-entrance,
+		.icon-float--y,
+		.icon-float--y-reverse,
+		.icon-float--x,
+		.spotlight-drift {
+			animation: none;
+		}
+	}
+</style>

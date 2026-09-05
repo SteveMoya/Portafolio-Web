@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/layouts/BlogLayout.astro"
+        ],
+        "createdAt": "2026-09-05T19:33:54.804Z",
+        "reason": "L319 is inside this file's frozen @media print block (blog post print output must stay byte-identical); a left-border blockquote is a standard print typography convention, not a screen AI-generated-UI tell"
+      },
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": [
+          "src/styles/global.css"
+        ],
+        "createdAt": "2026-09-05T20:01:25.375Z",
+        "reason": "user explicitly asked to replicate PersonalBlog's exact text-shiny animated gradient effect from its real Hero component (verified in that repo's actual src/styles/globals.css), not an unprompted AI embellishment"
+      }
+    ]
+  }
+}

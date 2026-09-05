@@ -43,13 +43,7 @@ import '@fontsource/monoton'
 		<NavbarMinimal />
 		<slot name="header-progress" />
 		<main class="relative h-auto w-full overflow-clip">
-			<!-- Animated Background Spheres -->
-			<div class="pointer-events-none fixed inset-0 z-[-1] overflow-hidden">
-				<div class="absolute -top-[20%] -left-[10%] h-[600px] w-[600px] rounded-full bg-[#c70039] opacity-20 mix-blend-screen blur-[120px] transition-transform duration-1000"></div>
-				<div class="absolute top-[40%] -right-[10%] h-[500px] w-[500px] rounded-full bg-[#b11141] opacity-20 mix-blend-screen blur-[150px] transition-transform duration-1000"></div>
-				<div class="absolute -bottom-[20%] left-[20%] h-[700px] w-[700px] rounded-full bg-[#c70039] opacity-15 mix-blend-screen blur-[130px] transition-transform duration-1000"></div>
-			</div>
-			
+
 			<!-- Page Content Wrapper with Transition Animation -->
 			<div transition:animate={{
 				forwards: {
