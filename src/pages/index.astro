@@ -1,6 +1,7 @@
 ---
 import About from '@/components/About/About.astro'
 import Hero from '@components/Hero/Hero.astro'
+import StatsSection from '@components/sections/StatsSection.astro'
 import TechMarquee from '@components/sections/TechMarquee.astro'
 import ProjectGallery from '@components/sections/ProjectGallery.astro'
 
@@ -12,6 +13,9 @@ const ogImage = '/img/Steve-Moya.webp'
 <Layout image={ogImage}>
 	<Hero />
 	<About />
+	<div class="px-4 sm:px-6 lg:px-8">
+		<StatsSection />
+	</div>
 	<ProjectGallery />
 	<TechMarquee />
 </Layout>
