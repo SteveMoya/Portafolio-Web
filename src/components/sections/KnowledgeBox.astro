@@ -1,0 +1,263 @@
+---
+import ScrollReveal from '@components/ui/ScrollReveal.astro'
+
+interface KnowledgeTag {
+	label: string
+	// Scattered starting position, percent of `.kb-stage`.
+	startLeft: number
+	startTop: number
+	rotate: number
+	// Ambient drift timing (only active under `prefers-reduced-motion: no-preference`).
+	dur: number
+	delay: number
+	// Landing position inside the box mouth once the settle timeline completes.
+	landingLeft: number
+	landingTop: number
+}
+
+// Fixed, deterministic scatter + landing coordinates (percent of `.kb-stage`),
+// not Math.random(), so layout is reproducible across every render — same
+// convention as Certifications.astro's SCATTER_OFFSETS.
+const tags: KnowledgeTag[] = [
+	{ label: 'Marketing Digital', startLeft: 10, startTop: 14, rotate: -6, dur: 7.2, delay: 0, landingLeft: 46, landingTop: 54 },
+	{ label: 'SEO', startLeft: 84, startTop: 10, rotate: 8, dur: 6.4, delay: -1.5, landingLeft: 54, landingTop: 50 },
+	{ label: 'IA', startLeft: 6, startTop: 46, rotate: 5, dur: 8.1, delay: -3, landingLeft: 44, landingTop: 58 },
+	{ label: 'Análisis de Datos', startLeft: 90, startTop: 40, rotate: -9, dur: 7.6, delay: -0.8, landingLeft: 56, landingTop: 56 },
+	{ label: 'React', startLeft: 16, startTop: 78, rotate: 7, dur: 6.9, delay: -2.2, landingLeft: 48, landingTop: 60 },
+	{ label: 'Astro', startLeft: 80, startTop: 78, rotate: -5, dur: 7.3, delay: -4, landingLeft: 52, landingTop: 62 },
+	{ label: 'TypeScript', startLeft: 32, startTop: 6, rotate: 4, dur: 6.6, delay: -1, landingLeft: 50, landingTop: 48 },
+	{ label: 'Google Ads', startLeft: 64, startTop: 4, rotate: -8, dur: 8.4, delay: -3.6, landingLeft: 58, landingTop: 52 },
+	{ label: 'Automatización', startLeft: 4, startTop: 64, rotate: -4, dur: 7.0, delay: -2.8, landingLeft: 42, landingTop: 56 },
+	{ label: 'WordPress', startLeft: 94, startTop: 62, rotate: 9, dur: 6.2, delay: -0.4, landingLeft: 60, landingTop: 58 },
+	{ label: 'Tailwind', startLeft: 24, startTop: 92, rotate: -7, dur: 7.9, delay: -3.2, landingLeft: 46, landingTop: 64 },
+	{ label: 'Machine Learning', startLeft: 72, startTop: 92, rotate: 6, dur: 6.8, delay: -1.8, landingLeft: 54, landingTop: 66 }
+]
+---
+
+<section
+	id="knowledge-box"
+	class="reveal relative min-h-screen overflow-hidden bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16"
+	data-knowledge-box
+>
+	<div class="mx-auto max-w-[1400px]">
+		<p class="mb-6 text-xs font-bold uppercase tracking-[0.3em] text-white/40">Conocimiento acumulado</p>
+
+		<ScrollReveal
+			text="Todo lo que entra en la caja"
+			as="h2"
+			class="max-w-2xl font-poppins text-3xl font-black uppercase tracking-tight text-white sm:text-4xl"
+		/>
+
+		<div class="kb-stage relative mt-16" data-kb-stage>
+			<div class="kb-box" data-kb-box style="left: 50%; top: 56%;">
+				<div class="kb-face dotted-card kb-face--floor">
+					<span class="corner-tick corner-tick--tl" />
+					<span class="corner-tick corner-tick--br" />
+				</div>
+				<div class="kb-face dotted-card kb-face--back">
+					<span class="corner-tick corner-tick--tl" />
+					<span class="corner-tick corner-tick--br" />
+				</div>
+				<div class="kb-face dotted-card kb-face--left">
+					<span class="corner-tick corner-tick--tl" />
+					<span class="corner-tick corner-tick--br" />
+				</div>
+			</div>
+
+			{
+				tags.map((tag) => (
+					<div
+						class="kb-tag absolute"
+						data-kb-tag
+						style={`left:${tag.startLeft}%; top:${tag.startTop}%;`}
+						data-landing-left={tag.landingLeft}
+						data-landing-top={tag.landingTop}
+					>
+						<span
+							class="kb-tag-pill pointer-events-none inline-block select-none whitespace-nowrap rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-white/60"
+							data-kb-tag-pill
+							style={`--dur:${tag.dur}s; --delay:${tag.delay}s; --rotate:${tag.rotate}deg;`}
+						>
+							{tag.label}
+						</span>
+					</div>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	/* Isometric open box: floor + two back walls, reusing ExpertiseSection's
+	   preserve-3d cube technique (fold flat squares into place, then apply a
+	   single camera rotation to the whole assembly). Perspective lives on the
+	   direct parent (`.kb-stage`), matching ExpertiseSection's
+	   `.expertise-visual` → `.cube-wrap` relationship, so nothing in between
+	   flattens the 3D context. */
+	.kb-stage {
+		min-height: 60vh;
+		perspective: 1600px;
+	}
+
+	@media (min-width: 640px) {
+		.kb-stage {
+			min-height: 70vh;
+		}
+	}
+
+	.kb-box {
+		--kb-size: clamp(200px, 26vw, 340px);
+		position: absolute;
+		width: var(--kb-size);
+		height: var(--kb-size);
+		transform-style: preserve-3d;
+		/* rotateX(60deg) rotateZ(-45deg) (the design phase's starting values)
+		   put two of the three faces almost perfectly edge-on to the camera,
+		   collapsing them to invisible lines — verified live in the browser
+		   during Task 6.8. rotateX(45deg) rotateY(135deg) gives the same
+		   "open crate, floor + two interior walls" silhouette as a clean,
+		   equal-area hexagon with all three faces clearly readable. */
+		transform: translate(-50%, -50%) rotateX(45deg) rotateY(135deg);
+		z-index: 10;
+	}
+
+	.kb-face {
+		position: absolute;
+		inset: 0;
+		border: 1px solid rgba(255, 255, 255, 0.14);
+		/* `.dotted-card`'s default dot pattern (0.5px dots at 0.15 opacity on a
+		   16px grid) is tuned for flat 2D cards and washes out to nothing on
+		   the two heavily foreshortened wall faces once the isometric 3D
+		   transform is applied — verified live in the browser during Task
+		   6.8 (bold test patterns rendered fine, so it wasn't a rendering
+		   bug, just contrast lost to perspective compression). This local,
+		   bolder dot recipe keeps the same "blueprint grid" identity but
+		   survives the foreshortening on every face. */
+		background-color: #0a0a0a;
+		background-image: radial-gradient(circle, rgba(255, 255, 255, 0.45) 1.1px, transparent 1.1px);
+		background-size: 22px 22px;
+	}
+
+	.kb-face--floor {
+		transform: rotateX(-90deg) translateZ(calc(var(--kb-size) / 2));
+	}
+
+	.kb-face--back {
+		transform: rotateY(180deg) translateZ(calc(var(--kb-size) / 2));
+	}
+
+	.kb-face--left {
+		transform: rotateY(-90deg) translateZ(calc(var(--kb-size) / 2));
+	}
+
+	/* Outer wrapper: GSAP-owned (left/top/scale/opacity/zIndex). Centering
+	   offset stays a static rule, never touched by the settle tween. */
+	.kb-tag {
+		transform: translate(-50%, -50%);
+		z-index: 20;
+	}
+
+	/* Inner pill: CSS-owned ambient drift. Splitting wrapper vs. pill keeps
+	   the GSAP-driven settle tween (on the wrapper's left/top/scale/opacity)
+	   and the CSS keyframe drift (on the pill's own transform) on two
+	   different elements/properties, so neither ever overrides the other —
+	   no animation-vs-inline-style cascade fight to work around. */
+	.kb-tag-pill {
+		display: inline-block;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.kb-tag-pill {
+			animation: tag-drift var(--dur, 7s) ease-in-out infinite;
+			animation-delay: var(--delay, 0s);
+		}
+	}
+
+	@keyframes tag-drift {
+		0%,
+		100% {
+			transform: rotate(var(--rotate, 0deg)) translateY(0);
+		}
+		50% {
+			transform: rotate(var(--rotate, 0deg)) translateY(-12px);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.kb-tag-pill {
+			animation: none;
+		}
+	}
+</style>
+
+<script>
+	import gsap from 'gsap'
+	import ScrollTrigger from 'gsap/ScrollTrigger'
+	import { reducedMotion } from '@/lib/motion'
+
+	gsap.registerPlugin(ScrollTrigger)
+
+	function initKnowledgeBox(section: Element) {
+		const el = section as HTMLElement
+		// Astro hoists this <script> into a single shared module, so it runs
+		// once per swap for every instance on the page — guard against
+		// re-wiring the same DOM node twice.
+		if (el.dataset.knowledgeBoxInit === 'true') return
+		el.dataset.knowledgeBoxInit = 'true'
+
+		const stage = el.querySelector<HTMLElement>('[data-kb-stage]')
+		const tagWrappers = el.querySelectorAll<HTMLElement>('[data-kb-tag]')
+		const pills = el.querySelectorAll<HTMLElement>('[data-kb-tag-pill]')
+		if (!stage || !tagWrappers.length) return
+
+		if (reducedMotion()) {
+			// Static arrangement: tags stay at their scattered starting spots,
+			// no pin, no scroll-driven transform. Ambient drift is already
+			// disabled by the `prefers-reduced-motion: no-preference` guard
+			// in <style> above.
+			return
+		}
+
+		const tl = gsap.timeline({
+			scrollTrigger: {
+				trigger: el,
+				start: 'top top',
+				end: '+=100%',
+				scrub: 1,
+				pin: true,
+				onUpdate(self) {
+					// Pause the ambient CSS drift once the settle timeline is
+					// mostly resolved so it doesn't visually compete with the
+					// tags coming to rest inside the box.
+					const settled = self.progress > 0.6
+					pills.forEach((pill) => {
+						pill.style.animationPlayState = settled ? 'paused' : 'running'
+					})
+				}
+			}
+		})
+
+		tagWrappers.forEach((tag, index) => {
+			tl.to(
+				tag,
+				{
+					left: `${tag.dataset.landingLeft}%`,
+					top: `${tag.dataset.landingTop}%`,
+					scale: 0.7,
+					opacity: 0.35,
+					zIndex: 5,
+					roundProps: 'zIndex',
+					ease: 'none'
+				},
+				index * 0.03
+			)
+		})
+	}
+
+	function initAllKnowledgeBoxes() {
+		document.querySelectorAll('[data-knowledge-box]').forEach(initKnowledgeBox)
+	}
+
+	initAllKnowledgeBoxes()
+	document.addEventListener('astro:after-swap', initAllKnowledgeBoxes)
+</script>
