@@ -1,0 +1,65 @@
+---
+import { Icon } from 'astro-icon/components'
+
+interface Props {
+	name: string
+	note: string
+	stars: number
+	forks: number
+	language: string | null
+	topics?: string[]
+	href?: string
+}
+
+const { name, note, stars, forks, language, topics = [], href } = Astro.props
+
+const usage =
+	topics.length > 0
+		? topics.slice(0, 3).join(', ')
+		: language
+			? `Construido principalmente en ${language}.`
+			: 'Proyecto personal explorando nuevas ideas.'
+---
+
+<div class="dotted-card relative flex h-full flex-col justify-between rounded-2xl border border-white/10 p-8 sm:p-10">
+	<span class="corner-tick corner-tick--tl"></span>
+	<span class="corner-tick corner-tick--tr"></span>
+	<span class="corner-tick corner-tick--bl"></span>
+	<span class="corner-tick corner-tick--br"></span>
+
+	<div>
+		<div class="flex items-center justify-between gap-4">
+			<h3 class="font-poppins text-xl font-black text-white sm:text-2xl">{name}</h3>
+			{
+				href && (
+					<a
+						href={href}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="shrink-0 text-xs font-bold uppercase tracking-[0.2em] text-[#c70039] transition-colors hover:text-white"
+					>
+						Ver repo &rarr;
+					</a>
+				)
+			}
+		</div>
+
+		<p class="mt-4 text-sm leading-relaxed text-white/60">{note}</p>
+
+		<div class="mt-6 border-t border-white/10 pt-6">
+			<p class="mb-2 text-[10px] font-bold uppercase tracking-[0.25em] text-white/40">Para qué sirve</p>
+			<p class="text-sm leading-relaxed text-white/50">{usage}</p>
+		</div>
+	</div>
+
+	<div class="mt-8 flex items-center gap-6 border-t border-white/10 pt-6">
+		<span class="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/50">
+			<Icon name="mdi:star-outline" class="h-4 w-4 text-[#c70039]" />
+			{stars} Estrellas
+		</span>
+		<span class="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/50">
+			<Icon name="mdi:source-fork" class="h-4 w-4 text-[#c70039]" />
+			{forks} Forks
+		</span>
+	</div>
+</div>

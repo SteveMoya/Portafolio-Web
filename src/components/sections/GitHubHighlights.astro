@@ -1,0 +1,52 @@
+---
+import { getHighlightRepos } from '@src/lib/github'
+import { getRepoNote } from '@src/data/repo-notes'
+import RepoCard from '@components/ui/RepoCard.astro'
+import ScrollReveal from '@components/ui/ScrollReveal.astro'
+
+const highlightRepos = await getHighlightRepos(3)
+---
+
+<section class="reveal relative bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16" data-github-highlights>
+	<div class="mx-auto max-w-[1400px]">
+		<p class="mb-6 text-xs font-bold uppercase tracking-[0.3em] text-white/40">GitHub</p>
+
+		<ScrollReveal
+			text="Del código a la práctica"
+			as="h2"
+			class="font-poppins max-w-2xl text-3xl font-black uppercase tracking-tight text-white sm:text-4xl"
+		/>
+
+		<div class="stack-cards mt-20">
+			{
+				highlightRepos.map((repo, index) => (
+					<div class="stack-card" style={`top: ${5 + index * 1.5}rem; z-index: ${index + 1};`}>
+						<RepoCard
+							name={repo.name}
+							note={getRepoNote(repo)}
+							stars={repo.stargazers_count}
+							forks={repo.forks_count}
+							language={repo.language}
+							topics={repo.topics}
+							href={repo.html_url}
+						/>
+					</div>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	/* Sticky card-stacking idiom shared with ProjectGallery: each card sticks
+	   at a slightly increasing offset so later cards overlap earlier ones as
+	   the user scrolls, without any scroll-jacking script. */
+	.stack-card {
+		position: sticky;
+		margin-bottom: 2rem;
+	}
+
+	.stack-card:last-child {
+		margin-bottom: 0;
+	}
+</style>
