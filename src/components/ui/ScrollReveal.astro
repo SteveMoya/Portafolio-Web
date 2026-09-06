@@ -1,0 +1,109 @@
+---
+interface Props {
+	text: string
+	as?: 'h2' | 'h3' | 'p' | 'span'
+	class?: string
+	stagger?: number
+	blur?: number
+	rotate?: number
+	start?: string
+	end?: string
+}
+
+const {
+	text,
+	as: tag = 'p',
+	class: className,
+	stagger = 0.06,
+	blur = 2,
+	rotate = 3,
+	start = 'top 85%',
+	end = 'top 45%',
+} = Astro.props
+
+const Tag = tag
+
+const escapeHtml = (value: string) =>
+	value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+
+// Split at build time so each word can animate independently while the
+// wrapper still wraps natively (real space characters between spans, not
+// non-breaking placeholders).
+const wordsHtml = text
+	.split(' ')
+	.filter(Boolean)
+	.map((word: string) => `<span class="sr-word" aria-hidden="true">${escapeHtml(word)}</span>`)
+	.join(' ')
+---
+
+<Tag
+	class:list={['scroll-reveal', className]}
+	aria-label={text}
+	data-scroll-reveal
+	data-stagger={stagger}
+	data-blur={blur}
+	data-rotate={rotate}
+	data-start={start}
+	data-end={end}
+	set:html={wordsHtml}
+/>
+
+<style>
+	.sr-word {
+		display: inline-block;
+		will-change: transform, filter;
+	}
+</style>
+
+<script>
+	import gsap from 'gsap'
+	import ScrollTrigger from 'gsap/ScrollTrigger'
+	import { reducedMotion } from '@/lib/motion'
+
+	gsap.registerPlugin(ScrollTrigger)
+
+	const initScrollReveal = () => {
+		const roots = document.querySelectorAll<HTMLElement>('[data-scroll-reveal]')
+		if (!roots.length) return
+
+		roots.forEach((root) => {
+			// Astro hoists this <script> into a single shared module, so it runs
+			// once per swap for every instance on the page — guard against
+			// re-wiring the same DOM node twice.
+			if (root.dataset.scrollRevealInit === 'true') return
+			root.dataset.scrollRevealInit = 'true'
+
+			// Scope the query to this instance only, never other ScrollReveal
+			// instances rendered elsewhere on the same page.
+			const words = root.querySelectorAll<HTMLElement>(':scope > .sr-word')
+			if (!words.length || reducedMotion()) return
+
+			const stagger = Number(root.dataset.stagger)
+			const blur = Number(root.dataset.blur)
+			const rotate = Number(root.dataset.rotate)
+			const start = root.dataset.start
+			const end = root.dataset.end
+
+			gsap.set(words, { opacity: 0.4, filter: `blur(${blur}px)`, rotate })
+
+			gsap
+				.timeline({
+					scrollTrigger: {
+						trigger: root,
+						start,
+						end,
+						scrub: true,
+					},
+				})
+				.to(words, {
+					opacity: 1,
+					filter: 'blur(0px)',
+					rotate: 0,
+					stagger,
+				})
+		})
+	}
+
+	initScrollReveal()
+	document.addEventListener('astro:after-swap', initScrollReveal)
+</script>
