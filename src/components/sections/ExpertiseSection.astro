@@ -53,7 +53,10 @@ const expertise = [
 						</div>
 					</div>
 
-					<div class="expertise-visual flex flex-1 items-center justify-center py-8" style="perspective: 1400px;">
+					<div
+						class="expertise-visual flex flex-1 items-center justify-center py-8"
+						style={`perspective: 1400px; --spin-duration: ${13 + index * 3.5}s; --spin-delay: -${index * 5}s;`}
+					>
 						<div class:list={['cube-wrap', index % 2 === 1 && 'cube-wrap--reverse']}>
 							<div class="cube">
 								<div class="cube-face cube-face--top" />
@@ -63,8 +66,12 @@ const expertise = [
 								<div class="cube-face cube-face--front">
 									<Icon name={item.icon} class="cube-icon h-14 w-14" />
 								</div>
-								<div class="cube-face cube-face--back" />
-								<div class="cube-face cube-face--left" />
+								<div class="cube-face cube-face--back">
+									<span class="cube-label">{item.title}</span>
+								</div>
+								<div class="cube-face cube-face--left">
+									<span class="cube-label">{item.tags[0]}</span>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -143,7 +150,8 @@ const expertise = [
 		width: 100%;
 		height: 100%;
 		transform-style: preserve-3d;
-		animation: cube-spin 16s linear infinite;
+		animation: cube-tumble var(--spin-duration, 16s) infinite;
+		animation-delay: var(--spin-delay, 0s);
 	}
 
 	.cube-face {
@@ -176,12 +184,20 @@ const expertise = [
 	}
 
 	.cube-face--back {
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		background: #0a0a0a;
+		padding: 1.5rem;
 		transform: rotateY(180deg) translateZ(100px);
 	}
 
 	.cube-face--left {
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		background: #050505;
+		padding: 1.5rem;
 		transform: rotateY(-90deg) translateZ(100px);
 	}
 
@@ -190,6 +206,17 @@ const expertise = [
 		font-size: 2.5rem;
 		font-weight: 900;
 		color: rgba(255, 255, 255, 0.1);
+	}
+
+	.cube-label {
+		font-family: 'Poppins', sans-serif;
+		font-size: 0.8rem;
+		font-weight: 800;
+		line-height: 1.3;
+		text-align: center;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: rgba(199, 0, 57, 0.55);
 	}
 
 	.cube-icon {
@@ -219,12 +246,37 @@ const expertise = [
 		}
 	}
 
-	@keyframes cube-spin {
+	@keyframes cube-tumble {
 		0% {
-			transform: rotateX(-24deg) rotateY(calc(var(--tilt-sign) * 45deg));
+			transform: rotateX(-24deg) rotateY(calc(var(--tilt-sign) * 0deg));
+			animation-timing-function: cubic-bezier(0.61, 0.05, 0.4, 0.95);
+		}
+		14% {
+			transform: rotateX(-38deg) rotateY(calc(var(--tilt-sign) * 55deg));
+			animation-timing-function: cubic-bezier(0.34, 0, 0.16, 1);
+		}
+		27% {
+			transform: rotateX(-12deg) rotateY(calc(var(--tilt-sign) * 95deg));
+			animation-timing-function: cubic-bezier(0.7, 0, 0.3, 1);
+		}
+		41% {
+			transform: rotateX(-30deg) rotateY(calc(var(--tilt-sign) * 150deg));
+			animation-timing-function: cubic-bezier(0.2, 0, 0.1, 1);
+		}
+		58% {
+			transform: rotateX(-20deg) rotateY(calc(var(--tilt-sign) * 230deg));
+			animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+		}
+		72% {
+			transform: rotateX(-34deg) rotateY(calc(var(--tilt-sign) * 270deg));
+			animation-timing-function: cubic-bezier(0.3, 0, 0.15, 1);
+		}
+		88% {
+			transform: rotateX(-16deg) rotateY(calc(var(--tilt-sign) * 335deg));
+			animation-timing-function: cubic-bezier(0.5, 0, 0.3, 1);
 		}
 		100% {
-			transform: rotateX(-24deg) rotateY(calc(var(--tilt-sign) * 405deg));
+			transform: rotateX(-24deg) rotateY(calc(var(--tilt-sign) * 360deg));
 		}
 	}
 
