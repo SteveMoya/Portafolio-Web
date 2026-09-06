@@ -86,6 +86,8 @@ const images = await getImages()
 </section>
 
 <script>
+    import { getLenis } from '@/lib/motion'
+
     function setupGallery() {
         const modal = document.getElementById('lightbox-modal') as HTMLDialogElement;
         const modalImg = document.getElementById('lightbox-image') as HTMLImageElement;
@@ -108,11 +110,13 @@ const images = await getImages()
             updateModalContent();
             modal.showModal();
             document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            getLenis()?.stop(); // Lenis ignores CSS overflow, so it needs an explicit stop
         }
 
         function closeModal() {
             modal.close();
             document.body.style.overflow = '';
+            getLenis()?.start();
             
             // Reset image state
             modalImg.classList.remove('scale-100', 'opacity-100');

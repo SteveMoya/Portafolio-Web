@@ -138,3 +138,18 @@ import '@fontsource/monoton'
 	initScrollAnimations()
 	document.addEventListener('astro:after-swap', initScrollAnimations)
 </script>
+
+<script>
+	import { initMotion, getLenis, getScrollTrigger } from '@/lib/motion'
+
+	initMotion()
+
+	document.addEventListener('astro:before-swap', () => {
+		getScrollTrigger()?.getAll().forEach((trigger) => trigger.kill())
+	})
+
+	document.addEventListener('astro:after-swap', () => {
+		getLenis()?.resize()
+		getScrollTrigger()?.refresh()
+	})
+</script>

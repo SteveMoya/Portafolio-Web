@@ -13,12 +13,24 @@ if (!Astro.url.pathname.includes('/blog')) {
 </a>
 
 <script>
+	import { getLenis } from '@/lib/motion'
+
 	document.addEventListener('DOMContentLoaded', () => {
 		const irArriba = document.querySelector('.ir-arriba')
 		if (!irArriba || !(irArriba instanceof HTMLElement)) return
 		// Función para el comportamiento de scroll hacia arriba
 		irArriba.addEventListener('click', (e) => {
 			e.preventDefault() // Evitar el comportamiento predeterminado
+
+			// When Lenis is active, let it own the smooth scroll so it stays in sync
+			// with its own inertia loop instead of fighting a second animation.
+			const lenis = getLenis()
+			if (lenis) {
+				lenis.scrollTo(0, { duration: 0.8 })
+				return
+			}
+
+			// Fallback manual rAF loop (reduced motion / Lenis intentionally inactive)
 			const targetPosition = 0 // Posición a la que se quiere desplazar
 			const startPosition = window.scrollY // Posición actual
 			const distance = targetPosition - startPosition // Distancia total a recorrer

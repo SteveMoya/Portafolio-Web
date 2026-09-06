@@ -28,10 +28,6 @@
         --color-nvim-green: 135, 215, 135;
     }
 
-    html {
-        scroll-behavior: smooth;
-    }
-
     body {
         @apply bg-[#101010] font-poppins text-[whitesmoke] overflow-x-clip text-wrap;
     }
@@ -202,8 +198,20 @@
     background-size: 16px 16px;
 }
 
+/* Sobre mí quote card: blueprint-technical hatch pattern */
+.about-pattern-card {
+    background-color: #0a0a0a;
+    background-image:
+        radial-gradient(80% 55% at 15% 0%, rgba(199, 0, 57, 0.06), transparent 55%),
+        radial-gradient(120% 80% at 50% 110%, rgba(255, 255, 255, 0.05), transparent 55%),
+        repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.028) 0 1px, transparent 1px 24px),
+        repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 24px);
+    background-size: 100% 100%;
+}
+
 @media print {
-    .dotted-card {
+    .dotted-card,
+    .about-pattern-card {
         background: none !important;
     }
 }
