@@ -20,26 +20,28 @@ interface KnowledgeTag {
 // not Math.random(), so layout is reproducible across every render — same
 // convention as Certifications.astro's SCATTER_OFFSETS.
 //
-// Landing coordinates were re-derived for the rotateX(55deg) rotateY(200deg)
-// camera (see `.kb-box`'s own comment): with that camera the floor face
-// projects as a parallelogram roughly spanning 44-58% left / 54-79% top of
-// `.kb-stage` (measured live in the browser via temporary corner markers
-// bilinear-interpolated across the floor's four projected corners), so every
-// landing point below sits inside that visible floor area instead of the old
-// symmetric camera's much higher, more central landing cluster.
+// Landing coordinates were re-derived for the rotateX(50deg) rotateY(135deg)
+// camera (see `.kb-box`'s own comment): with that camera + the shallow-wall
+// geometry, the floor face projects as a symmetric diamond centered at
+// roughly 50% left / 70.7% top of `.kb-stage`, spanning about ±18.7% left
+// and ±26.5% top from that center (measured live in the browser via
+// `getBoundingClientRect()` on `.kb-face--floor`), so every landing point
+// below sits well inside that diamond — comfortably clear of its four
+// corners/edges (which visually belong to the walls/rim, not the open
+// floor) — instead of the old asymmetric camera's parallelogram footprint.
 const tags: KnowledgeTag[] = [
-	{ label: 'Marketing Digital', startLeft: 10, startTop: 14, rotate: -6, dur: 7.2, delay: 0, landingLeft: 50, landingTop: 70.3 },
-	{ label: 'SEO', startLeft: 84, startTop: 10, rotate: 8, dur: 6.4, delay: -1.5, landingLeft: 53.5, landingTop: 78.8 },
-	{ label: 'IA', startLeft: 6, startTop: 46, rotate: 5, dur: 8.1, delay: -3, landingLeft: 43.7, landingTop: 73.4 },
-	{ label: 'Análisis de Datos', startLeft: 90, startTop: 40, rotate: -9, dur: 7.6, delay: -0.8, landingLeft: 56.7, landingTop: 71.9 },
-	{ label: 'React', startLeft: 16, startTop: 78, rotate: 7, dur: 6.9, delay: -2.2, landingLeft: 44.1, landingTop: 64.8 },
-	{ label: 'Astro', startLeft: 80, startTop: 78, rotate: -5, dur: 7.3, delay: -4, landingLeft: 54.3, landingTop: 64.1 },
-	{ label: 'TypeScript', startLeft: 32, startTop: 6, rotate: 4, dur: 6.6, delay: -1, landingLeft: 49.2, landingTop: 61.1 },
-	{ label: 'Google Ads', startLeft: 64, startTop: 4, rotate: -8, dur: 8.4, delay: -3.6, landingLeft: 58.3, landingTop: 59.9 },
-	{ label: 'Automatización', startLeft: 4, startTop: 64, rotate: -4, dur: 7.0, delay: -2.8, landingLeft: 47.9, landingTop: 53.8 },
-	{ label: 'WordPress', startLeft: 94, startTop: 62, rotate: 9, dur: 6.2, delay: -0.4, landingLeft: 48.2, landingTop: 78 },
-	{ label: 'Tailwind', startLeft: 24, startTop: 92, rotate: -7, dur: 7.9, delay: -3.2, landingLeft: 53.7, landingTop: 72.4 },
-	{ label: 'Machine Learning', startLeft: 72, startTop: 92, rotate: 6, dur: 6.8, delay: -1.8, landingLeft: 46.2, landingTop: 68.2 }
+	{ label: 'Marketing Digital', startLeft: 10, startTop: 14, rotate: -6, dur: 7.2, delay: 0, landingLeft: 48.1, landingTop: 56.2 },
+	{ label: 'SEO', startLeft: 84, startTop: 10, rotate: 8, dur: 6.4, delay: -1.5, landingLeft: 52.8, landingTop: 57.5 },
+	{ label: 'IA', startLeft: 6, startTop: 46, rotate: 5, dur: 8.1, delay: -3, landingLeft: 43.5, landingTop: 62.8 },
+	{ label: 'Análisis de Datos', startLeft: 90, startTop: 40, rotate: -9, dur: 7.6, delay: -0.8, landingLeft: 56.5, landingTop: 64.1 },
+	{ label: 'React', startLeft: 16, startTop: 78, rotate: 7, dur: 6.9, delay: -2.2, landingLeft: 41.6, landingTop: 72.1 },
+	{ label: 'Astro', startLeft: 80, startTop: 78, rotate: -5, dur: 7.3, delay: -4, landingLeft: 58.4, landingTop: 72.1 },
+	{ label: 'TypeScript', startLeft: 32, startTop: 6, rotate: 4, dur: 6.6, delay: -1, landingLeft: 44.4, landingTop: 80.0 },
+	{ label: 'Google Ads', startLeft: 64, startTop: 4, rotate: -8, dur: 8.4, delay: -3.6, landingLeft: 55.6, landingTop: 80.0 },
+	{ label: 'Automatización', startLeft: 4, startTop: 64, rotate: -4, dur: 7.0, delay: -2.8, landingLeft: 48.1, landingTop: 85.3 },
+	{ label: 'WordPress', startLeft: 94, startTop: 62, rotate: 9, dur: 6.2, delay: -0.4, landingLeft: 51.9, landingTop: 85.3 },
+	{ label: 'Tailwind', startLeft: 24, startTop: 92, rotate: -7, dur: 7.9, delay: -3.2, landingLeft: 46.3, landingTop: 69.4 },
+	{ label: 'Machine Learning', startLeft: 72, startTop: 92, rotate: 6, dur: 6.8, delay: -1.8, landingLeft: 53.7, landingTop: 65.5 }
 ]
 ---
 
@@ -159,18 +161,22 @@ const tags: KnowledgeTag[] = [
 		   collapsing them to invisible lines — verified live in the browser
 		   during Task 6.8. rotateX(45deg) rotateY(135deg) (an earlier revision)
 		   gave a clean, equal-area hexagon with all three faces readable, but
-		   its symmetric framing put the floor and both walls at equal visual
-		   weight, so the box's open top / interior didn't read as a distinct
-		   "place things fall into" — verified live in the browser (tags
-		   settling mid-scroll were barely distinguishable from the walls
-		   themselves). rotateX(55deg) rotateY(200deg) breaks that symmetry:
-		   the steeper X tilt reads as more of a bird's-eye look down INTO the
-		   opening, and the off-center Y rotation pushes the floor forward as
-		   the dominant lower shape with the back wall leaning up behind it,
-		   so a tag's fall path (ambient scatter → down through the rim → rest
-		   on the floor) has clear depth to travel through instead of
-		   collapsing onto the same plane as the walls. */
-		transform: translate(-50%, -50%) rotateX(55deg) rotateY(200deg);
+		   its symmetric framing put the floor and both full-height walls at
+		   equal visual weight, so the box's open top / interior didn't read
+		   as a distinct "place things fall into" — verified live in the
+		   browser (tags settling mid-scroll were barely distinguishable from
+		   the walls themselves). A later revision tried breaking that
+		   symmetry with an asymmetric rotateX(55deg) rotateY(200deg) camera
+		   instead, but real screenshots showed it read as a confusing
+		   cluster of disconnected panels, not a container. This revision
+		   keeps rotateY(135deg) (the original, symmetric framing) and a
+		   slightly steeper rotateX(50deg), and instead fixes the "floor vs.
+		   walls" weight problem at its actual source: the walls themselves
+		   (see `.kb-face--back`/`.kb-face--left`) are now shallow strips
+		   instead of full-height squares, so the floor dominates the
+		   silhouette by area regardless of camera symmetry, with the walls
+		   reading as a receding rim framing it. */
+		transform: translate(-50%, -50%) rotateX(50deg) rotateY(135deg);
 		z-index: 10;
 	}
 
@@ -195,6 +201,41 @@ const tags: KnowledgeTag[] = [
 		transform: rotateX(-90deg) translateZ(calc(var(--kb-size) / 2));
 	}
 
+	/* Back/left walls are shallow (a fraction of the box's full height)
+	   instead of full-height squares, anchored to the box's own bottom edge
+	   instead of `.kb-face`'s default `inset: 0`. A full-height wall put the
+	   floor and walls at equal visual weight — read live in the browser as
+	   two flat panels meeting at a fold, more "open book" than "container
+	   with a floor you can see into" (the exact complaint from real
+	   screenshots). Shrinking the walls down to low rims read immediately as
+	   an open box/tray from the very first real screenshot checked live in
+	   the browser: the floor dominates the silhouette, the two walls recede
+	   as narrow foreshortened strips framing it, and there's finally a
+	   legible "opening" between the top of those strips and the rim the
+	   flaps hinge from. */
+	.kb-face--back,
+	.kb-face--left {
+		inset: auto;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: 38%;
+		/* Even at this shallower height, the walls sit at a much steeper
+		   composite angle to the camera than the floor (the floor is tilted
+		   to face the camera fairly directly; the walls stay close to
+		   edge-on), which compresses `.kb-face`'s own dot recipe to near
+		   nothing — verified live in the browser (the walls read as vague
+		   dark shadow shapes, barely distinguishable from the empty
+		   background, not as a receding surface). A lighter background tone
+		   plus a bolder, brighter dot pattern (reusing `.kb-flap`'s own
+		   boosted recipe, which solved the identical foreshortening problem
+		   there) keeps the walls legible as a distinct, lighter "receding
+		   side" framing the darker, dominant floor. */
+		background-color: #17171a;
+		background-image: radial-gradient(circle, rgba(255, 255, 255, 0.55) 1.3px, transparent 1.3px);
+		background-size: 18px 18px;
+	}
+
 	.kb-face--back {
 		transform: rotateY(180deg) translateZ(calc(var(--kb-size) / 2));
 	}
@@ -215,22 +256,41 @@ const tags: KnowledgeTag[] = [
 
 	   The nested `.kb-flap` is the actual visible panel: it starts at the
 	   hinge's local origin (`transform-origin: top center`) and swings around
-	   it with its own single `rotateX(var(--flap-angle))`. Composing the
-	   hinge's base rotation with the flap's local rotation direction (worked
-	   out and confirmed live in the browser) gives one convention for all
-	   four sides: a POSITIVE angle swings the flap out and slightly down,
-	   away from the box (open/resting), matching a real box's flaps flopped
-	   outward after being opened; a NEGATIVE angle folds it back in.
-	   -90deg is the midpoint of that closing sweep — flat, spanning the
-	   opening at rim height, like a lid sealing the box from outside. Past
-	   that, continuing to -130deg keeps rotating the SAME direction, carrying
-	   the flap beyond flat so it tips down past the rim and in toward the
-	   box's own interior volume instead of resting on top of it — verified
-	   live in the browser (at -90deg the four flaps read as one flat sealed
-	   diamond capping the box; by -130deg they read as folded panels sitting
-	   inside the opening's silhouette, no longer a flat lid). The flap's
-	   height was also trimmed (see below) so this deeper fold doesn't drive
-	   its far edge through the opposite wall. */
+	   it with its own single `rotateX(var(--flap-angle))`. At `--flap-angle:
+	   0deg` the flap is a plain upright wall filling in that rim's missing
+	   face (identity extra rotation on top of the hinge's own base
+	   rotation). A previous revision rested the flaps fully open at a large
+	   POSITIVE angle (splayed near-flat outward, away from the box), but
+	   verified live in the browser against real screenshots: under this
+	   camera those four splayed panels read as a confusing cluster of
+	   disconnected floating quadrilaterals competing with the walls, not as
+	   "flaps flopped out of the way" — exactly the illegible rest state
+	   the user flagged. Worse, animating the shared angle from that positive
+	   open value down to the closed value forced every sweep through
+	   `0deg`, and the front-facing rim orientation happens to sit almost
+	   perfectly edge-on to this particular fixed camera at exactly that
+	   angle — verified live in the browser by sampling the scroll-driven
+	   close in small steps: the front flap's projected width visibly
+	   collapsed to a sliver and briefly vanished around `--flap-angle:
+	   0deg`, then reappeared as a different sliver past it, exactly the
+	   "glitch, not a smooth fold" artifact reported from real screenshots.
+
+	   This revision rests every flap AT that `0deg` identity pose instead of
+	   splayed open, with opacity faded down (see `.kb-flap`'s own rule) so
+	   the edge-on-for-this-camera front flap is naturally near-invisible
+	   exactly when it's supposed to be — no separate splayed-open pose to
+	   read as clutter, and no crossing back through `0deg` later while
+	   opaque. The close sweep then moves NEGATIVE only, monotonically away
+	   from that single problem angle toward -125deg (past -90deg's flat
+	   "lid capping the opening" midpoint, continuing on to tip down and
+	   tuck into the box's own interior volume), fading opacity up in the
+	   same tween so any other camera-specific thin angle along that one-way
+	   path is masked by low opacity rather than shown naked — verified live
+	   in the browser by sampling the close in ten small steps end to end,
+	   confirming no panel collapses to a sliver at full opacity anywhere
+	   along the sweep. The flap's height was also trimmed (see below) so
+	   this deeper fold doesn't drive its far edge through the opposite
+	   wall. */
 	.kb-flap-hinge {
 		position: absolute;
 		top: 0;
@@ -257,12 +317,12 @@ const tags: KnowledgeTag[] = [
 	}
 
 	.kb-flap {
-		--flap-angle: 78deg;
+		--flap-angle: 0deg;
 		position: absolute;
 		top: 0;
 		left: 0;
 		width: 100%;
-		/* Shorter than the earlier 0.56 revision: folding to -130deg (see the
+		/* Shorter than the earlier 0.56 revision: folding to -125deg (see the
 		   hinge comment above) swings the flap's far edge down past the rim
 		   and toward the opposite wall, and at the old 0.56 length that edge
 		   drove visibly through the opposite wall/floor — verified live in
@@ -271,6 +331,14 @@ const tags: KnowledgeTag[] = [
 		height: calc(var(--kb-size) * 0.45);
 		transform-origin: top center;
 		transform: rotateX(var(--flap-angle));
+		/* Faded down at rest (see the hinge comment above for why 0deg is
+		   the resting angle, not a splayed-open one) so the flaps read as
+		   near-invisible rim traces rather than a fourth competing shape —
+		   the open box's read comes entirely from the floor + two static
+		   walls below. GSAP fades this back up to 1 in the same tween that
+		   swings the angle closed, so the panel is only ever fully opaque
+		   once it's past the single problem angle for this camera. */
+		opacity: 0.06;
 		/* Flaps sit at a much steeper composite angle to the fixed isometric
 		   camera than the box's own walls (their own hinge rotation stacks on
 		   top of the wall's base rotation), which compresses the wall
@@ -326,10 +394,12 @@ const tags: KnowledgeTag[] = [
 
 		/* Static end state: box already sealed, tags already "used up" —
 		   no pin, no scroll-driven transform (guarded in <script> below).
-		   Matches the scroll-driven close's final angle (see `.kb-flap`'s
-		   own comment for why -130deg, not -90deg). */
+		   Matches the scroll-driven close's final angle and opacity (see
+		   `.kb-flap`'s own comment for why -125deg, not -90deg, and why
+		   opacity fades in alongside the angle). */
 		.kb-flap {
-			--flap-angle: -130deg;
+			--flap-angle: -125deg;
+			opacity: 1;
 		}
 
 		.kb-tag {
@@ -416,13 +486,16 @@ const tags: KnowledgeTag[] = [
 			)
 		})
 
-		// Final segment: only after the last tag has gone in, fold all four
-		// flaps from open past flat, in toward the box's own interior (see
-		// `.kb-flap`'s own comment for why -130deg, not -90deg).
+		// Final segment: only after the last tag has gone in, swing all four
+		// flaps from their hidden rim pose down past flat, in toward the
+		// box's own interior (see `.kb-flap`'s own comment for why the
+		// sweep only ever moves negative, and why opacity rises alongside
+		// the angle instead of the flap being opaque the whole time).
 		tl.to(
 			flaps,
 			{
-				'--flap-angle': '-130deg',
+				'--flap-angle': '-125deg',
+				opacity: 1,
 				ease: 'power2.inOut',
 				duration: FLAP_UNIT * FLAP_CLOSE_FRACTION
 			},
