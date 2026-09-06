@@ -31,10 +31,18 @@
 </section>
 
 <style>
-	.cta-section {
-		animation: cta-section-in linear both;
-		animation-timeline: view();
-		animation-range: entry 0% cover 40%;
+	@supports (animation-timeline: view()) {
+		.cta-section {
+			animation: cta-section-in linear both;
+			animation-timeline: view();
+			animation-range: entry 0% cover 40%;
+		}
+
+		.cta-in {
+			animation: cta-in-anim linear both;
+			animation-timeline: view();
+			animation-range: entry 0% cover 30%;
+		}
 	}
 
 	@keyframes cta-section-in {
@@ -55,12 +63,6 @@
 			opacity: 1;
 			transform: translateY(0);
 		}
-	}
-
-	.cta-in {
-		animation: cta-in-anim linear both;
-		animation-timeline: view();
-		animation-range: entry 0% cover 30%;
 	}
 
 	.cta-spotlight-drift {

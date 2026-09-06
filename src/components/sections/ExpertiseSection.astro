@@ -82,16 +82,18 @@ const expertise = [
 </section>
 
 <style>
-	.expertise-text {
-		animation: expertise-text-in linear both;
-		animation-timeline: view();
-		animation-range: cover 0% cover 100%;
-	}
+	@supports (animation-timeline: view()) {
+		.expertise-text {
+			animation: expertise-text-in linear both;
+			animation-timeline: view();
+			animation-range: cover 0% cover 100%;
+		}
 
-	.expertise-visual {
-		animation: expertise-visual-in linear both;
-		animation-timeline: view();
-		animation-range: cover 0% cover 100%;
+		.expertise-visual {
+			animation: expertise-visual-in linear both;
+			animation-timeline: view();
+			animation-range: cover 0% cover 100%;
+		}
 	}
 
 	@keyframes expertise-text-in {
