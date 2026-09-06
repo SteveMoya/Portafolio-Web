@@ -33,8 +33,8 @@ const expertise = [
 	<div class="mx-auto flex max-w-[1400px] flex-col">
 		{
 			expertise.map((item, index) => (
-				<div class:list={['flex min-h-screen flex-col items-center justify-center gap-12 md:flex-row', index % 2 === 1 && 'md:flex-row-reverse']}>
-					<div class="expertise-text flex-1">
+				<div class:list={['flex min-h-screen flex-col gap-12 md:flex-row', index % 2 === 1 && 'md:flex-row-reverse']}>
+					<div class="expertise-text flex flex-1 flex-col justify-center">
 						<div class="mb-6 flex items-center gap-4">
 							<span class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">Feature — {item.number}</span>
 							<span class="h-px flex-1 max-w-[80px] bg-white/20" />
@@ -96,41 +96,44 @@ const expertise = [
 		}
 	}
 
+	/* Position stays on one continuous linear line the whole time (colinear
+	   Y values at every stop); only opacity/scale shift near the edges —
+	   mirrors the reference's decoupled useTransform ranges. */
 	@keyframes expertise-text-in {
 		0% {
 			opacity: 0;
-			transform: translateY(140px);
+			transform: translateY(220px);
 		}
-		30% {
+		8% {
 			opacity: 1;
-			transform: translateY(30px);
+			transform: translateY(184.8px);
 		}
-		70% {
+		92% {
 			opacity: 1;
-			transform: translateY(-30px);
+			transform: translateY(-184.8px);
 		}
 		100% {
 			opacity: 0;
-			transform: translateY(-140px);
+			transform: translateY(-220px);
 		}
 	}
 
 	@keyframes expertise-visual-in {
 		0% {
 			opacity: 0;
-			transform: translateY(-100px) scale(0.92);
+			transform: translateY(-160px) scale(0.9);
 		}
-		30% {
+		8% {
 			opacity: 1;
-			transform: translateY(-20px) scale(1);
+			transform: translateY(-134.4px) scale(1);
 		}
-		70% {
+		92% {
 			opacity: 1;
-			transform: translateY(20px) scale(1);
+			transform: translateY(134.4px) scale(1);
 		}
 		100% {
 			opacity: 0;
-			transform: translateY(100px) scale(0.92);
+			transform: translateY(160px) scale(0.9);
 		}
 	}
 
