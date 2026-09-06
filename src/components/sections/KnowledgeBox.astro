@@ -19,19 +19,27 @@ interface KnowledgeTag {
 // Fixed, deterministic scatter + landing coordinates (percent of `.kb-stage`),
 // not Math.random(), so layout is reproducible across every render — same
 // convention as Certifications.astro's SCATTER_OFFSETS.
+//
+// Landing coordinates were re-derived for the rotateX(55deg) rotateY(200deg)
+// camera (see `.kb-box`'s own comment): with that camera the floor face
+// projects as a parallelogram roughly spanning 44-58% left / 54-79% top of
+// `.kb-stage` (measured live in the browser via temporary corner markers
+// bilinear-interpolated across the floor's four projected corners), so every
+// landing point below sits inside that visible floor area instead of the old
+// symmetric camera's much higher, more central landing cluster.
 const tags: KnowledgeTag[] = [
-	{ label: 'Marketing Digital', startLeft: 10, startTop: 14, rotate: -6, dur: 7.2, delay: 0, landingLeft: 46, landingTop: 54 },
-	{ label: 'SEO', startLeft: 84, startTop: 10, rotate: 8, dur: 6.4, delay: -1.5, landingLeft: 54, landingTop: 50 },
-	{ label: 'IA', startLeft: 6, startTop: 46, rotate: 5, dur: 8.1, delay: -3, landingLeft: 44, landingTop: 58 },
-	{ label: 'Análisis de Datos', startLeft: 90, startTop: 40, rotate: -9, dur: 7.6, delay: -0.8, landingLeft: 56, landingTop: 56 },
-	{ label: 'React', startLeft: 16, startTop: 78, rotate: 7, dur: 6.9, delay: -2.2, landingLeft: 48, landingTop: 60 },
-	{ label: 'Astro', startLeft: 80, startTop: 78, rotate: -5, dur: 7.3, delay: -4, landingLeft: 52, landingTop: 62 },
-	{ label: 'TypeScript', startLeft: 32, startTop: 6, rotate: 4, dur: 6.6, delay: -1, landingLeft: 50, landingTop: 48 },
-	{ label: 'Google Ads', startLeft: 64, startTop: 4, rotate: -8, dur: 8.4, delay: -3.6, landingLeft: 58, landingTop: 52 },
-	{ label: 'Automatización', startLeft: 4, startTop: 64, rotate: -4, dur: 7.0, delay: -2.8, landingLeft: 42, landingTop: 56 },
-	{ label: 'WordPress', startLeft: 94, startTop: 62, rotate: 9, dur: 6.2, delay: -0.4, landingLeft: 60, landingTop: 58 },
-	{ label: 'Tailwind', startLeft: 24, startTop: 92, rotate: -7, dur: 7.9, delay: -3.2, landingLeft: 46, landingTop: 64 },
-	{ label: 'Machine Learning', startLeft: 72, startTop: 92, rotate: 6, dur: 6.8, delay: -1.8, landingLeft: 54, landingTop: 66 }
+	{ label: 'Marketing Digital', startLeft: 10, startTop: 14, rotate: -6, dur: 7.2, delay: 0, landingLeft: 50, landingTop: 70.3 },
+	{ label: 'SEO', startLeft: 84, startTop: 10, rotate: 8, dur: 6.4, delay: -1.5, landingLeft: 53.5, landingTop: 78.8 },
+	{ label: 'IA', startLeft: 6, startTop: 46, rotate: 5, dur: 8.1, delay: -3, landingLeft: 43.7, landingTop: 73.4 },
+	{ label: 'Análisis de Datos', startLeft: 90, startTop: 40, rotate: -9, dur: 7.6, delay: -0.8, landingLeft: 56.7, landingTop: 71.9 },
+	{ label: 'React', startLeft: 16, startTop: 78, rotate: 7, dur: 6.9, delay: -2.2, landingLeft: 44.1, landingTop: 64.8 },
+	{ label: 'Astro', startLeft: 80, startTop: 78, rotate: -5, dur: 7.3, delay: -4, landingLeft: 54.3, landingTop: 64.1 },
+	{ label: 'TypeScript', startLeft: 32, startTop: 6, rotate: 4, dur: 6.6, delay: -1, landingLeft: 49.2, landingTop: 61.1 },
+	{ label: 'Google Ads', startLeft: 64, startTop: 4, rotate: -8, dur: 8.4, delay: -3.6, landingLeft: 58.3, landingTop: 59.9 },
+	{ label: 'Automatización', startLeft: 4, startTop: 64, rotate: -4, dur: 7.0, delay: -2.8, landingLeft: 47.9, landingTop: 53.8 },
+	{ label: 'WordPress', startLeft: 94, startTop: 62, rotate: 9, dur: 6.2, delay: -0.4, landingLeft: 48.2, landingTop: 78 },
+	{ label: 'Tailwind', startLeft: 24, startTop: 92, rotate: -7, dur: 7.9, delay: -3.2, landingLeft: 53.7, landingTop: 72.4 },
+	{ label: 'Machine Learning', startLeft: 72, startTop: 92, rotate: 6, dur: 6.8, delay: -1.8, landingLeft: 46.2, landingTop: 68.2 }
 ]
 ---
 
@@ -65,9 +73,10 @@ const tags: KnowledgeTag[] = [
 				</div>
 
 				<!-- Four hinged flaps, one per box edge, each rotating around its own
-				     rim edge between an OPEN (splayed outward) and CLOSED (folded flat,
-				     sealing the opening) resting state. The wrapping `.kb-flap-hinge`
-				     is a zero-height strip placed exactly at that edge's rim position
+				     rim edge between an OPEN (splayed outward) and CLOSED (folded past
+				     flat, in toward the box's own interior) resting state. The
+				     wrapping `.kb-flap-hinge` is a zero-height strip placed exactly at
+				     that edge's rim position
 				     (reusing the matching wall's own placement transform), so the
 				     nested `.kb-flap`'s own `transform-origin: top center` lands
 				     precisely on the hinge line — see the <style> block below for the
@@ -148,10 +157,20 @@ const tags: KnowledgeTag[] = [
 		/* rotateX(60deg) rotateZ(-45deg) (the design phase's starting values)
 		   put two of the three faces almost perfectly edge-on to the camera,
 		   collapsing them to invisible lines — verified live in the browser
-		   during Task 6.8. rotateX(45deg) rotateY(135deg) gives the same
-		   "open crate, floor + two interior walls" silhouette as a clean,
-		   equal-area hexagon with all three faces clearly readable. */
-		transform: translate(-50%, -50%) rotateX(45deg) rotateY(135deg);
+		   during Task 6.8. rotateX(45deg) rotateY(135deg) (an earlier revision)
+		   gave a clean, equal-area hexagon with all three faces readable, but
+		   its symmetric framing put the floor and both walls at equal visual
+		   weight, so the box's open top / interior didn't read as a distinct
+		   "place things fall into" — verified live in the browser (tags
+		   settling mid-scroll were barely distinguishable from the walls
+		   themselves). rotateX(55deg) rotateY(200deg) breaks that symmetry:
+		   the steeper X tilt reads as more of a bird's-eye look down INTO the
+		   opening, and the off-center Y rotation pushes the floor forward as
+		   the dominant lower shape with the back wall leaning up behind it,
+		   so a tag's fall path (ambient scatter → down through the rim → rest
+		   on the floor) has clear depth to travel through instead of
+		   collapsing onto the same plane as the walls. */
+		transform: translate(-50%, -50%) rotateX(55deg) rotateY(200deg);
 		z-index: 10;
 	}
 
@@ -199,10 +218,19 @@ const tags: KnowledgeTag[] = [
 	   it with its own single `rotateX(var(--flap-angle))`. Composing the
 	   hinge's base rotation with the flap's local rotation direction (worked
 	   out and confirmed live in the browser) gives one convention for all
-	   four sides: a NEGATIVE angle folds the flap in, over the opening
-	   (closed/sealed); a POSITIVE angle swings it out and slightly down, away
-	   from the box (open/resting), matching a real box's flaps flopped
-	   outward after being opened. */
+	   four sides: a POSITIVE angle swings the flap out and slightly down,
+	   away from the box (open/resting), matching a real box's flaps flopped
+	   outward after being opened; a NEGATIVE angle folds it back in.
+	   -90deg is the midpoint of that closing sweep — flat, spanning the
+	   opening at rim height, like a lid sealing the box from outside. Past
+	   that, continuing to -130deg keeps rotating the SAME direction, carrying
+	   the flap beyond flat so it tips down past the rim and in toward the
+	   box's own interior volume instead of resting on top of it — verified
+	   live in the browser (at -90deg the four flaps read as one flat sealed
+	   diamond capping the box; by -130deg they read as folded panels sitting
+	   inside the opening's silhouette, no longer a flat lid). The flap's
+	   height was also trimmed (see below) so this deeper fold doesn't drive
+	   its far edge through the opposite wall. */
 	.kb-flap-hinge {
 		position: absolute;
 		top: 0;
@@ -234,9 +262,13 @@ const tags: KnowledgeTag[] = [
 		top: 0;
 		left: 0;
 		width: 100%;
-		/* Slightly over half the box's width so opposite flaps overlap a
-		   little once closed, like a real box's flaps do. */
-		height: calc(var(--kb-size) * 0.56);
+		/* Shorter than the earlier 0.56 revision: folding to -130deg (see the
+		   hinge comment above) swings the flap's far edge down past the rim
+		   and toward the opposite wall, and at the old 0.56 length that edge
+		   drove visibly through the opposite wall/floor — verified live in
+		   the browser. 0.45 keeps the same "opposite flaps overlap a little
+		   once closed" read without the clip. */
+		height: calc(var(--kb-size) * 0.45);
 		transform-origin: top center;
 		transform: rotateX(var(--flap-angle));
 		/* Flaps sit at a much steeper composite angle to the fixed isometric
@@ -293,9 +325,11 @@ const tags: KnowledgeTag[] = [
 		}
 
 		/* Static end state: box already sealed, tags already "used up" —
-		   no pin, no scroll-driven transform (guarded in <script> below). */
+		   no pin, no scroll-driven transform (guarded in <script> below).
+		   Matches the scroll-driven close's final angle (see `.kb-flap`'s
+		   own comment for why -130deg, not -90deg). */
 		.kb-flap {
-			--flap-angle: -90deg;
+			--flap-angle: -130deg;
 		}
 
 		.kb-tag {
@@ -383,11 +417,12 @@ const tags: KnowledgeTag[] = [
 		})
 
 		// Final segment: only after the last tag has gone in, fold all four
-		// flaps from open to closed, sealing the box.
+		// flaps from open past flat, in toward the box's own interior (see
+		// `.kb-flap`'s own comment for why -130deg, not -90deg).
 		tl.to(
 			flaps,
 			{
-				'--flap-angle': '-90deg',
+				'--flap-angle': '-130deg',
 				ease: 'power2.inOut',
 				duration: FLAP_UNIT * FLAP_CLOSE_FRACTION
 			},
