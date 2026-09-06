@@ -1,0 +1,68 @@
+---
+import { getCollection } from 'astro:content'
+import { CldImage } from 'astro-cloudinary'
+import ScrollReveal from '@components/ui/ScrollReveal.astro'
+
+// Explicit sort (not the loader's native order) so the teaser picks a
+// reproducible set of 7 images across every build — Cloudinary's
+// `cldAssetsLoader` order isn't a documented stability guarantee.
+const images = (await getCollection('fotografia'))
+	.sort((a, b) => a.data.public_id.localeCompare(b.data.public_id))
+	.slice(0, 7)
+---
+
+<section
+	id="gallery-teaser"
+	class="reveal relative overflow-hidden bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16"
+	data-gallery-teaser
+>
+	<div class="mx-auto max-w-[1400px]">
+		<p class="mb-6 text-xs font-bold uppercase tracking-[0.3em] text-white/40">Fotografía</p>
+
+		<ScrollReveal
+			text="Detrás de cada proyecto"
+			as="h2"
+			class="max-w-2xl font-poppins text-3xl font-black uppercase tracking-tight text-white sm:text-4xl"
+		/>
+
+		{/* Height-capped masonry preview: same recipe as Gallery.astro's full grid,
+		    but clipped and faded so it reads as a teaser, not the complete set. */}
+		<div class="relative mt-16 max-h-[80vh] overflow-hidden rounded-2xl">
+			<div class="columns-2 gap-6 space-y-6 md:columns-3 lg:columns-4">
+				{
+					images.map((imagen, index) => (
+						<div class="break-inside-avoid overflow-hidden rounded-2xl bg-skin-fill shadow-sm ring-1 ring-skin-muted">
+							<CldImage
+								src={imagen.data.public_id}
+								alt={`Imagen del portafolio ${index + 1}`}
+								class="block h-auto w-full object-cover"
+								loading="lazy"
+							/>
+						</div>
+					))
+				}
+			</div>
+
+			{/* Bottom fade-to-background so the grid reads as a preview */}
+			<div class="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-[#0a0a0a] to-transparent" />
+
+			<a
+				href="/portafolio/fotografia"
+				class="cta-pill group absolute bottom-8 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-2 rounded-full bg-white px-6 py-3 text-black shadow-lg transition-transform duration-300 hover:scale-105"
+			>
+				<span class="text-[11px] font-black uppercase tracking-widest">Ver galería</span>
+				<svg
+					class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2.5"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<path d="M7 17L17 7M17 7H8M17 7V16" />
+				</svg>
+			</a>
+		</div>
+	</div>
+</section>
