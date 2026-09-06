@@ -10,7 +10,8 @@ interface KnowledgeTag {
 	// Ambient drift timing (only active under `prefers-reduced-motion: no-preference`).
 	dur: number
 	delay: number
-	// Landing position inside the box mouth once the settle timeline completes.
+	// Landing position inside the box mouth, where the tag shrinks/fades away
+	// as if it fell through the open top and disappeared inside the box.
 	landingLeft: number
 	landingTop: number
 }
@@ -61,6 +62,39 @@ const tags: KnowledgeTag[] = [
 				<div class="kb-face dotted-card kb-face--left">
 					<span class="corner-tick corner-tick--tl" />
 					<span class="corner-tick corner-tick--br" />
+				</div>
+
+				<!-- Four hinged flaps, one per box edge, each rotating around its own
+				     rim edge between an OPEN (splayed outward) and CLOSED (folded flat,
+				     sealing the opening) resting state. The wrapping `.kb-flap-hinge`
+				     is a zero-height strip placed exactly at that edge's rim position
+				     (reusing the matching wall's own placement transform), so the
+				     nested `.kb-flap`'s own `transform-origin: top center` lands
+				     precisely on the hinge line — see the <style> block below for the
+				     full geometry writeup. -->
+				<div class="kb-flap-hinge kb-flap-hinge--back">
+					<div class="kb-flap dotted-card" data-kb-flap>
+						<span class="corner-tick corner-tick--tl" />
+						<span class="corner-tick corner-tick--br" />
+					</div>
+				</div>
+				<div class="kb-flap-hinge kb-flap-hinge--left">
+					<div class="kb-flap dotted-card" data-kb-flap>
+						<span class="corner-tick corner-tick--tl" />
+						<span class="corner-tick corner-tick--br" />
+					</div>
+				</div>
+				<div class="kb-flap-hinge kb-flap-hinge--right">
+					<div class="kb-flap dotted-card" data-kb-flap>
+						<span class="corner-tick corner-tick--tl" />
+						<span class="corner-tick corner-tick--br" />
+					</div>
+				</div>
+				<div class="kb-flap-hinge kb-flap-hinge--front">
+					<div class="kb-flap dotted-card" data-kb-flap>
+						<span class="corner-tick corner-tick--tl" />
+						<span class="corner-tick corner-tick--br" />
+					</div>
 				</div>
 			</div>
 
@@ -150,6 +184,76 @@ const tags: KnowledgeTag[] = [
 		transform: rotateY(-90deg) translateZ(calc(var(--kb-size) / 2));
 	}
 
+	/* --- Flaps -------------------------------------------------------------
+	   Each `.kb-flap-hinge` is a zero-height strip (`top:0; height:0`) that
+	   reuses the EXACT same "rotate then translateZ" recipe as the wall face
+	   that would occupy that edge (front/back/left/right). Because a cube
+	   face's own top edge sits at local `(0, -half, 0)` before it's pushed
+	   into place, giving this zero-height strip the identical transform lands
+	   it precisely on that face's top rim — the box's opening edge — without
+	   needing any face at all (front/right have no rendered wall, but still
+	   get a rim position this way).
+
+	   The nested `.kb-flap` is the actual visible panel: it starts at the
+	   hinge's local origin (`transform-origin: top center`) and swings around
+	   it with its own single `rotateX(var(--flap-angle))`. Composing the
+	   hinge's base rotation with the flap's local rotation direction (worked
+	   out and confirmed live in the browser) gives one convention for all
+	   four sides: a NEGATIVE angle folds the flap in, over the opening
+	   (closed/sealed); a POSITIVE angle swings it out and slightly down, away
+	   from the box (open/resting), matching a real box's flaps flopped
+	   outward after being opened. */
+	.kb-flap-hinge {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 0;
+		transform-style: preserve-3d;
+	}
+
+	.kb-flap-hinge--front {
+		transform: translateZ(calc(var(--kb-size) / 2));
+	}
+
+	.kb-flap-hinge--back {
+		transform: rotateY(180deg) translateZ(calc(var(--kb-size) / 2));
+	}
+
+	.kb-flap-hinge--left {
+		transform: rotateY(-90deg) translateZ(calc(var(--kb-size) / 2));
+	}
+
+	.kb-flap-hinge--right {
+		transform: rotateY(90deg) translateZ(calc(var(--kb-size) / 2));
+	}
+
+	.kb-flap {
+		--flap-angle: 78deg;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		/* Slightly over half the box's width so opposite flaps overlap a
+		   little once closed, like a real box's flaps do. */
+		height: calc(var(--kb-size) * 0.56);
+		transform-origin: top center;
+		transform: rotateX(var(--flap-angle));
+		/* Flaps sit at a much steeper composite angle to the fixed isometric
+		   camera than the box's own walls (their own hinge rotation stacks on
+		   top of the wall's base rotation), which compresses the wall
+		   faces' already-boosted dot recipe below visibility — verified live
+		   in the browser (identical markup with a solid debug fill rendered
+		   fine, proving it wasn't a transform/z-fighting bug, just contrast
+		   lost to the extra foreshortening). A slightly lighter base tone plus
+		   a brighter, thicker border keeps the flap silhouette legible at any
+		   scroll position while keeping the same "blueprint dot" identity. */
+		border: 1.5px solid rgba(255, 255, 255, 0.28);
+		background-color: #141416;
+		background-image: radial-gradient(circle, rgba(255, 255, 255, 0.6) 1.4px, transparent 1.4px);
+		background-size: 22px 22px;
+	}
+
 	/* Outer wrapper: GSAP-owned (left/top/scale/opacity/zIndex). Centering
 	   offset stays a static rule, never touched by the settle tween. */
 	.kb-tag {
@@ -187,6 +291,16 @@ const tags: KnowledgeTag[] = [
 		.kb-tag-pill {
 			animation: none;
 		}
+
+		/* Static end state: box already sealed, tags already "used up" —
+		   no pin, no scroll-driven transform (guarded in <script> below). */
+		.kb-flap {
+			--flap-angle: -90deg;
+		}
+
+		.kb-tag {
+			display: none;
+		}
 	}
 </style>
 
@@ -196,6 +310,13 @@ const tags: KnowledgeTag[] = [
 	import { reducedMotion } from '@/lib/motion'
 
 	gsap.registerPlugin(ScrollTrigger)
+
+	// One timeline unit per tag settling one at a time, plus one final unit
+	// for the box's flaps to close once every tag has gone in.
+	const TAG_UNIT = 1
+	const TAG_SETTLE_FRACTION = 0.9 // leaves a small idle gap before the next tag's segment starts
+	const FLAP_UNIT = 1
+	const FLAP_CLOSE_FRACTION = 0.85
 
 	function initKnowledgeBox(section: Element) {
 		const el = section as HTMLElement
@@ -208,50 +329,70 @@ const tags: KnowledgeTag[] = [
 		const stage = el.querySelector<HTMLElement>('[data-kb-stage]')
 		const tagWrappers = el.querySelectorAll<HTMLElement>('[data-kb-tag]')
 		const pills = el.querySelectorAll<HTMLElement>('[data-kb-tag-pill]')
+		const flaps = el.querySelectorAll<HTMLElement>('[data-kb-flap]')
 		if (!stage || !tagWrappers.length) return
 
 		if (reducedMotion()) {
-			// Static arrangement: tags stay at their scattered starting spots,
-			// no pin, no scroll-driven transform. Ambient drift is already
-			// disabled by the `prefers-reduced-motion: no-preference` guard
-			// in <style> above.
+			// Static arrangement: box renders closed (via the
+			// `prefers-reduced-motion: reduce` rule above), tags stay hidden —
+			// no pin, no scroll-driven transform.
 			return
 		}
+
+		const totalUnits = tagWrappers.length * TAG_UNIT + FLAP_UNIT
+		// Progress (0..1) at which each tag's own drop has fully resolved —
+		// used to pause that tag's ambient drift once it's "fallen in", while
+		// every tag still waiting keeps drifting untouched.
+		const tagResolvedAt = Array.from(tagWrappers, (_, index) => (index * TAG_UNIT + TAG_UNIT * TAG_SETTLE_FRACTION) / totalUnits)
 
 		const tl = gsap.timeline({
 			scrollTrigger: {
 				trigger: el,
 				start: 'top top',
-				end: '+=100%',
+				end: () => `+=${window.innerHeight * totalUnits}`,
 				scrub: 1,
 				pin: true,
+				invalidateOnRefresh: true,
 				onUpdate(self) {
-					// Pause the ambient CSS drift once the settle timeline is
-					// mostly resolved so it doesn't visually compete with the
-					// tags coming to rest inside the box.
-					const settled = self.progress > 0.6
-					pills.forEach((pill) => {
-						pill.style.animationPlayState = settled ? 'paused' : 'running'
+					pills.forEach((pill, index) => {
+						const resolved = self.progress >= (tagResolvedAt[index] ?? 1)
+						pill.style.animationPlayState = resolved ? 'paused' : 'running'
 					})
 				}
 			}
 		})
 
+		// Segment i: only tag i flies from its ambient scattered position down
+		// through the box's open top and disappears, as if it fell inside.
+		// Every other tag is left completely untouched during this segment.
 		tagWrappers.forEach((tag, index) => {
 			tl.to(
 				tag,
 				{
 					left: `${tag.dataset.landingLeft}%`,
 					top: `${tag.dataset.landingTop}%`,
-					scale: 0.7,
-					opacity: 0.35,
+					scale: 0,
+					opacity: 0,
 					zIndex: 5,
 					roundProps: 'zIndex',
-					ease: 'none'
+					ease: 'power1.in',
+					duration: TAG_UNIT * TAG_SETTLE_FRACTION
 				},
-				index * 0.03
+				index * TAG_UNIT
 			)
 		})
+
+		// Final segment: only after the last tag has gone in, fold all four
+		// flaps from open to closed, sealing the box.
+		tl.to(
+			flaps,
+			{
+				'--flap-angle': '-90deg',
+				ease: 'power2.inOut',
+				duration: FLAP_UNIT * FLAP_CLOSE_FRACTION
+			},
+			tagWrappers.length * TAG_UNIT
+		)
 	}
 
 	function initAllKnowledgeBoxes() {
