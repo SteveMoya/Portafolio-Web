@@ -26,19 +26,26 @@ const tools = [
 		Tech Stack &amp; Herramientas
 	</p>
 
-	<div class="marquee-track flex w-max items-center gap-14">
-		{
-			[...tools, ...tools].map((tool) => (
-				<div class="flex shrink-0 items-center gap-3 text-white/70">
-					<Icon name={tool.icon} class="h-8 w-8 shrink-0" />
-					<span class="whitespace-nowrap text-sm font-semibold uppercase tracking-wide">{tool.name}</span>
-				</div>
-			))
-		}
+	<div class="marquee-mask mx-auto w-full max-w-screen-xl">
+		<div class="marquee-track flex w-max items-center gap-14">
+			{
+				[...tools, ...tools].map((tool) => (
+					<div class="flex shrink-0 items-center gap-3 text-white/70">
+						<Icon name={tool.icon} class="h-8 w-8 shrink-0" />
+						<span class="whitespace-nowrap text-sm font-semibold uppercase tracking-wide">{tool.name}</span>
+					</div>
+				))
+			}
+		</div>
 	</div>
 </section>
 
 <style>
+	.marquee-mask {
+		mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+		-webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+	}
+
 	.marquee-track {
 		animation: marquee-scroll 36s linear infinite;
 	}
