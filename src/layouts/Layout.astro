@@ -8,6 +8,7 @@ import TwSizeIndicator from '@components/ui/TwSizeIndicator.astro'
 import EditBlog from '@components/ui/editBlog.astro'
 import BotonFlotante from '@components/ui/BotonFlotante.astro'
 import BotonIrArriba from '@components/ui/BotonIrArriba.astro'
+import { WHATSAPP_URL } from '@/data/contact'
 import "@/styles/global.css";
 
 interface Props {
@@ -63,7 +64,7 @@ import '@fontsource/monoton'
 				Astro.url.pathname !== '/' && (
 					<BotonFlotante
 						icon="mdi:whatsapp"
-						link="https://api.whatsapp.com/send/?phone=18497511849&text&type=phone_number&app_absent=0"
+						link={WHATSAPP_URL}
 						text="contactame por whatsapp"
 					/>
 				)

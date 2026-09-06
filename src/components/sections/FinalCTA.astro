@@ -1,0 +1,130 @@
+---
+import { Icon } from 'astro-icon/components'
+import { basics } from '@cv'
+import { WHATSAPP_URL } from '@/data/contact'
+import ScrollReveal from '@components/ui/ScrollReveal.astro'
+
+const { name, profiles } = basics
+const year = new Date().getFullYear()
+
+// Same keyword set TechMarquee already renders — reused here purely as a
+// low-contrast decorative texture, not meant to be read.
+const keywords = [
+	'GitHub', 'HTML', 'CSS', 'JavaScript', 'TypeScript', 'Tailwind CSS',
+	'Node.js', 'PHP', 'WordPress', 'Google Analytics', 'Google Ads',
+	'Cloudflare', 'SAP', 'Canva', 'SEO', 'Análisis de Datos'
+]
+
+const NETWORK_ICONS: Record<string, string> = {
+	GitHub: 'mdi:github',
+	LinkedIn: 'mdi:linkedin',
+	X: 'mdi:twitter'
+}
+---
+
+<section
+	id="contacto"
+	class="reveal relative flex min-h-screen w-full flex-col overflow-hidden bg-[#0a0a0a] px-6 sm:px-10 lg:px-16"
+>
+	<!-- Decorative crossing ribbon: purely ambient background texture -->
+	<div class="pointer-events-none absolute inset-0 z-0 select-none overflow-hidden" aria-hidden="true">
+		<div class="ribbon-row absolute left-1/2 top-[32%] w-[220%] -translate-x-1/2 -translate-y-1/2 rotate-[-8deg]">
+			<div class="ribbon-track flex w-max items-center gap-16 whitespace-nowrap">
+				{
+					[...keywords, ...keywords].map((word) => (
+						<span class="font-poppins text-4xl font-black uppercase tracking-tight text-white/[0.06] sm:text-6xl">
+							{word}
+						</span>
+					))
+				}
+			</div>
+		</div>
+		<div class="ribbon-row ribbon-row--reverse absolute left-1/2 top-[68%] w-[220%] -translate-x-1/2 -translate-y-1/2 rotate-[8deg]">
+			<div class="ribbon-track flex w-max items-center gap-16 whitespace-nowrap">
+				{
+					[...keywords, ...keywords].map((word) => (
+						<span class="font-poppins text-4xl font-black uppercase tracking-tight text-white/[0.06] sm:text-6xl">
+							{word}
+						</span>
+					))
+				}
+			</div>
+		</div>
+	</div>
+
+	<div class="relative z-[2] flex flex-1 flex-col items-center justify-center gap-8 py-20 text-center">
+		<p class="text-xs font-bold uppercase tracking-[0.3em] text-white/40">Contacto</p>
+
+		<h2 class="max-w-3xl font-poppins text-4xl font-black uppercase leading-[0.95] tracking-tight text-white sm:text-6xl lg:text-7xl">
+			<ScrollReveal text="Construyamos algo" as="span" class="block" />
+			<ScrollReveal text="increíble juntos" as="span" class="block text-shiny-accent" />
+		</h2>
+
+		<p class="max-w-md text-sm leading-relaxed text-white/60 sm:text-base">
+			¿Tenés un proyecto en mente? Contame de qué se trata y lo hacemos realidad.
+		</p>
+
+		<div class="mt-4 flex flex-col items-center gap-4 sm:flex-row">
+			<a
+				href={WHATSAPP_URL}
+				target="_blank"
+				rel="noopener noreferrer"
+				aria-label="Escribime por WhatsApp"
+				class="group inline-flex items-center gap-3 rounded-full bg-[#25d366] px-8 py-4 text-sm font-black uppercase tracking-widest text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(37,211,102,0.35)]"
+			>
+				<Icon name="mdi:whatsapp" class="h-5 w-5" />
+				Trabajemos juntos
+			</a>
+
+			<a
+				href="/about"
+				aria-label="Ver Currículum completo"
+				class="group inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-8 py-4 text-sm font-black uppercase tracking-widest text-white/80 transition-all duration-300 hover:border-[#c70039]/50 hover:bg-white/10 hover:text-white"
+			>
+				<Icon name="mdi:account-details-outline" class="h-5 w-5" />
+				Ver Currículum
+			</a>
+		</div>
+	</div>
+
+	<div class="relative z-[2] flex w-full flex-col items-center gap-4 border-t border-white/10 py-6 sm:flex-row sm:justify-between">
+		<p class="text-xs font-semibold uppercase tracking-[0.2em] text-white/40">
+			&copy; {year} {name}. Todos los derechos reservados.
+		</p>
+
+		<div class="flex items-center gap-4">
+			{
+				profiles
+					.filter(({ network }) => NETWORK_ICONS[network])
+					.map(({ network, url }) => (
+						<a
+							href={url}
+							target="_blank"
+							rel="noopener noreferrer"
+							title={network}
+							aria-label={network}
+							class="text-white/40 transition-colors duration-300 hover:text-[#c70039]"
+						>
+							<Icon name={NETWORK_ICONS[network]} class="h-5 w-5" />
+						</a>
+					))
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	.ribbon-track {
+		animation: marquee-scroll 40s linear infinite;
+	}
+
+	.ribbon-row--reverse .ribbon-track {
+		animation-direction: reverse;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.ribbon-track {
+			animation: none;
+		}
+	}
+</style>
