@@ -29,11 +29,11 @@ const expertise = [
 ]
 ---
 
-<section class="reveal relative bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16">
-	<div class="mx-auto flex max-w-[1400px] flex-col gap-24">
+<section class="reveal relative bg-[#0a0a0a] px-6 sm:px-10 lg:px-16">
+	<div class="mx-auto flex max-w-[1400px] flex-col">
 		{
 			expertise.map((item, index) => (
-				<div class:list={['flex flex-col items-center gap-12 md:flex-row', index % 2 === 1 && 'md:flex-row-reverse']}>
+				<div class:list={['flex min-h-screen flex-col items-center justify-center gap-12 md:flex-row', index % 2 === 1 && 'md:flex-row-reverse']}>
 					<div class="expertise-text flex-1">
 						<div class="mb-6 flex items-center gap-4">
 							<span class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">Feature — {item.number}</span>
@@ -97,38 +97,38 @@ const expertise = [
 	@keyframes expertise-text-in {
 		0% {
 			opacity: 0;
-			transform: translateY(70px);
+			transform: translateY(140px);
 		}
-		25% {
+		30% {
 			opacity: 1;
-			transform: translateY(20px);
+			transform: translateY(30px);
 		}
-		75% {
+		70% {
 			opacity: 1;
-			transform: translateY(-20px);
+			transform: translateY(-30px);
 		}
 		100% {
 			opacity: 0;
-			transform: translateY(-70px);
+			transform: translateY(-140px);
 		}
 	}
 
 	@keyframes expertise-visual-in {
 		0% {
 			opacity: 0;
-			transform: translateY(-50px) scale(0.92);
+			transform: translateY(-100px) scale(0.92);
 		}
-		25% {
+		30% {
 			opacity: 1;
-			transform: translateY(-15px) scale(1);
+			transform: translateY(-20px) scale(1);
 		}
-		75% {
+		70% {
 			opacity: 1;
-			transform: translateY(15px) scale(1);
+			transform: translateY(20px) scale(1);
 		}
 		100% {
 			opacity: 0;
-			transform: translateY(50px) scale(0.92);
+			transform: translateY(100px) scale(0.92);
 		}
 	}
 

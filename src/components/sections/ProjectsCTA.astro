@@ -1,0 +1,111 @@
+---
+---
+
+<section class="cta-section relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-[#0a0a0a] px-6 text-center sm:px-10 lg:px-16">
+	<div class="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle,_#444_0.5px,_transparent_0.5px)] opacity-20 [background-size:24px_24px]"></div>
+	<div class="cta-spotlight-drift pointer-events-none absolute inset-0 z-0">
+		<div class="cta-spotlight-beam"></div>
+	</div>
+
+	<div class="relative z-[2] flex flex-col items-center gap-6">
+		<span class="cta-in text-[10px] font-bold uppercase tracking-[0.3em] text-white/40" style="animation-delay: 0s">
+			Después de la teoría
+		</span>
+
+		<h2 class="cta-in font-poppins text-[11vw] font-black uppercase leading-[0.9] tracking-tighter sm:text-[7vw] lg:text-[5.5vw]" style="animation-delay: 0.1s">
+			<span class="text-shiny">Los proyectos</span><br />
+			<span class="text-shiny-accent">hablan solos</span>
+		</h2>
+
+		<p class="cta-in max-w-md text-sm leading-relaxed text-white/60 sm:text-base" style="animation-delay: 0.2s">
+			Marketing, desarrollo e IA aplicados a casos reales. Bajá para ver el trabajo terminado.
+		</p>
+
+		<div class="cta-in scroll-cue mt-6 flex flex-col items-center gap-2 text-white/40" style="animation-delay: 0.3s">
+			<span class="text-[10px] font-bold uppercase tracking-[0.3em]">Ver proyectos</span>
+			<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M12 5v14M5 12l7 7 7-7" />
+			</svg>
+		</div>
+	</div>
+</section>
+
+<style>
+	.cta-section {
+		animation: cta-section-in linear both;
+		animation-timeline: view();
+		animation-range: entry 0% cover 40%;
+	}
+
+	@keyframes cta-section-in {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	@keyframes cta-in-anim {
+		from {
+			opacity: 0;
+			transform: translateY(30px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.cta-in {
+		animation: cta-in-anim linear both;
+		animation-timeline: view();
+		animation-range: entry 0% cover 30%;
+	}
+
+	.cta-spotlight-drift {
+		animation: cta-spotlight-drift 7s ease-in-out infinite alternate;
+	}
+
+	.cta-spotlight-beam {
+		position: absolute;
+		top: 0;
+		left: 50%;
+		width: 500px;
+		height: 1200px;
+		transform: translate(-50%, -400px) rotate(-45deg);
+		background: radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(255, 255, 255, 0.12) 0, rgba(255, 255, 255, 0.03) 50%, transparent 80%);
+	}
+
+	@keyframes cta-spotlight-drift {
+		from {
+			transform: translate(-50%, -400px) rotate(-45deg) translateX(0);
+		}
+		to {
+			transform: translate(-50%, -400px) rotate(-45deg) translateX(80px);
+		}
+	}
+
+	@keyframes scroll-cue-bounce {
+		0%,
+		100% {
+			transform: translateY(0);
+		}
+		50% {
+			transform: translateY(8px);
+		}
+	}
+
+	.scroll-cue svg {
+		animation: scroll-cue-bounce 1.6s ease-in-out infinite;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.cta-section,
+		.cta-in,
+		.cta-spotlight-drift,
+		.scroll-cue svg {
+			animation: none;
+		}
+	}
+</style>
