@@ -1,0 +1,129 @@
+---
+import { Icon } from 'astro-icon/components'
+import ScrollReveal from '@components/ui/ScrollReveal.astro'
+import { certifications } from '@/data/certifications'
+
+const formatCertDate = (isoMonth: string) => {
+	const [year, month] = isoMonth.split('-').map(Number)
+	const date = new Date(Date.UTC(year, month - 1, 1))
+	return new Intl.DateTimeFormat('es-ES', {
+		month: 'long',
+		year: 'numeric',
+		timeZone: 'UTC'
+	}).format(date)
+}
+---
+
+<section
+	id="certifications"
+	class="reveal relative bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16"
+	data-certifications
+>
+	<div class="mx-auto max-w-[1680px]">
+		<p class="mb-6 text-xs font-bold uppercase tracking-[0.3em] text-white/40">Trayectoria</p>
+
+		<ScrollReveal
+			text="Certificaciones y logros"
+			as="h2"
+			class="max-w-2xl font-poppins text-3xl font-black uppercase tracking-tight text-white sm:text-4xl"
+		/>
+
+		<div class="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+			{
+				certifications.map((cert) => (
+					<div
+						class="dotted-card relative rounded-2xl border border-white/10 p-6 transition-colors duration-300 hover:border-[#c70039]/40"
+						data-cert-card
+					>
+						<span class="corner-tick corner-tick--tl" />
+						<span class="corner-tick corner-tick--br" />
+						<Icon name={cert.icon} class="mb-4 h-6 w-6 text-[#c70039]" />
+						<h3 class="mb-1 text-lg font-bold text-white">{cert.name}</h3>
+						<p class="text-sm font-semibold text-white/50">{cert.issuer}</p>
+						<p class="mt-1 text-xs uppercase tracking-[0.2em] text-white/30">
+							{formatCertDate(cert.date)}
+						</p>
+						{cert.credentialUrl && (
+							<a
+								href={cert.credentialUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+								class="mt-4 inline-block text-xs font-bold uppercase tracking-[0.2em] text-[#c70039] transition-colors hover:text-white"
+							>
+								Ver credencial &rarr;
+							</a>
+						)}
+					</div>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<script>
+	import gsap from 'gsap'
+	import ScrollTrigger from 'gsap/ScrollTrigger'
+	import { reducedMotion } from '@/lib/motion'
+
+	gsap.registerPlugin(ScrollTrigger)
+
+	// Deterministic per-index scatter offsets used only as the GSAP "from"
+	// state — never used for real layout, which stays a normal CSS grid.
+	// Fixed values (not Math.random()) so the animation is reproducible
+	// across every page load and every run.
+	const SCATTER_OFFSETS = [
+		{ x: -120, y: 70, rotate: -10 },
+		{ x: 130, y: -50, rotate: 12 },
+		{ x: -70, y: -90, rotate: -16 }
+	] as const
+
+	const offsetAt = (index: number) => SCATTER_OFFSETS[index % SCATTER_OFFSETS.length]
+
+	function initCertifications(section: Element) {
+		const el = section as HTMLElement
+		// Astro hoists this <script> into a single shared module, so it runs
+		// once per swap for every instance on the page — guard against
+		// re-wiring the same DOM node twice.
+		if (el.dataset.certificationsInit === 'true') return
+		el.dataset.certificationsInit = 'true'
+
+		const cards = section.querySelectorAll<HTMLElement>('[data-cert-card]')
+		if (!cards.length) return
+
+		if (reducedMotion()) {
+			// No scatter, no animation: cards render directly in their final
+			// grid position (CSS grid already places them correctly).
+			return
+		}
+
+		gsap.fromTo(
+			cards,
+			{
+				x: (index: number) => offsetAt(index).x,
+				y: (index: number) => offsetAt(index).y,
+				rotate: (index: number) => offsetAt(index).rotate,
+				opacity: 0.3
+			},
+			{
+				x: 0,
+				y: 0,
+				rotate: 0,
+				opacity: 1,
+				stagger: 0.08,
+				scrollTrigger: {
+					trigger: section,
+					start: 'top 80%',
+					end: 'top 30%',
+					scrub: 0.6
+				}
+			}
+		)
+	}
+
+	function initAllCertifications() {
+		document.querySelectorAll('[data-certifications]').forEach(initCertifications)
+	}
+
+	initAllCertifications()
+	document.addEventListener('astro:after-swap', initAllCertifications)
+</script>
