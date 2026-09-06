@@ -20,6 +20,15 @@
         ],
         "createdAt": "2026-09-05T20:01:25.375Z",
         "reason": "user explicitly asked to replicate PersonalBlog's exact text-shiny animated gradient effect from its real Hero component (verified in that repo's actual src/styles/globals.css), not an unprompted AI embellishment"
+      },
+      {
+        "rule": "bounce-easing",
+        "value": "scroll-cue-bounce",
+        "files": [
+          "src/components/sections/ProjectsCTA.astro"
+        ],
+        "createdAt": "2026-09-06T00:30:00.298Z",
+        "reason": "Intentional scroll-down chevron cue nudge (plain ease-in-out, no spring/elastic overshoot), a standard UI affordance inviting the user to keep scrolling into the projects gallery — not a bouncy content-entrance transition."
       }
     ]
   }
