@@ -3,6 +3,7 @@ import { Icon } from 'astro-icon/components'
 import { basics } from '@cv'
 import { WHATSAPP_URL } from '@/data/contact'
 import ScrollReveal from '@components/ui/ScrollReveal.astro'
+import BlockReveal from '@components/ui/BlockReveal.astro'
 
 const { name, profiles } = basics
 const year = new Date().getFullYear()
@@ -55,10 +56,12 @@ const NETWORK_ICONS: Record<string, string> = {
 	<div class="relative z-[2] flex flex-1 flex-col items-center justify-center gap-8 py-20 text-center">
 		<p class="text-xs font-bold uppercase tracking-[0.3em] text-white/40">Contacto</p>
 
-		<h2 class="max-w-3xl font-poppins text-4xl font-black uppercase leading-[0.95] tracking-tight text-white sm:text-6xl lg:text-7xl">
-			<ScrollReveal text="Construyamos algo" as="span" class="block" />
-			<ScrollReveal text="increíble juntos" as="span" class="block text-shiny-accent" />
-		</h2>
+		<BlockReveal
+			as="h2"
+			class="max-w-3xl font-poppins text-4xl font-black uppercase leading-[0.95] tracking-tight text-white sm:text-6xl lg:text-7xl"
+			boxColor="#c70039"
+			lines={['Construyamos algo', 'increíble juntos']}
+		/>
 
 		<p class="max-w-md text-sm leading-relaxed text-white/60 sm:text-base">
 			¿Tenés un proyecto en mente? Contame de qué se trata y lo hacemos realidad.

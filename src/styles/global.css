@@ -10,7 +10,7 @@
         /* Brand colors */
         --primary: #c70039;
         --secondary: #b11141;
-        --dark: #101010;
+        --dark: #0a0a0a;
         --light: whitesmoke;
 
         /* Skin color variables */
@@ -18,7 +18,7 @@
         --color-text-base: 245, 245, 245;
         --color-text-muted: 168, 162, 158;
         --color-text-inverted: 245, 245, 245;
-        --color-fill: 16, 16, 16;
+        --color-fill: 10, 10, 10;
         --muted: 45, 45, 45;
         --color-accent: 199, 0, 57;
         --color-button-accent: 199, 0, 57;
@@ -29,7 +29,7 @@
     }
 
     body {
-        @apply bg-[#101010] font-poppins text-[whitesmoke] overflow-x-clip text-wrap;
+        @apply bg-[#0a0a0a] font-poppins text-[whitesmoke] overflow-x-clip text-wrap;
     }
 
     /* Scrollbar styles */
@@ -42,7 +42,7 @@
     }
 
     ::-webkit-scrollbar-track {
-        @apply bg-[#101010];
+        @apply bg-[#0a0a0a];
     }
 }
 

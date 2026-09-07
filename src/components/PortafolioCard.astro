@@ -11,21 +11,35 @@ interface Props {
 const { title, img = '', description, href } = Astro.props
 ---
 
-<article class="group relative w-full aspect-[4/3] md:aspect-[3/2] cursor-pointer">
-	{/* Efecto de Cartas Apiladas (Background Cards) - Hacia abajo, color principal con borde más claro para contraste y menor opacidad */}
+<article class="tilt-card-wrapper group relative w-full aspect-[4/3] md:aspect-[3/2] cursor-pointer" style="perspective: 1200px;">
+	{/* Efecto de Cartas Apiladas (Background Cards) con separación física 3D en el eje Z */}
 	{/* Carta 3 (Más profunda/lejana) */}
-	<div class="absolute inset-0 rounded-2xl bg-[#c70039] border border-white/5 z-0 transition-all duration-700 ease-out opacity-0 lg:group-hover:opacity-10 lg:group-hover:-translate-x-6 lg:group-hover:translate-y-6 lg:group-hover:rotate-[-3deg]"></div>
+	<div 
+		class="pointer-events-none absolute inset-0 rounded-2xl bg-[#c70039] border border-white/5 z-0 transition-all duration-700 ease-out opacity-0 lg:group-hover:opacity-20"
+		style="transform: translate3d(-18px, 18px, -45px) rotate(-3.5deg);"
+	></div>
 	
 	{/* Carta 2 (Intermedia) */}
-	<div class="absolute inset-0 rounded-2xl bg-[#c70039] border border-white/10 z-0 transition-all duration-500 ease-out opacity-0 lg:group-hover:opacity-20 lg:group-hover:-translate-x-4 lg:group-hover:translate-y-4 lg:group-hover:rotate-[-2deg]"></div>
+	<div 
+		class="pointer-events-none absolute inset-0 rounded-2xl bg-[#c70039] border border-white/10 z-0 transition-all duration-500 ease-out opacity-0 lg:group-hover:opacity-30"
+		style="transform: translate3d(-12px, 12px, -30px) rotate(-2deg);"
+	></div>
 	
 	{/* Carta 1 (Más cercana a la principal) */}
-	<div class="absolute inset-0 rounded-2xl bg-[#c70039] border border-white/20 z-0 transition-all duration-300 ease-out opacity-0 lg:group-hover:opacity-40 lg:group-hover:-translate-x-2 lg:group-hover:translate-y-2 lg:group-hover:rotate-[-1deg]"></div>
+	<div 
+		class="pointer-events-none absolute inset-0 rounded-2xl bg-[#c70039] border border-white/20 z-0 transition-all duration-300 ease-out opacity-0 lg:group-hover:opacity-45"
+		style="transform: translate3d(-6px, 6px, -15px) rotate(-1deg);"
+	></div>
 
-	{/* Contenedor Principal de la Tarjeta */}
-	<div class="relative z-10 flex flex-col justify-end w-full h-full overflow-hidden rounded-2xl bg-[#0a0a0a] border border-white/10 shadow-xl transition-all duration-300 lg:group-hover:shadow-[0_8px_30px_rgb(199,0,57,0.4)] lg:group-hover:-translate-y-2 lg:group-hover:border-[#c70039]/80">
-		<a href={href} class="absolute inset-0 z-20" aria-label={`Ver sección de ${title}`}></a>
+	{/* Contenedor Principal de la Tarjeta con 3D Tilt y Glare */}
+	<div 
+		data-tilt-card
+		class="tilt-card-inner relative z-10 flex flex-col justify-end w-full h-full overflow-hidden rounded-2xl bg-[#0a0a0a] border border-white/10 shadow-xl transition-all duration-300 lg:group-hover:shadow-[0_16px_40px_rgba(199,0,57,0.35)] lg:group-hover:border-[#c70039]/80"
+		style="transform-style: preserve-3d; transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));"
+	>
+		<a href={href} class="absolute inset-0 z-30" aria-label={`Ver sección de ${title}`}></a>
 		
+		{/* Capa de imagen de fondo */}
 		<div class="absolute inset-0 w-full h-full overflow-hidden z-0">
 			<CldImage
 				class="w-full h-full object-cover object-center transition-transform duration-[800ms] ease-out lg:group-hover:scale-110"
@@ -36,15 +50,23 @@ const { title, img = '', description, href } = Astro.props
 			/>
 		</div>
 		
-		{/* Gradiente multi-capa para asegurar legibilidad. Siempre visible en móvil/tablet, animado en lg */}
-		<div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent opacity-90 lg:opacity-80 z-10 transition-opacity duration-500 lg:group-hover:opacity-95"></div>
-		{/* Overlay rojo sutil al hacer hover (solo en desktop para no manchar el móvil siempre) */}
-		<div class="absolute inset-0 bg-[#c70039] opacity-0 mix-blend-multiply z-10 transition-opacity duration-500 lg:group-hover:opacity-20 hidden lg:block"></div>
+		{/* Gradiente multi-capa para asegurar legibilidad */}
+		<div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent opacity-90 lg:opacity-80 z-10 transition-opacity duration-500 lg:group-hover:opacity-95"></div>
+		
+		{/* Spotlight Glare especular dinámico que sigue el cursor */}
+		<div 
+			class="pointer-events-none absolute inset-0 z-20 transition-opacity duration-300"
+			style="opacity: var(--glare-opacity, 0); background: radial-gradient(circle 360px at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, 0.14) 0%, rgba(199, 0, 57, 0.16) 40%, transparent 70%); mix-blend-mode: screen;"
+		></div>
 
-		<div class="relative z-20 flex flex-col p-6 sm:p-8 transform transition-transform duration-500 ease-out translate-y-0 lg:translate-y-4 lg:group-hover:translate-y-0">
+		{/* Contenido en plano frontal con elevación espacial Z */}
+		<div 
+			class="pointer-events-none relative z-20 flex flex-col p-6 sm:p-8 transform transition-transform duration-500 ease-out translate-y-0 lg:translate-y-3 lg:group-hover:translate-y-0"
+			style="transform-style: preserve-3d; transform: translateZ(32px);"
+		>
 			<div class="flex items-center gap-3 mb-2">
-				<div class="w-10 h-1 bg-[#c70039] rounded-full transform origin-left transition-transform duration-500 ease-out scale-x-100 lg:scale-x-50 lg:group-hover:scale-x-100"></div>
-				<h2 class="text-3xl sm:text-4xl font-bold tracking-wide text-white drop-shadow-lg">
+				<div class="w-10 h-1 bg-[#c70039] rounded-full transform origin-left transition-transform duration-500 ease-out scale-x-100 lg:scale-x-50 lg:group-hover:scale-x-100 shadow-[0_0_12px_#c70039]"></div>
+				<h2 class="text-3xl sm:text-4xl font-black tracking-tight text-white drop-shadow-lg font-poppins">
 					{title}
 				</h2>
 			</div>
@@ -53,12 +75,22 @@ const { title, img = '', description, href } = Astro.props
 				{description}
 			</p>
 			
-			<div class="mt-4 flex items-center text-[#c70039] font-medium opacity-100 translate-x-0 lg:opacity-0 lg:transform lg:translate-x-4 transition-all duration-500 delay-200 lg:group-hover:opacity-100 lg:group-hover:translate-x-0">
-				<span>Explorar</span>
-				<svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+			<div 
+				class="mt-4 flex items-center text-[#c70039] font-medium opacity-100 translate-x-0 lg:opacity-0 lg:transform lg:translate-x-4 transition-all duration-500 delay-200 lg:group-hover:opacity-100 lg:group-hover:translate-x-0"
+				style="transform: translateZ(16px);"
+			>
+				<span class="text-xs font-bold uppercase tracking-[0.2em]">Explorar</span>
+				<svg class="ml-2 w-5 h-5 transition-transform duration-300 group-hover:translate-x-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
 				</svg>
 			</div>
 		</div>
 	</div>
 </article>
+
+<script>
+	import { initTiltCards } from '@src/utils/tilt3d'
+
+	initTiltCards()
+	document.addEventListener('astro:after-swap', () => initTiltCards())
+</script>

@@ -29,12 +29,19 @@ const expertise = [
 ]
 ---
 
-<section class="reveal relative bg-[#0a0a0a] px-6 sm:px-10 lg:px-16">
-	<div class="mx-auto flex max-w-[1400px] flex-col">
+<section class="relative bg-[#0a0a0a]" data-expertise-section>
+	<div class="expertise-stage relative h-screen w-full overflow-hidden" data-expertise-stage>
 		{
 			expertise.map((item, index) => (
-				<div class:list={['flex min-h-screen flex-col gap-12 md:flex-row', index % 2 === 1 && 'md:flex-row-reverse']}>
-					<div class="expertise-text flex flex-1 flex-col justify-center">
+				<div
+					class:list={[
+						'feature-slide absolute inset-0 mx-auto flex h-full max-w-[1400px] flex-col items-center justify-center gap-12 px-6 sm:px-10 lg:px-16 md:flex-row',
+						index % 2 === 1 && 'md:flex-row-reverse'
+					]}
+					data-feature-slide={index}
+					style={index === 0 ? 'opacity: 1; pointer-events: auto;' : 'opacity: 0; pointer-events: none;'}
+				>
+					<div class="expertise-text flex flex-1 flex-col justify-center" data-feature-text>
 						<div class="mb-6 flex items-center gap-4">
 							<span class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">Feature — {item.number}</span>
 							<span class="h-px flex-1 max-w-[80px] bg-white/20" />
@@ -57,20 +64,22 @@ const expertise = [
 						class="expertise-visual flex flex-1 items-center justify-center py-8"
 						style={`perspective: 1400px; --spin-duration: ${13 + index * 3.5}s; --spin-delay: -${index * 5}s;`}
 					>
-						<div class:list={['cube-wrap', index % 2 === 1 && 'cube-wrap--reverse']}>
-							<div class="cube">
-								<div class="cube-face cube-face--top" />
-								<div class="cube-face cube-face--side">
-									<span class="cube-number">{item.number}</span>
-								</div>
-								<div class="cube-face cube-face--front">
-									<Icon name={item.icon} class="cube-icon h-14 w-14" />
-								</div>
-								<div class="cube-face cube-face--back">
-									<span class="cube-label">{item.title}</span>
-								</div>
-								<div class="cube-face cube-face--left">
-									<span class="cube-label">{item.tags[0]}</span>
+						<div class="cube-motion" data-cube-motion>
+							<div class:list={['cube-wrap', index % 2 === 1 && 'cube-wrap--reverse']}>
+								<div class="cube">
+									<div class="cube-face cube-face--top" />
+									<div class="cube-face cube-face--side">
+										<span class="cube-number">{item.number}</span>
+									</div>
+									<div class="cube-face cube-face--front">
+										<Icon name={item.icon} class="cube-icon h-14 w-14" />
+									</div>
+									<div class="cube-face cube-face--back">
+										<span class="cube-label">{item.title}</span>
+									</div>
+									<div class="cube-face cube-face--left">
+										<span class="cube-label">{item.tags[0]}</span>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -82,59 +91,18 @@ const expertise = [
 </section>
 
 <style>
-	@supports (animation-timeline: view()) {
-		.expertise-text {
-			animation: expertise-text-in linear both;
-			animation-timeline: view();
-			animation-range: cover 0% cover 100%;
-		}
-
-		.expertise-visual {
-			animation: expertise-visual-in linear both;
-			animation-timeline: view();
-			animation-range: cover 0% cover 100%;
-		}
+	.cube-motion {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		height: 100%;
+		transform-style: preserve-3d;
+		will-change: transform, opacity;
 	}
 
-	/* Position stays on one continuous linear line the whole time (colinear
-	   Y values at every stop); only opacity/scale shift near the edges —
-	   mirrors the reference's decoupled useTransform ranges. */
-	@keyframes expertise-text-in {
-		0% {
-			opacity: 0;
-			transform: translateY(220px);
-		}
-		8% {
-			opacity: 1;
-			transform: translateY(184.8px);
-		}
-		92% {
-			opacity: 1;
-			transform: translateY(-184.8px);
-		}
-		100% {
-			opacity: 0;
-			transform: translateY(-220px);
-		}
-	}
-
-	@keyframes expertise-visual-in {
-		0% {
-			opacity: 0;
-			transform: translateY(-160px) scale(0.9);
-		}
-		8% {
-			opacity: 1;
-			transform: translateY(-134.4px) scale(1);
-		}
-		92% {
-			opacity: 1;
-			transform: translateY(134.4px) scale(1);
-		}
-		100% {
-			opacity: 0;
-			transform: translateY(160px) scale(0.9);
-		}
+	.expertise-text {
+		will-change: transform, opacity;
 	}
 
 	.cube-wrap {
@@ -297,12 +265,187 @@ const expertise = [
 		}
 	}
 
+	.feature-slide {
+		will-change: transform, opacity;
+	}
+
 	@media (prefers-reduced-motion: reduce) {
 		.cube-wrap,
 		.cube,
+		.cube-motion,
 		.expertise-text,
 		.expertise-visual {
-			animation: none;
+			animation: none !important;
+			transform: none !important;
+			opacity: 1 !important;
+		}
+
+		.feature-slide {
+			position: relative !important;
+			opacity: 1 !important;
+			transform: none !important;
+			pointer-events: auto !important;
 		}
 	}
 </style>
+
+<script>
+	import gsap from 'gsap'
+	import ScrollTrigger from 'gsap/ScrollTrigger'
+	import { reducedMotion } from '@/lib/motion'
+
+	gsap.registerPlugin(ScrollTrigger)
+
+	let currentTrigger: ScrollTrigger | null = null
+
+	function initExpertise() {
+		const section = document.querySelector<HTMLElement>('[data-expertise-section]')
+		const stage = document.querySelector<HTMLElement>('[data-expertise-stage]')
+		if (!section || !stage || reducedMotion()) return
+
+		if (currentTrigger) {
+			currentTrigger.kill()
+			currentTrigger = null
+		}
+
+		const slides = section.querySelectorAll<HTMLElement>('[data-feature-slide]')
+		if (!slides.length) return
+
+		// Reset initial state for all slides
+		slides.forEach((slide, index) => {
+			gsap.set(slide, {
+				opacity: index === 0 ? 1 : 0,
+				pointerEvents: index === 0 ? 'auto' : 'none'
+			})
+			const text = slide.querySelector<HTMLElement>('[data-feature-text]')
+			const visual = slide.querySelector<HTMLElement>('[data-cube-motion]')
+			if (text) gsap.set(text, { y: 0, opacity: index === 0 ? 1 : 0 })
+			if (visual) gsap.set(visual, { y: 0, rotateX: 0, scale: 1, opacity: index === 0 ? 1 : 0 })
+		})
+
+		// Master pinned timeline: tuned scroll distance and responsive scrub so passing to the next view feels immediate
+		const tl = gsap.timeline({
+			scrollTrigger: {
+				trigger: section,
+				start: 'top top',
+				end: () => `+=${window.innerHeight * 2.2}`,
+				pin: true,
+				scrub: 1,
+				anticipatePin: 1,
+				invalidateOnRefresh: true
+			}
+		})
+
+		currentTrigger = tl.scrollTrigger ?? null
+
+		const parts = Array.from(slides).map((slide) => ({
+			slide,
+			text: slide.querySelector<HTMLElement>('[data-feature-text]'),
+			visual: slide.querySelector<HTMLElement>('[data-cube-motion]')
+		}))
+
+		// Timeline total length: 2.15 units
+		// FEATURE 1 (0.0 -> 0.95):
+		// 0.00 -> 0.20: Feature 1 hold
+		// 0.20 -> 0.95: Feature 1 exit: Text BAJA (+240px), Cube SUBE (-480px)
+		if (parts[0]?.text && parts[0]?.visual) {
+			tl.to(
+				parts[0].text,
+				{ y: 240, opacity: 0, duration: 0.75, ease: 'power2.inOut' },
+				0.2
+			)
+			tl.to(
+				parts[0].visual,
+				{
+					y: () => -Math.max(window.innerHeight * 0.55, 460),
+					rotateX: 45,
+					scale: 0.88,
+					opacity: 0,
+					duration: 0.75,
+					ease: 'power2.inOut'
+				},
+				0.2
+			)
+			tl.set(parts[0].slide, { pointerEvents: 'none' }, 0.9)
+		}
+
+		// FEATURE 2 (0.20 -> 1.95):
+		// 0.20 -> 0.95: Feature 2 entrance: Text SUBE into place, Cube BAJA into place
+		// 0.95 -> 1.20: Feature 2 reading hold (centered)
+		// 1.20 -> 1.95: Feature 2 exit (OPUESTA): Text SUBE (-240px), Cube BAJA (+480px)
+		if (parts[1]?.text && parts[1]?.visual) {
+			tl.set(parts[1].slide, { opacity: 1, pointerEvents: 'auto' }, 0.2)
+			tl.fromTo(
+				parts[1].text,
+				{ y: 240, opacity: 0 },
+				{ y: 0, opacity: 1, duration: 0.75, ease: 'power2.inOut' },
+				0.2
+			)
+			tl.fromTo(
+				parts[1].visual,
+				{
+					y: () => -Math.max(window.innerHeight * 0.45, 380),
+					rotateX: -28,
+					scale: 0.88,
+					opacity: 0
+				},
+				{ y: 0, rotateX: 0, scale: 1, opacity: 1, duration: 0.75, ease: 'power2.inOut' },
+				0.2
+			)
+
+			// Exit (1.20 -> 1.95) — Opuesta a Feature 1:
+			tl.to(
+				parts[1].text,
+				{ y: -240, opacity: 0, duration: 0.75, ease: 'power2.inOut' },
+				1.2
+			)
+			tl.to(
+				parts[1].visual,
+				{
+					y: () => Math.max(window.innerHeight * 0.55, 460),
+					rotateX: -45,
+					scale: 0.88,
+					opacity: 0,
+					duration: 0.75,
+					ease: 'power2.inOut'
+				},
+				1.2
+			)
+			tl.set(parts[1].slide, { pointerEvents: 'none' }, 1.9)
+		}
+
+		// FEATURE 3 (1.20 -> 2.15):
+		// 1.20 -> 1.95: Feature 3 entrance: Text BAJA into place, Cube SUBE into place
+		// 1.95 -> 2.15: Feature 3 reading hold (centered)
+		// Upon continuing scroll, the pin releases and transitions directly to the next section
+		if (parts[2]?.text && parts[2]?.visual) {
+			tl.set(parts[2].slide, { opacity: 1, pointerEvents: 'auto' }, 1.2)
+			tl.fromTo(
+				parts[2].text,
+				{ y: -240, opacity: 0 },
+				{ y: 0, opacity: 1, duration: 0.75, ease: 'power2.inOut' },
+				1.2
+			)
+			tl.fromTo(
+				parts[2].visual,
+				{
+					y: () => Math.max(window.innerHeight * 0.45, 380),
+					rotateX: 28,
+					scale: 0.88,
+					opacity: 0
+				},
+				{ y: 0, rotateX: 0, scale: 1, opacity: 1, duration: 0.75, ease: 'power2.inOut' },
+				1.2
+			)
+			// Small hold cushion so Feature 3 settles before unpinning
+			tl.to({}, { duration: 0.2 }, 1.95)
+		}
+
+		ScrollTrigger.sort()
+		ScrollTrigger.refresh()
+	}
+
+	initExpertise()
+	document.addEventListener('astro:page-load', initExpertise)
+	document.addEventListener('astro:after-swap', initExpertise)
+</script>

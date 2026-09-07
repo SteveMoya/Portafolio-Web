@@ -56,10 +56,13 @@ type Query {
   document(collection: String, relativePath: String): DocumentNode!
   post(relativePath: String): Post!
   postConnection(before: String, after: String, first: Float, last: Float, sort: String, filter: PostFilter): PostConnection!
+  project(relativePath: String): Project!
+  projectConnection(before: String, after: String, first: Float, last: Float, sort: String, filter: ProjectFilter): ProjectConnection!
 }
 
 input DocumentFilter {
   post: PostFilter
+  project: ProjectFilter
 }
 
 type DocumentConnectionEdges {
@@ -85,7 +88,7 @@ type Collection {
   documents(before: String, after: String, first: Float, last: Float, sort: String, filter: DocumentFilter, folder: String): DocumentConnection!
 }
 
-union DocumentNode = Post | Folder
+union DocumentNode = Post | Project | Folder
 
 type Post implements Node & Document {
   title: String!
@@ -183,6 +186,72 @@ type PostConnection implements Connection {
   edges: [PostConnectionEdges]
 }
 
+type Project implements Node & Document {
+  title: String!
+  description: String!
+  image: String
+  imageUrl: String
+  demo: String
+  repository: String
+  technologies: [String]
+  draft: Boolean
+  featured: Boolean
+  order: Float
+  date: String!
+  company: String
+  client: String
+  role: String
+  status: String
+  private: Boolean
+  category: String
+  badges: [String]
+  id: ID!
+  _sys: SystemInfo!
+  _values: JSON!
+}
+
+input NumberFilter {
+  lt: Float
+  lte: Float
+  gte: Float
+  gt: Float
+  eq: Float
+  exists: Boolean
+  in: [Float]
+}
+
+input ProjectFilter {
+  title: StringFilter
+  description: StringFilter
+  image: ImageFilter
+  imageUrl: StringFilter
+  demo: StringFilter
+  repository: StringFilter
+  technologies: StringFilter
+  draft: BooleanFilter
+  featured: BooleanFilter
+  order: NumberFilter
+  date: DatetimeFilter
+  company: StringFilter
+  client: StringFilter
+  role: StringFilter
+  status: StringFilter
+  private: BooleanFilter
+  category: StringFilter
+  badges: StringFilter
+}
+
+type ProjectConnectionEdges {
+  cursor: String!
+  node: Project
+}
+
+type ProjectConnection implements Connection {
+  pageInfo: PageInfo!
+  totalCount: Float!
+  edges: [ProjectConnectionEdges]
+}
+
 type Mutation {
   addPendingDocument(collection: String!, relativePath: String!, template: String): DocumentNode!
   updateDocument(collection: String, relativePath: String!, params: DocumentUpdateMutation!): DocumentNode!
@@ -191,15 +260,19 @@ type Mutation {
   createFolder(collection: String, relativePath: String!): DocumentNode!
   updatePost(relativePath: String!, params: PostMutation!): Post!
   createPost(relativePath: String!, params: PostMutation!): Post!
+  updateProject(relativePath: String!, params: ProjectMutation!): Project!
+  createProject(relativePath: String!, params: ProjectMutation!): Project!
 }
 
 input DocumentUpdateMutation {
   post: PostMutation
+  project: ProjectMutation
   relativePath: String
 }
 
 input DocumentMutation {
   post: PostMutation
+  project: ProjectMutation
 }
 
 input PostMutation {
@@ -212,6 +285,27 @@ input PostMutation {
   updateDate: String
   tags: [String]
   SButton: JSON
+}
+
+input ProjectMutation {
+  title: String
+  description: String
+  image: String
+  imageUrl: String
+  demo: String
+  repository: String
+  technologies: [String]
+  draft: Boolean
+  featured: Boolean
+  order: Float
+  date: String
+  company: String
+  client: String
+  role: String
+  status: String
+  private: Boolean
+  category: String
+  badges: [String]
 }
 
 schema {

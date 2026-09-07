@@ -1,5 +1,4 @@
 ---
-import Button from '@components/ui/Button.astro'
 import ProjectTecnology from '@components/ProjectTecnology.astro'
 import ProjectBadge from '@components/ProjectBadge.astro'
 import { getAllProjects } from '@src/lib/projects'
@@ -10,87 +9,134 @@ import placehorderImage from '/public/img/place-holder-image.webp'
 const projects = await getAllProjects()
 ---
 
-<section class="mx-auto w-full max-w-7xl px-4 py-8">
-    <div class="flex flex-wrap justify-center gap-8">
+<section class="mx-auto w-full max-w-7xl px-4 py-12">
+    <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
         {
             projects.map((project: Project) => (
-                <article class="dotted-card w-full max-w-[450px] sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.333rem)] group relative flex flex-col overflow-hidden rounded-2xl shadow-sm ring-1 ring-skin-muted transition-all duration-500 hover:-translate-y-2 hover:shadow-xl hover:shadow-skin-hues/20 reveal reveal-delay-200">
-                    <div class="relative w-full overflow-hidden bg-skin-muted pb-[60%]">
-                        <img
-                            src={project.image || (placehorderImage as unknown as string)}
-                            alt={`${project.title} Imagen`}
-                            class="absolute left-0 top-0 h-full w-full object-cover object-center transition-transform duration-700 ease-in-out group-hover:scale-110"
-                            loading="lazy"
-                        />
-                        <time
-                            data-time={formatDate(project.updatedAt)}
-                            class="absolute bottom-4 left-4 rounded-lg bg-skin-hue/90 px-3 py-1.5 text-xs font-semibold tracking-wide text-skin-inverted shadow-lg backdrop-blur-md transition-transform duration-300 group-hover:-translate-y-1"
-                        >
-                            {formatDate(project.updatedAt)}
-                        </time>
-                    </div>
-                    <div class="flex flex-1 flex-col p-6 items-center text-center">
-                        <h3 class="mb-3 text-2xl font-bold tracking-tight text-skin-base transition-colors duration-300 group-hover:text-skin-hue line-clamp-1 capitalize">
-                            {project.title || 'Sin nombre'}
-                        </h3>
+                <div class="tilt-card-wrapper w-full" style="perspective: 1200px;">
+                    <article 
+                        data-tilt-card
+                        class="dotted-card group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0a0a0a] shadow-lg transition-all duration-300 hover:border-[#c70039]/60 hover:shadow-[0_16px_36px_rgba(199,0,57,0.25)]"
+                        style="transform-style: preserve-3d; transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));"
+                    >
+                        {/* Blueprint Corner Ticks */}
+                        <span class="corner-tick corner-tick--tl"></span>
+                        <span class="corner-tick corner-tick--tr"></span>
+                        <span class="corner-tick corner-tick--bl"></span>
+                        <span class="corner-tick corner-tick--br"></span>
 
-                        {(project.company || project.client) && (
-                            <p class="mb-2 text-xs font-medium text-skin-muted">
-                                {project.company && <span>{project.company}</span>}
-                                {project.company && project.client && <span> · </span>}
-                                {project.client && <span>{project.client}</span>}
-                            </p>
-                        )}
-
-                        {project.role && (
-                            <p class="mb-3 text-xs italic text-skin-muted">
-                                {project.role}
-                            </p>
-                        )}
-
-                        <p class="mb-6 flex-1 text-sm text-skin-muted line-clamp-3">
-                            {project.description || 'Sin descripcion'}
-                        </p>
-
-                        {project.badges && project.badges.length > 0 && (
-                            <div class="mb-4 flex flex-wrap justify-center gap-1.5">
-                                {project.badges.map((badge) => (
-                                    <ProjectBadge badge={badge} />
-                                ))}
+                        {/* Device Frame Header */}
+                        <div class="flex items-center justify-between border-b border-white/10 bg-[#0d0d11] px-4 py-2.5">
+                            <div class="flex items-center gap-1.5">
+                                <span class="h-2 w-2 rounded-full bg-white/20 transition-colors group-hover:bg-[#c70039]"></span>
+                                <span class="h-2 w-2 rounded-full bg-white/20"></span>
+                                <span class="h-2 w-2 rounded-full bg-white/20"></span>
                             </div>
-                        )}
-
-                        <ul class="mb-6 flex flex-wrap justify-center items-center gap-2">
-                            {project.technologies?.map((tech) => (
-                                <ProjectTecnology tecnology={tech.name} />
-                            ))}
-                        </ul>
-
-                        <div class="mt-auto flex w-full justify-center items-center gap-3">
-                            {project.demo && (
-                                <a
-                                    href={project.demo}
-                                    title={`Ver Demo de ${project.title}`}
-                                    aria-label={`Ver Demo de ${project.title}`}
-                                    class="transition-transform duration-300 hover:scale-105"
-                                >
-                                    <Button type="button">Ver Demo</Button>
-                                </a>
-                            )}
-                            {project.repository && !project.private && (
-                                <a
-                                    href={project.repository}
-                                    title={`Ver Codigo de ${project.title}`}
-                                    aria-label={`Ver Codigo de ${project.title}`}
-                                    class="transition-transform duration-300 hover:scale-105"
-                                >
-                                    <Button type="button">Ver Código</Button>
-                                </a>
-                            )}
+                            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">
+                                {project.technologies?.[0]?.name || 'Web Project'}
+                            </span>
                         </div>
-                    </div>
-                </article>
+
+                        {/* Project Preview Image Layer */}
+                        <div class="relative w-full overflow-hidden bg-black/50 aspect-[16/10]" style="transform: translateZ(5px);">
+                            <img
+                                src={project.image || (placehorderImage as unknown as string)}
+                                alt={`${project.title} Imagen`}
+                                class="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
+                                loading="lazy"
+                            />
+                            <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-black/30 to-transparent"></div>
+                            
+                            <time
+                                data-time={formatDate(project.updatedAt)}
+                                class="absolute bottom-3 left-4 rounded-md border border-white/10 bg-[#0a0a0a]/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white/70 shadow backdrop-blur-md"
+                                style="transform: translateZ(15px);"
+                            >
+                                {formatDate(project.updatedAt)}
+                            </time>
+                        </div>
+
+                        {/* Spotlight Glare Layer */}
+                        <div 
+                            class="pointer-events-none absolute inset-0 z-20 transition-opacity duration-300"
+                            style="opacity: var(--glare-opacity, 0); background: radial-gradient(circle 320px at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, 0.12) 0%, rgba(199, 0, 57, 0.15) 35%, transparent 70%); mix-blend-mode: screen;"
+                        ></div>
+
+                        {/* Card Content with Z-axis Elevation */}
+                        <div class="flex flex-1 flex-col p-6 items-center text-center" style="transform-style: preserve-3d; transform: translateZ(25px);">
+                            <h3 class="mb-2 font-poppins text-xl font-bold tracking-tight text-white transition-colors duration-300 group-hover:text-[#c70039] line-clamp-1 capitalize">
+                                {project.title || 'Sin nombre'}
+                            </h3>
+
+                            {(project.company || project.client) && (
+                                <p class="mb-2 text-xs font-medium text-white/50">
+                                    {project.company && <span>{project.company}</span>}
+                                    {project.company && project.client && <span> · </span>}
+                                    {project.client && <span>{project.client}</span>}
+                                </p>
+                            )}
+
+                            {project.role && (
+                                <p class="mb-3 text-xs italic text-white/40">
+                                    {project.role}
+                                </p>
+                            )}
+
+                            <p class="mb-5 flex-1 text-sm leading-relaxed text-white/60 line-clamp-3">
+                                {project.description || 'Sin descripción'}
+                            </p>
+
+                            {project.badges && project.badges.length > 0 && (
+                                <div class="mb-4 flex flex-wrap justify-center gap-1.5" style="transform: translateZ(15px);">
+                                    {project.badges.map((badge) => (
+                                        <ProjectBadge badge={badge} />
+                                    ))}
+                                </div>
+                            )}
+
+                            <ul class="mb-6 flex flex-wrap justify-center items-center gap-2" style="transform: translateZ(15px);">
+                                {project.technologies?.map((tech) => (
+                                    <ProjectTecnology tecnology={tech.name} />
+                                ))}
+                            </ul>
+
+                            <div class="mt-auto flex w-full justify-center items-center gap-3 pt-4 border-t border-white/10" style="transform: translateZ(20px);">
+                                {project.demo && (
+                                    <a
+                                        href={project.demo}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        title={`Ver Demo de ${project.title}`}
+                                        aria-label={`Ver Demo de ${project.title}`}
+                                        class="inline-flex items-center justify-center rounded-lg border border-[#c70039] bg-[#c70039]/15 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white transition-all duration-300 hover:bg-[#c70039] hover:shadow-[0_0_15px_rgba(199,0,57,0.5)] active:scale-95"
+                                    >
+                                        Ver Demo
+                                    </a>
+                                )}
+                                {project.repository && !project.private && (
+                                    <a
+                                        href={project.repository}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        title={`Ver Código de ${project.title}`}
+                                        aria-label={`Ver Código de ${project.title}`}
+                                        class="inline-flex items-center justify-center rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white/80 transition-all duration-300 hover:border-white/30 hover:bg-white/10 hover:text-white active:scale-95"
+                                    >
+                                        Ver Código
+                                    </a>
+                                )}
+                            </div>
+                        </div>
+                    </article>
+                </div>
             ))
         }
     </div>
 </section>
+
+<script>
+    import { initTiltCards } from '@src/utils/tilt3d'
+
+    initTiltCards()
+    document.addEventListener('astro:after-swap', () => initTiltCards())
+</script>

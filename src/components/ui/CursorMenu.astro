@@ -1,0 +1,237 @@
+---
+// CursorStyleMenu — floating menu on the right to choose cursor style + size
+// Syncs with Cursor.astro via custom events + localStorage
+---
+
+<div
+	id="cursor-menu"
+	class="fixed right-0 top-1/2 z-[60] -translate-y-1/2"
+	style="display: none;"
+>
+	<!-- Toggle button -->
+	<button
+		id="cursor-menu-toggle"
+		class="flex h-10 w-10 items-center justify-center rounded-l-lg border border-r-0 border-white/10 bg-[#0a0a0a]/80 text-white/40 backdrop-blur-sm transition-colors hover:border-[#c70039]/40 hover:text-[#c70039]"
+		aria-label="Estilo del cursor"
+		title="Cambiar estilo del cursor"
+	>
+		<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+			<path d="M12 2a4 4 0 0 0-4 4v8a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4z"/>
+			<path d="M12 18v4"/>
+		</svg>
+	</button>
+
+	<!-- Options panel -->
+	<div
+		id="cursor-menu-panel"
+		class="absolute right-full top-0 mr-1 w-52 rounded-lg border border-white/10 bg-[#0a0a0a]/90 p-2.5 backdrop-blur-md"
+		style="display: none;"
+	>
+		<!-- Style picker -->
+		<p class="mb-2 px-2 text-[9px] font-semibold uppercase tracking-[0.2em] text-white/30">
+			Estilo
+		</p>
+
+		<button
+			class="cursor-option flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-xs text-white/60 transition-colors hover:bg-white/5 hover:text-white/90"
+			data-style="liquid-glass"
+		>
+			<span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur-sm">
+				<span class="h-2 w-2 rounded-full bg-white/30"></span>
+			</span>
+			<span>Liquid Glass</span>
+		</button>
+
+		<button
+			class="cursor-option flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-xs text-white/60 transition-colors hover:bg-white/5 hover:text-white/90"
+			data-style="red-circle"
+		>
+			<span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-[#c70039] bg-[#c70039]/25">
+			</span>
+			<span>Circulo Rojo</span>
+		</button>
+
+		<button
+			class="cursor-option flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-xs text-white/60 transition-colors hover:bg-white/5 hover:text-white/90"
+			data-style="water-trail"
+		>
+			<span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-[#c70039] bg-transparent" style="backdrop-filter: invert(100%);">
+			</span>
+			<span>Agua</span>
+		</button>
+
+		<!-- Size slider -->
+		<div class="mt-3 border-t border-white/5 pt-3">
+			<div class="mb-1.5 flex items-center justify-between px-2">
+				<p class="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/30">
+					Tamano
+				</p>
+				<span id="cursor-size-value" class="text-[10px] text-white/40 tabular-nums">50</span>
+			</div>
+			<input
+				type="range"
+				id="cursor-size-slider"
+				min="20"
+				max="120"
+				value="50"
+				class="cursor-slider mx-2 w-[calc(100%-16px)]"
+			/>
+			<div class="mt-1 flex justify-between px-2">
+				<span class="text-[8px] text-white/20">20</span>
+				<span class="text-[8px] text-white/20">120</span>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+	.cursor-option.is-active {
+		background: rgba(199, 0, 57, 0.15) !important;
+		color: rgba(255, 255, 255, 0.9) !important;
+	}
+
+	/* Range slider — dark theme */
+	.cursor-slider {
+		-webkit-appearance: none;
+		appearance: none;
+		height: 4px;
+		border-radius: 2px;
+		background: rgba(255, 255, 255, 0.08);
+		outline: none;
+	}
+	.cursor-slider::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 14px;
+		height: 14px;
+		border-radius: 50%;
+		background: #c70039;
+		border: 2px solid rgba(255, 255, 255, 0.15);
+		cursor: pointer;
+		transition: transform 0.15s ease, box-shadow 0.15s ease;
+	}
+	.cursor-slider::-webkit-slider-thumb:hover {
+		transform: scale(1.2);
+		box-shadow: 0 0 8px rgba(199, 0, 57, 0.5);
+	}
+	.cursor-slider::-moz-range-thumb {
+		width: 14px;
+		height: 14px;
+		border-radius: 50%;
+		background: #c70039;
+		border: 2px solid rgba(255, 255, 255, 0.15);
+		cursor: pointer;
+	}
+</style>
+
+<script>
+	const CURSOR_STYLE_KEY = 'cursor-style';
+	const CURSOR_SIZE_KEY = 'cursor-size';
+	type CursorStyle = 'liquid-glass' | 'red-circle' | 'water-trail';
+	let listenersAttached = false;
+
+	function getSavedStyle(): CursorStyle {
+		try {
+			const saved = localStorage.getItem(CURSOR_STYLE_KEY);
+			if (saved === 'liquid-glass' || saved === 'red-circle' || saved === 'water-trail') return saved;
+		} catch {}
+		return 'liquid-glass';
+	}
+
+	function getSavedSize(): number {
+		try {
+			const v = parseInt(localStorage.getItem(CURSOR_SIZE_KEY) || '', 10);
+			if (!isNaN(v) && v >= 20 && v <= 120) return v;
+		} catch {}
+		return 50;
+	}
+
+	function updateActiveOption(style: CursorStyle) {
+		document.querySelectorAll('.cursor-option').forEach((opt) => {
+			const el = opt as HTMLElement;
+			el.classList.toggle('is-active', el.dataset.style === style);
+		});
+	}
+
+	function showMenu() {
+		const menu = document.getElementById('cursor-menu');
+		if (menu) menu.style.display = '';
+	}
+
+	function attachListeners() {
+		if (listenersAttached) return;
+		listenersAttached = true;
+
+		const menu = document.getElementById('cursor-menu');
+		const toggle = document.getElementById('cursor-menu-toggle');
+		const panel = document.getElementById('cursor-menu-panel');
+		const slider = document.getElementById('cursor-size-slider') as HTMLInputElement | null;
+		const sizeLabel = document.getElementById('cursor-size-value');
+		const options = document.querySelectorAll('.cursor-option');
+
+		if (!menu || !toggle || !panel) return;
+
+		// Toggle panel
+		toggle.addEventListener('click', (e) => {
+			e.stopPropagation();
+			const isOpen = panel.style.display === 'block';
+			panel.style.display = isOpen ? 'none' : 'block';
+		});
+
+		// Close on outside click
+		document.addEventListener('click', (e) => {
+			if (!menu.contains(e.target as Node)) {
+				panel.style.display = 'none';
+			}
+		});
+
+		// Handle style option clicks
+		options.forEach((opt) => {
+			opt.addEventListener('click', () => {
+				const style = (opt as HTMLElement).dataset.style as CursorStyle;
+				if (!style) return;
+				updateActiveOption(style);
+				try { localStorage.setItem(CURSOR_STYLE_KEY, style); } catch {}
+				window.dispatchEvent(new CustomEvent('cursor-style:set', { detail: { style } }));
+				panel.style.display = 'none';
+			});
+		});
+
+		// Size slider
+		if (slider) {
+			slider.value = String(getSavedSize());
+			if (sizeLabel) sizeLabel.textContent = slider.value;
+
+			slider.addEventListener('input', () => {
+				const size = Number(slider.value);
+				if (sizeLabel) sizeLabel.textContent = String(size);
+				try { localStorage.setItem(CURSOR_SIZE_KEY, String(size)); } catch {}
+				window.dispatchEvent(new CustomEvent('cursor-size:set', { detail: { size } }));
+			});
+		}
+
+		// Listen for external changes
+		window.addEventListener('cursor-style:change', ((e: CustomEvent) => {
+			updateActiveOption(e.detail.style);
+		}) as EventListener);
+
+		window.addEventListener('cursor-size:change', ((e: CustomEvent) => {
+			const size = Number(e.detail.size);
+			if (slider) slider.value = String(size);
+			if (sizeLabel) sizeLabel.textContent = String(size);
+		}) as EventListener);
+	}
+
+	function initMenu() {
+		showMenu();
+		updateActiveOption(getSavedStyle());
+		attachListeners();
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initMenu);
+	} else {
+		initMenu();
+	}
+	document.addEventListener('astro:page-load', initMenu);
+</script>

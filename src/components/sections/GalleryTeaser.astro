@@ -1,68 +1,301 @@
 ---
 import { getCollection } from 'astro:content'
 import { CldImage } from 'astro-cloudinary'
-import ScrollReveal from '@components/ui/ScrollReveal.astro'
+import BlockReveal from '@components/ui/BlockReveal.astro'
 
-// Explicit sort (not the loader's native order) so the teaser picks a
-// reproducible set of 7 images across every build — Cloudinary's
-// `cldAssetsLoader` order isn't a documented stability guarantee.
 const images = (await getCollection('fotografia'))
 	.sort((a, b) => a.data.public_id.localeCompare(b.data.public_id))
-	.slice(0, 7)
+	.slice(0, 8)
+
+// Central feature image + surrounding thumbnails
+const [feature, ...rest] = images
+
+// Arrange images in a collage layout: positions for scattered effect
+const collagePositions = [
+	{ top: '5%', left: '8%', width: '18%', rotate: -5, aspect: 'aspect-[4/3]' },   // top-left
+	{ top: '2%', left: '35%', width: '30%', rotate: 2, aspect: 'aspect-video' },   // top-center (large)
+	{ top: '8%', right: '5%', width: '16%', rotate: 4, aspect: 'aspect-square' },  // top-right
+	{ top: '45%', left: '3%', width: '15%', rotate: -3, aspect: 'aspect-[3/4]' },  // mid-left
+	// Center is the feature (handled separately)
+	{ top: '50%', right: '4%', width: '17%', rotate: 6, aspect: 'aspect-video' },  // mid-right
+	{ bottom: '12%', left: '10%', width: '22%', rotate: -2, aspect: 'aspect-video' }, // bottom-left
+	{ bottom: '8%', left: '38%', width: '20%', rotate: 1, aspect: 'aspect-[4/3]' },  // bottom-center
+	{ bottom: '15%', right: '8%', width: '14%', rotate: -4, aspect: 'aspect-square' }, // bottom-right
+]
 ---
 
 <section
 	id="gallery-teaser"
-	class="reveal relative overflow-hidden bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16"
+	class="relative overflow-hidden bg-[#0a0a0a]"
 	data-gallery-teaser
 >
-	<div class="mx-auto max-w-[1400px]">
-		<p class="mb-6 text-xs font-bold uppercase tracking-[0.3em] text-white/40">Fotografía</p>
-
-		<ScrollReveal
-			text="Detrás de cada proyecto"
+	<div class="pointer-events-none absolute inset-x-0 top-8 z-20 text-center sm:top-12">
+		<p class="mb-1 text-xs font-bold uppercase tracking-[0.3em] text-white/40">Fotografía</p>
+		<BlockReveal
+			text="Galería fotográfica"
 			as="h2"
-			class="max-w-2xl font-poppins text-3xl font-black uppercase tracking-tight text-white sm:text-4xl"
+			class="font-poppins text-2xl font-black uppercase tracking-tight text-white sm:text-3xl lg:text-4xl"
+			boxColor="#c70039"
 		/>
+	</div>
 
-		{/* Height-capped masonry preview: same recipe as Gallery.astro's full grid,
-		    but clipped and faded so it reads as a teaser, not the complete set. */}
-		<div class="relative mt-16 max-h-[80vh] overflow-hidden rounded-2xl">
-			<div class="columns-2 gap-6 space-y-6 md:columns-3 lg:columns-4">
-				{
-					images.map((imagen, index) => (
-						<div class="break-inside-avoid overflow-hidden rounded-2xl bg-skin-fill shadow-sm ring-1 ring-skin-muted">
+	<div class="gallery-collage relative" data-gallery-collage>
+		<div class="flex h-screen items-center justify-center overflow-hidden">
+			{/* Surrounding thumbnail images */}
+			{
+				rest.map((img, i) => {
+					const pos = collagePositions[i]
+					if (!pos) return null
+					const style = [
+						pos.top ? `top:${pos.top}` : '',
+						pos.bottom ? `bottom:${pos.bottom}` : '',
+						pos.left ? `left:${pos.left}` : '',
+						pos.right ? `right:${pos.right}` : '',
+						`width:${pos.width}`,
+						`transform:rotate(${pos.rotate}deg)`,
+					].filter(Boolean).join(';')
+
+					return (
+						<div
+							class={`collage-thumb absolute overflow-hidden rounded-2xl ${pos.aspect}`}
+							style={style}
+							data-thumb={i}
+						>
 							<CldImage
-								src={imagen.data.public_id}
-								alt={`Imagen del portafolio ${index + 1}`}
-								class="block h-auto w-full object-cover"
+								src={img.data.public_id}
+								alt="Imagen del portafolio"
+								class="h-full w-full object-cover"
 								loading="lazy"
 							/>
 						</div>
-					))
-				}
-			</div>
+					)
+				})
+			}
 
-			{/* Bottom fade-to-background so the grid reads as a preview */}
-			<div class="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-[#0a0a0a] to-transparent" />
+			{/* Central feature image with CTA */}
+			{
+				feature && (
+					<a
+						href="/portafolio/fotografia"
+						class="group collage-feature absolute overflow-hidden rounded-2xl bg-[#0a0a0a]"
+						data-feature
+						style="top: 50%; left: 50%; width: clamp(320px, 35vw, 480px); aspect-ratio: 16/9;"
+					>
+						<CldImage
+							src={feature.data.public_id}
+							alt="Imagen destacada del portafolio de fotografía"
+							class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+							loading="lazy"
+						/>
 
-			<a
-				href="/portafolio/fotografia"
-				class="cta-pill group absolute bottom-8 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-2 rounded-full bg-white px-6 py-3 text-black shadow-lg transition-transform duration-300 hover:scale-105"
-			>
-				<span class="text-[11px] font-black uppercase tracking-widest">Ver galería</span>
-				<svg
-					class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-				>
-					<path d="M7 17L17 7M17 7H8M17 7V16" />
-				</svg>
-			</a>
+						<div class="absolute inset-0 bg-black/50 transition-colors duration-300 group-hover:bg-black/40" />
+
+						<span class="absolute inset-0 grid place-items-center">
+							<span class="cta-pill inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-black shadow-2xl transition-all duration-300 group-hover:scale-105">
+								<span class="text-sm font-black uppercase tracking-widest">Ver galería</span>
+								<svg
+									class="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2.5"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								>
+									<path d="M7 17L17 7M17 7H8M17 7V16" />
+								</svg>
+							</span>
+						</span>
+					</a>
+				)
+			}
+
+			{/* Overlay that fades in as zoom completes */}
+			<div class="gallery-overlay pointer-events-none absolute inset-0 bg-[#0a0a0a] opacity-0" data-gallery-overlay />
 		</div>
 	</div>
 </section>
+
+<style>
+	.collage-thumb {
+		will-change: transform, opacity;
+		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+	}
+
+	.collage-thumb img {
+		will-change: transform;
+	}
+
+	.collage-feature {
+		will-change: transform;
+		box-shadow: 0 35px 70px -15px rgba(0, 0, 0, 0.6);
+		z-index: 10;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.collage-thumb,
+		.collage-feature {
+			opacity: 1 !important;
+			transform: none !important;
+		}
+	}
+</style>
+
+<script>
+	import gsap from 'gsap'
+	import ScrollTrigger from 'gsap/ScrollTrigger'
+	import { reducedMotion } from '@/lib/motion'
+
+	gsap.registerPlugin(ScrollTrigger)
+
+	const initGalleryZoom = () => {
+		const section = document.querySelector<HTMLElement>('[data-gallery-teaser]')
+		if (!section || reducedMotion()) return
+
+		// Prevent re-init on Astro view transitions
+		if (section.dataset.galleryInit === 'true') return
+		section.dataset.galleryInit = 'true'
+
+		const collage = section.querySelector<HTMLElement>('[data-gallery-collage]')
+		const feature = section.querySelector<HTMLElement>('[data-feature]')
+		const thumbs = section.querySelectorAll<HTMLElement>('[data-thumb]')
+		const overlay = section.querySelector<HTMLElement>('[data-gallery-overlay]')
+
+		if (!collage || !feature) return
+
+		gsap.set(overlay, { opacity: 0 })
+		gsap.set(feature, { xPercent: -50, yPercent: -50 })
+		gsap.set(thumbs, { xPercent: 0, yPercent: 0 })
+		const thumbImgs = section.querySelectorAll<HTMLElement>('[data-thumb] img')
+		gsap.set(thumbImgs, { scale: 1, xPercent: 0, yPercent: 0 })
+
+		// Entrance animation: smooth rising transition and centered placement
+		// Elements rise up from below and settle into their exact collage layout as section hits top top
+		const entranceTl = gsap.timeline({
+			scrollTrigger: {
+				trigger: section,
+				start: 'top 85%',
+				end: 'top top',
+				scrub: 0.8,
+			},
+		})
+
+		entranceTl.fromTo(
+			feature,
+			{ opacity: 0, scale: 0.82, y: 130 },
+			{ opacity: 1, scale: 1, y: 0, duration: 0.6, ease: 'power2.out' },
+			0
+		)
+
+		entranceTl.fromTo(
+			thumbs,
+			{ opacity: 0, scale: 0.72, y: 160 },
+			{ opacity: 1, scale: 1, y: 0, duration: 0.6, stagger: 0.025, ease: 'power2.out' },
+			0.04
+		)
+
+		// Pinned zoom animation: once at top top, pin and zoom feature to fullscreen
+		const zoomTl = gsap.timeline({
+			scrollTrigger: {
+				trigger: collage,
+				start: 'top top',
+				end: '+=110%',
+				scrub: 0.8,
+				pin: true,
+				pinSpacing: true,
+			},
+		})
+
+		// Brief hold so the viewer can appreciate the collage
+		zoomTl.to({}, { duration: 0.15 })
+
+		// Zoom the feature image to fullscreen
+		zoomTl.to(
+			feature,
+			{
+				width: '100vw',
+				height: '100vh',
+				top: '50%',
+				left: '50%',
+				xPercent: -50,
+				yPercent: -50,
+				borderRadius: 0,
+				aspectRatio: 'unset',
+				duration: 0.55,
+				ease: 'power2.inOut',
+			},
+			'zoom'
+		)
+
+		// Parallax dispersal for surrounding thumbnails:
+		// Radial outward push with multi-plane depth factors, rotation divergence, and subtle inner-image parallax
+		const thumbParallax = [
+			{ xPercent: -90, yPercent: -100, scale: 1.25, rotation: -14, duration: 0.48, imgX: -5, imgY: -5 },
+			{ xPercent: -20, yPercent: -130, scale: 1.45, rotation: 6, duration: 0.42, imgX: -2, imgY: -8 },
+			{ xPercent: 110, yPercent: -100, scale: 1.2, rotation: 11, duration: 0.52, imgX: 6, imgY: -6 },
+			{ xPercent: -140, yPercent: -20, scale: 1.35, rotation: -9, duration: 0.45, imgX: -10, imgY: -2 },
+			{ xPercent: 130, yPercent: 25, scale: 1.35, rotation: 13, duration: 0.46, imgX: 10, imgY: 2 },
+			{ xPercent: -85, yPercent: 95, scale: 1.25, rotation: -8, duration: 0.49, imgX: -6, imgY: 6 },
+			{ xPercent: 15, yPercent: 130, scale: 1.4, rotation: 5, duration: 0.43, imgX: 2, imgY: 8 },
+			{ xPercent: 120, yPercent: 100, scale: 1.2, rotation: -11, duration: 0.52, imgX: 6, imgY: 6 },
+		]
+
+		thumbs.forEach((thumb, i) => {
+			const p = thumbParallax[i] || {
+				xPercent: i % 2 === 0 ? -100 : 100,
+				yPercent: i < 4 ? -100 : 100,
+				scale: 1.3,
+				rotation: 0,
+				duration: 0.48,
+				imgX: 0,
+				imgY: 0,
+			}
+
+			zoomTl.to(
+				thumb,
+				{
+					xPercent: p.xPercent,
+					yPercent: p.yPercent,
+					scale: p.scale,
+					rotation: p.rotation,
+					opacity: 0,
+					duration: p.duration,
+					ease: 'power2.in',
+				},
+				'zoom'
+			)
+
+			const img = thumb.querySelector('img')
+			if (img) {
+				zoomTl.to(
+					img,
+					{
+						scale: 1.18,
+						xPercent: p.imgX,
+						yPercent: p.imgY,
+						duration: p.duration,
+						ease: 'power1.out',
+					},
+					'zoom'
+				)
+			}
+		})
+
+		// Fade to next section
+		zoomTl.to(
+			overlay,
+			{
+				opacity: 1,
+				duration: 0.22,
+				ease: 'power2.in',
+			},
+			'>-0.08'
+		)
+
+		ScrollTrigger.sort()
+		ScrollTrigger.refresh()
+	}
+
+	initGalleryZoom()
+	document.addEventListener('astro:after-swap', initGalleryZoom)
+</script>

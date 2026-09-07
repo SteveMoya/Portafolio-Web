@@ -10,3 +10,25 @@ fragment PostParts on Post {
   tags
   SButton
 }
+
+fragment ProjectParts on Project {
+  __typename
+  title
+  description
+  image
+  imageUrl
+  demo
+  repository
+  technologies
+  draft
+  featured
+  order
+  date
+  company
+  client
+  role
+  status
+  private
+  category
+  badges
+}

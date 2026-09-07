@@ -1,5 +1,5 @@
 ---
-import ScrollReveal from '@components/ui/ScrollReveal.astro'
+import BlockReveal from '@components/ui/BlockReveal.astro'
 
 interface KnowledgeTag {
 	label: string
@@ -30,82 +30,101 @@ interface KnowledgeTag {
 // corners/edges (which visually belong to the walls/rim, not the open
 // floor) — instead of the old asymmetric camera's parallelogram footprint.
 const tags: KnowledgeTag[] = [
-	{ label: 'Marketing Digital', startLeft: 10, startTop: 14, rotate: -6, dur: 7.2, delay: 0, landingLeft: 48.1, landingTop: 56.2 },
-	{ label: 'SEO', startLeft: 84, startTop: 10, rotate: 8, dur: 6.4, delay: -1.5, landingLeft: 52.8, landingTop: 57.5 },
-	{ label: 'IA', startLeft: 6, startTop: 46, rotate: 5, dur: 8.1, delay: -3, landingLeft: 43.5, landingTop: 62.8 },
-	{ label: 'Análisis de Datos', startLeft: 90, startTop: 40, rotate: -9, dur: 7.6, delay: -0.8, landingLeft: 56.5, landingTop: 64.1 },
-	{ label: 'React', startLeft: 16, startTop: 78, rotate: 7, dur: 6.9, delay: -2.2, landingLeft: 41.6, landingTop: 72.1 },
-	{ label: 'Astro', startLeft: 80, startTop: 78, rotate: -5, dur: 7.3, delay: -4, landingLeft: 58.4, landingTop: 72.1 },
-	{ label: 'TypeScript', startLeft: 32, startTop: 6, rotate: 4, dur: 6.6, delay: -1, landingLeft: 44.4, landingTop: 80.0 },
-	{ label: 'Google Ads', startLeft: 64, startTop: 4, rotate: -8, dur: 8.4, delay: -3.6, landingLeft: 55.6, landingTop: 80.0 },
-	{ label: 'Automatización', startLeft: 4, startTop: 64, rotate: -4, dur: 7.0, delay: -2.8, landingLeft: 48.1, landingTop: 85.3 },
-	{ label: 'WordPress', startLeft: 94, startTop: 62, rotate: 9, dur: 6.2, delay: -0.4, landingLeft: 51.9, landingTop: 85.3 },
-	{ label: 'Tailwind', startLeft: 24, startTop: 92, rotate: -7, dur: 7.9, delay: -3.2, landingLeft: 46.3, landingTop: 69.4 },
-	{ label: 'Machine Learning', startLeft: 72, startTop: 92, rotate: 6, dur: 6.8, delay: -1.8, landingLeft: 53.7, landingTop: 65.5 }
+	{ label: 'Marketing Digital', startLeft: 10, startTop: 14, rotate: -6, dur: 7.2, delay: 0, landingLeft: 46, landingTop: 59 },
+	{ label: 'SEO', startLeft: 84, startTop: 10, rotate: 8, dur: 6.4, delay: -1.5, landingLeft: 54, landingTop: 60 },
+	{ label: 'IA', startLeft: 6, startTop: 46, rotate: 5, dur: 8.1, delay: -3, landingLeft: 43, landingTop: 63 },
+	{ label: 'Análisis de Datos', startLeft: 90, startTop: 40, rotate: -9, dur: 7.6, delay: -0.8, landingLeft: 57, landingTop: 62 },
+	{ label: 'React', startLeft: 16, startTop: 78, rotate: 7, dur: 6.9, delay: -2.2, landingLeft: 45, landingTop: 66 },
+	{ label: 'Astro', startLeft: 80, startTop: 78, rotate: -5, dur: 7.3, delay: -4, landingLeft: 55, landingTop: 65 },
+	{ label: 'TypeScript', startLeft: 32, startTop: 6, rotate: 4, dur: 6.6, delay: -1, landingLeft: 47, landingTop: 58 },
+	{ label: 'Google Ads', startLeft: 64, startTop: 4, rotate: -8, dur: 8.4, delay: -3.6, landingLeft: 53, landingTop: 58 },
+	{ label: 'Automatización', startLeft: 4, startTop: 64, rotate: -4, dur: 7.0, delay: -2.8, landingLeft: 44, landingTop: 64 },
+	{ label: 'WordPress', startLeft: 94, startTop: 62, rotate: 9, dur: 6.2, delay: -0.4, landingLeft: 56, landingTop: 64 },
+	{ label: 'Tailwind', startLeft: 24, startTop: 92, rotate: -7, dur: 7.9, delay: -3.2, landingLeft: 48, landingTop: 65 },
+	{ label: 'Machine Learning', startLeft: 72, startTop: 92, rotate: 6, dur: 6.8, delay: -1.8, landingLeft: 52, landingTop: 63 }
 ]
 ---
 
 <section
 	id="knowledge-box"
-	class="reveal relative min-h-screen overflow-hidden bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16"
+	class="relative min-h-screen overflow-hidden bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16"
 	data-knowledge-box
 >
 	<div class="mx-auto max-w-[1400px]">
-		<p class="mb-6 text-xs font-bold uppercase tracking-[0.3em] text-white/40">Conocimiento acumulado</p>
+		<div data-kb-header>
+			<p class="mb-6 text-xs font-bold uppercase tracking-[0.3em] text-white/40">Conocimiento acumulado</p>
 
-		<ScrollReveal
-			text="Todo lo que entra en la caja"
-			as="h2"
-			class="max-w-2xl font-poppins text-3xl font-black uppercase tracking-tight text-white sm:text-4xl"
-		/>
+			<BlockReveal
+				text="Todo lo que entra en la caja"
+				as="h2"
+				class="max-w-2xl font-poppins text-3xl font-black uppercase tracking-tight text-white sm:text-4xl"
+				boxColor="#c70039"
+			/>
+		</div>
 
 		<div class="kb-stage relative mt-16" data-kb-stage>
-			<div class="kb-box" data-kb-box style="left: 50%; top: 56%;">
-				<div class="kb-face dotted-card kb-face--floor">
-					<span class="corner-tick corner-tick--tl" />
-					<span class="corner-tick corner-tick--br" />
-				</div>
-				<div class="kb-face dotted-card kb-face--back">
-					<span class="corner-tick corner-tick--tl" />
-					<span class="corner-tick corner-tick--br" />
-				</div>
-				<div class="kb-face dotted-card kb-face--left">
-					<span class="corner-tick corner-tick--tl" />
-					<span class="corner-tick corner-tick--br" />
+			<div class="kb-box-wrap" data-kb-box-wrap>
+				<div class="kb-box-shake" data-kb-box-shake>
+					<div class="kb-box" data-kb-box>
+						<div class="kb-face dotted-card kb-face--floor">
+							<span class="corner-tick corner-tick--tl" />
+							<span class="corner-tick corner-tick--br" />
+						</div>
+						<div class="kb-face dotted-card kb-face--back">
+							<span class="corner-tick corner-tick--tl" />
+							<span class="corner-tick corner-tick--br" />
+						</div>
+						<div class="kb-face dotted-card kb-face--left">
+							<span class="corner-tick corner-tick--tl" />
+							<span class="corner-tick corner-tick--br" />
+						</div>
+						<div class="kb-face dotted-card kb-face--right">
+							<span class="corner-tick corner-tick--tl" />
+							<span class="corner-tick corner-tick--br" />
+						</div>
+						<div class="kb-face dotted-card kb-face--front">
+							<span class="corner-tick corner-tick--tl" />
+							<span class="corner-tick corner-tick--br" />
+						</div>
+
+						<div class="kb-hinge kb-hinge--back">
+							<div class="kb-flap dotted-card" data-kb-flap="back">
+								<span class="corner-tick corner-tick--tl" />
+								<span class="corner-tick corner-tick--br" />
+							</div>
+						</div>
+						<div class="kb-hinge kb-hinge--front">
+							<div class="kb-flap dotted-card" data-kb-flap="front">
+								<span class="corner-tick corner-tick--tl" />
+								<span class="corner-tick corner-tick--br" />
+							</div>
+						</div>
+						<div class="kb-hinge kb-hinge--left">
+							<div class="kb-flap dotted-card" data-kb-flap="left">
+								<span class="corner-tick corner-tick--tl" />
+								<span class="corner-tick corner-tick--br" />
+							</div>
+						</div>
+						<div class="kb-hinge kb-hinge--right">
+							<div class="kb-flap dotted-card" data-kb-flap="right">
+								<span class="corner-tick corner-tick--tl" />
+								<span class="corner-tick corner-tick--br" />
+							</div>
+						</div>
+					</div>
 				</div>
 
-				<!-- Four hinged flaps, one per box edge, each rotating around its own
-				     rim edge between an OPEN (splayed outward) and CLOSED (folded past
-				     flat, in toward the box's own interior) resting state. The
-				     wrapping `.kb-flap-hinge` is a zero-height strip placed exactly at
-				     that edge's rim position
-				     (reusing the matching wall's own placement transform), so the
-				     nested `.kb-flap`'s own `transform-origin: top center` lands
-				     precisely on the hinge line — see the <style> block below for the
-				     full geometry writeup. -->
-				<div class="kb-flap-hinge kb-flap-hinge--back">
-					<div class="kb-flap dotted-card" data-kb-flap>
-						<span class="corner-tick corner-tick--tl" />
-						<span class="corner-tick corner-tick--br" />
-					</div>
-				</div>
-				<div class="kb-flap-hinge kb-flap-hinge--left">
-					<div class="kb-flap dotted-card" data-kb-flap>
-						<span class="corner-tick corner-tick--tl" />
-						<span class="corner-tick corner-tick--br" />
-					</div>
-				</div>
-				<div class="kb-flap-hinge kb-flap-hinge--right">
-					<div class="kb-flap dotted-card" data-kb-flap>
-						<span class="corner-tick corner-tick--tl" />
-						<span class="corner-tick corner-tick--br" />
-					</div>
-				</div>
-				<div class="kb-flap-hinge kb-flap-hinge--front">
-					<div class="kb-flap dotted-card" data-kb-flap>
-						<span class="corner-tick corner-tick--tl" />
-						<span class="corner-tick corner-tick--br" />
-					</div>
+				<div class="kb-particles pointer-events-none absolute inset-0 overflow-visible" data-kb-particles>
+					{
+						Array.from({ length: 32 }).map((_, i) => (
+							<span
+								class={`kb-particle absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 ${
+									i % 3 === 0 ? 'kb-particle--gold' : i % 3 === 1 ? 'kb-particle--red' : 'kb-particle--white'
+								}`}
+								data-kb-particle
+							/>
+						))
+					}
 				</div>
 			</div>
 
@@ -115,6 +134,8 @@ const tags: KnowledgeTag[] = [
 						class="kb-tag absolute"
 						data-kb-tag
 						style={`left:${tag.startLeft}%; top:${tag.startTop}%;`}
+						data-start-left={tag.startLeft}
+						data-start-top={tag.startTop}
 						data-landing-left={tag.landingLeft}
 						data-landing-top={tag.landingTop}
 					>
@@ -133,15 +154,8 @@ const tags: KnowledgeTag[] = [
 </section>
 
 <style>
-	/* Isometric open box: floor + two back walls, reusing ExpertiseSection's
-	   preserve-3d cube technique (fold flat squares into place, then apply a
-	   single camera rotation to the whole assembly). Perspective lives on the
-	   direct parent (`.kb-stage`), matching ExpertiseSection's
-	   `.expertise-visual` → `.cube-wrap` relationship, so nothing in between
-	   flattens the 3D context. */
 	.kb-stage {
 		min-height: 60vh;
-		perspective: 1600px;
 	}
 
 	@media (min-width: 640px) {
@@ -150,222 +164,217 @@ const tags: KnowledgeTag[] = [
 		}
 	}
 
-	.kb-box {
-		--kb-size: clamp(200px, 26vw, 340px);
+	/* Box 3D assembly wrapper */
+	.kb-box-wrap {
+		--bw: clamp(340px, 36vw, 440px);
+		--bh: clamp(170px, 18vw, 205px);
+		--bd: clamp(230px, 24vw, 270px);
 		position: absolute;
-		width: var(--kb-size);
-		height: var(--kb-size);
-		transform-style: preserve-3d;
-		/* rotateX(60deg) rotateZ(-45deg) (the design phase's starting values)
-		   put two of the three faces almost perfectly edge-on to the camera,
-		   collapsing them to invisible lines — verified live in the browser
-		   during Task 6.8. rotateX(45deg) rotateY(135deg) (an earlier revision)
-		   gave a clean, equal-area hexagon with all three faces readable, but
-		   its symmetric framing put the floor and both full-height walls at
-		   equal visual weight, so the box's open top / interior didn't read
-		   as a distinct "place things fall into" — verified live in the
-		   browser (tags settling mid-scroll were barely distinguishable from
-		   the walls themselves). A later revision tried breaking that
-		   symmetry with an asymmetric rotateX(55deg) rotateY(200deg) camera
-		   instead, but real screenshots showed it read as a confusing
-		   cluster of disconnected panels, not a container. This revision
-		   keeps rotateY(135deg) (the original, symmetric framing) and a
-		   slightly steeper rotateX(50deg), and instead fixes the "floor vs.
-		   walls" weight problem at its actual source: the walls themselves
-		   (see `.kb-face--back`/`.kb-face--left`) are now shallow strips
-		   instead of full-height squares, so the floor dominates the
-		   silhouette by area regardless of camera symmetry, with the walls
-		   reading as a receding rim framing it. */
-		transform: translate(-50%, -50%) rotateX(50deg) rotateY(135deg);
+		left: 50%;
+		top: 58%;
+		width: var(--bw);
+		height: var(--bh);
+		transform: translate(-50%, -50%);
+		perspective: 1600px;
 		z-index: 10;
+	}
+
+	.kb-box-shake {
+		position: relative;
+		width: 100%;
+		height: 100%;
+		transform-style: preserve-3d;
+	}
+
+	.kb-box {
+		position: relative;
+		width: 100%;
+		height: 100%;
+		transform-style: preserve-3d;
+		/* Isometric 3/4 view looking down into the open box matching reference image */
+		transform: rotateX(-24deg) rotateY(32deg);
 	}
 
 	.kb-face {
 		position: absolute;
-		inset: 0;
-		border: 1px solid rgba(255, 255, 255, 0.14);
-		/* `.dotted-card`'s default dot pattern (0.5px dots at 0.15 opacity on a
-		   16px grid) is tuned for flat 2D cards and washes out to nothing on
-		   the two heavily foreshortened wall faces once the isometric 3D
-		   transform is applied — verified live in the browser during Task
-		   6.8 (bold test patterns rendered fine, so it wasn't a rendering
-		   bug, just contrast lost to perspective compression). This local,
-		   bolder dot recipe keeps the same "blueprint grid" identity but
-		   survives the foreshortening on every face. */
-		background-color: #0a0a0a;
-		background-image: radial-gradient(circle, rgba(255, 255, 255, 0.45) 1.1px, transparent 1.1px);
-		background-size: 22px 22px;
+		left: 50%;
+		top: 50%;
+		box-sizing: border-box;
+		border: 1.5px solid rgba(255, 255, 255, 0.35);
 	}
 
+	/* Floor: width x depth, seated at bottom of box */
 	.kb-face--floor {
-		transform: rotateX(-90deg) translateZ(calc(var(--kb-size) / 2));
+		width: var(--bw);
+		height: var(--bd);
+		transform: translate(-50%, -50%) translateY(calc(var(--bh) / 2)) rotateX(90deg);
+		background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.12) 0%, #0d0d12 80%);
+		border-color: rgba(255, 255, 255, 0.25);
 	}
 
-	/* Back/left walls are shallow (a fraction of the box's full height)
-	   instead of full-height squares, anchored to the box's own bottom edge
-	   instead of `.kb-face`'s default `inset: 0`. A full-height wall put the
-	   floor and walls at equal visual weight — read live in the browser as
-	   two flat panels meeting at a fold, more "open book" than "container
-	   with a floor you can see into" (the exact complaint from real
-	   screenshots). Shrinking the walls down to low rims read immediately as
-	   an open box/tray from the very first real screenshot checked live in
-	   the browser: the floor dominates the silhouette, the two walls recede
-	   as narrow foreshortened strips framing it, and there's finally a
-	   legible "opening" between the top of those strips and the rim the
-	   flaps hinge from. */
-	.kb-face--back,
-	.kb-face--left {
-		inset: auto;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		height: 38%;
-		/* Even at this shallower height, the walls sit at a much steeper
-		   composite angle to the camera than the floor (the floor is tilted
-		   to face the camera fairly directly; the walls stay close to
-		   edge-on), which compresses `.kb-face`'s own dot recipe to near
-		   nothing — verified live in the browser (the walls read as vague
-		   dark shadow shapes, barely distinguishable from the empty
-		   background, not as a receding surface). A lighter background tone
-		   plus a bolder, brighter dot pattern (reusing `.kb-flap`'s own
-		   boosted recipe, which solved the identical foreshortening problem
-		   there) keeps the walls legible as a distinct, lighter "receding
-		   side" framing the darker, dominant floor. */
-		background-color: #17171a;
-		background-image: radial-gradient(circle, rgba(255, 255, 255, 0.55) 1.3px, transparent 1.3px);
-		background-size: 18px 18px;
-	}
-
+	/* Back wall */
 	.kb-face--back {
-		transform: rotateY(180deg) translateZ(calc(var(--kb-size) / 2));
+		width: var(--bw);
+		height: var(--bh);
+		transform: translate(-50%, -50%) translateZ(calc(-1 * var(--bd) / 2));
+		background: linear-gradient(180deg, #22222c 0%, #121218 100%);
+		border-color: rgba(255, 255, 255, 0.3);
 	}
 
+	/* Left wall */
 	.kb-face--left {
-		transform: rotateY(-90deg) translateZ(calc(var(--kb-size) / 2));
+		width: var(--bd);
+		height: var(--bh);
+		transform: translate(-50%, -50%) translateX(calc(-1 * var(--bw) / 2)) rotateY(90deg);
+		background: linear-gradient(180deg, #262634 0%, #14141c 100%);
+		border-color: rgba(255, 255, 255, 0.3);
 	}
 
-	/* --- Flaps -------------------------------------------------------------
-	   Each `.kb-flap-hinge` is a zero-height strip (`top:0; height:0`) that
-	   reuses the EXACT same "rotate then translateZ" recipe as the wall face
-	   that would occupy that edge (front/back/left/right). Because a cube
-	   face's own top edge sits at local `(0, -half, 0)` before it's pushed
-	   into place, giving this zero-height strip the identical transform lands
-	   it precisely on that face's top rim — the box's opening edge — without
-	   needing any face at all (front/right have no rendered wall, but still
-	   get a rim position this way).
+	/* Right wall */
+	.kb-face--right {
+		width: var(--bd);
+		height: var(--bh);
+		transform: translate(-50%, -50%) translateX(calc(var(--bw) / 2)) rotateY(-90deg);
+		background: linear-gradient(180deg, #262634 0%, #14141c 100%);
+		border-color: rgba(255, 255, 255, 0.3);
+	}
 
-	   The nested `.kb-flap` is the actual visible panel: it starts at the
-	   hinge's local origin (`transform-origin: top center`) and swings around
-	   it with its own single `rotateX(var(--flap-angle))`. At `--flap-angle:
-	   0deg` the flap is a plain upright wall filling in that rim's missing
-	   face (identity extra rotation on top of the hinge's own base
-	   rotation). A previous revision rested the flaps fully open at a large
-	   POSITIVE angle (splayed near-flat outward, away from the box), but
-	   verified live in the browser against real screenshots: under this
-	   camera those four splayed panels read as a confusing cluster of
-	   disconnected floating quadrilaterals competing with the walls, not as
-	   "flaps flopped out of the way" — exactly the illegible rest state
-	   the user flagged. Worse, animating the shared angle from that positive
-	   open value down to the closed value forced every sweep through
-	   `0deg`, and the front-facing rim orientation happens to sit almost
-	   perfectly edge-on to this particular fixed camera at exactly that
-	   angle — verified live in the browser by sampling the scroll-driven
-	   close in small steps: the front flap's projected width visibly
-	   collapsed to a sliver and briefly vanished around `--flap-angle:
-	   0deg`, then reappeared as a different sliver past it, exactly the
-	   "glitch, not a smooth fold" artifact reported from real screenshots.
+	/* Front wall: frosted translucent glass with luminous rim matching reference */
+	.kb-face--front {
+		width: var(--bw);
+		height: var(--bh);
+		transform: translate(-50%, -50%) translateZ(calc(var(--bd) / 2));
+		background: linear-gradient(180deg, rgba(160, 160, 175, 0.45) 0%, rgba(50, 50, 65, 0.3) 60%, rgba(20, 20, 28, 0.5) 100%);
+		backdrop-filter: blur(10px);
+		border: 1.5px solid rgba(255, 255, 255, 0.45);
+		border-top: 2.5px solid rgba(255, 255, 255, 0.85);
+		box-shadow: 0 -2px 12px rgba(255, 255, 255, 0.2), inset 0 2px 6px rgba(255, 255, 255, 0.35);
+	}
 
-	   This revision rests every flap AT that `0deg` identity pose instead of
-	   splayed open, with opacity faded down (see `.kb-flap`'s own rule) so
-	   the edge-on-for-this-camera front flap is naturally near-invisible
-	   exactly when it's supposed to be — no separate splayed-open pose to
-	   read as clutter, and no crossing back through `0deg` later while
-	   opaque. The close sweep then moves NEGATIVE only, monotonically away
-	   from that single problem angle toward -125deg (past -90deg's flat
-	   "lid capping the opening" midpoint, continuing on to tip down and
-	   tuck into the box's own interior volume), fading opacity up in the
-	   same tween so any other camera-specific thin angle along that one-way
-	   path is masked by low opacity rather than shown naked — verified live
-	   in the browser by sampling the close in ten small steps end to end,
-	   confirming no panel collapses to a sliver at full opacity anywhere
-	   along the sweep. The flap's height was also trimmed (see below) so
-	   this deeper fold doesn't drive its far edge through the opposite
-	   wall. */
-	.kb-flap-hinge {
+	/* Hinges & Flaps */
+	.kb-hinge {
 		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		height: 0;
+		left: 50%;
+		top: 50%;
 		transform-style: preserve-3d;
 	}
 
-	.kb-flap-hinge--front {
-		transform: translateZ(calc(var(--kb-size) / 2));
-	}
-
-	.kb-flap-hinge--back {
-		transform: rotateY(180deg) translateZ(calc(var(--kb-size) / 2));
-	}
-
-	.kb-flap-hinge--left {
-		transform: rotateY(-90deg) translateZ(calc(var(--kb-size) / 2));
-	}
-
-	.kb-flap-hinge--right {
-		transform: rotateY(90deg) translateZ(calc(var(--kb-size) / 2));
-	}
-
 	.kb-flap {
-		--flap-angle: 0deg;
 		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		/* Shorter than the earlier 0.56 revision: folding to -125deg (see the
-		   hinge comment above) swings the flap's far edge down past the rim
-		   and toward the opposite wall, and at the old 0.56 length that edge
-		   drove visibly through the opposite wall/floor — verified live in
-		   the browser. 0.45 keeps the same "opposite flaps overlap a little
-		   once closed" read without the clip. */
-		height: calc(var(--kb-size) * 0.45);
-		transform-origin: top center;
-		transform: rotateX(var(--flap-angle));
-		/* Faded down at rest (see the hinge comment above for why 0deg is
-		   the resting angle, not a splayed-open one) so the flaps read as
-		   near-invisible rim traces rather than a fourth competing shape —
-		   the open box's read comes entirely from the floor + two static
-		   walls below. GSAP fades this back up to 1 in the same tween that
-		   swings the angle closed, so the panel is only ever fully opaque
-		   once it's past the single problem angle for this camera. */
-		opacity: 0.06;
-		/* Flaps sit at a much steeper composite angle to the fixed isometric
-		   camera than the box's own walls (their own hinge rotation stacks on
-		   top of the wall's base rotation), which compresses the wall
-		   faces' already-boosted dot recipe below visibility — verified live
-		   in the browser (identical markup with a solid debug fill rendered
-		   fine, proving it wasn't a transform/z-fighting bug, just contrast
-		   lost to the extra foreshortening). A slightly lighter base tone plus
-		   a brighter, thicker border keeps the flap silhouette legible at any
-		   scroll position while keeping the same "blueprint dot" identity. */
-		border: 1.5px solid rgba(255, 255, 255, 0.28);
-		background-color: #141416;
-		background-image: radial-gradient(circle, rgba(255, 255, 255, 0.6) 1.4px, transparent 1.4px);
-		background-size: 22px 22px;
+		box-sizing: border-box;
+		border: 1.5px solid rgba(255, 255, 255, 0.45);
+		background: linear-gradient(180deg, rgba(160, 160, 180, 0.55) 0%, rgba(60, 60, 75, 0.4) 100%);
+		backdrop-filter: blur(6px);
+		box-shadow: inset 0 1px 4px rgba(255, 255, 255, 0.35);
 	}
 
-	/* Outer wrapper: GSAP-owned (left/top/scale/opacity/zIndex). Centering
-	   offset stays a static rule, never touched by the settle tween. */
+	/* Left Flap: width = bd, height = bd * 0.48 (standard inner flap proportions), hinged at bottom, swings up and over top */
+	.kb-hinge--left {
+		width: var(--bd);
+		height: 0;
+		transform: translate(-50%, -50%) translateX(calc(-1 * var(--bw) / 2)) translateY(calc(-1 * var(--bh) / 2)) rotateY(-90deg);
+	}
+	.kb-hinge--left .kb-flap {
+		width: 100%;
+		height: calc(var(--bd) * 0.48);
+		bottom: 0;
+		left: 0;
+		transform-origin: bottom center;
+		transform: rotateX(-55deg);
+		border-bottom: 2px solid rgba(255, 255, 255, 0.65);
+		clip-path: polygon(7% 0%, 93% 0%, 100% 100%, 0% 100%);
+	}
+
+	/* Right Flap: width = bd, height = bd * 0.48, hinged at bottom, swings up and over top */
+	.kb-hinge--right {
+		width: var(--bd);
+		height: 0;
+		transform: translate(-50%, -50%) translateX(calc(var(--bw) / 2)) translateY(calc(-1 * var(--bh) / 2)) rotateY(90deg);
+	}
+	.kb-hinge--right .kb-flap {
+		width: 100%;
+		height: calc(var(--bd) * 0.48);
+		bottom: 0;
+		left: 0;
+		transform-origin: bottom center;
+		transform: rotateX(-55deg);
+		border-bottom: 2px solid rgba(255, 255, 255, 0.65);
+		clip-path: polygon(7% 0%, 93% 0%, 100% 100%, 0% 100%);
+	}
+
+	/* Back Flap: width = bw, height = bd * 0.495, raised 1.5px to fold cleanly over side flaps */
+	.kb-hinge--back {
+		width: var(--bw);
+		height: 0;
+		transform: translate(-50%, -50%) translateZ(calc(-1 * var(--bd) / 2)) translateY(calc(-1 * var(--bh) / 2 - 1.5px));
+	}
+	.kb-hinge--back .kb-flap {
+		width: 100%;
+		height: calc(var(--bd) * 0.495);
+		bottom: 0;
+		left: 0;
+		transform-origin: bottom center;
+		transform: rotateX(50deg);
+		border-bottom: 2px solid rgba(255, 255, 255, 0.65);
+		clip-path: polygon(2% 0%, 98% 0%, 100% 100%, 0% 100%);
+	}
+
+	/* Front Flap: width = bw, height = bd * 0.495, rests open at -50deg and folds over top to 90deg */
+	.kb-hinge--front {
+		width: var(--bw);
+		height: 0;
+		transform: translate(-50%, -50%) translateZ(calc(var(--bd) / 2)) translateY(calc(-1 * var(--bh) / 2 - 1.5px));
+	}
+	.kb-hinge--front .kb-flap {
+		width: 100%;
+		height: calc(var(--bd) * 0.495);
+		bottom: 0;
+		left: 0;
+		transform-origin: bottom center;
+		transform: rotateX(-50deg);
+		border-bottom: 2px solid rgba(255, 255, 255, 0.75);
+		clip-path: polygon(2% 0%, 98% 0%, 100% 100%, 0% 100%);
+	}
+
+	/* Particles */
+	.kb-particles {
+		z-index: 50;
+	}
+
+	.kb-particle {
+		border-radius: 9999px;
+		opacity: 0;
+		transform: scale(0);
+		pointer-events: none;
+	}
+
+	.kb-particle--white {
+		width: 8px;
+		height: 8px;
+		background: #ffffff;
+		box-shadow: 0 0 16px 5px rgba(255, 255, 255, 1), 0 0 28px 10px rgba(255, 255, 255, 0.7);
+	}
+
+	.kb-particle--gold {
+		width: 9px;
+		height: 9px;
+		background: #fbbf24;
+		box-shadow: 0 0 18px 6px rgba(251, 191, 36, 1), 0 0 32px 12px rgba(245, 158, 11, 0.8);
+	}
+
+	.kb-particle--red {
+		width: 7px;
+		height: 7px;
+		background: #f87171;
+		box-shadow: 0 0 16px 5px rgba(248, 113, 113, 1), 0 0 28px 10px rgba(239, 68, 68, 0.8);
+	}
+
+	/* Tags */
 	.kb-tag {
 		transform: translate(-50%, -50%);
 		z-index: 20;
 	}
 
-	/* Inner pill: CSS-owned ambient drift. Splitting wrapper vs. pill keeps
-	   the GSAP-driven settle tween (on the wrapper's left/top/scale/opacity)
-	   and the CSS keyframe drift (on the pill's own transform) on two
-	   different elements/properties, so neither ever overrides the other —
-	   no animation-vs-inline-style cascade fight to work around. */
 	.kb-tag-pill {
 		display: inline-block;
 	}
@@ -392,17 +401,17 @@ const tags: KnowledgeTag[] = [
 			animation: none;
 		}
 
-		/* Static end state: box already sealed, tags already "used up" —
-		   no pin, no scroll-driven transform (guarded in <script> below).
-		   Matches the scroll-driven close's final angle and opacity (see
-		   `.kb-flap`'s own comment for why -125deg, not -90deg, and why
-		   opacity fades in alongside the angle). */
-		.kb-flap {
-			--flap-angle: -125deg;
-			opacity: 1;
+		.kb-hinge--left .kb-flap,
+		.kb-hinge--right .kb-flap,
+		.kb-hinge--front .kb-flap {
+			transform: rotateX(90deg) !important;
+		}
+		.kb-hinge--back .kb-flap {
+			transform: rotateX(-90deg) !important;
 		}
 
-		.kb-tag {
+		.kb-tag,
+		.kb-particles {
 			display: none;
 		}
 	}
@@ -415,92 +424,233 @@ const tags: KnowledgeTag[] = [
 
 	gsap.registerPlugin(ScrollTrigger)
 
-	// One timeline unit per tag settling one at a time, plus one final unit
-	// for the box's flaps to close once every tag has gone in.
-	const TAG_UNIT = 1
-	const TAG_SETTLE_FRACTION = 0.9 // leaves a small idle gap before the next tag's segment starts
-	const FLAP_UNIT = 1
-	const FLAP_CLOSE_FRACTION = 0.85
-
 	function initKnowledgeBox(section: Element) {
 		const el = section as HTMLElement
-		// Astro hoists this <script> into a single shared module, so it runs
-		// once per swap for every instance on the page — guard against
-		// re-wiring the same DOM node twice.
 		if (el.dataset.knowledgeBoxInit === 'true') return
 		el.dataset.knowledgeBoxInit = 'true'
 
+		const header = el.querySelector<HTMLElement>('[data-kb-header]')
 		const stage = el.querySelector<HTMLElement>('[data-kb-stage]')
+		const boxWrap = el.querySelector<HTMLElement>('[data-kb-box-wrap]')
+		const boxShake = el.querySelector<HTMLElement>('[data-kb-box-shake]')
+		const box = el.querySelector<HTMLElement>('[data-kb-box]')
 		const tagWrappers = el.querySelectorAll<HTMLElement>('[data-kb-tag]')
 		const pills = el.querySelectorAll<HTMLElement>('[data-kb-tag-pill]')
-		const flaps = el.querySelectorAll<HTMLElement>('[data-kb-flap]')
-		if (!stage || !tagWrappers.length) return
+		const flapL = el.querySelector<HTMLElement>('[data-kb-flap="left"]')
+		const flapR = el.querySelector<HTMLElement>('[data-kb-flap="right"]')
+		const flapB = el.querySelector<HTMLElement>('[data-kb-flap="back"]')
+		const flapF = el.querySelector<HTMLElement>('[data-kb-flap="front"]')
+		const particles = el.querySelectorAll<HTMLElement>('[data-kb-particle]')
+		if (!stage || !box || !boxWrap || !boxShake || !tagWrappers.length) return
 
 		if (reducedMotion()) {
-			// Static arrangement: box renders closed (via the
-			// `prefers-reduced-motion: reduce` rule above), tags stay hidden —
-			// no pin, no scroll-driven transform.
 			return
 		}
 
-		const totalUnits = tagWrappers.length * TAG_UNIT + FLAP_UNIT
-		// Progress (0..1) at which each tag's own drop has fully resolved —
-		// used to pause that tag's ambient drift once it's "fallen in", while
-		// every tag still waiting keeps drifting untouched.
-		const tagResolvedAt = Array.from(tagWrappers, (_, index) => (index * TAG_UNIT + TAG_UNIT * TAG_SETTLE_FRACTION) / totalUnits)
+		gsap.set(boxWrap, { xPercent: -50, yPercent: -50 })
+
+		// Animation timings:
+		const FLIGHT_DURATION = 0.85
+		const STAGGER = 0.15
+		const TAGS_START = 0.1
+
+		const lastTagStart = TAGS_START + (tagWrappers.length - 1) * STAGGER
+		const tagsCompleteTime = lastTagStart + FLIGHT_DURATION
+
+		// Package closing sequence:
+		// Step 1: Side flaps fold inward (finishes completely before top flaps begin)
+		const sideFlapsStart = tagsCompleteTime + 0.1
+		const sideFlapsDuration = 0.4
+		const sideFlapsEnd = sideFlapsStart + sideFlapsDuration
+
+		// Step 2: Back and front flaps fold down over the sides to seal the package flush
+		const frontBackFlapsStart = sideFlapsEnd + 0.08
+		const frontBackFlapsDuration = 0.45
+		const impactTime = frontBackFlapsStart + frontBackFlapsDuration
+		const shakeDuration = 0.35
+		const sealedHoldDuration = 0.35
+		const exitDuration = 0.7
+		const exitStart = impactTime + shakeDuration + sealedHoldDuration
+		const totalTimelineTime = exitStart + exitDuration
 
 		const tl = gsap.timeline({
 			scrollTrigger: {
 				trigger: el,
 				start: 'top top',
-				end: () => `+=${window.innerHeight * totalUnits}`,
-				scrub: 1,
+				end: () => `+=${window.innerHeight * 2.8}`,
+				scrub: 0.8,
 				pin: true,
 				invalidateOnRefresh: true,
 				onUpdate(self) {
+					const currentTime = self.progress * totalTimelineTime
 					pills.forEach((pill, index) => {
-						const resolved = self.progress >= (tagResolvedAt[index] ?? 1)
-						pill.style.animationPlayState = resolved ? 'paused' : 'running'
+						const tagStart = TAGS_START + index * STAGGER
+						pill.style.animationPlayState = currentTime >= tagStart ? 'paused' : 'running'
 					})
 				}
 			}
 		})
 
-		// Segment i: only tag i flies from its ambient scattered position down
-		// through the box's open top and disappears, as if it fell inside.
-		// Every other tag is left completely untouched during this segment.
+		// 1. Tags parabolic flight into the box
 		tagWrappers.forEach((tag, index) => {
+			const startLeft = parseFloat(tag.dataset.startLeft || '0')
+			const startTop = parseFloat(tag.dataset.startTop || '0')
+			const landingLeft = parseFloat(tag.dataset.landingLeft || '50')
+			const landingTop = parseFloat(tag.dataset.landingTop || '62')
+
+			const apexLeft = startLeft + (50 - startLeft) * 0.72
+			const apexTop = startTop > 38 ? Math.min(startTop - 32, 24) : Math.max(startTop - 8, 2)
+			const startTime = TAGS_START + index * STAGGER
+
 			tl.to(
 				tag,
 				{
-					left: `${tag.dataset.landingLeft}%`,
-					top: `${tag.dataset.landingTop}%`,
-					scale: 0,
-					opacity: 0,
-					zIndex: 5,
-					roundProps: 'zIndex',
-					ease: 'power1.in',
-					duration: TAG_UNIT * TAG_SETTLE_FRACTION
+					keyframes: [
+						{
+							left: `${apexLeft}%`,
+							top: `${apexTop}%`,
+							scale: 1.08,
+							opacity: 1,
+							ease: 'power1.out',
+							duration: FLIGHT_DURATION * 0.45
+						},
+						{
+							left: `${landingLeft}%`,
+							top: `${landingTop}%`,
+							scale: 0.15,
+							opacity: 0,
+							ease: 'power2.in',
+							duration: FLIGHT_DURATION * 0.55
+						}
+					],
+					duration: FLIGHT_DURATION
 				},
-				index * TAG_UNIT
+				startTime
 			)
 		})
 
-		// Final segment: only after the last tag has gone in, swing all four
-		// flaps from their hidden rim pose down past flat, in toward the
-		// box's own interior (see `.kb-flap`'s own comment for why the
-		// sweep only ever moves negative, and why opacity rises alongside
-		// the angle instead of the flap being opaque the whole time).
+		// 2. Sequential Package Closing
+		// Step 2a: Left and right flaps fold inward to 90deg (flat horizontally)
+		if (flapL && flapR) {
+			tl.fromTo(
+				[flapL, flapR],
+				{ rotateX: -55 },
+				{
+					rotateX: 90,
+					duration: sideFlapsDuration,
+					ease: 'power2.inOut'
+				},
+				sideFlapsStart
+			)
+		}
+
+		// Step 2b: Back flap folds forward (to -90deg), front flap folds backward (to 90deg) over them
+		if (flapB && flapF) {
+			tl.fromTo(
+				flapB,
+				{ rotateX: 50 },
+				{
+					rotateX: -90,
+					duration: frontBackFlapsDuration,
+					ease: 'power2.inOut'
+				},
+				frontBackFlapsStart
+			)
+			tl.fromTo(
+				flapF,
+				{ rotateX: -50 },
+				{
+					rotateX: 90,
+					duration: frontBackFlapsDuration,
+					ease: 'power2.inOut'
+				},
+				frontBackFlapsStart
+			)
+		}
+
+		// 3. Impact Shake on Box (applied to dedicated wrapper so .kb-box 3D transform is never mutated by GSAP)
 		tl.to(
-			flaps,
+			boxShake,
 			{
-				'--flap-angle': '-125deg',
-				opacity: 1,
-				ease: 'power2.inOut',
-				duration: FLAP_UNIT * FLAP_CLOSE_FRACTION
+				keyframes: [
+					{ x: -10, y: 4, rotateZ: -2, duration: 0.04 },
+					{ x: 10, y: -3, rotateZ: 2, duration: 0.04 },
+					{ x: -7, y: 2, rotateZ: -1.4, duration: 0.04 },
+					{ x: 7, y: -2, rotateZ: 1.4, duration: 0.04 },
+					{ x: -3, y: 1, rotateZ: -0.6, duration: 0.04 },
+					{ x: 3, y: -1, rotateZ: 0.6, duration: 0.04 },
+					{ x: 0, y: 0, rotateZ: 0, duration: 0.05 }
+				],
+				ease: 'power1.out',
+				duration: shakeDuration
 			},
-			tagWrappers.length * TAG_UNIT
+			impactTime
 		)
+
+		// 4. Particle Burst from the impact
+		particles.forEach((particle, i) => {
+			const angle = (Math.PI * 2 * i) / particles.length + (Math.random() * 0.25 - 0.125)
+			const dist = 120 + Math.random() * 200
+			const targetX = Math.cos(angle) * dist
+			const targetY = -85 + Math.sin(angle) * dist * 0.7 - 60 // bursts upwards from seam
+			const targetScale = 0.7 + Math.random() * 1.3
+
+			tl.fromTo(
+				particle,
+				{
+					x: 0,
+					y: -85, // seam of top rim
+					scale: 0.3,
+					opacity: 1
+				},
+				{
+					x: targetX,
+					y: targetY,
+					scale: targetScale,
+					opacity: 0,
+					ease: 'power3.out',
+					duration: 0.65
+				},
+				impactTime
+			)
+		})
+
+		// 5. Rest / Hold sealed state
+		tl.to(
+			{},
+			{
+				duration: sealedHoldDuration
+			},
+			impactTime + shakeDuration
+		)
+
+		// 6. Exit Animation for KnowledgeBox section
+		if (header) {
+			tl.to(
+				header,
+				{
+					opacity: 0,
+					y: -35,
+					duration: exitDuration * 0.7,
+					ease: 'power2.in'
+				},
+				exitStart
+			)
+		}
+
+		tl.to(
+			boxWrap,
+			{
+				keyframes: [
+					{ y: -14, duration: exitDuration * 0.28, ease: 'power1.out' },
+					{ y: 110, opacity: 0, duration: exitDuration * 0.72, ease: 'power2.in' }
+				]
+			},
+			exitStart
+		)
+
+		ScrollTrigger.sort()
+		ScrollTrigger.refresh()
 	}
 
 	function initAllKnowledgeBoxes() {

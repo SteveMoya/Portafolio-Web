@@ -19,6 +19,14 @@ interface MotionContext {
 
 let ctx: MotionContext | null = null
 
+export function refreshScrollTriggers() {
+	if (typeof window === 'undefined') return
+	requestAnimationFrame(() => {
+		ScrollTrigger.sort()
+		ScrollTrigger.refresh()
+	})
+}
+
 export function initMotion(): MotionContext {
 	if (ctx) return ctx
 
@@ -33,6 +41,15 @@ export function initMotion(): MotionContext {
 	}
 
 	ctx = { gsap, ScrollTrigger, lenis }
+	if (typeof window !== 'undefined') {
+		;(window as any).ScrollTrigger = ScrollTrigger
+		;(window as any).gsap = gsap
+
+		window.addEventListener('load', refreshScrollTriggers)
+		document.addEventListener('astro:page-load', refreshScrollTriggers)
+		document.addEventListener('astro:after-swap', refreshScrollTriggers)
+		refreshScrollTriggers()
+	}
 	return ctx
 }
 

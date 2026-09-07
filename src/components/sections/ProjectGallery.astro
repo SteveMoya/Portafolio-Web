@@ -2,24 +2,33 @@
 import { getAllProjects } from '@src/lib/projects'
 import { formatDate } from '@src/utils'
 import placeholderImage from '/public/img/place-holder-image.webp'
+import BlockReveal from '@components/ui/BlockReveal.astro'
 
-const PREVIEW_COUNT = 6
+const PREVIEW_COUNT = 3
 const allProjects = await getAllProjects()
 const projects = allProjects.slice(0, PREVIEW_COUNT)
 ---
 
 <section class="relative bg-[#0a0a0a]" style={`height: ${projects.length * 100}vh`} data-gallery-section>
 	<div class="sticky top-0 flex h-screen flex-col justify-center overflow-hidden">
-		<p class="reveal mb-6 px-6 text-xs font-bold uppercase tracking-[0.3em] text-white/40 sm:px-10 lg:px-16">
-			Proyectos
-		</p>
+		<div class="mb-6 px-6 sm:px-10 lg:px-16">
+			<p class="mb-1 text-xs font-bold uppercase tracking-[0.3em] text-white/40">
+				Selección
+			</p>
+			<BlockReveal
+				text="Galería de proyectos"
+				as="h2"
+				class="font-poppins text-2xl font-black uppercase tracking-tight text-white sm:text-3xl lg:text-4xl"
+				boxColor="#c70039"
+			/>
+		</div>
 
 		<div class="flex" data-gallery-track>
 			{
 				projects.map((project, index) => (
-					<div class="w-screen shrink-0 px-6 sm:px-10 lg:px-16">
+					<div class="w-screen shrink-0 px-6 sm:px-10 lg:px-16" style="perspective: 1400px;">
 						<div class="mx-auto grid max-w-[1400px] items-center gap-10 md:grid-cols-[auto_1fr]">
-							<div class="flex items-baseline gap-4 md:flex-col md:gap-2">
+							<div class="flex items-baseline gap-4 select-none md:flex-col md:gap-2" style="transform: translateZ(-20px);">
 								<span class="font-poppins text-5xl font-black text-white/10 sm:text-7xl">
 									{String(index + 1).padStart(2, '0')}
 								</span>
@@ -28,27 +37,69 @@ const projects = allProjects.slice(0, PREVIEW_COUNT)
 								</span>
 							</div>
 
-							<div>
-								<div class="device-frame overflow-hidden rounded-xl border border-white/10 bg-[#111]">
-									<div class="flex items-center gap-1.5 border-b border-white/10 bg-[#0a0a0a] px-3 py-2">
-										<span class="h-2 w-2 rounded-full bg-white/20" />
-										<span class="h-2 w-2 rounded-full bg-white/20" />
-										<span class="h-2 w-2 rounded-full bg-white/20" />
+							<div
+								data-tilt-card
+								data-tilt-max="5"
+								class="dotted-card group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0a0a0a] shadow-2xl transition-all duration-300 hover:border-[#c70039]/70 hover:shadow-[0_20px_50px_rgba(199,0,57,0.25)]"
+								style="transform-style: preserve-3d; transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));"
+							>
+								{/* Blueprint Corner Ticks */}
+								<span class="corner-tick corner-tick--tl"></span>
+								<span class="corner-tick corner-tick--tr"></span>
+								<span class="corner-tick corner-tick--bl"></span>
+								<span class="corner-tick corner-tick--br"></span>
+
+								{/* Device Frame Header */}
+								<div class="flex items-center justify-between border-b border-white/10 bg-[#0d0d11] px-4 py-2.5">
+									<div class="flex items-center gap-1.5">
+										<span class="h-2 w-2 rounded-full bg-white/20 transition-colors group-hover:bg-[#ff5f56]" />
+										<span class="h-2 w-2 rounded-full bg-white/20 transition-colors group-hover:bg-[#ffbd2e]" />
+										<span class="h-2 w-2 rounded-full bg-white/20 transition-colors group-hover:bg-[#27c93f]" />
 									</div>
+									<span class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">
+										{project.technologies?.[0]?.name || 'Web Showcase'}
+									</span>
+								</div>
+
+								{/* Project Preview Image Layer - Aspect Ratio 16/10 covering full card width */}
+								<div class="relative w-full overflow-hidden bg-black/50 aspect-[16/10]" style="transform: translateZ(10px);">
 									<img
 										src={project.image || (placeholderImage as unknown as string)}
 										alt={`${project.title} imagen`}
-										class="aspect-[16/9] w-full object-cover"
+										class="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
 										loading="lazy"
 									/>
+									<div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-black/20 to-transparent"></div>
+									
+									<time
+										data-time={formatDate(project.updatedAt)}
+										class="absolute bottom-3 left-4 rounded-md border border-white/10 bg-[#0a0a0a]/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white/70 shadow backdrop-blur-md"
+										style="transform: translateZ(15px);"
+									>
+										{formatDate(project.updatedAt)}
+									</time>
 								</div>
 
-								<div class="mt-6 flex flex-wrap items-end justify-between gap-4">
+								{/* Dynamic Spotlight Glare */}
+								<div 
+									class="pointer-events-none absolute inset-0 z-30 transition-opacity duration-300"
+									style="opacity: var(--glare-opacity, 0); background: radial-gradient(circle 500px at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, 0.12) 0%, rgba(199, 0, 57, 0.15) 40%, transparent 70%); mix-blend-mode: screen;"
+								></div>
+
+								{/* Elevated Foreground Content Layer */}
+								<div 
+									class="flex flex-wrap items-end justify-between gap-4 p-6 sm:p-8"
+									style="transform-style: preserve-3d; transform: translateZ(25px);"
+								>
 									<div>
-										<h3 class="text-2xl font-bold text-white sm:text-3xl">{project.title}</h3>
-										<p class="mt-1 max-w-lg text-sm text-white/50">{project.description}</p>
+										<h3 class="font-poppins text-2xl font-bold tracking-tight text-white transition-colors duration-300 group-hover:text-[#c70039] sm:text-3xl">
+											{project.title}
+										</h3>
+										<p class="mt-1 max-w-lg text-sm leading-relaxed text-white/60">
+											{project.description}
+										</p>
 									</div>
-									<div class="flex items-center gap-4">
+									<div class="flex items-center gap-4" style="transform: translateZ(10px);">
 										<span class="text-xs font-semibold uppercase tracking-[0.2em] text-white/40">
 											{formatDate(project.updatedAt)}
 										</span>
@@ -57,9 +108,10 @@ const projects = allProjects.slice(0, PREVIEW_COUNT)
 												href={project.demo}
 												target="_blank"
 												rel="noopener noreferrer"
-												class="text-xs font-bold uppercase tracking-[0.2em] text-[#c70039] transition-colors hover:text-white"
+												class="inline-flex items-center gap-1.5 rounded-lg border border-[#c70039] bg-[#c70039]/15 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-white transition-all duration-300 hover:bg-[#c70039] hover:shadow-[0_0_20px_rgba(199,0,57,0.5)] active:scale-95"
 											>
-												Ver más &rarr;
+												<span>Ver más</span>
+												<span>&rarr;</span>
 											</a>
 										)}
 									</div>
@@ -86,6 +138,8 @@ const projects = allProjects.slice(0, PREVIEW_COUNT)
 </section>
 
 <script>
+	import { initTiltCards } from '@src/utils/tilt3d'
+
 	function initGallery(section: Element) {
 		const track = section.querySelector<HTMLElement>('[data-gallery-track]')
 		const progressBar = section.querySelector<HTMLElement>('[data-gallery-progress]')
@@ -115,6 +169,7 @@ const projects = allProjects.slice(0, PREVIEW_COUNT)
 
 	function initAllGalleries() {
 		document.querySelectorAll('[data-gallery-section]').forEach(initGallery)
+		initTiltCards()
 	}
 
 	initAllGalleries()

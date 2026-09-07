@@ -1,6 +1,7 @@
 ---
 import { Icon } from 'astro-icon/components'
 import { basics } from '@cv'
+import BlockReveal from '@components/ui/BlockReveal.astro'
 
 const { name, label, location } = basics
 const year = new Date().getFullYear()
@@ -12,7 +13,7 @@ const socialLinks = {
 }
 ---
 
-<section class="relative flex h-screen w-screen flex-col overflow-hidden bg-[#0a0a0a]">
+<section class="relative -mt-16 flex h-dvh w-screen flex-col overflow-hidden bg-[#0a0a0a]">
 	<!-- Background: dot grid + rotating light spotlight (from PersonalBlog's HeroVisual) -->
 	<div class="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle,_#444_0.5px,_transparent_0.5px)] opacity-20 [background-size:24px_24px]"></div>
 	<div class="spotlight-drift pointer-events-none absolute inset-0 z-0">
@@ -21,10 +22,9 @@ const socialLinks = {
 		<div class="spotlight-beam spotlight-beam--3"></div>
 	</div>
 
-	<!-- Availability tag, rotated on the left edge -->
+	<!-- Availability tag, on the left edge -->
 	<div
-		class="tag-hover absolute left-0 top-1/2 z-[2] hidden -translate-y-1/2 -rotate-90 items-center gap-2 rounded-b-md border border-t-0 border-white/10 bg-white/[0.03] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-white/50 transition-transform duration-300 sm:flex"
-		style="transform-origin: top left; translate: 0 -100%;"
+		class="tag-hover availability-tag absolute z-[2] hidden items-center gap-2 rounded-b-md border border-t-0 border-white/10 bg-white/[0.03] py-2 pr-4 pl-0 text-[10px] font-semibold uppercase tracking-[0.25em] text-white/50 sm:flex"
 	>
 		<span class="h-1.5 w-1.5 rounded-full bg-[#c70039]"></span>
 		Disponible para proyectos
@@ -48,11 +48,16 @@ const socialLinks = {
 				>
 					<Icon name="mdi:github" class="h-7 w-7" />
 				</a>
-				<h1 class="line-in flex items-center whitespace-nowrap font-poppins text-[13vw] font-black uppercase leading-[0.85] tracking-tighter sm:text-[8vw] lg:text-[6.2vw]" style="animation-delay: 0s">
+				<BlockReveal
+					as="h1"
+					class="flex items-center whitespace-nowrap font-poppins text-[13vw] font-black uppercase leading-[0.85] tracking-tighter sm:text-[8vw] lg:text-[6.2vw]"
+					boxColor="#c70039"
+					delay={0.1}
+				>
 					<span class="text-shiny">Marketing</span>
-					<Icon name="mdi:bullhorn-outline" class="mx-[0.05em] h-[0.7em] w-[0.7em] shrink-0 text-[#c70039]" />
+					<Icon name="mdi:bullhorn-outline" class="icon-bob mx-[0.05em] h-[0.7em] w-[0.7em] shrink-0 text-[#c70039]" style="animation-delay: 0s; animation-duration: 3.2s" />
 					<span class="text-shiny">Digital</span>
-				</h1>
+				</BlockReveal>
 			</div>
 		</div>
 
@@ -81,21 +86,31 @@ const socialLinks = {
 				>
 					<Icon name="mdi:instagram" class="h-7 w-7" />
 				</a>
-				<h1 class="line-in flex items-center whitespace-nowrap font-poppins text-[13vw] font-black uppercase leading-[0.85] tracking-tighter sm:text-[8vw] lg:text-[6.2vw]" style="animation-delay: 0.1s">
+				<BlockReveal
+					as="h1"
+					class="flex items-center whitespace-nowrap font-poppins text-[13vw] font-black uppercase leading-[0.85] tracking-tighter sm:text-[8vw] lg:text-[6.2vw]"
+					boxColor="#c70039"
+					delay={0.3}
+				>
 					<span class="text-shiny">Desarrollo</span>
-					<Icon name="mdi:code-tags" class="mx-[0.05em] h-[0.7em] w-[0.7em] shrink-0 text-[#c70039]" />
+					<Icon name="mdi:code-tags" class="icon-bob mx-[0.05em] h-[0.7em] w-[0.7em] shrink-0 text-[#c70039]" style="animation-delay: 0.35s; animation-duration: 3.6s" />
 					<span class="text-shiny">Web</span>
-				</h1>
+				</BlockReveal>
 			</div>
 		</div>
 
 		<!-- Line 3: IA [icon] DATOS -->
 		<div class="relative items-center gap-8 md:flex">
-			<h1 class="line-in flex items-center whitespace-nowrap font-poppins text-[13vw] font-black uppercase leading-[0.85] tracking-tighter sm:text-[8vw] lg:text-[6.2vw]" style="animation-delay: 0.2s">
+			<BlockReveal
+				as="h1"
+				class="flex items-center whitespace-nowrap font-poppins text-[13vw] font-black uppercase leading-[0.85] tracking-tighter sm:text-[8vw] lg:text-[6.2vw]"
+				boxColor="#c70039"
+				delay={0.5}
+			>
 				<span class="text-shiny">IA</span>
-				<Icon name="mdi:robot-outline" class="mx-[0.05em] h-[0.7em] w-[0.7em] shrink-0 text-[#c70039]" />
+				<Icon name="mdi:robot-outline" class="icon-bob mx-[0.05em] h-[0.7em] w-[0.7em] shrink-0 text-[#c70039]" style="animation-delay: 0.7s; animation-duration: 2.8s" />
 				<span class="text-shiny">Datos</span>
-			</h1>
+			</BlockReveal>
 
 			<p class="line-in mt-2 max-w-[220px] text-[10px] font-medium uppercase leading-relaxed tracking-[0.2em] text-white/50 md:mt-4" style="animation-delay: 0.6s">
 				Abierto a nuevas oportunidades, sin importar ubicación o modalidad.
@@ -117,7 +132,7 @@ const socialLinks = {
 			aria-label="Ver CV completo"
 			class="resume-button group flex h-11 shrink-0 items-center overflow-hidden rounded-full bg-white text-black shadow-lg transition-[width] duration-500"
 		>
-			<span class="resume-button__label whitespace-nowrap pl-5 pr-1 text-[10px] font-black uppercase tracking-widest opacity-0 transition-opacity duration-200">
+			<span class="resume-button__label min-w-0 whitespace-nowrap text-[10px] font-black uppercase tracking-widest opacity-0 transition-opacity duration-200">
 				Ver CV
 			</span>
 			<span class="flex h-11 w-11 shrink-0 items-center justify-center transition-transform duration-500 group-hover:rotate-45">
@@ -192,9 +207,30 @@ const socialLinks = {
 		animation: icon-entrance 1s cubic-bezier(0.16, 1, 0.3, 1) both, icon-float-x 3s ease-in-out infinite 1s;
 	}
 
+	/* ── Inline headline icons: gentle continuous bob, small enough to stay clear of the tight line-height ── */
+	@keyframes icon-bob {
+		50% {
+			transform: translateY(-0.08em);
+		}
+	}
+
+	.icon-bob {
+		display: inline-block;
+		animation: icon-bob 3s ease-in-out infinite;
+	}
+
+	/* ── Availability tag: flush on the left edge, vertically centered ── */
+	.availability-tag {
+		top: 50%;
+		left: 0;
+		writing-mode: vertical-rl;
+		text-orientation: mixed;
+		transform: translateY(-50%);
+	}
+
 	/* ── Availability tag hover ── */
 	.tag-hover:hover {
-		transform: translate(6px, -100%) rotate(-90deg);
+		transform: translateY(-50%) translateX(6px);
 	}
 
 	/* ── Resume button: circle that widens to a pill on hover ── */
@@ -207,6 +243,8 @@ const socialLinks = {
 	}
 
 	.resume-button:hover .resume-button__label {
+		padding-left: 1.25rem;
+		padding-right: 0.25rem;
 		opacity: 1;
 		transition-delay: 150ms;
 	}
@@ -259,6 +297,7 @@ const socialLinks = {
 		.icon-float--y,
 		.icon-float--y-reverse,
 		.icon-float--x,
+		.icon-bob,
 		.spotlight-drift {
 			animation: none;
 		}

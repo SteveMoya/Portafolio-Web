@@ -1,0 +1,178 @@
+---
+export interface Props {
+	text?: string
+	lines?: string[]
+	as?: 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'div' | 'span'
+	class?: string
+	boxColor?: string
+	duration?: number
+	stagger?: number
+	delay?: number
+}
+
+const {
+	text,
+	lines: linesProp,
+	as: Tag = 'h2',
+	class: className = '',
+	boxColor = '#c70039',
+	duration = 0.45,
+	stagger = 0.2,
+	delay = 0,
+} = Astro.props as Props
+
+// Parse lines either from array or split by newline if text string provided
+const lines: string[] | null = linesProp ?? (text ? text.split('\n').map((l: string) => l.trim()).filter((l: string) => l.length > 0) : null)
+---
+
+<Tag
+	class:list={['block-reveal-container', className]}
+	data-block-reveal
+	data-box-color={boxColor}
+	data-duration={duration}
+	data-stagger={stagger}
+	data-delay={delay}
+>
+	{
+		lines ? (
+			lines.map((line: string) => (
+				<span class="block-reveal-line-wrapper block overflow-hidden py-0.5">
+					<span class="block-reveal-line relative inline-block">
+						<span
+							class="block-reveal-box pointer-events-none absolute inset-0 z-10 block"
+							style={`background-color: ${boxColor};`}
+							aria-hidden="true"
+						/>
+						<span class="block-reveal-content inline-block opacity-0">
+							{line}
+						</span>
+					</span>
+				</span>
+			))
+		) : (
+			<span class="block-reveal-line-wrapper block overflow-hidden py-0.5">
+				<span class="block-reveal-line relative inline-flex items-center">
+					<span
+						class="block-reveal-box pointer-events-none absolute inset-0 z-10 block"
+						style={`background-color: ${boxColor};`}
+						aria-hidden="true"
+					/>
+					<span class="block-reveal-content inline-flex items-center opacity-0">
+						<slot />
+					</span>
+				</span>
+			</span>
+		)
+	}
+</Tag>
+
+<style>
+	.block-reveal-line {
+		vertical-align: top;
+	}
+
+	.block-reveal-box {
+		transform-origin: left center;
+		transform: scaleX(0);
+		will-change: transform;
+	}
+
+	.block-reveal-content {
+		will-change: opacity;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.block-reveal-box {
+			display: none !important;
+		}
+		.block-reveal-content {
+			opacity: 1 !important;
+		}
+	}
+</style>
+
+<script>
+	import gsap from 'gsap'
+	import ScrollTrigger from 'gsap/ScrollTrigger'
+	import { reducedMotion } from '@/lib/motion'
+
+	gsap.registerPlugin(ScrollTrigger)
+
+	function initBlockReveals() {
+		const containers = document.querySelectorAll<HTMLElement>('[data-block-reveal]')
+		if (!containers.length) return
+
+		containers.forEach((container) => {
+			if (container.dataset.blockRevealInit === 'true') return
+			container.dataset.blockRevealInit = 'true'
+
+			// If user has reduced-motion preference, show all content immediately
+			if (reducedMotion()) {
+				container.querySelectorAll<HTMLElement>('.block-reveal-content').forEach((el) => {
+					el.style.opacity = '1'
+				})
+				container.querySelectorAll<HTMLElement>('.block-reveal-box').forEach((el) => {
+					el.style.display = 'none'
+				})
+				return
+			}
+
+			const lines = container.querySelectorAll<HTMLElement>('.block-reveal-line')
+			if (!lines.length) return
+
+			const duration = parseFloat(container.dataset.duration || '0.45')
+			const stagger = parseFloat(container.dataset.stagger || '0.2')
+			const delay = parseFloat(container.dataset.delay || '0')
+
+			// Create timeline triggered by scroll (or immediate if above fold)
+			const tl = gsap.timeline({
+				delay,
+				scrollTrigger: {
+					trigger: container,
+					start: 'top 88%',
+					once: true,
+				},
+			})
+
+			lines.forEach((line, index) => {
+				const box = line.querySelector<HTMLElement>('.block-reveal-box')
+				const content = line.querySelector<HTMLElement>('.block-reveal-content')
+				if (!box || !content) return
+
+				const lineDelay = index * stagger
+
+				// Step 1: Box expands to cover the line (from left to right)
+				tl.fromTo(
+					box,
+					{ scaleX: 0, transformOrigin: 'left center' },
+					{
+						scaleX: 1,
+						duration,
+						ease: 'power2.inOut',
+					},
+					lineDelay
+				)
+				// Step 2: Content becomes visible once box covers it
+				.set(
+					content,
+					{ opacity: 1 },
+					lineDelay + duration
+				)
+				// Step 3: Box shrinks away to the right, unveiling the content
+				.to(
+					box,
+					{
+						scaleX: 0,
+						transformOrigin: 'right center',
+						duration,
+						ease: 'power2.inOut',
+					},
+					lineDelay + duration
+				)
+			})
+		})
+	}
+
+	initBlockReveals()
+	document.addEventListener('astro:after-swap', initBlockReveals)
+</script>

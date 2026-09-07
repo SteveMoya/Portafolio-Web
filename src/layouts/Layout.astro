@@ -3,6 +3,7 @@ import NavbarMinimal from './Navbar.astro'
 import Footer from './Footer.astro'
 import Head from './Head.astro'
 import Cursor from '@src/layouts/Cursor.astro'
+import CursorMenu from '@components/ui/CursorMenu.astro'
 
 import TwSizeIndicator from '@components/ui/TwSizeIndicator.astro'
 import EditBlog from '@components/ui/editBlog.astro'
@@ -38,12 +39,13 @@ import '@fontsource/monoton'
 <html lang="es">
 	<Head {...Astro.props} />
 	<body
-		class="body bg-dark h-auto w-full overflow-x-clip text-wrap pt-16 font-poppins text-[whitesmoke]"
+		class="body bg-[#0a0a0a] h-auto w-full overflow-x-clip text-wrap pt-16 font-poppins text-[whitesmoke]"
 	>
 		<Cursor />
+		<CursorMenu />
 		<NavbarMinimal />
 		<slot name="header-progress" />
-		<main class="relative h-auto w-full overflow-clip">
+		<main class="relative h-auto w-full overflow-clip bg-[#0a0a0a]">
 
 			<!-- Page Content Wrapper with Transition Animation -->
 			<div transition:animate={{
@@ -141,7 +143,7 @@ import '@fontsource/monoton'
 </script>
 
 <script>
-	import { initMotion, getLenis, getScrollTrigger } from '@/lib/motion'
+	import { initMotion, getLenis, getScrollTrigger, refreshScrollTriggers } from '@/lib/motion'
 
 	initMotion()
 
@@ -151,6 +153,6 @@ import '@fontsource/monoton'
 
 	document.addEventListener('astro:after-swap', () => {
 		getLenis()?.resize()
-		getScrollTrigger()?.refresh()
+		refreshScrollTriggers()
 	})
 </script>

@@ -1,43 +1,14 @@
 ---
 import Button from '@components/ui/Button.astro'
-import ValueItem from './ValueItem.astro'
-import { Icon } from 'astro-icon/components'
 
-import YoImg from '@/assets/img/Yo.webp'
+import ProfileImg from '@/assets/img/ProfileImage.jpg'
 import { Image } from 'astro:assets'
-
-const skills = [
-	{
-		icon: 'mdi:bullhorn-outline',
-		title: 'Marketing Digital',
-		description: 'Campañas, estrategia de contenido y gestión de comunidades orientadas a resultados.'
-	},
-	{
-		icon: 'mdi:code-tags',
-		title: 'Desarrollo Web',
-		description: 'Sitios y aplicaciones a medida, del diseño a la puesta en producción.'
-	},
-	{
-		icon: 'mdi:robot-outline',
-		title: 'IA & Análisis de Datos',
-		description: 'Formación técnica en inteligencia artificial y análisis de datos aplicados a problemas reales.'
-	}
-]
-
-const values = [
-	{ icon: 'mdi:creation', text: 'Innovación constante' },
-	{ icon: 'mdi:flash', text: 'Excelencia técnica' },
-	{ icon: 'mdi:heart', text: 'Colaboración y trabajo en equipo' },
-	{ icon: 'mdi:target', text: 'Integridad y ética profesional' },
-	{ icon: 'mdi:book', text: 'Aprendizaje continuo' },
-	{ icon: 'mdi:eye', text: 'Responsabilidad social' }
-]
 ---
 
-<section id="about" class="reveal relative min-h-screen w-full bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16">
+<section id="about" data-about-section class="reveal relative md:sticky md:top-0 z-0 flex min-h-screen w-full items-center bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16 will-change-[transform,opacity,filter]">
 	<div class="mx-auto grid max-w-[1680px] gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
 		<!-- Blueprint quote card -->
-		<div class="dotted-card about-pattern-card relative rounded-2xl border border-white/10 p-8 sm:p-12">
+		<div class="dotted-card about-pattern-card relative rounded-2xl border border-white/10 bg-[#101010] p-8 sm:p-12">
 			<span class="corner-tick corner-tick--tl"></span>
 			<span class="corner-tick corner-tick--tr"></span>
 			<span class="corner-tick corner-tick--bl"></span>
@@ -78,76 +49,10 @@ const values = [
 		<!-- Photo -->
 		<Image
 			class="aspect-[4/5] w-full rounded-2xl object-cover grayscale transition-all duration-700 hover:grayscale-0"
-			src={YoImg}
+			src={ProfileImg}
 			loading="eager"
 			alt="Steve Moya Cepeda"
 		/>
-	</div>
-
-	<!-- Skills -->
-	<div class="mx-auto mt-20 max-w-[1680px]">
-		<p class="mb-8 text-xs font-bold uppercase tracking-[0.3em] text-white/40">Áreas de trabajo</p>
-		<div class="grid gap-4 sm:grid-cols-3">
-			{
-				skills.map((skill) => (
-					<div class="dotted-card relative rounded-2xl border border-white/10 p-6 transition-colors duration-300 hover:border-[#c70039]/40">
-						<span class="corner-tick corner-tick--tl" />
-						<span class="corner-tick corner-tick--br" />
-						<Icon name={skill.icon} class="mb-4 h-6 w-6 text-[#c70039]" />
-						<h3 class="mb-2 text-lg font-bold text-white">{skill.title}</h3>
-						<p class="text-sm leading-relaxed text-white/50">{skill.description}</p>
-					</div>
-				))
-			}
-		</div>
-	</div>
-
-	<!-- Misión, Visión y Valores -->
-	<div class="mx-auto mt-20 max-w-[1680px]">
-		<p class="mb-8 text-xs font-bold uppercase tracking-[0.3em] text-white/40">Misión, Visión y Valores</p>
-		<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-			<div class="dotted-card relative flex flex-col justify-between rounded-2xl border border-white/10 p-8 md:col-span-2">
-				<span class="corner-tick corner-tick--tl" />
-				<span class="corner-tick corner-tick--br" />
-				<div>
-					<div class="mb-4 flex items-center gap-3">
-						<Icon name="mdi:target" class="h-6 w-6 shrink-0 text-[#c70039]" />
-						<h3 class="text-xl font-semibold text-white">Misión</h3>
-					</div>
-					<p class="text-white/60">
-						Construir soluciones de marketing, software e IA que ayuden a las empresas a crecer,
-						aportando valor a través de la innovación.
-					</p>
-				</div>
-			</div>
-
-			<div class="dotted-card relative flex flex-col justify-between rounded-2xl border border-white/10 p-8 md:col-span-2">
-				<span class="corner-tick corner-tick--tl" />
-				<span class="corner-tick corner-tick--br" />
-				<div>
-					<div class="mb-4 flex items-center gap-3">
-						<Icon name="mdi:eye-outline" class="h-6 w-6 shrink-0 text-[#c70039]" />
-						<h3 class="text-xl font-semibold text-white">Visión</h3>
-					</div>
-					<p class="text-white/60">
-						Ser un referente en la intersección entre marketing, desarrollo e inteligencia
-						artificial, ayudando a las empresas a alcanzar sus objetivos de negocio.
-					</p>
-				</div>
-			</div>
-
-			<div class="dotted-card relative rounded-2xl border border-white/10 p-8 md:col-span-2 lg:col-span-4">
-				<span class="corner-tick corner-tick--tl" />
-				<span class="corner-tick corner-tick--br" />
-				<div class="mb-4 flex items-center gap-3">
-					<Icon name="mdi:heart-outline" class="h-6 w-6 shrink-0 text-[#c70039]" />
-					<h3 class="text-xl font-semibold text-white">Valores</h3>
-				</div>
-				<div class="grid grid-cols-2 gap-4 md:grid-cols-3">
-					{values.map(({ icon, text }) => <ValueItem name={icon}>{text}</ValueItem>)}
-				</div>
-			</div>
-		</div>
 	</div>
 </section>
 
