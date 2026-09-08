@@ -1,0 +1,81 @@
+---
+import { Icon } from 'astro-icon/components'
+import socialLinks from '@src/data/socialLinks.json'
+
+interface Props {
+	eyebrow?: string
+	title?: string
+	titleAccent?: string
+}
+
+const { eyebrow = 'Redes sociales', title = 'Encontrame en', titleAccent = 'todas partes' } = Astro.props
+
+const connectLinks = socialLinks.links.filter((link) => link.url.startsWith('http') || link.url.startsWith('mailto'))
+---
+
+<section class="relative w-full bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16">
+	<div class="connect-in mx-auto flex max-w-5xl flex-col items-center gap-3 text-center" style="animation-delay: 0s">
+		<p class="text-xs font-bold uppercase tracking-[0.3em] text-white/40">{eyebrow}</p>
+		<h2 class="font-poppins text-3xl font-black uppercase leading-tight tracking-tight text-white sm:text-4xl">
+			{title} <span class="text-[#c70039]">{titleAccent}</span>
+		</h2>
+	</div>
+
+	<div class="mx-auto mt-12 grid max-w-5xl grid-cols-2 gap-4 sm:grid-cols-3">
+		{
+			connectLinks.map((link, index) => (
+				<a
+					href={link.url}
+					target={link.url.startsWith('http') ? '_blank' : '_self'}
+					rel={link.url.startsWith('http') ? 'noopener noreferrer' : ''}
+					aria-label={`${link.title}${link.handle ? ` — ${link.handle}` : ''}`}
+					class="connect-in group flex flex-col rounded-2xl border border-white/10 bg-white/5 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#c70039]/40 hover:shadow-[0_12px_40px_rgba(199,0,57,0.18)]"
+					style={`animation-delay: ${index * 0.05}s`}
+				>
+					<div class="flex items-center gap-3">
+						<span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[#c70039] transition-colors duration-300 group-hover:border-[#c70039]/40">
+							<Icon name={link.icon} class="h-5 w-5" />
+						</span>
+						<span class="flex min-w-0 flex-col">
+							<span class="truncate text-sm font-bold text-white">{link.title}</span>
+							{link.handle && <span class="truncate text-xs text-white/40">{link.handle}</span>}
+						</span>
+					</div>
+
+					<div class="mt-4 flex items-center justify-between border-t border-white/10 pt-3">
+						<span class="text-[10px] font-bold uppercase tracking-[0.25em] text-white/40 transition-colors duration-300 group-hover:text-[#c70039]">
+							Conectar
+						</span>
+						<Icon
+							name="mdi:arrow-top-right"
+							class="h-4 w-4 text-white/40 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[#c70039]"
+						/>
+					</div>
+				</a>
+			))
+		}
+	</div>
+</section>
+
+<style>
+	@keyframes links-in {
+		from {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.connect-in {
+		animation: links-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.connect-in {
+			animation: none;
+		}
+	}
+</style>

@@ -1,0 +1,206 @@
+---
+import { siteConfig } from '@src/data/config'
+import Layout from '@src/layouts/Layout.astro'
+import Header from '@components/Header.astro'
+import SocialConnect from '@components/sections/SocialConnect.astro'
+import Input from '@components/ui/Input.astro'
+import Button from '@components/ui/Button.astro'
+
+const { author } = siteConfig
+
+const faqs = [
+	{
+		question: '¿Qué servicios ofrecés?',
+		answer:
+			'Desarrollo web (front y back), marketing digital, SEO y análisis de datos. Puedo encargarme de un proyecto completo o sumarme a un equipo que ya tiene algo en marcha.'
+	},
+	{
+		question: '¿Con qué tecnologías trabajás?',
+		answer:
+			'Principalmente JavaScript/TypeScript, Astro, React y Node.js, además de WordPress para proyectos que lo requieren. También manejo SEO técnico, Google Analytics/Ads y Cloudflare.'
+	},
+	{
+		question: '¿Cómo es tu proceso de trabajo?',
+		answer:
+			'Arrancamos con una charla para entender el objetivo y el alcance, sigo con una propuesta y estimación de tiempos, y avanzo en etapas cortas con entregas visibles para que puedas ir revisando el progreso.'
+	},
+	{
+		question: '¿Cuánto tiempo toma un proyecto?',
+		answer:
+			'Depende del alcance: una landing puede estar lista en una o dos semanas, mientras que un producto más completo puede tomar varios meses. Te doy un estimado concreto apenas conozco los detalles.'
+	},
+	{
+		question: '¿Trabajás con clientes de otros países?',
+		answer:
+			'Sí, trabajo de forma remota con clientes de cualquier zona horaria. Coordinamos las reuniones y entregas por videollamada, email o la herramienta que prefieras.'
+	},
+	{
+		question: '¿Cómo me pongo en contacto?',
+		answer: 'Lo más directo es el formulario de acá arriba, o escribirme por cualquiera de mis redes sociales. Te respondo a la brevedad.'
+	}
+]
+---
+
+<Layout title={`${author} | Contacto`} description="Hablemos de tu próximo proyecto. Escribime por redes o completá el formulario y te respondo a la brevedad.">
+	<Header
+		title="Hablemos"
+		titleCaption="de tu proyecto"
+		description="¿Tenés una idea en mente? Contame los detalles y"
+		descriptionCaption="lo llevamos adelante juntos."
+	/>
+
+	<SocialConnect eyebrow="Redes sociales" title="También podés" titleAccent="encontrarme acá" />
+
+	<section class="relative w-full bg-[#0a0a0a] px-6 pb-16 sm:px-10 lg:px-16">
+		<div class="contact-in mx-auto max-w-2xl" style="animation-delay: 0s">
+			<div class="mb-8 flex items-center gap-3">
+				<span class="h-px flex-1 bg-white/10" />
+				<span class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">Enviame un mensaje</span>
+				<span class="h-px flex-1 bg-white/10" />
+			</div>
+
+			<form id="contact-form" novalidate class="dotted-card rounded-2xl border border-white/10 bg-white/5 p-6 sm:p-8">
+				<div class="grid gap-5 sm:grid-cols-2">
+					<div>
+						<label for="nombre" class="mb-2 block text-xs font-bold uppercase tracking-[0.15em] text-white/50">Nombre</label>
+						<Input id="nombre" name="nombre" type="text" required placeholder="Tu nombre" class="m-0 w-full" />
+						<p data-error-for="nombre" class="mt-1.5 hidden text-xs font-semibold text-[#c70039]">Ingresá tu nombre.</p>
+					</div>
+
+					<div>
+						<label for="email" class="mb-2 block text-xs font-bold uppercase tracking-[0.15em] text-white/50">Email</label>
+						<Input id="email" name="email" type="email" required placeholder="tu@email.com" class="m-0 w-full" />
+						<p data-error-for="email" class="mt-1.5 hidden text-xs font-semibold text-[#c70039]">Ingresá un email válido.</p>
+					</div>
+				</div>
+
+				<div class="mt-5">
+					<label for="asunto" class="mb-2 block text-xs font-bold uppercase tracking-[0.15em] text-white/50">Asunto</label>
+					<Input id="asunto" name="asunto" type="text" required placeholder="¿De qué se trata?" class="m-0 w-full" />
+					<p data-error-for="asunto" class="mt-1.5 hidden text-xs font-semibold text-[#c70039]">Contame el asunto.</p>
+				</div>
+
+				<div class="mt-5">
+					<label for="descripcion" class="mb-2 block text-xs font-bold uppercase tracking-[0.15em] text-white/50">Descripción</label>
+					<Input id="descripcion" name="descripcion" type="textarea" required placeholder="Contame más sobre tu proyecto" class="m-0 w-full" />
+					<p data-error-for="descripcion" class="mt-1.5 hidden text-xs font-semibold text-[#c70039]">Contame un poco más.</p>
+				</div>
+
+				<div class="mt-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+					<Button type="submit" variant="primary" text="Enviar mensaje" class="m-0" />
+					<p id="form-status" class="hidden text-sm font-semibold" role="status"></p>
+				</div>
+			</form>
+		</div>
+	</section>
+
+	<section class="relative w-full bg-[#0a0a0a] px-6 pb-24 sm:px-10 lg:px-16">
+		<div class="mx-auto flex max-w-2xl flex-col gap-4">
+			<div class="mb-4 flex items-center gap-3">
+				<span class="h-px flex-1 bg-white/10" />
+				<span class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">Preguntas frecuentes</span>
+				<span class="h-px flex-1 bg-white/10" />
+			</div>
+
+			{
+				faqs.map((faq, index) => (
+					<details
+						class="faq-in group rounded-2xl border border-white/10 bg-white/5 transition-colors duration-300 open:border-[#c70039]/40"
+						style={`animation-delay: ${index * 0.05}s`}
+					>
+						<summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 text-base font-bold text-white select-none">
+							{faq.question}
+							<svg
+								class="h-4 w-4 shrink-0 text-white/40 transition-transform duration-300 group-open:rotate-180 group-open:text-[#c70039]"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+							</svg>
+						</summary>
+						<p class="border-t border-white/10 px-6 pb-5 pt-4 text-sm leading-relaxed text-white/60">{faq.answer}</p>
+					</details>
+				))
+			}
+		</div>
+	</section>
+</Layout>
+
+<style>
+	@keyframes links-in {
+		from {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.contact-in,
+	.faq-in {
+		animation: links-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.contact-in,
+		.faq-in {
+			animation: none;
+		}
+	}
+</style>
+
+<script>
+	const CONTACT_EMAIL = 'contacto@stevemoya.com'
+	const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+	const form = document.getElementById('contact-form') as HTMLFormElement | null
+	const status = document.getElementById('form-status') as HTMLParagraphElement | null
+
+	const setError = (field: string, show: boolean) => {
+		const el = form?.querySelector<HTMLElement>(`[data-error-for="${field}"]`)
+		el?.classList.toggle('hidden', !show)
+	}
+
+	const showStatus = (message: string, tone: 'success' | 'error') => {
+		if (!status) return
+		status.textContent = message
+		status.classList.remove('hidden', 'text-[#c70039]', 'text-emerald-400')
+		status.classList.add(tone === 'success' ? 'text-emerald-400' : 'text-[#c70039]')
+	}
+
+	form?.addEventListener('submit', (event) => {
+		event.preventDefault()
+
+		const data = new FormData(form)
+		const nombre = String(data.get('nombre') || '').trim()
+		const email = String(data.get('email') || '').trim()
+		const asunto = String(data.get('asunto') || '').trim()
+		const descripcion = String(data.get('descripcion') || '').trim()
+
+		const nombreValid = nombre.length > 0
+		const emailValid = EMAIL_RE.test(email)
+		const asuntoValid = asunto.length > 0
+		const descripcionValid = descripcion.length > 0
+
+		setError('nombre', !nombreValid)
+		setError('email', !emailValid)
+		setError('asunto', !asuntoValid)
+		setError('descripcion', !descripcionValid)
+
+		if (!nombreValid || !emailValid || !asuntoValid || !descripcionValid) {
+			showStatus('Revisá los campos marcados antes de continuar.', 'error')
+			return
+		}
+
+		// No hay backend propio todavía: se arma un mailto: prellenado
+		// para que el mensaje salga desde el cliente de correo del visitante.
+		const body = `${nombre}\n${email}\n\n${descripcion}`
+		const mailto = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(body)}`
+		window.location.href = mailto
+
+		showStatus('Se abrió tu cliente de correo con el mensaje listo para enviar.', 'success')
+	})
+</script>

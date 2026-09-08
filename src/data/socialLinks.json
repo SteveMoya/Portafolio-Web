@@ -13,27 +13,32 @@
         {
             "title": "LinkedIn",
             "url": "https://www.linkedin.com/in/stevemoya/",
-            "icon": "mdi:linkedin"
+            "icon": "mdi:linkedin",
+            "handle": "/in/stevemoya"
         },
         {
             "title": "GitHub",
             "url": "https://github.com/SteveMoya",
-            "icon": "mdi:github"
+            "icon": "mdi:github",
+            "handle": "@SteveMoya"
         },
         {
             "title": "Twitter",
             "url": "https://twitter.com/steve_moya",
-            "icon": "mdi:twitter"
+            "icon": "mdi:twitter",
+            "handle": "@steve_moya"
         },
         {
             "title": "Instagram",
             "url": "https://instagram.com/stevemoya",
-            "icon": "mdi:instagram"
+            "icon": "mdi:instagram",
+            "handle": "@stevemoya"
         },
         {
             "title": "Email",
             "url": "mailto:contacto@stevemoya.com",
-            "icon": "mdi:email"
+            "icon": "mdi:email",
+            "handle": "contacto@stevemoya.com"
         }
     ]
 }

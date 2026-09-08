@@ -1,21 +1,47 @@
 ---
 import { Icon } from 'astro-icon/components'
 import Search from '@components/Search.astro'
+import NavMenuCard from '@components/NavMenuCard.astro'
+import { getCategories, sluglify } from '@utils/index'
 import { Image, Picture } from "astro:assets"
 const navItems = [
 	{ title: 'Inicio', href: '/' },
 	{	 title: 'Sobre mí', href: '/about' },
 	{ title: 'Blog', href: '/blog' },
-	{ title: 'Portafolio', href: '/portafolio' }
+	{ title: 'Portafolio', href: '/portafolio' },
+	{ title: 'Contacto', href: '/contact' }
 ]
 
 const aboutMenu = [
-	{ title: 'CV completo', description: 'Mi trayectoria profesional', href: '/about', icon: 'mdi:file-document-outline' },
-	{ title: 'Experiencia', description: 'Dónde he trabajado', href: '/about', icon: 'mdi:briefcase-outline' },
-	{ title: 'Habilidades', description: 'Herramientas que domino', href: '/about', icon: 'mdi:lightning-bolt-outline' },
-	{ title: 'Educación', description: 'Formación académica', href: '/about', icon: 'mdi:school-outline' },
-	{ title: 'Proyectos', description: 'Lo último en lo que trabajé', href: '/portafolio', icon: 'mdi:rocket-launch-outline' },
-	{ title: 'Contacto', description: 'Hablemos de tu proyecto', href: 'mailto:steve@stevemoya.me', icon: 'mdi:email-outline' }
+	{ title: 'Experiencia', description: 'Dónde he trabajado', href: '/about#experiencia', icon: 'mdi:briefcase-outline', span: 2 as const },
+	{ title: 'Habilidades', description: 'Herramientas que domino', href: '/about#habilidades', icon: 'mdi:lightning-bolt-outline', span: 2 as const },
+	{ title: 'Educación', description: 'Formación académica', href: '/about#educacion', icon: 'mdi:school-outline', span: 2 as const },
+	{ title: 'Proyectos', description: 'Lo último en lo que trabajé', href: '/portafolio', icon: 'mdi:rocket-launch-outline', span: 6 as const, featured: true },
+	{ title: 'CV completo', description: 'Descarga mi currículum en PDF', href: '/CV.-Steve-Moya-Cepeda.pdf', icon: 'mdi:file-document-outline', span: 3 as const, external: true },
+	{ title: 'Contacto', description: 'Hablemos de tu proyecto', href: '/contact', icon: 'mdi:email-outline', span: 3 as const }
+]
+
+const categoryIcons: Record<string, string> = {
+	'diseño': 'mdi:palette-outline',
+	'marketing': 'mdi:bullhorn-outline',
+	'productividad': 'mdi:checkbox-marked-circle-outline',
+	'programación': 'mdi:code-tags'
+}
+
+const categories = await getCategories()
+
+const blogMenu = [
+	{ title: 'Los más recientes', description: 'Los últimos artículos que publiqué', href: '/blog', icon: 'mdi:post-outline', span: 3 as const, featured: true },
+	{ title: 'Todos los artículos', description: 'El archivo completo, con paginación', href: '/blog/todos-los-blogs/1', icon: 'mdi:archive-outline', span: 3 as const, featured: true },
+	...categories.map((category: string) => ({
+		title: category,
+		description: `Artículos sobre ${category.toLowerCase()}`,
+		href: `/blog/category/${sluglify(category.toLowerCase())}/1`,
+		icon: categoryIcons[category.toLowerCase()] ?? 'mdi:tag-outline',
+		span: 3 as const
+	})),
+	{ title: 'Etiquetas', description: 'Busca por tema específico', href: '/blog/tags', icon: 'mdi:tag-multiple-outline', span: 3 as const },
+	{ title: 'RSS', description: 'Suscríbete a las novedades', href: '/rss.xml', icon: 'mdi:rss', span: 3 as const, external: true }
 ]
 
 const isActive = (path: string) => {
@@ -64,25 +90,34 @@ const isActive = (path: string) => {
 
 				<div
 					data-panel
-					class="pointer-events-none absolute left-1/2 top-[calc(100%+0.75rem)] grid w-[340px] -translate-x-1/2 translate-y-1 grid-cols-2 gap-2 rounded-2xl border border-white/10 bg-[#0a0a0a] p-3 opacity-0 shadow-2xl shadow-black/60 transition-all duration-200"
+					class="pointer-events-none absolute left-1/2 top-[calc(100%+0.75rem)] grid w-[420px] -translate-x-1/2 translate-y-1 grid-cols-6 gap-2 rounded-2xl border border-white/10 bg-[#0a0a0a] p-3 opacity-0 shadow-2xl shadow-black/60 transition-all duration-200"
 				>
-					{
-						aboutMenu.map((item) => (
-							<a
-								href={item.href}
-								class="group flex flex-col gap-1.5 rounded-xl p-3 transition-colors duration-200 hover:bg-white/[0.06]"
-							>
-								<Icon name={item.icon} class="h-4 w-4 text-white/50 transition-colors duration-200 group-hover:text-[#c70039]" />
-								<span class="text-sm font-semibold text-white">{item.title}</span>
-								<span class="text-xs text-white/40">{item.description}</span>
-							</a>
-						))
-					}
+					{aboutMenu.map((item) => <NavMenuCard {...item} />)}
+				</div>
+			</nav-dropdown>
+
+			<nav-dropdown class="relative">
+				<button
+					type="button"
+					aria-expanded="false"
+					class={`flex items-center gap-1 rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-300 ${
+						isActive('/blog') ? 'bg-white text-black' : 'text-white/70 hover:text-white'
+					}`}
+				>
+					Blog
+					<Icon name="mdi:chevron-down" class="h-4 w-4 transition-transform duration-300" data-chevron />
+				</button>
+
+				<div
+					data-panel
+					class="pointer-events-none absolute left-1/2 top-[calc(100%+0.75rem)] grid w-[420px] -translate-x-1/2 translate-y-1 grid-cols-6 gap-2 rounded-2xl border border-white/10 bg-[#0a0a0a] p-3 opacity-0 shadow-2xl shadow-black/60 transition-all duration-200"
+				>
+					{blogMenu.map((item) => <NavMenuCard {...item} />)}
 				</div>
 			</nav-dropdown>
 
 			{
-				navItems.slice(2).map((item) => (
+				navItems.slice(2).filter((item) => item.title !== 'Blog').map((item) => (
 					<a
 						href={item.href}
 						class={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-300 ${

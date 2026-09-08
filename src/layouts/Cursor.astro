@@ -6,9 +6,9 @@
 ---
 
 <div
-	class="pointer-events-none fixed z-50 block rounded-full"
+	class="pointer-events-none fixed z-50 block"
 	id="cursor"
-	style="width:50px;height:50px;margin-left:-25px;margin-top:-25px;"
+	style="width:50px;height:50px;border-radius:25px;left:0;top:0;transform:translate(-50%,-50%);will-change:left,top,width,height,border-radius;"
 >
 </div>
 <!-- Canvas trail — white circles + difference blend = invert only where drawn -->
@@ -30,7 +30,22 @@
 	const BLUR = 1;
 	const BACKGROUND_COLOR = 'rgba(245, 245, 245, 0.2)';
 
+	// Distortion while hugging an element scales with the element's own
+	// size: a small nav pill has its label filling almost the whole box, so
+	// any lens warp there would touch the text — it gets next to none. A
+	// large card has neutral space to spare around its label, so it keeps
+	// close to the full "liquid glass" edge-refraction look.
+	const HOVER_STRENGTH_RATIO = 0.18;
+	const HOVER_DEPTH_RATIO = 0.08;
+	const HOVER_CHROMA_MAX = 1;
+
 	const LERP_FACTOR = 0.12;
+
+	// Hover-hug config — cursor morphs to cover any clickable element it hovers
+	const HOVER_LERP_FACTOR = 0.22;
+	const HOVER_PADDING = 0;
+	const CLICKABLE_SELECTOR =
+		'a, button, input[type="button"], input[type="submit"], input[type="reset"], input[type="checkbox"], input[type="radio"], select, summary, label[for], [role="button"], [role="link"], [data-cursor-target]';
 
 	// Trail config — snake drawn on canvas, inverted via mix-blend-mode:difference
 	const TRAIL_INTERVAL = 8;
@@ -61,8 +76,12 @@
 	let mouseY = 0;
 	let curX = 0;
 	let curY = 0;
+	let curW = DEFAULT_SIZE;
+	let curH = DEFAULT_SIZE;
+	let curR = DEFAULT_SIZE / 2;
 	let rafId = 0;
 	let hasMoved = false;
+	let hoveredEl: HTMLElement | null = null;
 
 	// ── Size persistence ──
 	function getSavedSize(): number {
@@ -79,14 +98,15 @@
 
 	function applySize(size: number) {
 		cursorSize = size;
-		if (cursor) {
-			const half = size / 2;
+		if (!hoveredEl && cursor) {
+			curW = size;
+			curH = size;
+			curR = size / 2;
 			cursor.style.width = size + 'px';
 			cursor.style.height = size + 'px';
-			cursor.style.marginLeft = -half + 'px';
-			cursor.style.marginTop = -half + 'px';
+			cursor.style.borderRadius = curR + 'px';
 		}
-		if (cursor) applyStyle(cursor, currentStyle);
+		if (cursor) applyStyle(cursor, currentStyle, curW, curH, curR);
 	}
 
 	// ── Canvas sizing ──
@@ -180,17 +200,19 @@
 		el.style.opacity = '';
 	}
 
-	function applyGlassEffect(el: HTMLElement) {
+	function applyGlassEffect(el: HTMLElement, w: number, h: number, r: number) {
 		clearCursorStyles(el);
-		const s = cursorSize;
-		const r = s / 2;
 		if (!getSVGFilterSupport()) {
 			el.style.backdropFilter = `blur(${BLUR * 2}px)`;
 			el.style.background = BACKGROUND_COLOR;
 			el.style.boxShadow = '1px 1px 1px 0px rgba(255,255,255,0.6) inset,-1px -1px 1px 0px rgba(255,255,255,0.6) inset,0 0 16px 0 rgba(0,0,0,0.04)';
 			el.style.border = '1px solid rgba(255,255,255,0.3)';
 		} else {
-			const url = getDisplacementFilter({ height: s, width: s, radius: r, depth: DEPTH, strength: STRENGTH, chromaticAberration: 2 });
+			const minSide = Math.min(w, h);
+			const depth = hoveredEl ? Math.min(DEPTH, Math.max(2, minSide * HOVER_DEPTH_RATIO)) : DEPTH;
+			const strength = hoveredEl ? Math.min(STRENGTH, minSide * HOVER_STRENGTH_RATIO) : STRENGTH;
+			const chromaticAberration = hoveredEl ? Math.min(HOVER_CHROMA_MAX, minSide / 120) : 2;
+			const url = getDisplacementFilter({ height: h, width: w, radius: r, depth, strength, chromaticAberration });
 			el.style.backdropFilter = `blur(${BLUR / 2}px) url('${url}') blur(${BLUR}px) brightness(1.1) saturate(1.5)`;
 			el.style.background = BACKGROUND_COLOR;
 			el.style.boxShadow = '1px 1px 1px 0px rgba(255,255,255,0.6) inset,-1px -1px 1px 0px rgba(255,255,255,0.6) inset,0 0 16px 0 rgba(0,0,0,0.04)';
@@ -213,12 +235,42 @@
 		el.style.boxShadow = 'none';
 	}
 
-	function applyStyle(el: HTMLElement, style: CursorStyle) {
+	function applyStyle(el: HTMLElement, style: CursorStyle, w: number = cursorSize, h: number = cursorSize, r: number = cursorSize / 2) {
 		switch (style) {
-			case 'liquid-glass': applyGlassEffect(el); break;
+			case 'liquid-glass': applyGlassEffect(el, w, h, r); break;
 			case 'red-circle': applyRedCircle(el); break;
 			case 'water-trail': applyWaterTrail(el); break;
 		}
+	}
+
+	// ── Hover-hug: cursor morphs to cover any clickable element ──
+	function isInteractionDisabled(el: HTMLElement): boolean {
+		return el.matches(':disabled') || el.getAttribute('aria-disabled') === 'true';
+	}
+
+	function getTargetRadius(el: HTMLElement, w: number, h: number): number {
+		const r = parseFloat(getComputedStyle(el).borderRadius);
+		const radius = isNaN(r) ? 0 : r;
+		// Clamp to what the element itself can actually render (e.g. a
+		// "rounded-full"/9999px pill) — an uncapped radius breaks the glass
+		// filter's internal gradient math (percentages go out of [0,100]).
+		return Math.min(radius, w / 2, h / 2);
+	}
+
+	function setHoverTarget(el: HTMLElement) {
+		if (isInteractionDisabled(el)) return;
+		hoveredEl = el;
+		const rect = el.getBoundingClientRect();
+		const w = rect.width + HOVER_PADDING * 2;
+		const h = rect.height + HOVER_PADDING * 2;
+		if (cursor) {
+			applyStyle(cursor, currentStyle, w, h, getTargetRadius(el, w, h));
+		}
+	}
+
+	function clearHoverTarget() {
+		hoveredEl = null;
+		if (cursor) applyStyle(cursor, currentStyle, cursorSize, cursorSize, cursorSize / 2);
 	}
 
 	// ── Canvas trail: white circles + mix-blend-mode:difference = invert ──
@@ -264,12 +316,42 @@
 
 	function animate() {
 		if (cursor) {
-			curX = lerp(curX, mouseX, LERP_FACTOR);
-			curY = lerp(curY, mouseY, LERP_FACTOR);
+			let targetX = mouseX;
+			let targetY = mouseY;
+			let targetW = cursorSize;
+			let targetH = cursorSize;
+			let targetR = cursorSize / 2;
+
+			if (hoveredEl) {
+				if (!hoveredEl.isConnected) {
+					hoveredEl = null;
+				} else {
+					const rect = hoveredEl.getBoundingClientRect();
+					targetX = rect.left + rect.width / 2;
+					targetY = rect.top + rect.height / 2;
+					targetW = rect.width + HOVER_PADDING * 2;
+					targetH = rect.height + HOVER_PADDING * 2;
+					targetR = getTargetRadius(hoveredEl, targetW, targetH);
+				}
+			}
+
+			const factor = hoveredEl ? HOVER_LERP_FACTOR : LERP_FACTOR;
+			curX = lerp(curX, targetX, factor);
+			curY = lerp(curY, targetY, factor);
+			curW = lerp(curW, targetW, factor);
+			curH = lerp(curH, targetH, factor);
+			curR = lerp(curR, targetR, factor);
+
 			cursor.style.left = curX + 'px';
 			cursor.style.top = curY + 'px';
+			cursor.style.width = curW + 'px';
+			cursor.style.height = curH + 'px';
+			cursor.style.borderRadius = curR + 'px';
 
-			if (currentStyle === 'water-trail' && hasMoved) {
+			// Trail only makes sense while freely following the mouse — once
+			// hugging an element, the shaped cursor box itself is the visual;
+			// a trail of fixed-size circles would just overlay a blob on it.
+			if (currentStyle === 'water-trail' && hasMoved && !hoveredEl) {
 				const now = Date.now();
 				const dx = curX - lastTrailX;
 				const dy = curY - lastTrailY;
@@ -283,7 +365,7 @@
 				}
 
 				drawTrail();
-			} else if (currentStyle !== 'water-trail' && trailCanvas) {
+			} else if (trailCanvas) {
 				const dpr = window.devicePixelRatio || 1;
 				trailCtx?.clearRect(0, 0, trailCanvas.width / dpr, trailCanvas.height / dpr);
 				trailPoints = [];
@@ -328,7 +410,7 @@
 		const style = e.detail.style as CursorStyle;
 		currentStyle = style;
 		saveStyle(style);
-		if (cursor) applyStyle(cursor, style);
+		if (cursor) applyStyle(cursor, style, curW, curH, curR);
 		if (style !== 'water-trail' && trailCanvas) {
 			trailPoints = [];
 			const dpr = window.devicePixelRatio || 1;
@@ -354,6 +436,17 @@
 			curY = mouseY;
 			hasMoved = true;
 		}
+	});
+
+	document.addEventListener('mouseover', (e: MouseEvent) => {
+		const el = (e.target as Element | null)?.closest?.(CLICKABLE_SELECTOR) as HTMLElement | null;
+		if (el && el !== hoveredEl) setHoverTarget(el);
+	});
+
+	document.addEventListener('mouseout', (e: MouseEvent) => {
+		const el = (e.target as Element | null)?.closest?.(CLICKABLE_SELECTOR) as HTMLElement | null;
+		const to = e.relatedTarget as Node | null;
+		if (el && el === hoveredEl && (!to || !el.contains(to))) clearHoverTarget();
 	});
 
 	window.addEventListener('resize', resizeCanvas);
