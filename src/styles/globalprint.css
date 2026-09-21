@@ -79,13 +79,13 @@ p, li, div, span {
   }
 
   /* Ocultar elementos decorativos del timeline */
-  .before\\:-ml-6,
-  .before\\:w-px,
-  .before\\:absolute,
-  .before\\:bg-skin-muted,
-  .before\\:opacity-30,
-  .before\\:h-full,
-  .before\\:mt-2,
+  .before\:-ml-6,
+  .before\:w-px,
+  .before\:absolute,
+  .before\:bg-skin-muted,
+  .before\:opacity-30,
+  .before\:h-full,
+  .before\:mt-2,
   .absolute.w-2.h-2.bg-skin-hue.rounded-full {
     display: none !important;
   }
@@ -163,7 +163,7 @@ p, li, div, span {
 
   /* Bordes y líneas visibles */
   .bg-skin-muted,
-  .before\\:bg-skin-muted::before {
+  .before\:bg-skin-muted::before {
     background-color: #d0d0d0 !important;
   }
 

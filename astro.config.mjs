@@ -31,6 +31,14 @@ export default defineConfig({
   adapter: vercel(),
   prefetch: true,
 
+  vite: {
+    css: {
+      lightningcss: {
+        errorRecovery: true,
+      },
+    },
+  },
+
   env: {
     schema: {
       GITHUB_USERNAME: envField.string({ context: "server", access: "public" }),
