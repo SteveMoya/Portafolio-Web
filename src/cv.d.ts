@@ -123,7 +123,7 @@ type Language =
   | "Bengali"
   | string;
 
-interface Projects {
+export interface Projects {
   name: string;
   isActive: boolean;
   description: string;
