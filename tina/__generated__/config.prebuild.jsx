@@ -9,6 +9,29 @@ var CATEGORIES = [
   "Fotografia",
   "Otros"
 ];
+var PROJECT_STATUSES = ["active", "completed", "in_progress", "archived"];
+var PROJECT_CATEGORIES = [
+  "web",
+  "mobile",
+  "api",
+  "ai",
+  "backend",
+  "devops",
+  "frontend",
+  "fullstack",
+  "other"
+];
+var PROJECT_BADGES = [
+  "private",
+  "client",
+  "company",
+  "open_source",
+  "ai",
+  "devops",
+  "freelance",
+  "work",
+  "personal"
+];
 
 // tina/config.ts
 import { defineConfig } from "tinacms";
@@ -273,7 +296,7 @@ var config_default = defineConfig({
             name: "status",
             label: "Estado",
             required: false,
-            options: ["active", "completed", "in_progress", "archived"]
+            options: [...PROJECT_STATUSES]
           },
           {
             type: "boolean",
@@ -287,7 +310,7 @@ var config_default = defineConfig({
             name: "category",
             label: "Categoria",
             required: false,
-            options: ["web", "mobile", "api", "ai", "backend", "devops", "frontend", "fullstack", "other"]
+            options: [...PROJECT_CATEGORIES]
           },
           {
             type: "string",
@@ -295,7 +318,7 @@ var config_default = defineConfig({
             label: "Badges",
             required: false,
             list: true,
-            options: ["private", "client", "company", "open_source", "ai", "devops", "freelance", "work", "personal"]
+            options: [...PROJECT_BADGES]
           }
         ]
       }
