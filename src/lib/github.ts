@@ -39,6 +39,9 @@ export async function getRepoLanguages(repo: string): Promise<GitHubLanguage[]> 
 				}
 			}
 		)
+		if (!response.ok) {
+			throw new Error(`GitHub API respondió ${response.status} al pedir los lenguajes de ${repo}`)
+		}
 		const languages = await response.json()
 		return Object.entries(languages).map(([lang, size]) => ({
 			name: lang,
@@ -92,6 +95,9 @@ export async function fetchFirstImageFromReadme(repo: string): Promise<string | 
 				}
 			}
 		)
+		if (!response.ok) {
+			return null
+		}
 		const data = await response.json()
 
 		if (!data.download_url) {
@@ -146,6 +152,9 @@ export async function getRepos(): Promise<GitHubRepo[]> {
 					Authorization: `token ${GITHUB_TOKEN}`
 				}
 			})
+			if (!response.ok) {
+				throw new Error(`GitHub API respondió ${response.status} al pedir los repositorios`)
+			}
 			const repos = (await response.json()) as GitHubRepo[]
 
 			const reposWithDetails = await Promise.all(
