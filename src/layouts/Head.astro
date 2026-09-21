@@ -16,7 +16,7 @@ const {
 	title = siteConfig.title,
 	description = siteConfig.description,
 	keywords = siteConfig.keywords,
-	canonicalURL = new URL(Astro.url.pathname, Astro.site) || 'https://stevemoya.me/',
+	canonicalURL = new URL(Astro.url.pathname, Astro.site),
 	image = siteConfig.ogImage,
 	articleDate,
 	articleUpdateDate

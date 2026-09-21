@@ -18,5 +18,5 @@ const shapes = jsonparse.shapes.map(({ id, type, x, y, props, parentId }) => ({
 ---
 
 <div class="z-0! mx-auto h-[400px] w-[500px]">
-	<Draw client:only shapes={shapes} />
+	<Draw client:only="react" shapes={shapes} />
 </div>

@@ -1,11 +1,5 @@
 ---
 
-import Button from './Button.astro'
-
-// import { twMerge } from 'tailwind-merge'
-import { CldImage } from 'astro-cloudinary'
-
-
 interface Props {
 	class?: string
 	type?: 'about'
@@ -16,7 +10,7 @@ interface Props {
 	date?: string
 }
 
-const { type, title, img = '', description, href, date } = Astro.props
+const { type, title, img = '', description } = Astro.props
 ---
 
 {

@@ -8,6 +8,6 @@ declare module '@alpinejs/collapse' {
 }
 
 declare module '@pagefind/default-ui' {
-	const PagefindUI: any
+	const PagefindUI: new (options: Record<string, unknown>) => unknown
 	export { PagefindUI }
 }

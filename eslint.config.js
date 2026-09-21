@@ -29,7 +29,13 @@ export default [
 			'@typescript-eslint': tseslint
 		},
 		rules: {
-			...tseslint.configs.recommended.rules
+			...tseslint.configs.recommended.rules,
+			// Astro generates /// <reference path="../.astro/types.d.ts" /> in env.d.ts --
+			// an ambient .d.ts reference with no import-style equivalent, so path stays allowed.
+			'@typescript-eslint/triple-slash-reference': [
+				'error',
+				{ path: 'always', types: 'prefer-import', lib: 'always' }
+			]
 		}
 	},
 	{

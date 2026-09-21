@@ -2,6 +2,13 @@ import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
 
+declare global {
+	interface Window {
+		gsap: typeof gsap
+		ScrollTrigger: typeof ScrollTrigger
+	}
+}
+
 /**
  * Motion foundation for the whole site: a singleton GSAP + ScrollTrigger + Lenis
  * setup. `initMotion()` is idempotent and safe to call from every page load
@@ -42,8 +49,8 @@ export function initMotion(): MotionContext {
 
 	ctx = { gsap, ScrollTrigger, lenis }
 	if (typeof window !== 'undefined') {
-		;(window as any).ScrollTrigger = ScrollTrigger
-		;(window as any).gsap = gsap
+		window.ScrollTrigger = ScrollTrigger
+		window.gsap = gsap
 
 		window.addEventListener('load', refreshScrollTriggers)
 		document.addEventListener('astro:page-load', refreshScrollTriggers)
