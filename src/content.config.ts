@@ -1,12 +1,8 @@
-import { CATEGORIES } from '@src/data/categories';
+import { CATEGORIES, PROJECT_BADGES, PROJECT_CATEGORIES, PROJECT_STATUSES } from '@src/data/categories';
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { cldAssetsLoader } from 'astro-cloudinary/loaders';
-
-const PROJECT_STATUSES = ['active', 'completed', 'in_progress', 'archived'] as const
-const PROJECT_CATEGORIES = ['web', 'mobile', 'api', 'ai', 'backend', 'devops', 'frontend', 'fullstack', 'other'] as const
-const PROJECT_BADGES = ['private', 'client', 'company', 'open_source', 'ai', 'devops', 'freelance', 'work', 'personal'] as const
 
 const blog = defineCollection({
 	loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
