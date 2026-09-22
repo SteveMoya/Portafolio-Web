@@ -1,48 +1,32 @@
 ---
 import { Icon } from 'astro-icon/components'
 import Search from '@components/Search.astro'
-import NavMenuCard from '@components/NavMenuCard.astro'
-import { getCategories, sluglify } from '@utils/index'
-import { Picture } from "astro:assets"
+import BentoCard from '@components/ui/BentoCard.astro'
+import { getPosts, formatDate } from '@utils/index'
+import { Picture } from 'astro:assets'
+
 const navItems = [
 	{ title: 'Inicio', href: '/' },
-	{	 title: 'Sobre mí', href: '/about' },
+	{ title: 'Sobre mí', href: '/about' },
 	{ title: 'Blog', href: '/blog' },
 	{ title: 'Portafolio', href: '/portafolio' },
 	{ title: 'Contacto', href: '/contact' }
 ]
 
-const aboutMenu = [
-	{ title: 'Experiencia', description: 'Dónde he trabajado', href: '/about#experiencia', icon: 'mdi:briefcase-outline', span: 2 as const },
-	{ title: 'Habilidades', description: 'Herramientas que domino', href: '/about#habilidades', icon: 'mdi:lightning-bolt-outline', span: 2 as const },
-	{ title: 'Educación', description: 'Formación académica', href: '/about#educacion', icon: 'mdi:school-outline', span: 2 as const },
-	{ title: 'Proyectos', description: 'Lo último en lo que trabajé', href: '/portafolio', icon: 'mdi:rocket-launch-outline', span: 6 as const, featured: true },
-	{ title: 'CV completo', description: 'Descarga mi currículum en PDF', href: '/CV.-Steve-Moya-Cepeda.pdf', icon: 'mdi:file-document-outline', span: 3 as const, external: true },
-	{ title: 'Contacto', description: 'Hablemos de tu proyecto', href: '/contact', icon: 'mdi:email-outline', span: 3 as const }
-]
+const posts = await getPosts(1)
+const latestPost = posts.length > 0 ? posts[0] : null
 
-const categoryIcons: Record<string, string> = {
-	'diseño': 'mdi:palette-outline',
-	'marketing': 'mdi:bullhorn-outline',
-	'productividad': 'mdi:checkbox-marked-circle-outline',
-	'programación': 'mdi:code-tags'
-}
+const latestPostSummary = latestPost
+	? latestPost.data.description
+		? latestPost.data.description.length > 52
+			? `${latestPost.data.description.slice(0, 48).trim()}...`
+			: latestPost.data.description
+		: 'Último artículo publicado'
+	: 'Los últimos artículos publicados'
 
-const categories = await getCategories()
-
-const blogMenu = [
-	{ title: 'Los más recientes', description: 'Los últimos artículos que publiqué', href: '/blog', icon: 'mdi:post-outline', span: 3 as const, featured: true },
-	{ title: 'Todos los artículos', description: 'El archivo completo, con paginación', href: '/blog/todos-los-blogs/1', icon: 'mdi:archive-outline', span: 3 as const, featured: true },
-	...categories.map((category: string) => ({
-		title: category,
-		description: `Artículos sobre ${category.toLowerCase()}`,
-		href: `/blog/category/${sluglify(category.toLowerCase())}/1`,
-		icon: categoryIcons[category.toLowerCase()] ?? 'mdi:tag-outline',
-		span: 3 as const
-	})),
-	{ title: 'Etiquetas', description: 'Busca por tema específico', href: '/blog/tags', icon: 'mdi:tag-multiple-outline', span: 3 as const },
-	{ title: 'RSS', description: 'Suscríbete a las novedades', href: '/rss.xml', icon: 'mdi:rss', span: 3 as const, external: true }
-]
+const latestPostDesc = latestPost
+	? `${formatDate(latestPost.data.pubDate)} • ${latestPostSummary}`
+	: 'Los últimos artículos publicados'
 
 const isActive = (path: string) => {
 	const currentPath = Astro.url.pathname
@@ -76,6 +60,7 @@ const isActive = (path: string) => {
 				Inicio
 			</a>
 
+			<!-- Dropdown: Sobre mí -->
 			<nav-dropdown class="relative">
 				<button
 					type="button"
@@ -90,12 +75,95 @@ const isActive = (path: string) => {
 
 				<div
 					data-panel
-					class="pointer-events-none absolute left-1/2 top-[calc(100%+0.75rem)] grid w-[420px] -translate-x-1/2 translate-y-1 grid-cols-6 gap-2 rounded-2xl border border-white/10 bg-[#0a0a0a] p-3 opacity-0 shadow-2xl shadow-black/60 transition-all duration-200"
+					class="pointer-events-none absolute left-1/2 top-[calc(100%+0.75rem)] w-[700px] max-w-[calc(100vw-2rem)] -translate-x-1/2 translate-y-1 rounded-2xl border border-white/10 bg-[#0a0a0c]/95 p-3 opacity-0 shadow-2xl shadow-black/80 backdrop-blur-2xl transition-all duration-300 before:absolute before:-top-3 before:left-0 before:right-0 before:h-3 before:content-['']"
 				>
-					{aboutMenu.map((item) => <NavMenuCard {...item} />)}
+					<div class="flex gap-3">
+						<!-- Left Section (~63%) -->
+						<div class="flex flex-1 flex-col gap-2.5">
+							<!-- Top row: 2 Hero cards -->
+							<div class="grid grid-cols-2 gap-2.5">
+								<BentoCard
+									variant="hero"
+									theme="rocket"
+									icon="mdi:rocket-launch-outline"
+									title="Proyectos"
+									description="Descubre mis creaciones y código"
+									href="/portafolio"
+								/>
+								<BentoCard
+									variant="hero"
+									theme="timeline"
+									icon="mdi:briefcase-outline"
+									title="Experiencia"
+									description="Mi trayectoria y empresas"
+									href="/about#experiencia"
+								/>
+							</div>
+							<!-- Bottom row: 3 Compact cards -->
+							<div class="grid grid-cols-3 gap-2.5">
+								<BentoCard
+									variant="compact"
+									theme="code"
+									icon="mdi:code-tags"
+									title="Habilidades"
+									description="Stack técnico que domino"
+									href="/about#habilidades"
+								/>
+								<BentoCard
+									variant="compact"
+									theme="education"
+									icon="mdi:school-outline"
+									title="Educación"
+									description="Formación y credenciales"
+									href="/about#educacion"
+								/>
+								<BentoCard
+									variant="compact"
+									theme="identity"
+									icon="mdi:account-outline"
+									title="Sobre mí"
+									description="Historia, visión y valores"
+									href="/about"
+								/>
+							</div>
+						</div>
+
+						<!-- Vertical Divider -->
+						<div class="w-px self-stretch bg-white/10 my-0.5"></div>
+
+						<!-- Right Section (~37%) -->
+						<div class="flex w-[225px] shrink-0 flex-col gap-2.5 justify-between">
+							<BentoCard
+								variant="stack"
+								theme="gallery"
+								icon="mdi:image-outline"
+								title="Galería"
+								description="Fotografía y capturas"
+								href="/portafolio"
+							/>
+							<BentoCard
+								variant="stack"
+								theme="document"
+								icon="mdi:file-document-outline"
+								title="Currículum"
+								description="Ver o descargar CV en PDF"
+								href="/CV.-Steve-Moya-Cepeda.pdf"
+								external={true}
+							/>
+							<BentoCard
+								variant="stack"
+								theme="chat"
+								icon="mdi:chat-processing-outline"
+								title="Contacto"
+								description="Hablemos de tu proyecto"
+								href="/contact"
+							/>
+						</div>
+					</div>
 				</div>
 			</nav-dropdown>
 
+			<!-- Dropdown: Blog -->
 			<nav-dropdown class="relative">
 				<button
 					type="button"
@@ -110,9 +178,92 @@ const isActive = (path: string) => {
 
 				<div
 					data-panel
-					class="pointer-events-none absolute left-1/2 top-[calc(100%+0.75rem)] grid w-[420px] -translate-x-1/2 translate-y-1 grid-cols-6 gap-2 rounded-2xl border border-white/10 bg-[#0a0a0a] p-3 opacity-0 shadow-2xl shadow-black/60 transition-all duration-200"
+					class="pointer-events-none absolute left-1/2 top-[calc(100%+0.75rem)] w-[700px] max-w-[calc(100vw-2rem)] -translate-x-1/2 translate-y-1 rounded-2xl border border-white/10 bg-[#0a0a0c]/95 p-3 opacity-0 shadow-2xl shadow-black/80 backdrop-blur-2xl transition-all duration-300 before:absolute before:-top-3 before:left-0 before:right-0 before:h-3 before:content-['']"
 				>
-					{blogMenu.map((item) => <NavMenuCard {...item} />)}
+					<div class="flex gap-3">
+						<!-- Left Section (~63%) -->
+						<div class="flex flex-1 flex-col gap-2.5">
+							<!-- Top row: 2 Hero cards -->
+							<div class="grid grid-cols-2 gap-2.5">
+								<BentoCard
+									variant="hero"
+									theme="post"
+									icon="mdi:sparkles"
+									title={latestPost ? latestPost.data.title : 'Los más recientes'}
+									description={latestPostDesc}
+									href={latestPost ? `/blog/${latestPost.id}` : '/blog'}
+									badge={latestPost ? 'NUEVO' : undefined}
+								/>
+								<BentoCard
+									variant="hero"
+									theme="archive"
+									icon="mdi:archive-outline"
+									title="Archivo Completo"
+									description="Todos los artículos con paginación"
+									href="/blog/todos-los-blogs/1"
+								/>
+							</div>
+							<!-- Bottom row: 3 Compact cards -->
+							<div class="grid grid-cols-3 gap-2.5">
+								<BentoCard
+									variant="compact"
+									theme="code"
+									icon="mdi:code-tags"
+									title="Programación"
+									description="Código, stacks & dev"
+									href="/blog/category/programacion/1"
+								/>
+								<BentoCard
+									variant="compact"
+									theme="palette"
+									icon="mdi:palette-outline"
+									title="Diseño"
+									description="UI/UX y sistemas visuales"
+									href="/blog/category/diseno/1"
+								/>
+								<BentoCard
+									variant="compact"
+									theme="marketing"
+									icon="mdi:bullhorn-outline"
+									title="Marketing"
+									description="Estrategia y crecimiento"
+									href="/blog/category/marketing/1"
+								/>
+							</div>
+						</div>
+
+						<!-- Vertical Divider -->
+						<div class="w-px self-stretch bg-white/10 my-0.5"></div>
+
+						<!-- Right Section (~37%) -->
+						<div class="flex w-[225px] shrink-0 flex-col gap-2.5 justify-between">
+							<BentoCard
+								variant="stack"
+								theme="tags"
+								icon="mdi:tag-multiple-outline"
+								title="Etiquetas"
+								description="Explora temas y tags"
+								href="/blog/tags"
+							/>
+							<BentoCard
+								variant="stack"
+								theme="productivity"
+								icon="mdi:checkbox-marked-circle-outline"
+								title="Productividad"
+								description="Hábitos y flujos de trabajo"
+								href="/blog/category/productividad/1"
+							/>
+							<BentoCard
+								variant="stack"
+								theme="rss"
+								icon="mdi:rss"
+								title="Feed RSS"
+								description="Suscríbete en tu lector"
+								href="/rss.xml"
+								external={true}
+							/>
+						</div>
+					</div>
 				</div>
 			</nav-dropdown>
 
@@ -225,7 +376,37 @@ const isActive = (path: string) => {
 			const panel = this.querySelector<HTMLElement>('[data-panel]')!
 			const chevron = this.querySelector<HTMLElement>('[data-chevron]')!
 
+			let openTimeout: number | undefined
+			let closeTimeout: number | undefined
+
+			const adjustPosition = () => {
+				panel.style.transform = ''
+				const rect = panel.getBoundingClientRect()
+				const margin = 16
+				if (rect.left < margin) {
+					const offset = margin - rect.left
+					panel.style.transform = `translateX(calc(-50% + ${offset}px))`
+				} else if (rect.right > window.innerWidth - margin) {
+					const offset = rect.right - (window.innerWidth - margin)
+					panel.style.transform = `translateX(calc(-50% - ${offset}px))`
+				}
+			}
+
 			const open = () => {
+				clearTimeout(closeTimeout)
+				document.querySelectorAll('nav-dropdown').forEach((dropdown) => {
+					if (dropdown !== this) {
+						const otherPanel = dropdown.querySelector<HTMLElement>('[data-panel]')
+						const otherChevron = dropdown.querySelector<HTMLElement>('[data-chevron]')
+						const otherButton = dropdown.querySelector<HTMLButtonElement>('button')
+						otherPanel?.classList.add('pointer-events-none', 'opacity-0', 'translate-y-1')
+						otherPanel?.classList.remove('translate-y-0')
+						otherChevron?.classList.remove('rotate-180')
+						otherButton?.setAttribute('aria-expanded', 'false')
+					}
+				})
+
+				adjustPosition()
 				panel.classList.remove('pointer-events-none', 'opacity-0', 'translate-y-1')
 				panel.classList.add('translate-y-0')
 				chevron.classList.add('rotate-180')
@@ -233,24 +414,48 @@ const isActive = (path: string) => {
 			}
 
 			const close = () => {
+				clearTimeout(openTimeout)
 				panel.classList.add('pointer-events-none', 'opacity-0', 'translate-y-1')
 				panel.classList.remove('translate-y-0')
 				chevron.classList.remove('rotate-180')
 				button.setAttribute('aria-expanded', 'false')
 			}
 
+			this.addEventListener('mouseenter', () => {
+				clearTimeout(closeTimeout)
+				openTimeout = window.setTimeout(() => {
+					open()
+				}, 120)
+			})
+
+			this.addEventListener('mouseleave', () => {
+				clearTimeout(openTimeout)
+				closeTimeout = window.setTimeout(() => {
+					close()
+				}, 150)
+			})
+
 			const toggle = (event: MouseEvent) => {
 				event.stopPropagation()
+				clearTimeout(openTimeout)
+				clearTimeout(closeTimeout)
 				const isOpen = button.getAttribute('aria-expanded') === 'true'
 				isOpen ? close() : open()
 			}
 
 			button.addEventListener('click', toggle)
+
 			document.addEventListener('click', (event) => {
-				if (!this.contains(event.target as Node)) close()
+				if (!this.contains(event.target as Node)) {
+					clearTimeout(openTimeout)
+					close()
+				}
 			})
 			document.addEventListener('keydown', (event) => {
-				if (event.key === 'Escape') close()
+				if (event.key === 'Escape') {
+					clearTimeout(openTimeout)
+					close()
+				}
 			})
 			document.addEventListener('astro:after-swap', close)
 		}

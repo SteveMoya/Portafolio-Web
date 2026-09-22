@@ -30,10 +30,10 @@ const socialLinks = {
 		Disponible para proyectos
 	</div>
 
-	<div class="relative z-[2] mx-auto flex w-full max-w-[1680px] flex-1 flex-col justify-center gap-4 px-6 pt-16 sm:px-10 lg:px-16">
+	<div class="relative z-[2] mx-auto flex w-full max-w-[1680px] flex-1 flex-col items-center justify-center gap-4 px-6 pt-16 sm:px-10 lg:px-16">
 		<!-- Line 1: MARKETING [icon] DIGITAL -->
-		<div class="relative items-center gap-8 md:flex">
-			<p class="line-in mb-2 max-w-[200px] text-right text-[10px] font-medium uppercase leading-relaxed tracking-[0.2em] text-white/50 md:mb-0" style="animation-delay: 0.2s">
+		<div class="relative flex flex-col items-center justify-center gap-4 md:flex-row md:gap-8">
+			<p class="line-in mb-2 max-w-[200px] text-center text-[10px] font-medium uppercase leading-relaxed tracking-[0.2em] text-white/50 md:mb-0 md:text-right" style="animation-delay: 0.2s">
 				Hola, soy {name}. Marketing, desarrollo, IA y datos.
 			</p>
 			<div class="relative">
@@ -50,7 +50,7 @@ const socialLinks = {
 				</a>
 				<BlockReveal
 					as="h1"
-					class="flex items-center whitespace-nowrap font-poppins text-[13vw] font-black uppercase leading-[0.85] tracking-tighter sm:text-[8vw] lg:text-[6.2vw]"
+					class="flex items-center whitespace-nowrap font-poppins text-[7.8vw] font-black uppercase leading-[0.85] tracking-tighter sm:text-[8vw] lg:text-[6.2vw]"
 					boxColor="#c70039"
 					delay={0.1}
 				>
@@ -62,7 +62,7 @@ const socialLinks = {
 		</div>
 
 		<!-- Line 2: DESARROLLO [icon] WEB -->
-		<div class="relative items-center gap-8 md:flex">
+		<div class="relative flex items-center justify-center gap-8">
 			<div class="relative">
 				<a
 					href={socialLinks.linkedin}
@@ -88,7 +88,7 @@ const socialLinks = {
 				</a>
 				<BlockReveal
 					as="h1"
-					class="flex items-center whitespace-nowrap font-poppins text-[13vw] font-black uppercase leading-[0.85] tracking-tighter sm:text-[8vw] lg:text-[6.2vw]"
+					class="flex items-center whitespace-nowrap font-poppins text-[7.8vw] font-black uppercase leading-[0.85] tracking-tighter sm:text-[8vw] lg:text-[6.2vw]"
 					boxColor="#c70039"
 					delay={0.3}
 				>
@@ -100,10 +100,10 @@ const socialLinks = {
 		</div>
 
 		<!-- Line 3: IA [icon] DATOS -->
-		<div class="relative items-center gap-8 md:flex">
+		<div class="relative flex flex-col items-center justify-center gap-4 md:flex-row md:gap-8">
 			<BlockReveal
 				as="h1"
-				class="flex items-center whitespace-nowrap font-poppins text-[13vw] font-black uppercase leading-[0.85] tracking-tighter sm:text-[8vw] lg:text-[6.2vw]"
+				class="flex items-center whitespace-nowrap font-poppins text-[7.8vw] font-black uppercase leading-[0.85] tracking-tighter sm:text-[8vw] lg:text-[6.2vw]"
 				boxColor="#c70039"
 				delay={0.5}
 			>
@@ -112,12 +112,12 @@ const socialLinks = {
 				<span class="text-shiny">Datos</span>
 			</BlockReveal>
 
-			<p class="line-in mt-2 max-w-[220px] text-[10px] font-medium uppercase leading-relaxed tracking-[0.2em] text-white/50 md:mt-4" style="animation-delay: 0.6s">
+			<p class="line-in mt-2 max-w-[220px] text-center text-[10px] font-medium uppercase leading-relaxed tracking-[0.2em] text-white/50 md:mt-0 md:text-left" style="animation-delay: 0.6s">
 				Abierto a nuevas oportunidades, sin importar ubicación o modalidad.
 			</p>
 		</div>
 
-		<p class="line-in mt-6 text-sm font-medium text-white/60 sm:text-base" style="animation-delay: 0.7s">
+		<p class="line-in mt-6 text-center text-sm font-medium text-white/60 sm:text-base" style="animation-delay: 0.7s">
 			{label}
 		</p>
 	</div>
