@@ -7,46 +7,228 @@ import ScrollReveal from '@components/ui/ScrollReveal.astro'
 const highlightRepos = await getHighlightRepos(3)
 ---
 
-<section class="relative bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16" data-github-highlights>
-	<div class="mx-auto max-w-[1400px]">
-		<p class="mb-6 text-xs font-bold uppercase tracking-[0.3em] text-white/40">GitHub</p>
+<section
+	class="relative bg-[#0a0a0a]"
+	style={`height: ${highlightRepos.length * 100}vh;`}
+	data-github-highlights
+>
+	<div class="sticky-container sticky top-0 flex h-screen flex-col justify-center overflow-hidden px-6 sm:px-10 lg:px-16">
+		<div class="mx-auto w-full max-w-[1400px]">
+			<div class="mb-8 sm:mb-12">
+				<p class="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-white/40">GitHub</p>
 
-		<ScrollReveal
-			text="Del código a la práctica"
-			as="h2"
-			class="font-poppins max-w-2xl text-3xl font-black uppercase tracking-tight text-white sm:text-4xl"
-		/>
+				<ScrollReveal
+					text="Del código a la práctica"
+					as="h2"
+					class="font-poppins max-w-2xl text-3xl font-black uppercase tracking-tight text-white sm:text-4xl"
+				/>
+			</div>
 
-		<div class="stack-cards mt-20">
-			{
-				highlightRepos.map((repo, index) => (
-					<div class="stack-card" style={`top: ${5 + index * 1.5}rem; z-index: ${index + 1};`}>
-						<RepoCard
-							name={repo.name}
-							note={getRepoNote(repo)}
-							stars={repo.stargazers_count}
-							forks={repo.forks_count}
-							language={repo.language}
-							topics={repo.topics}
-							href={repo.html_url}
-						/>
-					</div>
-				))
-			}
+			<div class="stack-stage relative mx-auto w-full max-w-[1100px]" data-stack-stage>
+				{
+					highlightRepos.map((repo, index) => (
+						<div
+							class="stack-card-layer"
+							data-card-layer={index}
+							style={`z-index: ${index + 1};`}
+						>
+							<RepoCard
+								name={repo.name}
+								note={getRepoNote(repo)}
+								stars={repo.stargazers_count}
+								forks={repo.forks_count}
+								language={repo.language}
+								topics={repo.topics}
+								href={repo.html_url}
+							/>
+						</div>
+					))
+				}
+			</div>
 		</div>
 	</div>
 </section>
 
-<style>
-	/* Sticky card-stacking idiom shared with ProjectGallery: each card sticks
-	   at a slightly increasing offset so later cards overlap earlier ones as
-	   the user scrolls, without any scroll-jacking script. */
-	.stack-card {
-		position: sticky;
-		margin-bottom: 2rem;
+<script>
+	function initStackCards() {
+		const section = document.querySelector<HTMLElement>('[data-github-highlights]')
+		if (!section) return
+		if (section.dataset.stackCardsInit === 'true') return
+		section.dataset.stackCardsInit = 'true'
+
+		const stage = section.querySelector<HTMLElement>('[data-stack-stage]')
+		const cardLayers = Array.from(section.querySelectorAll<HTMLElement>('[data-card-layer]'))
+		if (!stage || cardLayers.length < 2) return
+
+		const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+		if (isReducedMotion) return
+
+		const updateStageHeight = () => {
+			let maxH = 0
+			cardLayers.forEach((layer) => {
+				const prevTransform = layer.style.transform
+				layer.style.transform = 'none'
+				const h = layer.scrollHeight || layer.offsetHeight
+				layer.style.transform = prevTransform
+				if (h > maxH) maxH = h
+			})
+			if (maxH > 0) {
+				stage.style.minHeight = `${maxH}px`
+			}
+		}
+
+		updateStageHeight()
+
+		let ticking = false
+
+		const onScroll = () => {
+			const rect = section.getBoundingClientRect()
+			const scrollable = rect.height - window.innerHeight
+			if (scrollable <= 0) return
+
+			const progress = Math.min(1, Math.max(0, -rect.top / scrollable))
+
+			// Phase 1 (Card 1 arrives and stacks over Card 0): progress 0.10 -> 0.45
+			const t1 = Math.min(1, Math.max(0, (progress - 0.1) / 0.35))
+
+			// Phase 2 (Card 2 arrives and stacks over Card 1): progress 0.55 -> 0.90
+			const t2 = Math.min(1, Math.max(0, (progress - 0.55) / 0.35))
+
+			const STACK_STEP = 24
+
+			// Card 0:
+			// Stays anchored at y = 0, never moving up into the title text.
+			// Scales down and dims to reveal depth behind Card 1 & Card 2.
+			const scale0 = 1 - 0.05 * t1 - 0.05 * t2
+			const bright0 = 1 - 0.25 * t1 - 0.2 * t2
+			cardLayers[0].style.transform = `translate3d(0, 0px, 0) scale(${scale0})`
+			cardLayers[0].style.filter = `brightness(${bright0})`
+
+			// Card 1:
+			// Enters from below and settles at STACK_STEP (24px lower than Card 0),
+			// leaving Card 0's top tab cleanly visible without pushing anything upward.
+			if (t1 <= 0) {
+				cardLayers[1].style.transform = 'translate3d(0, 110vh, 0)'
+				cardLayers[1].style.filter = 'brightness(1)'
+				cardLayers[1].style.opacity = '0'
+				cardLayers[1].style.pointerEvents = 'none'
+			} else {
+				const y1Entrance = (1 - t1) * (window.innerHeight * 0.85)
+				const y1 = y1Entrance + STACK_STEP
+				const scale1 = 1 - 0.05 * t2
+				const bright1 = 1 - 0.25 * t2
+				cardLayers[1].style.transform = `translate3d(0, ${y1}px, 0) scale(${scale1})`
+				cardLayers[1].style.filter = `brightness(${bright1})`
+				cardLayers[1].style.opacity = '1'
+				cardLayers[1].style.pointerEvents = t2 > 0.5 ? 'none' : 'auto'
+			}
+
+			// Card 2:
+			// Enters from below and settles at STACK_STEP * 2 (48px lower than Card 0),
+			// leaving Card 1's and Card 0's top tabs cleanly visible.
+			if (cardLayers[2]) {
+				if (t2 <= 0) {
+					cardLayers[2].style.transform = 'translate3d(0, 110vh, 0)'
+					cardLayers[2].style.filter = 'brightness(1)'
+					cardLayers[2].style.opacity = '0'
+					cardLayers[2].style.pointerEvents = 'none'
+				} else {
+					const y2Entrance = (1 - t2) * (window.innerHeight * 0.85)
+					const y2 = y2Entrance + STACK_STEP * 2
+					cardLayers[2].style.transform = `translate3d(0, ${y2}px, 0) scale(1)`
+					cardLayers[2].style.filter = 'brightness(1)'
+					cardLayers[2].style.opacity = '1'
+					cardLayers[2].style.pointerEvents = 'auto'
+				}
+			}
+		}
+
+		const requestTick = () => {
+			if (!ticking) {
+				requestAnimationFrame(() => {
+					onScroll()
+					ticking = false
+				})
+				ticking = true
+			}
+		}
+
+		window.addEventListener('scroll', requestTick, { passive: true })
+		window.addEventListener('resize', () => {
+			updateStageHeight()
+			requestTick()
+		}, { passive: true })
+
+		onScroll()
 	}
 
-	.stack-card:last-child {
-		margin-bottom: 0;
+	initStackCards()
+	document.addEventListener('astro:page-load', initStackCards)
+	document.addEventListener('astro:after-swap', initStackCards)
+</script>
+
+<style>
+	.stack-stage {
+		position: relative;
+		width: 100%;
+	}
+
+	.stack-card-layer {
+		width: 100%;
+		border-radius: 1rem;
+		transform-origin: center top;
+		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.08);
+		will-change: transform, filter, opacity;
+	}
+
+	.stack-card-layer:not(:first-child) {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+	}
+
+	@media (max-height: 520px) {
+		[data-github-highlights] {
+			height: auto !important;
+		}
+
+		.sticky-container {
+			position: relative !important;
+			height: auto !important;
+			overflow: visible !important;
+			padding-top: 4rem;
+			padding-bottom: 4rem;
+		}
+
+		.stack-card-layer:not(:first-child) {
+			position: relative !important;
+			margin-top: 2rem !important;
+			transform: none !important;
+			filter: none !important;
+			opacity: 1 !important;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		[data-github-highlights] {
+			height: auto !important;
+		}
+
+		.sticky-container {
+			position: relative !important;
+			height: auto !important;
+			overflow: visible !important;
+			padding-top: 4rem;
+			padding-bottom: 4rem;
+		}
+
+		.stack-card-layer:not(:first-child) {
+			position: relative !important;
+			margin-top: 2rem !important;
+			transform: none !important;
+			filter: none !important;
+			opacity: 1 !important;
+		}
 	}
 </style>
