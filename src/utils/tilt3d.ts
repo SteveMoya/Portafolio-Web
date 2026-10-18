@@ -70,7 +70,7 @@ export function initTiltCards(selector = '[data-tilt-card]', maxRotation = 7): (
 		const onPointerLeave = () => {
 			if (rafId !== null) cancelAnimationFrame(rafId)
 			bounds = null
-			card.style.transition = 'transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.5s ease, border-color 0.5s ease'
+			card.style.transition = 'none'
 			card.style.setProperty('--rx', '0deg')
 			card.style.setProperty('--ry', '0deg')
 			card.style.setProperty('--glare-opacity', '0')
