@@ -5,6 +5,7 @@ import Header from '@components/Header.astro'
 import SocialConnect from '@components/sections/SocialConnect.astro'
 import Input from '@components/ui/Input.astro'
 import Button from '@components/ui/Button.astro'
+import { AstronautCharacter } from '@components/sections/AstronautCharacter'
 
 const { author } = siteConfig
 
@@ -51,78 +52,141 @@ const faqs = [
 
 	<SocialConnect eyebrow="Redes sociales" title="También podés" titleAccent="encontrarme acá" />
 
-	<section class="relative w-full bg-[#0a0a0a] px-6 pb-16 sm:px-10 lg:px-16">
-		<div class="contact-in mx-auto max-w-2xl" style="animation-delay: 0s">
-			<div class="mb-8 flex items-center gap-3">
-				<span class="h-px flex-1 bg-white/10" />
-				<span class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">Enviame un mensaje</span>
-				<span class="h-px flex-1 bg-white/10" />
+	<!-- Contact Form Section with Astronaut -->
+	<section class="relative w-full bg-gradient-to-br from-[#fafaf8] via-[#f5f5f3] to-[#f0f0ee] px-6 py-16 sm:px-10 lg:px-16">
+		<div class="mx-auto max-w-6xl">
+			<div class="mb-12 flex items-center gap-4">
+				<span class="h-px flex-1 bg-stone-300" />
+				<span class="text-[10px] font-bold uppercase tracking-[0.3em] text-stone-500">Escribime directamente</span>
+				<span class="h-px flex-1 bg-stone-300" />
 			</div>
 
-			<form id="contact-form" novalidate class="dotted-card rounded-2xl border border-white/10 bg-white/5 p-6 sm:p-8">
-				<div class="grid gap-5 sm:grid-cols-2">
-					<div>
-						<label for="nombre" class="mb-2 block text-xs font-bold uppercase tracking-[0.15em] text-white/50">Nombre</label>
-						<Input id="nombre" name="nombre" type="text" required placeholder="Tu nombre" class="m-0 w-full" />
-						<p data-error-for="nombre" class="mt-1.5 hidden text-xs font-semibold text-[#c70039]">Ingresá tu nombre.</p>
-					</div>
+			<div class="grid gap-8 lg:grid-cols-2">
+				<!-- Form -->
+				<div class="contact-in flex flex-col justify-center" style="animation-delay: 0s">
+					<form id="contact-form" novalidate class="space-y-6">
+						<div class="grid gap-4 sm:grid-cols-2">
+							<div>
+								<label for="nombre" class="mb-2 block text-sm font-semibold text-stone-700">
+									Tu nombre
+								</label>
+								<Input
+									id="nombre"
+									name="nombre"
+									type="text"
+									required
+									placeholder="¿Cómo te llamas?"
+									class="m-0 w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-stone-900 placeholder-stone-400 shadow-sm transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+								/>
+								<p data-error-for="nombre" class="mt-1.5 hidden text-xs font-semibold text-red-500">Ingresá tu nombre.</p>
+							</div>
 
-					<div>
-						<label for="email" class="mb-2 block text-xs font-bold uppercase tracking-[0.15em] text-white/50">Email</label>
-						<Input id="email" name="email" type="email" required placeholder="tu@email.com" class="m-0 w-full" />
-						<p data-error-for="email" class="mt-1.5 hidden text-xs font-semibold text-[#c70039]">Ingresá un email válido.</p>
-					</div>
+							<div>
+								<label for="email" class="mb-2 block text-sm font-semibold text-stone-700">
+									Tu email
+								</label>
+								<Input
+									id="email"
+									name="email"
+									type="email"
+									required
+									placeholder="tu@email.com"
+									class="m-0 w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-stone-900 placeholder-stone-400 shadow-sm transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+								/>
+								<p data-error-for="email" class="mt-1.5 hidden text-xs font-semibold text-red-500">Ingresá un email válido.</p>
+							</div>
+						</div>
+
+						<div>
+							<label for="asunto" class="mb-2 block text-sm font-semibold text-stone-700">
+								¿De qué se trata?
+							</label>
+							<Input
+								id="asunto"
+								name="asunto"
+								type="text"
+								required
+								placeholder="Por ejemplo: Quiero un sitio web nuevo"
+								class="m-0 w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-stone-900 placeholder-stone-400 shadow-sm transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+							/>
+							<p data-error-for="asunto" class="mt-1.5 hidden text-xs font-semibold text-red-500">Contame el asunto.</p>
+						</div>
+
+						<div>
+							<label for="descripcion" class="mb-2 block text-sm font-semibold text-stone-700">
+								Contame más
+							</label>
+							<Input
+								id="descripcion"
+								name="descripcion"
+								type="textarea"
+								required
+								placeholder="Describí tu proyecto, presupuesto, timeline, o lo que consideres importante."
+								class="m-0 w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-stone-900 placeholder-stone-400 shadow-sm transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+								rows={5}
+							/>
+							<p data-error-for="descripcion" class="mt-1.5 hidden text-xs font-semibold text-red-500">Contame un poco más.</p>
+						</div>
+
+						<div class="flex flex-col items-start gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
+							<Button
+								type="submit"
+								variant="primary"
+								text="Enviar mensaje"
+								class="m-0 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 px-8 py-3 font-semibold text-white shadow-md transition-all hover:from-blue-600 hover:to-blue-700 hover:shadow-lg active:scale-95"
+							/>
+							<p id="form-status" class="hidden text-sm font-semibold" role="status"></p>
+						</div>
+					</form>
 				</div>
 
-				<div class="mt-5">
-					<label for="asunto" class="mb-2 block text-xs font-bold uppercase tracking-[0.15em] text-white/50">Asunto</label>
-					<Input id="asunto" name="asunto" type="text" required placeholder="¿De qué se trata?" class="m-0 w-full" />
-					<p data-error-for="asunto" class="mt-1.5 hidden text-xs font-semibold text-[#c70039]">Contame el asunto.</p>
+				<!-- Astronaut Character -->
+				<div class="astronaut-container hidden lg:flex items-center justify-center rounded-2xl bg-white/50 p-8 backdrop-blur-sm">
+					<AstronautCharacter client:load />
 				</div>
-
-				<div class="mt-5">
-					<label for="descripcion" class="mb-2 block text-xs font-bold uppercase tracking-[0.15em] text-white/50">Descripción</label>
-					<Input id="descripcion" name="descripcion" type="textarea" required placeholder="Contame más sobre tu proyecto" class="m-0 w-full" />
-					<p data-error-for="descripcion" class="mt-1.5 hidden text-xs font-semibold text-[#c70039]">Contame un poco más.</p>
-				</div>
-
-				<div class="mt-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-					<Button type="submit" variant="primary" text="Enviar mensaje" class="m-0" />
-					<p id="form-status" class="hidden text-sm font-semibold" role="status"></p>
-				</div>
-			</form>
+			</div>
 		</div>
 	</section>
 
-	<section class="relative w-full bg-[#0a0a0a] px-6 pb-24 sm:px-10 lg:px-16">
-		<div class="mx-auto flex max-w-2xl flex-col gap-4">
-			<div class="mb-4 flex items-center gap-3">
-				<span class="h-px flex-1 bg-white/10" />
-				<span class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">Preguntas frecuentes</span>
-				<span class="h-px flex-1 bg-white/10" />
+	<!-- Mobile Astronaut -->
+	<div class="lg:hidden bg-gradient-to-b from-[#f0f0ee] to-[#fafaf8] px-6 py-8 sm:px-10">
+		<div class="mx-auto max-w-6xl rounded-2xl bg-white/50 p-6 backdrop-blur-sm" style="height: 300px">
+			<AstronautCharacter client:load />
+		</div>
+	</div>
+
+	<!-- FAQ Section -->
+	<section class="relative w-full bg-gradient-to-br from-[#fafaf8] via-white to-[#f5f5f3] px-6 pb-24 sm:px-10 lg:px-16">
+		<div class="mx-auto max-w-3xl">
+			<div class="mb-12 flex items-center gap-4">
+				<span class="h-px flex-1 bg-stone-300" />
+				<span class="text-[10px] font-bold uppercase tracking-[0.3em] text-stone-500">Preguntas frecuentes</span>
+				<span class="h-px flex-1 bg-stone-300" />
 			</div>
 
-			{
-				faqs.map((faq, index) => (
-					<details
-						class="faq-in group rounded-2xl border border-white/10 bg-white/5 transition-colors duration-300 open:border-[#c70039]/40"
-						style={`animation-delay: ${index * 0.05}s`}
-					>
-						<summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 text-base font-bold text-white select-none">
-							{faq.question}
-							<svg
-								class="h-4 w-4 shrink-0 text-white/40 transition-transform duration-300 group-open:rotate-180 group-open:text-[#c70039]"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-							</svg>
-						</summary>
-						<p class="border-t border-white/10 px-6 pb-5 pt-4 text-sm leading-relaxed text-white/60">{faq.answer}</p>
-					</details>
-				))
-			}
+			<div class="space-y-3">
+				{
+					faqs.map((faq, index) => (
+						<details
+							class="faq-in group rounded-xl border border-stone-200 bg-white shadow-sm transition-all duration-300 hover:shadow-md open:border-blue-300 open:shadow-md"
+							style={`animation-delay: ${index * 0.05}s`}
+						>
+							<summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 text-base font-semibold text-stone-900 select-none">
+								{faq.question}
+								<svg
+									class="h-5 w-5 shrink-0 text-stone-400 transition-transform duration-300 group-open:rotate-180 group-open:text-blue-500"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+								</svg>
+							</summary>
+							<p class="border-t border-stone-100 px-6 pb-5 pt-4 text-sm leading-relaxed text-stone-600">{faq.answer}</p>
+						</details>
+					))
+				}
+			</div>
 		</div>
 	</section>
 </Layout>
