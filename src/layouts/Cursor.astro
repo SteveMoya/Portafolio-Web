@@ -444,7 +444,15 @@
 
 	document.addEventListener('astro:page-load', () => { initCursor(); });
 
+	// Throttle mousemove to ~60fps (16ms) to limit calculations per second
+	let lastMouseUpdateTime = 0;
+	const MOUSEMOVE_THROTTLE = 16;
+
 	document.addEventListener('mousemove', (e) => {
+		const now = Date.now();
+		if (now - lastMouseUpdateTime < MOUSEMOVE_THROTTLE) return;
+
+		lastMouseUpdateTime = now;
 		mouseX = e.clientX;
 		mouseY = e.clientY;
 		if (!hasMoved) {
