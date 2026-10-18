@@ -83,6 +83,10 @@
 	let hasMoved = false;
 	let hoveredEl: HTMLElement | null = null;
 
+	// SVG filter cache to prevent regeneration every frame
+	let cachedFilterParams: { w: number; h: number; r: number; depth: number; strength: number; chroma: number } | null = null;
+	let cachedFilterUrl: string = '';
+
 	// ── Size persistence ──
 	function getSavedSize(): number {
 		try {
@@ -212,8 +216,20 @@
 			const depth = hoveredEl ? Math.min(DEPTH, Math.max(2, minSide * HOVER_DEPTH_RATIO)) : DEPTH;
 			const strength = hoveredEl ? Math.min(STRENGTH, minSide * HOVER_STRENGTH_RATIO) : STRENGTH;
 			const chromaticAberration = hoveredEl ? Math.min(HOVER_CHROMA_MAX, minSide / 120) : 2;
-			const url = getDisplacementFilter({ height: h, width: w, radius: r, depth, strength, chromaticAberration });
-			el.style.backdropFilter = `blur(${BLUR / 2}px) url('${url}') blur(${BLUR}px) brightness(1.1) saturate(1.5)`;
+
+			// Cache filter to avoid regenerating SVG every frame
+			if (!cachedFilterParams ||
+				cachedFilterParams.w !== w ||
+				cachedFilterParams.h !== h ||
+				cachedFilterParams.r !== r ||
+				cachedFilterParams.depth !== depth ||
+				cachedFilterParams.strength !== strength ||
+				cachedFilterParams.chroma !== chromaticAberration) {
+				cachedFilterParams = { w, h, r, depth, strength, chroma: chromaticAberration };
+				cachedFilterUrl = getDisplacementFilter({ height: h, width: w, radius: r, depth, strength, chromaticAberration });
+			}
+
+			el.style.backdropFilter = `blur(${BLUR / 2}px) url('${cachedFilterUrl}') blur(${BLUR}px) brightness(1.1) saturate(1.5)`;
 			el.style.background = BACKGROUND_COLOR;
 			el.style.boxShadow = '1px 1px 1px 0px rgba(255,255,255,0.6) inset,-1px -1px 1px 0px rgba(255,255,255,0.6) inset,0 0 16px 0 rgba(0,0,0,0.04)';
 			el.style.border = 'none';
