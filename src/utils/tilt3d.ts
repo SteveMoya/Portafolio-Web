@@ -14,6 +14,17 @@ export function initTiltCards(selector = '[data-tilt-card]', maxRotation = 7): (
 	const cards = document.querySelectorAll<HTMLElement>(selector)
 	const cleanups: Array<() => void> = []
 
+	function throttle(fn: (e: PointerEvent) => void, delay: number) {
+		let lastCall = 0
+		return (e: PointerEvent) => {
+			const now = Date.now()
+			if (now - lastCall >= delay) {
+				lastCall = now
+				fn(e)
+			}
+		}
+	}
+
 	cards.forEach((card) => {
 		// Avoid attaching duplicate listeners if re-run
 		if (card.dataset.tiltInitialized === 'true') return
@@ -28,7 +39,7 @@ export function initTiltCards(selector = '[data-tilt-card]', maxRotation = 7): (
 			card.style.setProperty('--glare-opacity', '1')
 		}
 
-		const onPointerMove = (e: PointerEvent) => {
+		const onPointerMoveRaw = (e: PointerEvent) => {
 			if (!bounds) bounds = card.getBoundingClientRect()
 
 			if (rafId !== null) cancelAnimationFrame(rafId)
@@ -53,6 +64,8 @@ export function initTiltCards(selector = '[data-tilt-card]', maxRotation = 7): (
 				card.style.setProperty('--gy', `${gy}%`)
 			})
 		}
+
+		const onPointerMove = throttle(onPointerMoveRaw, 8)
 
 		const onPointerLeave = () => {
 			if (rafId !== null) cancelAnimationFrame(rafId)

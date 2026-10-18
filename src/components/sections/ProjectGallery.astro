@@ -67,6 +67,7 @@ const projects = allProjects.slice(0, PREVIEW_COUNT)
 										src={project.image || (placeholderImage as unknown as string)}
 										alt={`${project.title} imagen`}
 										class="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
+										style="will-change: transform; transform: scale3d(1, 1, 1);"
 										loading="lazy"
 									/>
 									<div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-black/20 to-transparent"></div>
