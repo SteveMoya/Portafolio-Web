@@ -35,7 +35,6 @@ export function initTiltCards(selector = '[data-tilt-card]', maxRotation = 7): (
 
 		const onPointerEnter = () => {
 			bounds = card.getBoundingClientRect()
-			card.style.transition = 'box-shadow 0.3s ease, border-color 0.3s ease'
 			card.style.setProperty('--glare-opacity', '1')
 		}
 
@@ -70,7 +69,6 @@ export function initTiltCards(selector = '[data-tilt-card]', maxRotation = 7): (
 		const onPointerLeave = () => {
 			if (rafId !== null) cancelAnimationFrame(rafId)
 			bounds = null
-			card.style.transition = 'none'
 			card.style.setProperty('--rx', '0deg')
 			card.style.setProperty('--ry', '0deg')
 			card.style.setProperty('--glare-opacity', '0')
