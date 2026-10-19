@@ -31,19 +31,29 @@ const socialLinks = {
 	</div>
 
 	<div class="relative z-[2] mx-auto flex w-full max-w-[1680px] flex-1 flex-col items-center justify-center gap-4 px-6 pt-16 sm:px-10 lg:px-16">
-		<!-- Line 1: MARKETING [icon] DIGITAL -->
-		<div class="relative flex flex-col items-center justify-center gap-4 md:flex-row md:gap-8">
-			<p class="line-in mb-2 max-w-[200px] text-center text-[10px] font-medium uppercase leading-relaxed tracking-[0.2em] text-white/50 md:mb-0 md:text-right" style="animation-delay: 0.2s">
-				Hola, soy {name}. Marketing, desarrollo, IA y datos.
-			</p>
-			<div class="relative">
+		<!-- Mobile-only greeting (shows above pyramid on mobile) -->
+		<p class="line-in mb-1 max-w-[240px] text-center text-[10px] font-medium uppercase leading-relaxed tracking-[0.2em] text-white/50 md:hidden" style="animation-delay: 0.2s">
+			Hola, soy {name}. IA, datos, desarrollo y marketing.
+		</p>
+
+		<!-- Line 1: IA [icon] DATOS (Pyramid Apex) -->
+		<div class="relative flex w-full items-center justify-center">
+			<!-- Desktop left flank: greeting -->
+			<div class="hidden flex-1 items-center justify-end pr-8 md:flex">
+				<p class="line-in max-w-[200px] text-right text-[10px] font-medium uppercase leading-relaxed tracking-[0.2em] text-white/50" style="animation-delay: 0.2s">
+					Hola, soy {name}. IA, datos, desarrollo y marketing.
+				</p>
+			</div>
+
+			<!-- Apex heading -->
+			<div class="relative shrink-0">
 				<a
 					href={socialLinks.github}
 					target="_blank"
 					rel="noopener noreferrer"
 					title="GitHub"
 					aria-label="GitHub"
-					class="icon-entrance icon-float--y absolute -top-4 right-0 z-20 hidden text-white/40 transition-colors duration-300 hover:text-[#c70039] md:right-2 md:block"
+					class="icon-entrance icon-float--y absolute -top-5 right-0 z-20 hidden text-white/40 transition-colors duration-300 hover:text-[#c70039] md:-right-6 md:block"
 					style="animation-delay: 0.3s"
 				>
 					<Icon name="mdi:github" class="h-7 w-7" />
@@ -54,15 +64,22 @@ const socialLinks = {
 					boxColor="#c70039"
 					delay={0.1}
 				>
-					<span class="text-shiny">Marketing</span>
-					<Icon name="mdi:bullhorn-outline" class="icon-bob mx-[0.05em] h-[0.7em] w-[0.7em] shrink-0 text-[#c70039]" style="animation-delay: 0s; animation-duration: 3.2s" />
-					<span class="text-shiny">Digital</span>
+					<span class="text-shiny">IA</span>
+					<Icon name="mdi:robot-outline" class="icon-bob mx-[0.05em] h-[0.7em] w-[0.7em] shrink-0 text-[#c70039]" style="animation-delay: 0s; animation-duration: 2.8s" />
+					<span class="text-shiny">Datos</span>
 				</BlockReveal>
+			</div>
+
+			<!-- Desktop right flank: availability notice -->
+			<div class="hidden flex-1 items-center justify-start pl-8 md:flex">
+				<p class="line-in max-w-[220px] text-left text-[10px] font-medium uppercase leading-relaxed tracking-[0.2em] text-white/50" style="animation-delay: 0.6s">
+					Abierto a nuevas oportunidades, sin importar ubicación o modalidad.
+				</p>
 			</div>
 		</div>
 
-		<!-- Line 2: DESARROLLO [icon] WEB -->
-		<div class="relative flex items-center justify-center gap-8">
+		<!-- Line 2: DESARROLLO [icon] WEB (Pyramid Middle) -->
+		<div class="relative flex items-center justify-center">
 			<div class="relative">
 				<a
 					href={socialLinks.linkedin}
@@ -74,17 +91,6 @@ const socialLinks = {
 					style="animation-delay: 0.4s"
 				>
 					<Icon name="mdi:linkedin" class="h-7 w-7" />
-				</a>
-				<a
-					href={socialLinks.instagram}
-					target="_blank"
-					rel="noopener noreferrer"
-					title="Instagram"
-					aria-label="Instagram"
-					class="icon-entrance icon-float--x absolute -bottom-10 right-16 z-20 hidden text-white/40 transition-colors duration-300 hover:text-[#c70039] md:right-24 md:block"
-					style="animation-delay: 0.5s"
-				>
-					<Icon name="mdi:instagram" class="h-7 w-7" />
 				</a>
 				<BlockReveal
 					as="h1"
@@ -99,23 +105,37 @@ const socialLinks = {
 			</div>
 		</div>
 
-		<!-- Line 3: IA [icon] DATOS -->
-		<div class="relative flex flex-col items-center justify-center gap-4 md:flex-row md:gap-8">
-			<BlockReveal
-				as="h1"
-				class="flex items-center whitespace-nowrap font-poppins text-[7.8vw] font-black uppercase leading-[0.85] tracking-tighter sm:text-[8vw] lg:text-[6.2vw]"
-				boxColor="#c70039"
-				delay={0.5}
-			>
-				<span class="text-shiny">IA</span>
-				<Icon name="mdi:robot-outline" class="icon-bob mx-[0.05em] h-[0.7em] w-[0.7em] shrink-0 text-[#c70039]" style="animation-delay: 0.7s; animation-duration: 2.8s" />
-				<span class="text-shiny">Datos</span>
-			</BlockReveal>
-
-			<p class="line-in mt-2 max-w-[220px] text-center text-[10px] font-medium uppercase leading-relaxed tracking-[0.2em] text-white/50 md:mt-0 md:text-left" style="animation-delay: 0.6s">
-				Abierto a nuevas oportunidades, sin importar ubicación o modalidad.
-			</p>
+		<!-- Line 3: MARKETING [icon] DIGITAL (Pyramid Base) -->
+		<div class="relative flex items-center justify-center">
+			<div class="relative">
+				<a
+					href={socialLinks.instagram}
+					target="_blank"
+					rel="noopener noreferrer"
+					title="Instagram"
+					aria-label="Instagram"
+					class="icon-entrance icon-float--x absolute -bottom-8 right-8 z-20 hidden text-white/40 transition-colors duration-300 hover:text-[#c70039] md:right-16 md:block"
+					style="animation-delay: 0.5s"
+				>
+					<Icon name="mdi:instagram" class="h-7 w-7" />
+				</a>
+				<BlockReveal
+					as="h1"
+					class="flex items-center whitespace-nowrap font-poppins text-[7.8vw] font-black uppercase leading-[0.85] tracking-tighter sm:text-[8vw] lg:text-[6.2vw]"
+					boxColor="#c70039"
+					delay={0.5}
+				>
+					<span class="text-shiny">Marketing</span>
+					<Icon name="mdi:bullhorn-outline" class="icon-bob mx-[0.05em] h-[0.7em] w-[0.7em] shrink-0 text-[#c70039]" style="animation-delay: 0.7s; animation-duration: 3.2s" />
+					<span class="text-shiny">Digital</span>
+				</BlockReveal>
+			</div>
 		</div>
+
+		<!-- Mobile-only availability notice (shows below pyramid on mobile) -->
+		<p class="line-in mt-2 max-w-[240px] text-center text-[10px] font-medium uppercase leading-relaxed tracking-[0.2em] text-white/50 md:hidden" style="animation-delay: 0.6s">
+			Abierto a nuevas oportunidades, sin importar ubicación o modalidad.
+		</p>
 
 		<p class="line-in mt-6 text-center text-sm font-medium text-white/60 sm:text-base" style="animation-delay: 0.7s">
 			{label}

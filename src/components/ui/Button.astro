@@ -12,6 +12,8 @@ interface Props {
 	iconposition?: 'left' | 'right'
 	value?: string
 	id?: string
+	disabled?: boolean
+	[key: string]: any
 }
 
 const {
@@ -23,7 +25,9 @@ const {
 	type,
 	iconposition,
 	value,
-	id
+	id,
+	disabled = false,
+	...rest
 } = Astro.props
 
 const variants = {
@@ -42,6 +46,8 @@ const variants = {
 			class={twMerge(variants[variant] || '', className)}
 			id={id}
 			value={value}
+			disabled={disabled}
+			{...rest}
 		>
 			{variant === 'slash' ? (
 				<span class="group-hover:relative group-hover:z-[4]">

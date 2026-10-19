@@ -70,39 +70,40 @@ const faqs = [
 							<h3 class="text-xl font-bold text-white">Encontrame en</h3>
 						</div>
 
-						{/* Social Networks Auto-Carousel */}
+						{/* Social Networks Carousel with Fade */}
 						<div class="carousel-fade relative w-full overflow-hidden rounded-xl border border-white/10 bg-[#0a0a0a]/50">
-							<div id="social-carousel-container" class="grid grid-cols-2 gap-4 p-8 sm:grid-cols-3 sm:p-10 lg:p-12">
+							<div id="social-carousel-track" class="flex gap-4 transition-transform duration-700 ease-out" style="width: max-content;">
 								{
-									connectLinks.map((link, index) => (
-										<a
-											href={link.url}
-											target={link.url.startsWith('http') ? '_blank' : '_self'}
-											rel={link.url.startsWith('http') ? 'noopener noreferrer' : ''}
-											aria-label={`${link.title}${link.handle ? ` — ${link.handle}` : ''}`}
-											class="connect-card group flex flex-col rounded-2xl border border-white/10 bg-white/5 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#c70039]/40 hover:shadow-[0_12px_40px_rgba(199,0,57,0.18)]"
-											style={`animation-delay: ${index * 0.05}s`}
-										>
-											<div class="flex items-center gap-3">
-												<span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[#c70039] transition-colors duration-300 group-hover:border-[#c70039]/40">
-													<Icon name={link.icon} class="h-5 w-5" />
-												</span>
-												<span class="flex min-w-0 flex-col">
-													<span class="truncate text-sm font-bold text-white">{link.title}</span>
-													{link.handle && <span class="truncate text-xs text-white/40">{link.handle}</span>}
-												</span>
-											</div>
+									[...connectLinks, ...connectLinks].map((link, index) => (
+										<div class="w-full flex-shrink-0 sm:w-1/2 lg:w-1/3">
+											<a
+												href={link.url}
+												target={link.url.startsWith('http') ? '_blank' : '_self'}
+												rel={link.url.startsWith('http') ? 'noopener noreferrer' : ''}
+												aria-label={`${link.title}${link.handle ? ` — ${link.handle}` : ''}`}
+												class="connect-card group flex h-full flex-col rounded-2xl border border-white/10 bg-white/5 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#c70039]/40 hover:shadow-[0_12px_40px_rgba(199,0,57,0.18)]"
+											>
+												<div class="flex items-center gap-3">
+													<span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[#c70039] transition-colors duration-300 group-hover:border-[#c70039]/40">
+														<Icon name={link.icon} class="h-5 w-5" />
+													</span>
+													<span class="flex min-w-0 flex-col">
+														<span class="truncate text-sm font-bold text-white">{link.title}</span>
+														{link.handle && <span class="truncate text-xs text-white/40">{link.handle}</span>}
+													</span>
+												</div>
 
-											<div class="mt-4 flex items-center justify-between border-t border-white/10 pt-3">
-												<span class="text-[10px] font-bold uppercase tracking-[0.25em] text-white/40 transition-colors duration-300 group-hover:text-[#c70039]">
-													Conectar
-												</span>
-												<Icon
-													name="mdi:arrow-top-right"
-													class="h-4 w-4 text-white/40 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[#c70039]"
-												/>
-											</div>
-										</a>
+												<div class="mt-4 flex items-center justify-between border-t border-white/10 pt-3">
+													<span class="text-[10px] font-bold uppercase tracking-[0.25em] text-white/40 transition-colors duration-300 group-hover:text-[#c70039]">
+														Conectar
+													</span>
+													<Icon
+														name="mdi:arrow-top-right"
+														class="h-4 w-4 text-white/40 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[#c70039]"
+													/>
+												</div>
+											</a>
+										</div>
 									))
 								}
 							</div>
@@ -233,6 +234,17 @@ const faqs = [
 		-webkit-mask-image: linear-gradient(to right, transparent, #000 15%, #000 85%, transparent);
 	}
 
+	@keyframes links-in {
+		from {
+			opacity: 0;
+			transform: scale(0.95);
+		}
+		to {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+
 	.connect-card {
 		animation: links-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 	}
@@ -299,45 +311,68 @@ const faqs = [
 	})
 
 
-	// Social Cards Auto-Carousel
-	const carouselContainer = document.getElementById('social-carousel-container')
-	if (carouselContainer) {
-		const cards = Array.from(carouselContainer.querySelectorAll('a'))
-		const totalCards = cards.length
-		let currentIndex = 0
+	// Social Cards Fade Carousel
+	const carouselTrack = document.getElementById('social-carousel-track')
+	if (carouselTrack) {
+		const carouselContainer = carouselTrack.closest('.carousel-fade')
+		const cards = carouselTrack.querySelectorAll('a')
+		const totalOriginalCards = cards.length / 2
+		let currentPosition = 0
 		let autoPlayInterval: ReturnType<typeof setInterval>
+		let isAutoPlaying = true
 
-		const showSlide = (index: number) => {
-			currentIndex = index % totalCards
-
-			cards.forEach((card, i) => {
-				if (i === currentIndex) {
-					card.classList.remove('opacity-50')
-				} else {
-					card.classList.add('opacity-50')
-				}
-			})
+		const updateCarouselPosition = (offset: number) => {
+			carouselTrack.style.transform = `translateX(-${offset}px)`
 		}
 
+		const calculateCardWidth = () => {
+			const firstCard = cards[0] as HTMLElement
+			return firstCard ? firstCard.offsetWidth + 16 : 0
+		}
+
+		let cardWidth = calculateCardWidth()
+
 		const nextSlide = () => {
-			showSlide(currentIndex + 1)
+			currentPosition += cardWidth
+			updateCarouselPosition(currentPosition)
+
+			if (currentPosition >= cardWidth * totalOriginalCards) {
+				setTimeout(() => {
+					carouselTrack.style.transition = 'none'
+					currentPosition = 0
+					updateCarouselPosition(0)
+					setTimeout(() => {
+						carouselTrack.style.transition = 'transform 700ms cubic-bezier(0.4, 0, 0.2, 1)'
+					}, 50)
+				}, 700)
+			}
 		}
 
 		const startAutoPlay = () => {
-			autoPlayInterval = setInterval(nextSlide, 4000)
+			if (!isAutoPlaying) {
+				isAutoPlaying = true
+				autoPlayInterval = setInterval(nextSlide, 4000)
+			}
 		}
 
 		const stopAutoPlay = () => {
+			isAutoPlaying = false
 			clearInterval(autoPlayInterval)
 		}
 
-		// Start auto-play
-		showSlide(0)
+		// Initialize
+		carouselTrack.style.transition = 'transform 700ms cubic-bezier(0.4, 0, 0.2, 1)'
+		window.addEventListener('resize', () => {
+			cardWidth = calculateCardWidth()
+		})
+
 		startAutoPlay()
 
 		// Pause on hover, resume on leave
-		carouselContainer.addEventListener('mouseenter', stopAutoPlay)
-		carouselContainer.addEventListener('mouseleave', startAutoPlay)
+		if (carouselContainer) {
+			carouselContainer.addEventListener('mouseenter', stopAutoPlay)
+			carouselContainer.addEventListener('mouseleave', startAutoPlay)
+		}
 
 		// Cleanup
 		window.addEventListener('beforeunload', () => {
