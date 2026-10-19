@@ -70,65 +70,25 @@ const faqs = [
 							<h3 class="text-xl font-bold text-white">Encontrame en</h3>
 						</div>
 
-						{/* Carousel Container */}
-						<div class="relative">
-							<div class="overflow-hidden rounded-xl">
-								<div id="social-carousel" class="flex transition-transform duration-500 ease-out">
+						{/* Social Networks Marquee */}
+						<div class="relative w-full overflow-hidden border-y border-white/10 bg-[#0a0a0a] -mx-6 sm:-mx-10 lg:-mx-16 px-6 py-8 sm:px-10 lg:px-16">
+							<div class="marquee-mask mx-auto w-full">
+								<div class="marquee-track flex w-max items-center gap-8">
 									{
-										connectLinks.map((link) => (
-											<div class="w-full flex-shrink-0">
-												<a
-													href={link.url}
-													target={link.url.startsWith('http') ? '_blank' : '_self'}
-													rel={link.url.startsWith('http') ? 'noopener noreferrer' : ''}
-													aria-label={`${link.title}${link.handle ? ` — ${link.handle}` : ''}`}
-													class="group flex flex-col items-center gap-4 rounded-xl border border-white/10 bg-gradient-to-br from-white/8 to-white/3 p-6 backdrop-blur-sm transition-all duration-300 hover:border-[#c70039]/40 hover:shadow-[0_12px_40px_rgba(199,0,57,0.15)] sm:p-8"
-												>
-													<div class="flex h-16 w-16 items-center justify-center rounded-lg bg-white/10 text-3xl transition-all duration-300 group-hover:scale-110 group-hover:bg-[#c70039]/20">
-														<Icon name={link.icon} class="h-8 w-8 text-[#c70039]" />
-													</div>
-													<div class="text-center">
-														<h4 class="text-lg font-bold text-white">{link.title}</h4>
-														{link.handle && <p class="mt-1 text-sm text-white/60">{link.handle}</p>}
-													</div>
-													<div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-white/40 transition-colors duration-300 group-hover:text-[#c70039]">
-														<span>Conectar</span>
-														<Icon name="mdi:arrow-top-right" class="h-4 w-4" />
-													</div>
-												</a>
-											</div>
+										[...connectLinks, ...connectLinks].map((link) => (
+											<a
+												href={link.url}
+												target={link.url.startsWith('http') ? '_blank' : '_self'}
+												rel={link.url.startsWith('http') ? 'noopener noreferrer' : ''}
+												aria-label={link.title}
+												class="group flex shrink-0 items-center gap-3 rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 transition-all duration-300 hover:border-[#c70039]/40 hover:bg-white/10"
+											>
+												<Icon name={link.icon} class="h-5 w-5 shrink-0 text-[#c70039]" />
+												<span class="whitespace-nowrap text-xs font-semibold uppercase tracking-wide text-white/70">{link.title}</span>
+											</a>
 										))
 									}
 								</div>
-							</div>
-
-							{/* Carousel Controls */}
-							<div class="mt-4 flex items-center justify-center gap-2">
-								<button id="carousel-prev" aria-label="Anterior" class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/40 transition-all hover:border-[#c70039]/40 hover:text-[#c70039]">
-									<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-									</svg>
-								</button>
-
-								<div id="carousel-dots" class="flex gap-2">
-									{
-										connectLinks.map((_, index) => (
-											<button
-												data-index={index}
-												aria-label={`Ir a red ${index + 1}`}
-												class={`h-2 w-2 rounded-full transition-all duration-300 ${
-													index === 0 ? 'w-8 bg-[#c70039]' : 'bg-white/20 hover:bg-white/40'
-												}`}
-											/>
-										))
-									}
-								</div>
-
-								<button id="carousel-next" aria-label="Siguiente" class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/40 transition-all hover:border-[#c70039]/40 hover:text-[#c70039]">
-									<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-									</svg>
-								</button>
 							</div>
 						</div>
 					</div>
@@ -251,10 +211,34 @@ const faqs = [
 		}
 	}
 
+	/* Marquee Styles */
+	.marquee-mask {
+		mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+		-webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+	}
+
+	.marquee-track {
+		animation: marquee-scroll 40s linear infinite;
+	}
+
+	.marquee-track:hover {
+		animation-play-state: paused;
+	}
+
+	@keyframes marquee-scroll {
+		from {
+			transform: translateX(0);
+		}
+		to {
+			transform: translateX(-50%);
+		}
+	}
+
 	@media (prefers-reduced-motion: reduce) {
 		.social-section,
 		.contact-section,
-		details[open] {
+		details[open],
+		.marquee-track {
 			animation: none;
 		}
 	}
@@ -311,54 +295,8 @@ const faqs = [
 		showStatus('Se abrió tu cliente de correo con el mensaje listo para enviar.', 'success')
 	})
 
-	// Carousel Logic
-	const carousel = document.getElementById('social-carousel')
-	const prevBtn = document.getElementById('carousel-prev')
-	const nextBtn = document.getElementById('carousel-next')
-	const dots = document.querySelectorAll('#carousel-dots button')
 
-	if (carousel && prevBtn && nextBtn) {
-		let currentIndex = 0
-		const totalCards = dots.length
-		let autoPlayTimeout: ReturnType<typeof setTimeout>
-
-		const goToSlide = (index: number) => {
-			currentIndex = (index + totalCards) % totalCards
-			const offset = -currentIndex * 100
-			carousel.style.transform = `translateX(${offset}%)`
-
-			dots.forEach((dot, i) => {
-				if (i === currentIndex) {
-					dot.classList.add('w-8', 'bg-[#c70039]')
-					dot.classList.remove('bg-white/20', 'hover:bg-white/40')
-				} else {
-					dot.classList.remove('w-8', 'bg-[#c70039]')
-					dot.classList.add('bg-white/20', 'hover:bg-white/40')
-				}
-			})
-
-			clearTimeout(autoPlayTimeout)
-			autoPlayTimeout = setTimeout(() => nextSlide(), 5000)
-		}
-
-		const nextSlide = () => goToSlide(currentIndex + 1)
-		const prevSlide = () => goToSlide(currentIndex - 1)
-
-		nextBtn.addEventListener('click', nextSlide)
-		prevBtn.addEventListener('click', prevSlide)
-
-		dots.forEach((dot, index) => {
-			dot.addEventListener('click', () => goToSlide(index))
-		})
-
-		// Auto-play
-		autoPlayTimeout = setTimeout(() => nextSlide(), 5000)
-
-		// Cleanup
-		window.addEventListener('beforeunload', () => clearTimeout(autoPlayTimeout))
-	}
-
-	// 3D Canvas - Data Flow Visualization
+	// Development Process Visualization
 	const canvasContainer = document.getElementById('canvas-container')
 	if (canvasContainer) {
 		const canvas = document.createElement('canvas')
@@ -368,6 +306,7 @@ const faqs = [
 		if (!ctx) throw new Error('Could not get canvas context')
 
 		let animationId: number
+		let progress = 0
 
 		const resizeCanvas = () => {
 			canvas.width = canvasContainer.clientWidth * window.devicePixelRatio
@@ -378,90 +317,21 @@ const faqs = [
 		resizeCanvas()
 		window.addEventListener('resize', resizeCanvas)
 
-		// Data node network
-		class DataNode {
-			x: number
-			y: number
-			vx: number
-			vy: number
-			radius: number
-			label: string
-			dataFlow: number = 0
-			isActive: boolean = false
-
-			constructor(x: number, y: number, label: string) {
-				this.x = x
-				this.y = y
-				this.vx = (Math.random() - 0.5) * 0.5
-				this.vy = (Math.random() - 0.5) * 0.5
-				this.radius = Math.random() * 3 + 2
-				this.label = label
-			}
-
-			update(width: number, height: number, mouseX: number, mouseY: number) {
-				this.x += this.vx
-				this.y += this.vy
-				this.dataFlow += 0.02
-
-				// Bounce off walls
-				if (this.x - this.radius < 0 || this.x + this.radius > width) this.vx *= -1
-				if (this.y - this.radius < 0 || this.y + this.radius > height) this.vy *= -1
-
-				this.x = Math.max(this.radius, Math.min(width - this.radius, this.x))
-				this.y = Math.max(this.radius, Math.min(height - this.radius, this.y))
-
-				// Attraction to mouse
-				const dx = mouseX - this.x
-				const dy = mouseY - this.y
-				const dist = Math.sqrt(dx * dx + dy * dy)
-				this.isActive = dist < 100
-
-				if (this.isActive) {
-					this.vx += (dx / dist) * 0.2
-					this.vy += (dy / dist) * 0.2
-				}
-
-				this.vx *= 0.96
-				this.vy *= 0.96
-			}
-
-			draw(ctx: CanvasRenderingContext2D) {
-				const pulse = Math.sin(this.dataFlow) * 0.5 + 0.5
-				const glow = this.isActive ? 12 : 6
-
-				// Glow
-				ctx.fillStyle = `rgba(199, 0, 57, ${0.1 * pulse})`
-				ctx.beginPath()
-				ctx.arc(this.x, this.y, this.radius + glow, 0, Math.PI * 2)
-				ctx.fill()
-
-				// Core
-				ctx.fillStyle = `rgba(199, 0, 57, ${0.5 + pulse * 0.5})`
-				ctx.beginPath()
-				ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
-				ctx.fill()
-
-				// Inner core
-				ctx.fillStyle = 'rgba(255, 255, 255, 0.3)'
-				ctx.beginPath()
-				ctx.arc(this.x, this.y, this.radius * 0.5, 0, Math.PI * 2)
-				ctx.fill()
-			}
-		}
-
 		const width = canvasContainer.clientWidth
 		const height = canvasContainer.clientHeight
-		const nodes = [
-			new DataNode(width * 0.2, height * 0.3, 'DATA'),
-			new DataNode(width * 0.5, height * 0.2, 'WEB'),
-			new DataNode(width * 0.8, height * 0.4, 'AI'),
-			new DataNode(width * 0.3, height * 0.7, 'CODE'),
-			new DataNode(width * 0.7, height * 0.75, 'DEV'),
-			new DataNode(width * 0.5, height * 0.5, 'CORE')
+
+		const steps = [
+			{ label: '1. BRIEF', desc: 'Idea', color: '#c70039' },
+			{ label: '2. DESIGN', desc: 'Mockups', color: '#e84c5f' },
+			{ label: '3. CODE', desc: 'Build', color: '#ff6b7a' },
+			{ label: '4. TEST', desc: 'Quality', color: '#ff8a95' },
+			{ label: '5. DEPLOY', desc: 'Launch', color: '#ffa8b0' },
+			{ label: '6. CONTACT', desc: 'Háblame', color: '#c70039' }
 		]
 
 		let mouseX = width / 2
 		let mouseY = height / 2
+		let clickable = false
 
 		canvasContainer.addEventListener('mousemove', (e) => {
 			const rect = canvasContainer.getBoundingClientRect()
@@ -469,48 +339,85 @@ const faqs = [
 			mouseY = e.clientY - rect.top
 		})
 
+		canvasContainer.addEventListener('click', () => {
+			if (progress >= 0.95 && clickable) {
+				// Navigate to contact form
+				const contactForm = document.getElementById('contact-form')
+				if (contactForm) {
+					contactForm.scrollIntoView({ behavior: 'smooth' })
+				}
+			}
+		})
+
 		const animate = () => {
 			ctx.fillStyle = '#0a0a0a'
 			ctx.fillRect(0, 0, width, height)
 
-			// Update and draw nodes
-			nodes.forEach((node) => {
-				node.update(width, height, mouseX, mouseY)
-				node.draw(ctx)
+			// Auto-progress
+			progress += 0.003
+			if (progress > 1) progress = 0
+
+			// Draw development steps
+			const stepWidth = width / steps.length
+			const centerY = height * 0.5
+
+			steps.forEach((step, index) => {
+				const x = (index + 0.5) * stepWidth
+				const stepProgress = Math.max(0, Math.min(1, progress * steps.length - index))
+				const radius = 20 + stepProgress * 10
+				const opacity = stepProgress * 0.8 + 0.2
+
+				// Connection line
+				if (index < steps.length - 1) {
+					ctx.strokeStyle = `rgba(199, 0, 57, ${opacity * 0.3})`
+					ctx.lineWidth = 2
+					ctx.beginPath()
+					ctx.moveTo(x + 25, centerY)
+					ctx.lineTo(x + stepWidth - 25, centerY)
+					ctx.stroke()
+				}
+
+				// Node glow
+				ctx.fillStyle = `rgba(199, 0, 57, ${0.1 * opacity})`
+				ctx.beginPath()
+				ctx.arc(x, centerY, radius + 15, 0, Math.PI * 2)
+				ctx.fill()
+
+				// Node core
+				ctx.fillStyle = step.color
+				ctx.globalAlpha = opacity
+				ctx.beginPath()
+				ctx.arc(x, centerY, radius, 0, Math.PI * 2)
+				ctx.fill()
+				ctx.globalAlpha = 1
+
+				// Step number
+				ctx.fillStyle = '#0a0a0a'
+				ctx.font = `bold ${Math.round(radius * 0.6)}px Arial`
+				ctx.textAlign = 'center'
+				ctx.textBaseline = 'middle'
+				ctx.fillText(String(index + 1), x, centerY)
+
+				// Label
+				ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`
+				ctx.font = '11px Arial'
+				ctx.textAlign = 'center'
+				ctx.fillText(step.desc, x, centerY + radius + 30)
 			})
 
-			// Draw connections
-			for (let i = 0; i < nodes.length; i++) {
-				for (let j = i + 1; j < nodes.length; j++) {
-					const dx = nodes[i].x - nodes[j].x
-					const dy = nodes[i].y - nodes[j].y
-					const dist = Math.sqrt(dx * dx + dy * dy)
-					const maxDist = 150
+			// Final CTA
+			if (progress >= 0.9) {
+				const finalY = centerY + 80
+				const ctaOpacity = Math.max(0, (progress - 0.9) / 0.1)
+				clickable = ctaOpacity > 0.8
 
-					if (dist < maxDist) {
-						const opacity = (1 - dist / maxDist) * 0.4
-						const lineWidth = (1 - dist / maxDist) * 2
+				ctx.fillStyle = `rgba(199, 0, 57, ${ctaOpacity * 0.3})`
+				ctx.fillRect(width * 0.1, finalY - 20, width * 0.8, 40)
 
-						// Data flow animation
-						const flowProgress = (nodes[i].dataFlow + nodes[j].dataFlow) * 0.5
-						const flowPos = flowProgress % 1
-
-						ctx.strokeStyle = `rgba(199, 0, 57, ${opacity})`
-						ctx.lineWidth = lineWidth
-						ctx.beginPath()
-						ctx.moveTo(nodes[i].x, nodes[i].y)
-						ctx.lineTo(nodes[j].x, nodes[j].y)
-						ctx.stroke()
-
-						// Animated data packets
-						ctx.fillStyle = `rgba(199, 0, 57, ${0.6 + Math.sin(flowProgress * Math.PI * 4) * 0.4})`
-						const packetX = nodes[i].x + (nodes[j].x - nodes[i].x) * flowPos
-						const packetY = nodes[i].y + (nodes[j].y - nodes[i].y) * flowPos
-						ctx.beginPath()
-						ctx.arc(packetX, packetY, 2, 0, Math.PI * 2)
-						ctx.fill()
-					}
-				}
+				ctx.fillStyle = `rgba(255, 255, 255, ${ctaOpacity})`
+				ctx.font = 'bold 14px Arial'
+				ctx.textAlign = 'center'
+				ctx.fillText('Haz click para contactarme →', width * 0.5, finalY + 5)
 			}
 
 			animationId = requestAnimationFrame(animate)
