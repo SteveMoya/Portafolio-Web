@@ -219,16 +219,25 @@ const phases = [
 		}
 	]
 
-	const canvas = document.getElementById('three-canvas') as HTMLCanvasElement | null
-	const stage = document.getElementById('webgl-stage') as HTMLElement | null
-	const tooltip = document.getElementById('node-tooltip')
-	const tooltipText = document.getElementById('node-tooltip-text')
-	const rotateToggle = document.getElementById('btn-rotate-toggle')
-	const rotateLabel = document.getElementById('rotate-label')
-	const resetViewBtn = document.getElementById('btn-reset-view')
-	const applyPhaseBtn = document.getElementById('btn-apply-phase')
+	let cleanupContact3D: (() => void) | null = null
 
-	if (canvas && stage) {
+	function setupContact3D() {
+		if (cleanupContact3D) {
+			cleanupContact3D()
+			cleanupContact3D = null
+		}
+
+		const canvas = document.getElementById('three-canvas') as HTMLCanvasElement | null
+		const stage = document.getElementById('webgl-stage') as HTMLElement | null
+		if (!canvas || !stage) return
+
+		const tooltip = document.getElementById('node-tooltip')
+		const tooltipText = document.getElementById('node-tooltip-text')
+		const rotateToggle = document.getElementById('btn-rotate-toggle')
+		const rotateLabel = document.getElementById('rotate-label')
+		const resetViewBtn = document.getElementById('btn-reset-view')
+		const applyPhaseBtn = document.getElementById('btn-apply-phase')
+
 		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 		let isAutoRotating = !prefersReducedMotion
 
@@ -513,9 +522,10 @@ const phases = [
 			previousMousePosition = { x: e.clientX, y: e.clientY }
 		})
 
-		window.addEventListener('mouseup', () => {
+		const onMouseUp = () => {
 			isDragging = false
-		})
+		}
+		window.addEventListener('mouseup', onMouseUp)
 
 		stage.addEventListener('mousemove', (e) => {
 			const coords = getCanvasCoordinates(e)
@@ -657,15 +667,28 @@ const phases = [
 
 		animate()
 
-		// Cleanup on navigation
-		window.addEventListener(
-			'beforeunload',
-			() => {
-				cancelAnimationFrame(animId)
-				resizeObserver.disconnect()
-				renderer.dispose()
-			},
-			{ once: true }
-		)
+		cleanupContact3D = () => {
+			cancelAnimationFrame(animId)
+			resizeObserver.disconnect()
+			window.removeEventListener('mouseup', onMouseUp)
+			renderer.dispose()
+			scene.clear()
+		}
 	}
+
+	setupContact3D()
+	document.addEventListener('astro:page-load', setupContact3D)
+	document.addEventListener('astro:after-swap', setupContact3D)
+	document.addEventListener('astro:before-swap', () => {
+		if (cleanupContact3D) {
+			cleanupContact3D()
+			cleanupContact3D = null
+		}
+	})
+	window.addEventListener('beforeunload', () => {
+		if (cleanupContact3D) {
+			cleanupContact3D()
+			cleanupContact3D = null
+		}
+	})
 </script>

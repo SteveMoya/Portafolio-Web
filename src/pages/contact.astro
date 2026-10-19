@@ -177,26 +177,30 @@ const faqs = [
 								<p data-error-for="descripcion" class="mt-1.5 hidden text-xs font-medium text-[#ff6b7a]" role="alert">Escribí algunos detalles sobre lo que necesitás.</p>
 							</div>
 
-							{/* Active Submission CTA Area */}
+							{/* Form Submission CTA Area */}
 							<div class="pt-2">
-								<div class="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
-									<Button
-										id="btn-submit-form"
-										type="submit"
-										variant="primary"
-										icon="mdi:send"
-										iconposition="right"
-										text="Enviar mensaje directo"
-										class="m-0 w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-[#c70039] px-7 py-3.5 text-base font-semibold text-white shadow-[0_4px_24px_rgba(199,0,57,0.35)] transition-all duration-300 hover:scale-[1.02] hover:bg-[#b11141] hover:shadow-[0_8px_30px_rgba(199,0,57,0.5)] active:scale-[0.98]"
-									/>
+								<div class="flex flex-col gap-3">
+									<div class="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
+										<Button
+											id="btn-submit-form"
+											type="submit"
+											variant="primary"
+											icon="mdi:send"
+											iconposition="right"
+											text="Enviar mensaje directo"
+											disabled={true}
+											class="m-0 w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-white/10 px-7 py-3.5 text-base font-semibold text-white/40 cursor-not-allowed border border-white/10 pointer-events-none"
+										/>
 
-									<p class="text-xs text-white/50 text-center sm:text-right">
-										Respuesta garantizada en 24h hábiles.
-									</p>
+										<div class="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-xs text-white/70">
+											<Icon name="mdi:information-outline" class="h-4 w-4 shrink-0 text-[#e84c5f]" />
+											<span>Envío en desarrollo · Contactá por redes o WhatsApp</span>
+										</div>
+									</div>
 								</div>
 
-								{/* Live Status Feedback Toast / Banner */}
-								<div id="form-feedback-card" class="mt-4 hidden rounded-xl border border-white/10 bg-black/60 p-4 backdrop-blur-md transition-all">
+								{/* Live Status Feedback Banner (flattened, no nested card box) */}
+								<div id="form-feedback-card" class="mt-4 hidden border-t border-white/10 pt-4 transition-all">
 									<div class="flex items-start gap-3">
 										<Icon id="feedback-icon" name="mdi:check-circle" class="h-5 w-5 shrink-0 text-emerald-400 mt-0.5" />
 										<div class="flex-1">
@@ -209,7 +213,7 @@ const faqs = [
 													href="https://wa.me/18497511849"
 													target="_blank"
 													rel="noopener noreferrer"
-													class="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-300 transition-colors hover:bg-emerald-500/20"
+													class="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-300 transition-colors hover:bg-emerald-500/20"
 												>
 													<Icon name="mdi:whatsapp" class="h-4 w-4" />
 													<span>Abrir por WhatsApp (+1 849 751-1849)</span>
@@ -342,21 +346,31 @@ const faqs = [
 	const WHATSAPP_PHONE = '18497511849'
 	const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-	const form = document.getElementById('contact-form') as HTMLFormElement | null
-	const formSection = document.getElementById('contact-form-section')
-	const feedbackCard = document.getElementById('form-feedback-card')
-	const feedbackIcon = document.getElementById('feedback-icon')
-	const statusMessage = document.getElementById('form-status-message')
-	const whatsappBtn = document.getElementById('btn-whatsapp-direct') as HTMLAnchorElement | null
-	const copySummaryBtn = document.getElementById('btn-copy-summary') as HTMLButtonElement | null
-	const copySummaryText = document.getElementById('copy-summary-text')
-	const asuntoInput = document.getElementById('asunto') as HTMLInputElement | null
-	const nombreInput = document.getElementById('nombre') as HTMLInputElement | null
-	const descripcionInput = document.getElementById('descripcion') as HTMLTextAreaElement | null
-	const projectChips = document.querySelectorAll<HTMLButtonElement>('.project-chip')
+	let stopCarouselScroll: (() => void) | null = null
 
-	let activeSelectedProjectType = ''
-	let lastFormattedMessage = ''
+	function initContactPage() {
+		if (stopCarouselScroll) {
+			stopCarouselScroll()
+			stopCarouselScroll = null
+		}
+
+		const form = document.getElementById('contact-form') as HTMLFormElement | null
+		const formSection = document.getElementById('contact-form-section')
+		const feedbackCard = document.getElementById('form-feedback-card')
+		const feedbackIcon = document.getElementById('feedback-icon')
+		const statusMessage = document.getElementById('form-status-message')
+		const whatsappBtn = document.getElementById('btn-whatsapp-direct') as HTMLAnchorElement | null
+		const copySummaryBtn = document.getElementById('btn-copy-summary') as HTMLButtonElement | null
+		const copySummaryText = document.getElementById('copy-summary-text')
+		const asuntoInput = document.getElementById('asunto') as HTMLInputElement | null
+		const nombreInput = document.getElementById('nombre') as HTMLInputElement | null
+		const descripcionInput = document.getElementById('descripcion') as HTMLTextAreaElement | null
+		const projectChips = document.querySelectorAll<HTMLButtonElement>('.project-chip')
+
+		if (!form && !document.getElementById('social-carousel-track')) return
+
+		let activeSelectedProjectType = ''
+		let lastFormattedMessage = ''
 
 	// Project Type Chip selection
 	projectChips.forEach((chip) => {
@@ -448,9 +462,19 @@ const faqs = [
 		}
 	}
 
+	const submitBtn = document.getElementById('btn-submit-form') as HTMLButtonElement | null
+
 	// Form Submission Handler
 	form?.addEventListener('submit', (event) => {
 		event.preventDefault()
+
+		if (submitBtn?.disabled) {
+			showFeedback(
+				'El envío directo mediante formulario está temporalmente en desarrollo. Podés contactarme directamente por WhatsApp o redes sociales.',
+				'error'
+			)
+			return
+		}
 
 		const data = new FormData(form)
 		const nombre = String(data.get('nombre') || '').trim()
@@ -516,7 +540,6 @@ const faqs = [
 		const carouselContainer = carouselTrack.closest('.carousel-fade')
 		const cardWidth = 240 + 16 // card width + gap
 		const totalOriginalCards = 7 // connectLinks.length
-		const totalCards = totalOriginalCards * 3 // tripled for infinite scroll
 		let currentPosition = 0
 		let scrollInterval: ReturnType<typeof setInterval> | null = null
 		let isScrolling = false
@@ -545,8 +568,13 @@ const faqs = [
 
 		const stopScroll = () => {
 			isScrolling = false
-			if (scrollInterval) clearInterval(scrollInterval)
+			if (scrollInterval) {
+				clearInterval(scrollInterval)
+				scrollInterval = null
+			}
 		}
+
+		stopCarouselScroll = stopScroll
 
 		carouselTrack.style.transition = 'transform 500ms ease-out'
 
@@ -554,9 +582,22 @@ const faqs = [
 			carouselContainer.addEventListener('mouseenter', startScroll)
 			carouselContainer.addEventListener('mouseleave', stopScroll)
 		}
-
-		window.addEventListener('beforeunload', () => {
-			stopScroll()
-		})
 	}
+}
+
+initContactPage()
+document.addEventListener('astro:page-load', initContactPage)
+document.addEventListener('astro:after-swap', initContactPage)
+document.addEventListener('astro:before-swap', () => {
+	if (stopCarouselScroll) {
+		stopCarouselScroll()
+		stopCarouselScroll = null
+	}
+})
+window.addEventListener('beforeunload', () => {
+	if (stopCarouselScroll) {
+		stopCarouselScroll()
+		stopCarouselScroll = null
+	}
+})
 </script>
