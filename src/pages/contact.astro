@@ -70,25 +70,41 @@ const faqs = [
 							<h3 class="text-xl font-bold text-white">Encontrame en</h3>
 						</div>
 
-						{/* Social Networks Marquee */}
-						<div class="relative w-full overflow-hidden border-y border-white/10 bg-[#0a0a0a] -mx-6 sm:-mx-10 lg:-mx-16 px-6 py-8 sm:px-10 lg:px-16">
-							<div class="marquee-mask mx-auto w-full">
-								<div class="marquee-track flex w-max items-center gap-8">
-									{
-										[...connectLinks, ...connectLinks].map((link) => (
-											<a
-												href={link.url}
-												target={link.url.startsWith('http') ? '_blank' : '_self'}
-												rel={link.url.startsWith('http') ? 'noopener noreferrer' : ''}
-												aria-label={link.title}
-												class="group flex shrink-0 items-center gap-3 rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 transition-all duration-300 hover:border-[#c70039]/40 hover:bg-white/10"
-											>
-												<Icon name={link.icon} class="h-5 w-5 shrink-0 text-[#c70039]" />
-												<span class="whitespace-nowrap text-xs font-semibold uppercase tracking-wide text-white/70">{link.title}</span>
-											</a>
-										))
-									}
-								</div>
+						{/* Social Networks Auto-Carousel */}
+						<div class="carousel-fade relative w-full overflow-hidden rounded-xl border border-white/10 bg-[#0a0a0a]/50">
+							<div id="social-carousel-container" class="grid grid-cols-2 gap-4 p-8 sm:grid-cols-3 sm:p-10 lg:p-12">
+								{
+									connectLinks.map((link, index) => (
+										<a
+											href={link.url}
+											target={link.url.startsWith('http') ? '_blank' : '_self'}
+											rel={link.url.startsWith('http') ? 'noopener noreferrer' : ''}
+											aria-label={`${link.title}${link.handle ? ` — ${link.handle}` : ''}`}
+											class="connect-card group flex flex-col rounded-2xl border border-white/10 bg-white/5 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#c70039]/40 hover:shadow-[0_12px_40px_rgba(199,0,57,0.18)]"
+											style={`animation-delay: ${index * 0.05}s`}
+										>
+											<div class="flex items-center gap-3">
+												<span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[#c70039] transition-colors duration-300 group-hover:border-[#c70039]/40">
+													<Icon name={link.icon} class="h-5 w-5" />
+												</span>
+												<span class="flex min-w-0 flex-col">
+													<span class="truncate text-sm font-bold text-white">{link.title}</span>
+													{link.handle && <span class="truncate text-xs text-white/40">{link.handle}</span>}
+												</span>
+											</div>
+
+											<div class="mt-4 flex items-center justify-between border-t border-white/10 pt-3">
+												<span class="text-[10px] font-bold uppercase tracking-[0.25em] text-white/40 transition-colors duration-300 group-hover:text-[#c70039]">
+													Conectar
+												</span>
+												<Icon
+													name="mdi:arrow-top-right"
+													class="h-4 w-4 text-white/40 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[#c70039]"
+												/>
+											</div>
+										</a>
+									))
+								}
 							</div>
 						</div>
 					</div>
@@ -211,27 +227,14 @@ const faqs = [
 		}
 	}
 
-	/* Marquee Styles */
-	.marquee-mask {
-		mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
-		-webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+	/* Carousel Fade Styles */
+	.carousel-fade {
+		mask-image: linear-gradient(to right, transparent, #000 15%, #000 85%, transparent);
+		-webkit-mask-image: linear-gradient(to right, transparent, #000 15%, #000 85%, transparent);
 	}
 
-	.marquee-track {
-		animation: marquee-scroll 40s linear infinite;
-	}
-
-	.marquee-track:hover {
-		animation-play-state: paused;
-	}
-
-	@keyframes marquee-scroll {
-		from {
-			transform: translateX(0);
-		}
-		to {
-			transform: translateX(-50%);
-		}
+	.connect-card {
+		animation: links-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
@@ -296,6 +299,52 @@ const faqs = [
 	})
 
 
+	// Social Cards Auto-Carousel
+	const carouselContainer = document.getElementById('social-carousel-container')
+	if (carouselContainer) {
+		const cards = Array.from(carouselContainer.querySelectorAll('a'))
+		const totalCards = cards.length
+		let currentIndex = 0
+		let autoPlayInterval: ReturnType<typeof setInterval>
+
+		const showSlide = (index: number) => {
+			currentIndex = index % totalCards
+
+			cards.forEach((card, i) => {
+				if (i === currentIndex) {
+					card.classList.remove('opacity-50')
+				} else {
+					card.classList.add('opacity-50')
+				}
+			})
+		}
+
+		const nextSlide = () => {
+			showSlide(currentIndex + 1)
+		}
+
+		const startAutoPlay = () => {
+			autoPlayInterval = setInterval(nextSlide, 4000)
+		}
+
+		const stopAutoPlay = () => {
+			clearInterval(autoPlayInterval)
+		}
+
+		// Start auto-play
+		showSlide(0)
+		startAutoPlay()
+
+		// Pause on hover, resume on leave
+		carouselContainer.addEventListener('mouseenter', stopAutoPlay)
+		carouselContainer.addEventListener('mouseleave', startAutoPlay)
+
+		// Cleanup
+		window.addEventListener('beforeunload', () => {
+			clearInterval(autoPlayInterval)
+		})
+	}
+
 	// Development Process Visualization
 	const canvasContainer = document.getElementById('canvas-container')
 	if (canvasContainer) {
@@ -341,7 +390,6 @@ const faqs = [
 
 		canvasContainer.addEventListener('click', () => {
 			if (progress >= 0.95 && clickable) {
-				// Navigate to contact form
 				const contactForm = document.getElementById('contact-form')
 				if (contactForm) {
 					contactForm.scrollIntoView({ behavior: 'smooth' })
@@ -353,11 +401,9 @@ const faqs = [
 			ctx.fillStyle = '#0a0a0a'
 			ctx.fillRect(0, 0, width, height)
 
-			// Auto-progress
 			progress += 0.003
 			if (progress > 1) progress = 0
 
-			// Draw development steps
 			const stepWidth = width / steps.length
 			const centerY = height * 0.5
 
@@ -367,7 +413,6 @@ const faqs = [
 				const radius = 20 + stepProgress * 10
 				const opacity = stepProgress * 0.8 + 0.2
 
-				// Connection line
 				if (index < steps.length - 1) {
 					ctx.strokeStyle = `rgba(199, 0, 57, ${opacity * 0.3})`
 					ctx.lineWidth = 2
@@ -377,13 +422,11 @@ const faqs = [
 					ctx.stroke()
 				}
 
-				// Node glow
 				ctx.fillStyle = `rgba(199, 0, 57, ${0.1 * opacity})`
 				ctx.beginPath()
 				ctx.arc(x, centerY, radius + 15, 0, Math.PI * 2)
 				ctx.fill()
 
-				// Node core
 				ctx.fillStyle = step.color
 				ctx.globalAlpha = opacity
 				ctx.beginPath()
@@ -391,21 +434,18 @@ const faqs = [
 				ctx.fill()
 				ctx.globalAlpha = 1
 
-				// Step number
 				ctx.fillStyle = '#0a0a0a'
 				ctx.font = `bold ${Math.round(radius * 0.6)}px Arial`
 				ctx.textAlign = 'center'
 				ctx.textBaseline = 'middle'
 				ctx.fillText(String(index + 1), x, centerY)
 
-				// Label
 				ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`
 				ctx.font = '11px Arial'
 				ctx.textAlign = 'center'
 				ctx.fillText(step.desc, x, centerY + radius + 30)
 			})
 
-			// Final CTA
 			if (progress >= 0.9) {
 				const finalY = centerY + 80
 				const ctaOpacity = Math.max(0, (progress - 0.9) / 0.1)
