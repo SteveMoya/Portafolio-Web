@@ -80,7 +80,7 @@ const faqs = [
 						</div>
 
 						{/* Social Networks Carousel with Fade */}
-						<div class="carousel-fade relative overflow-hidden rounded-xl border border-white/10 bg-[#0a0a0a]/50 p-4" style="width: 280px;">
+						<div class="carousel-fade relative w-full overflow-hidden rounded-xl border border-white/10 bg-[#0a0a0a]/50 p-4">
 							<div id="social-carousel-track" class="flex gap-4 transition-transform duration-500 ease-out" style="width: max-content;">
 								{
 									[...connectLinks, ...connectLinks, ...connectLinks].map((link) => (
@@ -90,20 +90,20 @@ const faqs = [
 												target={link.url.startsWith('http') ? '_blank' : '_self'}
 												rel={link.url.startsWith('http') ? 'noopener noreferrer' : ''}
 												aria-label={`${link.title}${link.handle ? ` — ${link.handle}` : ''}`}
-												class="connect-card group flex h-full flex-col rounded-2xl border border-white/10 bg-white/5 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#c70039]/40 hover:shadow-[0_12px_40px_rgba(199,0,57,0.18)]"
+												class="connect-card group flex h-full flex-col rounded-2xl border border-white/10 bg-white/5 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#c70039]/60 hover:shadow-lg"
 											>
 												<div class="flex items-center gap-3">
-													<span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[#c70039] transition-colors duration-300 group-hover:border-[#c70039]/40">
+													<span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[#c70039] transition-colors duration-300 group-hover:border-[#c70039]/50">
 														<Icon name={link.icon} class="h-5 w-5" />
 													</span>
 													<span class="flex min-w-0 flex-col">
 														<span class="truncate text-sm font-bold text-white">{link.title}</span>
-														{link.handle && <span class="truncate text-xs text-white/50">{link.handle}</span>}
+														{link.handle && <span class="truncate text-xs text-white/60">{link.handle}</span>}
 													</span>
 												</div>
 
 												<div class="mt-4 flex items-center justify-between border-t border-white/10 pt-3">
-													<span class="text-[11px] font-semibold tracking-wide text-white/50 transition-colors duration-300 group-hover:text-[#c70039]">
+													<span class="text-xs font-semibold tracking-wide text-white/60 transition-colors duration-300 group-hover:text-[#c70039]">
 														Conectar
 													</span>
 													<Icon
