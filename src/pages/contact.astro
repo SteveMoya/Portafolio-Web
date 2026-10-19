@@ -6,10 +6,20 @@ import Input from '@components/ui/Input.astro'
 import Button from '@components/ui/Button.astro'
 import { Icon } from 'astro-icon/components'
 import socialLinks from '@src/data/socialLinks.json'
+import ContactScene3D from '@components/contact/ContactScene3D.astro'
 
 const { author } = siteConfig
 
 const connectLinks = socialLinks.links.filter((link) => link.url.startsWith('http') || link.url.startsWith('mailto'))
+
+const projectTypes = [
+	{ id: 'web', label: 'Sitio Web / Landing', phaseRef: 'dev' },
+	{ id: 'saas', label: 'Aplicación Web / SaaS', phaseRef: 'dev' },
+	{ id: 'ecommerce', label: 'E-Commerce', phaseRef: 'dev' },
+	{ id: 'seo', label: 'Auditoría SEO & Performance', phaseRef: 'seo' },
+	{ id: 'uiux', label: 'Diseño UI/UX', phaseRef: 'design' },
+	{ id: 'consulting', label: 'Estrategia & Consultoría', phaseRef: 'brief' }
+]
 
 const faqs = [
 	{
@@ -55,27 +65,26 @@ const faqs = [
 	{/* Main Contact Section - Split Layout */}
 	<section class="relative w-full bg-[#0a0a0a] px-6 pb-24 sm:px-10 lg:px-16">
 		<div class="mx-auto max-w-7xl">
-			<div class="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
-				{/* Left Column - 3D Element */}
-				<div class="flex items-center justify-center lg:sticky lg:top-24 lg:h-fit">
-					<div id="canvas-container" class="h-full w-full"></div>
+			<div class="grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-14">
+				{/* Left Column - 3D Interactive Observatory */}
+				<div class="lg:sticky lg:top-24 lg:h-fit">
+					<ContactScene3D />
 				</div>
 
-				{/* Right Column - Form & Social */}
-				<div class="flex flex-col gap-12">
-					{/* Social Networks - Top */}
+				{/* Right Column - Form & Channels */}
+				<div class="flex flex-col gap-10">
+					{/* Direct Channels Section */}
 					<div class="social-section">
-						<div class="mb-8">
-							<p class="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-white/40">Conecta conmigo</p>
-							<h3 class="text-xl font-bold text-white">Encontrame en</h3>
+						<div class="mb-4">
+							<h3 class="text-xl font-bold text-white tracking-tight">Canales directos</h3>
 						</div>
 
 						{/* Social Networks Carousel with Fade */}
-						<div class="carousel-fade relative w-full overflow-hidden rounded-xl border border-white/10 bg-[#0a0a0a]/50">
-							<div id="social-carousel-track" class="flex gap-4 transition-transform duration-700 ease-out" style="width: max-content;">
+						<div class="carousel-fade relative overflow-hidden rounded-xl border border-white/10 bg-[#0a0a0a]/50 p-4" style="width: 280px;">
+							<div id="social-carousel-track" class="flex gap-4 transition-transform duration-500 ease-out" style="width: max-content;">
 								{
-									[...connectLinks, ...connectLinks].map((link, index) => (
-										<div class="w-full flex-shrink-0 sm:w-1/2 lg:w-1/3">
+									[...connectLinks, ...connectLinks, ...connectLinks].map((link) => (
+										<div class="flex-shrink-0" style="width: 240px;">
 											<a
 												href={link.url}
 												target={link.url.startsWith('http') ? '_blank' : '_self'}
@@ -89,17 +98,17 @@ const faqs = [
 													</span>
 													<span class="flex min-w-0 flex-col">
 														<span class="truncate text-sm font-bold text-white">{link.title}</span>
-														{link.handle && <span class="truncate text-xs text-white/40">{link.handle}</span>}
+														{link.handle && <span class="truncate text-xs text-white/50">{link.handle}</span>}
 													</span>
 												</div>
 
 												<div class="mt-4 flex items-center justify-between border-t border-white/10 pt-3">
-													<span class="text-[10px] font-bold uppercase tracking-[0.25em] text-white/40 transition-colors duration-300 group-hover:text-[#c70039]">
+													<span class="text-[11px] font-semibold tracking-wide text-white/50 transition-colors duration-300 group-hover:text-[#c70039]">
 														Conectar
 													</span>
 													<Icon
 														name="mdi:arrow-top-right"
-														class="h-4 w-4 text-white/40 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[#c70039]"
+														class="h-4 w-4 text-white/50 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[#c70039]"
 													/>
 												</div>
 											</a>
@@ -110,48 +119,114 @@ const faqs = [
 						</div>
 					</div>
 
-					{/* Contact Form - Middle */}
-					<div class="contact-section">
+					{/* Contact Form Section */}
+					<div id="contact-form-section" class="contact-section rounded-2xl border border-white/10 bg-white/[0.02] p-6 sm:p-8 backdrop-blur-sm transition-all duration-300">
 						<div class="mb-6">
-							<h3 class="text-xl font-bold text-white">Escribime un mensaje</h3>
-							<p class="mt-1 text-sm text-white/60">Te respondo a la brevedad</p>
+							<h3 class="text-2xl font-bold text-white tracking-tight">Escribime un mensaje</h3>
+							<p class="mt-1 text-sm text-white/70">
+								Contame sobre tu idea, alcance y objetivos. Respondé en menos de 24 horas.
+							</p>
 						</div>
 
-						<form id="contact-form" novalidate class="space-y-4">
+						{/* Interactive Project Scope Chips */}
+						<div class="mb-6">
+							<p id="project-type-label" class="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/70">
+								Tipo de proyecto o servicio
+							</p>
+							<div class="flex flex-wrap gap-2" id="project-chips-container" role="group" aria-labelledby="project-type-label">
+								{
+									projectTypes.map((pt) => (
+										<button
+											type="button"
+											data-project-id={pt.id}
+											data-phase-ref={pt.phaseRef}
+											data-project-label={pt.label}
+											class="project-chip rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/80 transition-all duration-200 hover:border-white/30 hover:bg-white/10 hover:text-white"
+										>
+											{pt.label}
+										</button>
+									))
+								}
+							</div>
+						</div>
+
+						<form id="contact-form" novalidate class="space-y-5">
 							<div class="grid gap-4 sm:grid-cols-2">
 								<div>
-									<label for="nombre" class="mb-2 block text-xs font-bold uppercase tracking-[0.15em] text-white/50">Nombre</label>
-									<Input id="nombre" name="nombre" type="text" required placeholder="Tu nombre" class="m-0 w-full" />
-									<p data-error-for="nombre" class="mt-1.5 hidden text-xs font-semibold text-[#c70039]">Ingresá tu nombre.</p>
+									<label for="nombre" class="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/70">Nombre *</label>
+									<Input id="nombre" name="nombre" type="text" required placeholder="Tu nombre o empresa" class="m-0 w-full border border-white/10 focus:border-[#c70039] focus:ring-1 focus:ring-[#c70039]" />
+									<p data-error-for="nombre" class="mt-1.5 hidden text-xs font-medium text-[#ff6b7a]" role="alert">Ingresá tu nombre.</p>
 								</div>
 
 								<div>
-									<label for="email" class="mb-2 block text-xs font-bold uppercase tracking-[0.15em] text-white/50">Email</label>
-									<Input id="email" name="email" type="email" required placeholder="tu@email.com" class="m-0 w-full" />
-									<p data-error-for="email" class="mt-1.5 hidden text-xs font-semibold text-[#c70039]">Ingresá un email válido.</p>
+									<label for="email" class="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/70">Email *</label>
+									<Input id="email" name="email" type="email" required placeholder="tu@email.com" class="m-0 w-full border border-white/10 focus:border-[#c70039] focus:ring-1 focus:ring-[#c70039]" />
+									<p data-error-for="email" class="mt-1.5 hidden text-xs font-medium text-[#ff6b7a]" role="alert">Ingresá un email válido.</p>
 								</div>
 							</div>
 
 							<div>
-								<label for="asunto" class="mb-2 block text-xs font-bold uppercase tracking-[0.15em] text-white/50">Asunto</label>
-								<Input id="asunto" name="asunto" type="text" required placeholder="¿De qué se trata?" class="m-0 w-full" />
-								<p data-error-for="asunto" class="mt-1.5 hidden text-xs font-semibold text-[#c70039]">Contame el asunto.</p>
+								<label for="asunto" class="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/70">Asunto *</label>
+								<Input id="asunto" name="asunto" type="text" required placeholder="Ej: Nuevo sitio web / Rediseño de plataforma" class="m-0 w-full border border-white/10 focus:border-[#c70039] focus:ring-1 focus:ring-[#c70039]" />
+								<p data-error-for="asunto" class="mt-1.5 hidden text-xs font-medium text-[#ff6b7a]" role="alert">Contame de qué se trata el proyecto.</p>
 							</div>
 
 							<div>
-								<label for="descripcion" class="mb-2 block text-xs font-bold uppercase tracking-[0.15em] text-white/50">Descripción</label>
-								<Input id="descripcion" name="descripcion" type="textarea" required placeholder="Contame más sobre tu proyecto" class="m-0 w-full" />
-								<p data-error-for="descripcion" class="mt-1.5 hidden text-xs font-semibold text-[#c70039]">Contame un poco más.</p>
+								<label for="descripcion" class="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/70">Descripción del proyecto *</label>
+								<Input id="descripcion" name="descripcion" type="textarea" required placeholder="Describí los requerimientos principales, tiempos estimados y cualquier detalle clave..." class="m-0 w-full border border-white/10 focus:border-[#c70039] focus:ring-1 focus:ring-[#c70039]" />
+								<p data-error-for="descripcion" class="mt-1.5 hidden text-xs font-medium text-[#ff6b7a]" role="alert">Escribí algunos detalles sobre lo que necesitás.</p>
 							</div>
 
-							<div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between pt-2">
-								<div class="group relative">
-									<Button type="submit" variant="primary" text="Enviar mensaje" class="m-0 cursor-not-allowed opacity-50" disabled />
-									<div class="absolute bottom-full left-0 mb-2 hidden whitespace-nowrap rounded-lg bg-white/10 px-3 py-2 text-xs text-white/60 backdrop-blur-sm group-hover:block">
-										Funcionalidad en desarrollo
+							{/* Active Submission CTA Area */}
+							<div class="pt-2">
+								<div class="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
+									<Button
+										id="btn-submit-form"
+										type="submit"
+										variant="primary"
+										icon="mdi:send"
+										iconposition="right"
+										text="Enviar mensaje directo"
+										class="m-0 w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-[#c70039] px-7 py-3.5 text-base font-semibold text-white shadow-[0_4px_24px_rgba(199,0,57,0.35)] transition-all duration-300 hover:scale-[1.02] hover:bg-[#b11141] hover:shadow-[0_8px_30px_rgba(199,0,57,0.5)] active:scale-[0.98]"
+									/>
+
+									<p class="text-xs text-white/50 text-center sm:text-right">
+										Respuesta garantizada en 24h hábiles.
+									</p>
+								</div>
+
+								{/* Live Status Feedback Toast / Banner */}
+								<div id="form-feedback-card" class="mt-4 hidden rounded-xl border border-white/10 bg-black/60 p-4 backdrop-blur-md transition-all">
+									<div class="flex items-start gap-3">
+										<Icon id="feedback-icon" name="mdi:check-circle" class="h-5 w-5 shrink-0 text-emerald-400 mt-0.5" />
+										<div class="flex-1">
+											<p id="form-status-message" class="text-sm font-medium text-white"></p>
+											
+											{/* Quick alternative channels if mailto fails */}
+											<div class="mt-3 flex flex-wrap gap-2.5" id="feedback-actions">
+												<a
+													id="btn-whatsapp-direct"
+													href="https://wa.me/18497511849"
+													target="_blank"
+													rel="noopener noreferrer"
+													class="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-300 transition-colors hover:bg-emerald-500/20"
+												>
+													<Icon name="mdi:whatsapp" class="h-4 w-4" />
+													<span>Abrir por WhatsApp (+1 849 751-1849)</span>
+												</a>
+
+												<button
+													id="btn-copy-summary"
+													type="button"
+													class="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+												>
+													<Icon name="mdi:content-copy" class="h-4 w-4 text-[#c70039]" />
+													<span id="copy-summary-text">Copiar mensaje</span>
+												</button>
+											</div>
+										</div>
 									</div>
 								</div>
-								<p id="form-status" class="hidden text-sm font-semibold" role="status"></p>
 							</div>
 						</form>
 					</div>
@@ -164,8 +239,7 @@ const faqs = [
 	<section class="relative w-full bg-gradient-to-b from-[#0a0a0a] to-[#050505] px-6 py-24 sm:px-10 lg:px-16">
 		<div class="mx-auto max-w-4xl">
 			<div class="mb-12 text-center">
-				<p class="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-white/40">Dudas frecuentes</p>
-				<h2 class="text-3xl font-bold text-white sm:text-4xl">Preguntas que suelen surgir</h2>
+				<h2 class="text-3xl font-bold text-white sm:text-4xl tracking-tight">Preguntas frecuentes</h2>
 			</div>
 
 			<div class="space-y-3">
@@ -218,16 +292,6 @@ const faqs = [
 		animation: fade-in-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
-	#canvas-container {
-		min-height: 400px;
-	}
-
-	@media (min-width: 1024px) {
-		#canvas-container {
-			min-height: 600px;
-		}
-	}
-
 	/* Carousel Fade Styles */
 	.carousel-fade {
 		mask-image: linear-gradient(to right, transparent, #000 15%, #000 85%, transparent);
@@ -249,36 +313,142 @@ const faqs = [
 		animation: links-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 	}
 
+	@keyframes pulse-border {
+		0%, 100% {
+			border-color: rgba(255, 255, 255, 0.1);
+		}
+		50% {
+			border-color: rgba(199, 0, 57, 0.6);
+		}
+	}
+
+	.pulse-highlight {
+		animation: pulse-border 1.5s ease-in-out 2;
+	}
+
 	@media (prefers-reduced-motion: reduce) {
 		.social-section,
 		.contact-section,
 		details[open],
-		.marquee-track {
+		.connect-card {
 			animation: none;
 		}
 	}
 </style>
 
 <script>
-	// Contact Form Functionality
-	const CONTACT_EMAIL = 'contacto@stevemoya.com'
+	// Contact Form & 3D Synchronization
+	const CONTACT_EMAIL = 'steve@stevemoya.me'
+	const WHATSAPP_PHONE = '18497511849'
 	const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 	const form = document.getElementById('contact-form') as HTMLFormElement | null
-	const status = document.getElementById('form-status') as HTMLParagraphElement | null
+	const formSection = document.getElementById('contact-form-section')
+	const feedbackCard = document.getElementById('form-feedback-card')
+	const feedbackIcon = document.getElementById('feedback-icon')
+	const statusMessage = document.getElementById('form-status-message')
+	const whatsappBtn = document.getElementById('btn-whatsapp-direct') as HTMLAnchorElement | null
+	const copySummaryBtn = document.getElementById('btn-copy-summary') as HTMLButtonElement | null
+	const copySummaryText = document.getElementById('copy-summary-text')
+	const asuntoInput = document.getElementById('asunto') as HTMLInputElement | null
+	const nombreInput = document.getElementById('nombre') as HTMLInputElement | null
+	const descripcionInput = document.getElementById('descripcion') as HTMLTextAreaElement | null
+	const projectChips = document.querySelectorAll<HTMLButtonElement>('.project-chip')
+
+	let activeSelectedProjectType = ''
+	let lastFormattedMessage = ''
+
+	// Project Type Chip selection
+	projectChips.forEach((chip) => {
+		chip.addEventListener('click', () => {
+			const label = chip.dataset.projectLabel || ''
+			const isCurrent = activeSelectedProjectType === label
+
+			projectChips.forEach((c) => {
+				c.classList.remove('border-[#c70039]', 'bg-[#c70039]/20', 'text-white', 'shadow-[0_0_12px_rgba(199,0,57,0.3)]')
+				c.classList.add('border-white/10', 'bg-white/5', 'text-white/80')
+			})
+
+			if (!isCurrent) {
+				activeSelectedProjectType = label
+				chip.classList.remove('border-white/10', 'bg-white/5', 'text-white/80')
+				chip.classList.add('border-[#c70039]', 'bg-[#c70039]/20', 'text-white', 'shadow-[0_0_12px_rgba(199,0,57,0.3)]')
+
+				if (asuntoInput) {
+					asuntoInput.value = `Proyecto: ${label}`
+				}
+			} else {
+				activeSelectedProjectType = ''
+			}
+		})
+	})
+
+	// Listen for 3D Phase Selection events
+	window.addEventListener('steve:phase-selected', (e: Event) => {
+		const customEvent = e as CustomEvent<{ phaseId: string; phaseTitle: string; phaseNum: string }>
+		const { phaseId } = customEvent.detail
+
+		// Find matching chip
+		projectChips.forEach((chip) => {
+			if (chip.dataset.phaseRef === phaseId) {
+				chip.classList.add('border-[#c70039]/50')
+				setTimeout(() => chip.classList.remove('border-[#c70039]/50'), 1200)
+			}
+		})
+	})
+
+	// Listen for CTA apply from 3D component
+	window.addEventListener('steve:apply-phase-cta', (e: Event) => {
+		const customEvent = e as CustomEvent<{ phase: { id: string; title: string; num: string } }>
+		const { phase } = customEvent.detail
+
+		if (asuntoInput) {
+			asuntoInput.value = `Propuesta: Fase ${phase.num} · ${phase.title}`
+		}
+
+		// Scroll to form smoothly
+		formSection?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+		formSection?.classList.add('pulse-highlight')
+		setTimeout(() => formSection?.classList.remove('pulse-highlight'), 3000)
+
+		if (nombreInput && !nombreInput.value) {
+			nombreInput.focus()
+		} else if (descripcionInput) {
+			descripcionInput.focus()
+		}
+	})
 
 	const setError = (field: string, show: boolean) => {
 		const el = form?.querySelector<HTMLElement>(`[data-error-for="${field}"]`)
 		el?.classList.toggle('hidden', !show)
 	}
 
-	const showStatus = (message: string, tone: 'success' | 'error') => {
-		if (!status) return
-		status.textContent = message
-		status.classList.remove('hidden', 'text-[#c70039]', 'text-emerald-400')
-		status.classList.add(tone === 'success' ? 'text-emerald-400' : 'text-[#c70039]')
+	const showFeedback = (message: string, tone: 'success' | 'error', formattedBody: string = '', subject: string = '') => {
+		if (!feedbackCard || !statusMessage) return
+
+		feedbackCard.classList.remove('hidden')
+		statusMessage.textContent = message
+
+		if (tone === 'success') {
+			feedbackCard.classList.remove('border-[#c70039]/50', 'bg-[#c70039]/10')
+			feedbackCard.classList.add('border-emerald-500/30', 'bg-emerald-500/10')
+			feedbackIcon?.classList.remove('text-[#c70039]')
+			feedbackIcon?.classList.add('text-emerald-400')
+
+			// Configure WhatsApp fallback button
+			if (whatsappBtn && formattedBody) {
+				const waText = `Hola Steve! Te contacto desde tu portafolio sobre *${subject}*:\n\n${formattedBody}`
+				whatsappBtn.href = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(waText)}`
+			}
+		} else {
+			feedbackCard.classList.remove('border-emerald-500/30', 'bg-emerald-500/10')
+			feedbackCard.classList.add('border-[#c70039]/50', 'bg-[#c70039]/10')
+			feedbackIcon?.classList.remove('text-emerald-400')
+			feedbackIcon?.classList.add('text-[#c70039]')
+		}
 	}
 
+	// Form Submission Handler
 	form?.addEventListener('submit', (event) => {
 		event.preventDefault()
 
@@ -299,209 +469,94 @@ const faqs = [
 		setError('descripcion', !descripcionValid)
 
 		if (!nombreValid || !emailValid || !asuntoValid || !descripcionValid) {
-			showStatus('Revisá los campos marcados antes de continuar.', 'error')
+			showFeedback('Revisá los campos obligatorios marcados antes de continuar.', 'error')
 			return
 		}
 
-		const body = `${nombre}\n${email}\n\n${descripcion}`
-		const mailto = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(body)}`
+		lastFormattedMessage = `De: ${nombre} (${email})\nTipo: ${activeSelectedProjectType || 'General'}\nAsunto: ${asunto}\n\nDetalles del proyecto:\n${descripcion}`
+
+		const mailto = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(lastFormattedMessage)}`
 		window.location.href = mailto
 
-		showStatus('Se abrió tu cliente de correo con el mensaje listo para enviar.', 'success')
+		showFeedback(
+			'Se preparó tu cliente de correo con los datos. Si preferís respuesta más rápida, también podés enviarlo directo por WhatsApp o copiar el texto:',
+			'success',
+			lastFormattedMessage,
+			asunto
+		)
 	})
 
+	// Copy summary button
+	copySummaryBtn?.addEventListener('click', async () => {
+		if (!lastFormattedMessage) {
+			const nombre = nombreInput?.value || ''
+			const email = (form?.querySelector('#email') as HTMLInputElement)?.value || ''
+			const asunto = asuntoInput?.value || ''
+			const desc = descripcionInput?.value || ''
+			lastFormattedMessage = `De: ${nombre} (${email})\nAsunto: ${asunto}\n\n${desc}`
+		}
 
-	// Social Cards Fade Carousel
+		try {
+			await navigator.clipboard.writeText(lastFormattedMessage)
+			if (copySummaryText) {
+				const originalText = copySummaryText.textContent
+				copySummaryText.textContent = '¡Copiado!'
+				setTimeout(() => {
+					copySummaryText.textContent = originalText
+				}, 2000)
+			}
+		} catch (err) {
+			console.error('Error al copiar:', err)
+		}
+	})
+
+	// Social Cards Scroll Carousel
 	const carouselTrack = document.getElementById('social-carousel-track')
 	if (carouselTrack) {
 		const carouselContainer = carouselTrack.closest('.carousel-fade')
-		const cards = carouselTrack.querySelectorAll('a')
-		const totalOriginalCards = cards.length / 2
+		const cardWidth = 240 + 16 // card width + gap
+		const totalOriginalCards = 7 // connectLinks.length
+		const totalCards = totalOriginalCards * 3 // tripled for infinite scroll
 		let currentPosition = 0
-		let autoPlayInterval: ReturnType<typeof setInterval>
-		let isAutoPlaying = true
+		let scrollInterval: ReturnType<typeof setInterval> | null = null
+		let isScrolling = false
 
-		const updateCarouselPosition = (offset: number) => {
-			carouselTrack.style.transform = `translateX(-${offset}px)`
-		}
+		const updatePosition = () => {
+			currentPosition += 2
+			carouselTrack.style.transform = `translateX(-${currentPosition}px)`
 
-		const calculateCardWidth = () => {
-			const firstCard = cards[0] as HTMLElement
-			return firstCard ? firstCard.offsetWidth + 16 : 0
-		}
-
-		let cardWidth = calculateCardWidth()
-
-		const nextSlide = () => {
-			currentPosition += cardWidth
-			updateCarouselPosition(currentPosition)
-
+			// Reset to beginning when reaching end of first cycle
 			if (currentPosition >= cardWidth * totalOriginalCards) {
+				carouselTrack.style.transition = 'none'
+				currentPosition = 0
+				carouselTrack.style.transform = `translateX(0)`
 				setTimeout(() => {
-					carouselTrack.style.transition = 'none'
-					currentPosition = 0
-					updateCarouselPosition(0)
-					setTimeout(() => {
-						carouselTrack.style.transition = 'transform 700ms cubic-bezier(0.4, 0, 0.2, 1)'
-					}, 50)
-				}, 700)
+					carouselTrack.style.transition = 'transform 500ms ease-out'
+				}, 50)
 			}
 		}
 
-		const startAutoPlay = () => {
-			if (!isAutoPlaying) {
-				isAutoPlaying = true
-				autoPlayInterval = setInterval(nextSlide, 4000)
+		const startScroll = () => {
+			if (!isScrolling) {
+				isScrolling = true
+				scrollInterval = setInterval(updatePosition, 30)
 			}
 		}
 
-		const stopAutoPlay = () => {
-			isAutoPlaying = false
-			clearInterval(autoPlayInterval)
+		const stopScroll = () => {
+			isScrolling = false
+			if (scrollInterval) clearInterval(scrollInterval)
 		}
 
-		// Initialize
-		carouselTrack.style.transition = 'transform 700ms cubic-bezier(0.4, 0, 0.2, 1)'
-		window.addEventListener('resize', () => {
-			cardWidth = calculateCardWidth()
-		})
+		carouselTrack.style.transition = 'transform 500ms ease-out'
 
-		startAutoPlay()
-
-		// Pause on hover, resume on leave
 		if (carouselContainer) {
-			carouselContainer.addEventListener('mouseenter', stopAutoPlay)
-			carouselContainer.addEventListener('mouseleave', startAutoPlay)
+			carouselContainer.addEventListener('mouseenter', startScroll)
+			carouselContainer.addEventListener('mouseleave', stopScroll)
 		}
-
-		// Cleanup
-		window.addEventListener('beforeunload', () => {
-			clearInterval(autoPlayInterval)
-		})
-	}
-
-	// Development Process Visualization
-	const canvasContainer = document.getElementById('canvas-container')
-	if (canvasContainer) {
-		const canvas = document.createElement('canvas')
-		canvasContainer.appendChild(canvas)
-
-		const ctx = canvas.getContext('2d')
-		if (!ctx) throw new Error('Could not get canvas context')
-
-		let animationId: number
-		let progress = 0
-
-		const resizeCanvas = () => {
-			canvas.width = canvasContainer.clientWidth * window.devicePixelRatio
-			canvas.height = canvasContainer.clientHeight * window.devicePixelRatio
-			ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
-		}
-
-		resizeCanvas()
-		window.addEventListener('resize', resizeCanvas)
-
-		const width = canvasContainer.clientWidth
-		const height = canvasContainer.clientHeight
-
-		const steps = [
-			{ label: '1. BRIEF', desc: 'Idea', color: '#c70039' },
-			{ label: '2. DESIGN', desc: 'Mockups', color: '#e84c5f' },
-			{ label: '3. CODE', desc: 'Build', color: '#ff6b7a' },
-			{ label: '4. TEST', desc: 'Quality', color: '#ff8a95' },
-			{ label: '5. DEPLOY', desc: 'Launch', color: '#ffa8b0' },
-			{ label: '6. CONTACT', desc: 'Háblame', color: '#c70039' }
-		]
-
-		let mouseX = width / 2
-		let mouseY = height / 2
-		let clickable = false
-
-		canvasContainer.addEventListener('mousemove', (e) => {
-			const rect = canvasContainer.getBoundingClientRect()
-			mouseX = e.clientX - rect.left
-			mouseY = e.clientY - rect.top
-		})
-
-		canvasContainer.addEventListener('click', () => {
-			if (progress >= 0.95 && clickable) {
-				const contactForm = document.getElementById('contact-form')
-				if (contactForm) {
-					contactForm.scrollIntoView({ behavior: 'smooth' })
-				}
-			}
-		})
-
-		const animate = () => {
-			ctx.fillStyle = '#0a0a0a'
-			ctx.fillRect(0, 0, width, height)
-
-			progress += 0.003
-			if (progress > 1) progress = 0
-
-			const stepWidth = width / steps.length
-			const centerY = height * 0.5
-
-			steps.forEach((step, index) => {
-				const x = (index + 0.5) * stepWidth
-				const stepProgress = Math.max(0, Math.min(1, progress * steps.length - index))
-				const radius = 20 + stepProgress * 10
-				const opacity = stepProgress * 0.8 + 0.2
-
-				if (index < steps.length - 1) {
-					ctx.strokeStyle = `rgba(199, 0, 57, ${opacity * 0.3})`
-					ctx.lineWidth = 2
-					ctx.beginPath()
-					ctx.moveTo(x + 25, centerY)
-					ctx.lineTo(x + stepWidth - 25, centerY)
-					ctx.stroke()
-				}
-
-				ctx.fillStyle = `rgba(199, 0, 57, ${0.1 * opacity})`
-				ctx.beginPath()
-				ctx.arc(x, centerY, radius + 15, 0, Math.PI * 2)
-				ctx.fill()
-
-				ctx.fillStyle = step.color
-				ctx.globalAlpha = opacity
-				ctx.beginPath()
-				ctx.arc(x, centerY, radius, 0, Math.PI * 2)
-				ctx.fill()
-				ctx.globalAlpha = 1
-
-				ctx.fillStyle = '#0a0a0a'
-				ctx.font = `bold ${Math.round(radius * 0.6)}px Arial`
-				ctx.textAlign = 'center'
-				ctx.textBaseline = 'middle'
-				ctx.fillText(String(index + 1), x, centerY)
-
-				ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`
-				ctx.font = '11px Arial'
-				ctx.textAlign = 'center'
-				ctx.fillText(step.desc, x, centerY + radius + 30)
-			})
-
-			if (progress >= 0.9) {
-				const finalY = centerY + 80
-				const ctaOpacity = Math.max(0, (progress - 0.9) / 0.1)
-				clickable = ctaOpacity > 0.8
-
-				ctx.fillStyle = `rgba(199, 0, 57, ${ctaOpacity * 0.3})`
-				ctx.fillRect(width * 0.1, finalY - 20, width * 0.8, 40)
-
-				ctx.fillStyle = `rgba(255, 255, 255, ${ctaOpacity})`
-				ctx.font = 'bold 14px Arial'
-				ctx.textAlign = 'center'
-				ctx.fillText('Haz click para contactarme →', width * 0.5, finalY + 5)
-			}
-
-			animationId = requestAnimationFrame(animate)
-		}
-
-		animate()
 
 		window.addEventListener('beforeunload', () => {
-			cancelAnimationFrame(animationId)
+			stopScroll()
 		})
 	}
 </script>

@@ -613,12 +613,15 @@ const phases = [
 
 		// Animation Loop
 		let animId: number
-		const clock = new THREE.Clock()
+		let lastTime = performance.now()
+		const startTime = performance.now()
 
 		const animate = () => {
 			animId = requestAnimationFrame(animate)
-			const delta = clock.getDelta()
-			const elapsed = clock.getElapsedTime()
+			const now = performance.now()
+			const delta = Math.min((now - lastTime) / 1000, 0.1)
+			const elapsed = (now - startTime) / 1000
+			lastTime = now
 
 			// Auto rotation
 			if (isAutoRotating && !isDragging) {
