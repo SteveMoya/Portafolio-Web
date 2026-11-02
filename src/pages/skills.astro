@@ -1,122 +1,480 @@
 ---
-import Layout from '@/layouts/Layout.astro';
-import { skills, categories } from '@/data/skills';
-import HardSkillsNew from '@/components/sections/skills/HardSkillsNew';
-import ToolsSectionNew from '@/components/sections/skills/ToolsSectionNew';
+import { Icon } from 'astro-icon/components'
+import Layout from '@/layouts/Layout.astro'
+import PageHero from '@/components/ui/PageHero.astro'
+import SectionHeading from '@/components/ui/SectionHeading.astro'
+import BlockReveal from '@/components/ui/BlockReveal.astro'
+import HardSkillsNew from '@/components/sections/skills/HardSkillsNew'
+import ToolsSectionNew from '@/components/sections/skills/ToolsSectionNew'
+import { skills, categories } from '@/data/skills'
+import { principles, softSkills } from '@/data/capabilities'
+import { languages, interests } from '@cv'
+import { getAllProjects } from '@src/lib/projects'
+import placeholderImage from '/public/img/place-holder-image.webp'
 
-const pageTitle = 'Skills';
-const pageDescription = 'My technical skills and expertise';
+// Existing hand-drawn SVG components. The mapping lives here, keyed by the
+// skill name from the data file, so the data file stays presentation-free.
+import HTML from '@/icons/html.astro'
+import JavaScript from '@/icons/javascript.astro'
+import TypeScript from '@/icons/type.astro'
+import React from '@/icons/react.astro'
+import Node from '@/icons/node.astro'
+import SQL from '@/icons/sql.astro'
+import Git from '@/icons/git.astro'
+import GitHub from '@/icons/GitHub.astro'
+import Tailwind from '@/icons/tailwind.astro'
+import AstroIcon from '@/icons/Astro.astro'
+import SEOIcon from '@/icons/SEO.astro'
 
-// Categorize skills by type
-const aiSkills = skills.filter(s => s.category === 'AI & Data');
-const softwareSkills = skills.filter(s => ['Frontend', 'Backend'].includes(s.category));
-const additionalSkills = skills.filter(s => ['DevOps & Tools', 'Marketing'].includes(s.category));
+const SKILL_ICONS: Record<string, any> = {
+	'HTML/CSS': HTML,
+	JavaScript: JavaScript,
+	TypeScript: TypeScript,
+	React: React,
+	Astro: AstroIcon,
+	'Tailwind CSS': Tailwind,
+	'Node.js': Node,
+	PostgreSQL: SQL,
+	MongoDB: SQL,
+	Git: Git,
+	GitHub: GitHub,
+	SEO: SEOIcon
+}
 
-// Prepare tools data
-const toolsData = skills.map((skill) => ({
-	name: skill.name,
-	icon: skill.icon,
-	category: skill.category,
-}));
+const pageTitle = 'Skills & Tools'
+const pageDescription =
+	'Lenguajes, frameworks, plataformas y disciplinas que uso para construir productos web: del frontend y el backend hasta los datos y el marketing digital.'
+
+const expertCount = skills.filter((skill) => skill.level === 'expert').length
+const advancedCount = skills.filter((skill) => skill.level === 'advanced').length
+
+// Grouped slices handed to the interactive React islands.
+const aiSkills = skills.filter((skill) => skill.category === 'AI & Data')
+const softwareSkills = skills.filter((skill) => ['Frontend', 'Backend'].includes(skill.category))
+const additionalSkills = skills.filter((skill) =>
+	['DevOps & Tools', 'Marketing'].includes(skill.category)
+)
+
+// Tooling strip: platforms and channels rather than languages. The emoji `icon`
+// field from the data file is intentionally dropped, the React island renders a
+// neutral initial instead.
+const toolsData = skills
+	.filter((skill) => ['DevOps & Tools', 'Marketing'].includes(skill.category))
+	.map((skill) => ({ name: skill.name, category: skill.category }))
+
+// Real projects only. If the collection is empty at build time the section is
+// skipped entirely instead of rendering an empty frame.
+let liveProjects: Awaited<ReturnType<typeof getAllProjects>> = []
+try {
+	liveProjects = await getAllProjects()
+} catch (error) {
+	console.warn('[skills] no se pudieron cargar los proyectos', error)
+}
+const projects = liveProjects.slice(0, 3)
+
+const stats = [
+	{ label: 'Habilidades', value: skills.length },
+	{ label: 'Nivel experto', value: expertCount },
+	{ label: 'Nivel avanzado', value: advancedCount },
+	{ label: 'Categorías', value: categories.length }
+]
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
-	<main class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-		<!-- Hero Section -->
-		<section class="relative min-h-screen flex items-center justify-center py-20 overflow-hidden">
-			<!-- Background gradient overlay -->
-			<div class="absolute inset-0 bg-gradient-to-b from-slate-900/50 via-slate-800 to-slate-900 z-0"></div>
+	<PageHero
+		eyebrow="Capacidades"
+		lines={['Skills', '& Tools']}
+		accentIndex={1}
+		subtitle="Un mapa técnico de lo que hago: lenguajes y frameworks con los que construyo interfaces, la infraestructura que las sostiene y las disciplinas que conectan el producto con su audiencia."
+		meta={[
+			`${skills.length} habilidades`,
+			`${categories.length} categorías`,
+			`${expertCount} en nivel experto`
+		]}
+	/>
 
-			<!-- Hero content -->
-			<div class="relative z-10 text-center px-4 sm:px-6 lg:px-8">
-				<div class="space-y-6 mb-12">
-					<div class="inline-block">
-						<span class="text-xs font-bold uppercase tracking-[0.4em] text-sky-300 bg-slate-800/20 px-4 py-2 rounded-full border border-slate-700">
-							Capabilities & Expertise
-						</span>
-					</div>
-					<h1 class="text-6xl md:text-7xl font-bold text-white tracking-tight leading-tight">
-						Skills &<br />Tools
-					</h1>
-					<p class="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
-						Building scalable architectures and innovative solutions across AI, software engineering, and modern development tools.
-					</p>
-				</div>
-
-				<!-- Scroll indicator -->
-				<div class="flex flex-col items-center justify-center gap-3 mt-16">
-					<div class="inline-flex gap-2 text-slate-400 text-sm">
-						<span>Scroll to explore</span>
-					</div>
-					<svg class="w-5 h-5 text-slate-400 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-					</svg>
-				</div>
-			</div>
-		</section>
-
-		<!-- Core Focus Section with 3-Column Layout -->
-		<section class="relative py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-800 to-slate-900">
-			<div class="max-w-7xl mx-auto">
-				<div class="text-center mb-16">
-					<span class="text-xs font-bold uppercase tracking-[0.4em] text-sky-300 bg-slate-800/20 px-4 py-2 rounded-full border border-slate-700 inline-block mb-6">
-						Core Focus
-					</span>
-					<h2 class="text-4xl md:text-5xl font-bold text-white mb-4">
-						Hard Skills & Expertise
-					</h2>
-					<p class="text-slate-400 max-w-2xl mx-auto">
-						Technical depth across AI, software engineering, and development tools
-					</p>
-				</div>
-
-				<HardSkillsNew client:load
-					aiSkills={aiSkills}
-					softwareSkills={softwareSkills}
-					additionalSkills={additionalSkills}
-				/>
-			</div>
-		</section>
-
-		<!-- Professional Tooling Section -->
-		<section class="relative py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-900 to-slate-800">
-			<div class="max-w-7xl mx-auto">
-				<ToolsSectionNew client:load tools={toolsData} />
-			</div>
-		</section>
-
-		<!-- Summary Stats -->
-		<section class="relative py-20 px-4 sm:px-6 lg:px-8 bg-slate-900">
-			<div class="max-w-6xl mx-auto">
-				<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-					{
-						[
-							{ label: 'Total Skills', value: skills.length },
-							{
-								label: 'Expert Level',
-								value: skills.filter((s) => s.level === 'expert').length,
-							},
-							{
-								label: 'Advanced',
-								value: skills.filter((s) => s.level === 'advanced').length,
-							},
-							{
-								label: 'Categories',
-								value: categories.length,
-							},
-						].map((stat) => (
-							<div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-lg p-6 text-center hover:border-sky-500/50 transition-colors">
-								<p class="text-3xl font-bold text-white mb-2">
-									{stat.value}
-								</p>
-								<p class="text-slate-400 text-sm">
-									{stat.label}
-								</p>
+	<!-- Technology marquee: the real stack, looping seamlessly. The second copy
+	     exists only to close the loop and is hidden from assistive tech. -->
+	<div
+		class="marquee relative border-y border-white/10 bg-[#0a0a0a]"
+		role="marquee"
+		aria-label="Tecnologías del stack"
+	>
+		<div class="marquee-track" style="--marquee-duration: 75s">
+			{
+				[0, 1].map((copy) => (
+					<div class="flex shrink-0 items-stretch" aria-hidden={copy === 1 ? 'true' : undefined}>
+						{skills.map((skill) => (
+							<div class="flex shrink-0 items-center gap-3 border-r border-white/10 px-6 py-4">
+								<span class="h-1.5 w-1.5 shrink-0 bg-[#c70039]" aria-hidden="true" />
+								<div class="leading-none">
+									<p class="font-poppins text-sm font-black uppercase tracking-tight text-white sm:text-base">
+										{skill.name}
+									</p>
+									<p class="mt-1.5 font-mono text-[9px] uppercase tracking-[0.22em] text-white/40">
+										{skill.category}
+									</p>
+								</div>
 							</div>
-						))
-					}
+						))}
+					</div>
+				))
+			}
+		</div>
+	</div>
+
+	<!-- Core technologies -->
+	<section class="relative px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+		<div class="mx-auto max-w-[1400px]">
+			<SectionHeading
+				eyebrow="Stack"
+				title="Tecnologías principales"
+				description="Cada herramienta de este mapa está en producción en algún proyecto real, no solo en un tutorial."
+			/>
+
+			<div class="reveal grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+				{
+					skills.map((skill) => {
+						const SkillIcon = SKILL_ICONS[skill.name]
+
+						return (
+							<div class="dotted-card hover-lift group relative flex flex-col justify-between gap-6 rounded-2xl border border-white/10 p-4 transition-colors duration-300 hover:border-[#c70039]/40">
+								<span class="corner-tick corner-tick--tl" aria-hidden="true" />
+								<span class="corner-tick corner-tick--br" aria-hidden="true" />
+
+								<span class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[#c70039] transition-colors duration-300 group-hover:border-[#c70039]/40 [&>svg]:h-5 [&>svg]:w-5">
+									{SkillIcon ? (
+										<SkillIcon />
+									) : (
+										<span class="font-poppins text-xs font-black uppercase">
+											{skill.name.charAt(0)}
+										</span>
+									)}
+								</span>
+
+								<span class="block">
+									<span class="block font-poppins text-sm font-bold leading-tight text-white">
+										{skill.name}
+									</span>
+									<span class="mt-1.5 block text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">
+										{skill.category}
+									</span>
+								</span>
+							</div>
+						)
+					})
+				}
+			</div>
+		</div>
+	</section>
+
+	<!-- Hard skills -->
+	<section class="relative px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+		<div class="mx-auto max-w-[1400px]">
+			<SectionHeading
+				eyebrow="Profundidad"
+				title="Habilidades técnicas"
+				description="Tres frentes de trabajo: la capa de datos e inteligencia artificial, el desarrollo de producto y las herramientas que sostienen la entrega."
+			/>
+
+			<HardSkillsNew
+				client:visible
+				aiSkills={aiSkills}
+				softwareSkills={softwareSkills}
+				additionalSkills={additionalSkills}
+			/>
+		</div>
+	</section>
+
+	<!-- Tooling -->
+	<section class="relative px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+		<div class="mx-auto max-w-[1400px]">
+			<SectionHeading
+				eyebrow="Flujo de trabajo"
+				title="Herramientas y plataformas"
+				description="El resto de la cadena: versionado, despliegue, analítica y los canales donde el producto se encuentra con la gente."
+			/>
+
+			<ToolsSectionNew client:visible tools={toolsData} />
+		</div>
+	</section>
+
+	<!-- Principles: how the work is approached -->
+	<section class="relative px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+		<div class="mx-auto max-w-[1400px]">
+			<SectionHeading
+				eyebrow="Método"
+				title="Cómo trabajo"
+				description="Cuatro reglas que se repiten en cada proyecto, del primer boceto al último despliegue."
+			/>
+
+			<div class="reveal grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+				{
+					principles.map((principle) => (
+						<article class="dotted-card hover-lift group relative flex flex-col gap-3 rounded-2xl border border-white/10 p-6 transition-colors duration-300 hover:border-[#c70039]/40">
+							<span class="corner-tick corner-tick--tl" aria-hidden="true" />
+							<span class="corner-tick corner-tick--br" aria-hidden="true" />
+
+							<span class="font-poppins text-3xl font-black leading-none tracking-tight text-[#c70039]">
+								{principle.number}
+							</span>
+
+							<h3 class="font-poppins text-sm font-black uppercase leading-snug tracking-tight text-white">
+								{principle.title}
+							</h3>
+
+							<p class="text-sm leading-relaxed text-white/60">{principle.description}</p>
+
+							<span
+								class="mt-auto h-px w-8 bg-[#c70039]/70 transition-all duration-500 group-hover:w-16"
+								aria-hidden="true"
+							/>
+						</article>
+					))
+				}
+			</div>
+		</div>
+	</section>
+
+	<!-- Soft skills -->
+	<section class="relative px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+		<div class="mx-auto max-w-[1400px]">
+			<SectionHeading
+				eyebrow="Transversal"
+				title="Competencias"
+				description="Lo que no aparece en el stack pero decide si un proyecto llega bien a producción."
+			/>
+
+			<div class="reveal grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+				{
+					softSkills.map((skill) => (
+						<article class="hover-lift group relative flex gap-4 rounded-2xl border border-white/10 bg-white/[0.02] p-5 transition-colors duration-300 hover:border-[#c70039]/40 hover:bg-white/[0.04]">
+							<span class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-[#c70039] transition-colors duration-300 group-hover:border-[#c70039]/40">
+								<Icon name={skill.icon} class="h-5 w-5" aria-hidden="true" />
+							</span>
+
+							<div class="flex flex-col gap-1.5">
+								<h3 class="font-poppins text-sm font-bold tracking-tight text-white">
+									{skill.name}
+								</h3>
+								<p class="text-sm leading-relaxed text-white/60">{skill.description}</p>
+							</div>
+						</article>
+					))
+				}
+			</div>
+		</div>
+	</section>
+
+	<!-- Projects: only rendered when the collection actually returns items -->
+	{
+		projects.length > 0 && (
+			<section class="relative px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+				<div class="mx-auto max-w-[1400px]">
+					<SectionHeading
+						eyebrow="Selección"
+						title="Proyectos en producción"
+						description="Trabajo que está vivo hoy: código desplegado, no maquetas de presentación."
+					/>
+
+					<div class="reveal grid gap-5 md:grid-cols-3">
+						{projects.map((project, index) => (
+							<article class="dotted-card hover-lift group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 transition-colors duration-300 hover:border-[#c70039]/40">
+								<span class="corner-tick corner-tick--tl" aria-hidden="true" />
+
+								<div class="relative aspect-[16/10] w-full overflow-hidden border-b border-white/10 bg-black/40">
+									<img
+										src={project.image || (placeholderImage as unknown as string)}
+										alt={`${project.title} imagen`}
+										loading="lazy"
+										class="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
+									/>
+									<div
+										class="pointer-events-none absolute inset-0"
+										aria-hidden="true"
+										style="background: linear-gradient(to top, #0a0a0a, rgba(10,10,10,0.15), transparent);"
+									/>
+									<span class="absolute left-4 top-4 rounded-md border border-white/10 bg-[#0a0a0a]/80 px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-white/60 backdrop-blur-sm">
+										{String(index + 1).padStart(2, '0')}
+									</span>
+								</div>
+
+								<div class="flex flex-1 flex-col gap-3 p-5">
+									<h3 class="font-poppins text-base font-black uppercase leading-snug tracking-tight text-white">
+										{project.title}
+									</h3>
+
+									<p class="text-sm leading-relaxed text-white/60">{project.description}</p>
+
+									<div class="flex flex-wrap gap-1.5">
+										{project.technologies.slice(0, 4).map((tech) => (
+											<span class="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/50">
+												{tech.name}
+											</span>
+										))}
+									</div>
+
+									<a
+										href={project.demo || '/portafolio/webs'}
+										target={project.demo ? '_blank' : undefined}
+										rel={project.demo ? 'noopener noreferrer' : undefined}
+										aria-label={`Ver ${project.title}`}
+										class="tap mt-auto inline-flex w-fit items-center gap-2 pt-2 text-[10px] font-bold uppercase tracking-[0.28em] text-white/60 transition-colors duration-300 hover:text-[#c70039]"
+									>
+										{project.demo ? 'Abrir sitio' : 'Ver portafolio'}
+										<span aria-hidden="true">&rarr;</span>
+									</a>
+								</div>
+							</article>
+						))}
+					</div>
+
+					<div class="mt-8">
+						<a
+							href="/portafolio/webs"
+							class="tap inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.28em] text-white/60 transition-colors duration-300 hover:text-[#c70039]"
+						>
+							Ver todos los proyectos
+							<span aria-hidden="true">&rarr;</span>
+						</a>
+					</div>
+				</div>
+			</section>
+		)
+	}
+
+	<!-- Languages and interests, straight from cv.json -->
+	<section class="relative px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+		<div class="mx-auto max-w-[1400px]">
+			<SectionHeading
+				eyebrow="Contexto"
+				title="Idiomas e intereses"
+				description="Los idiomas en los que trabajo y los temas que sigo por fuera de la entrega."
+			/>
+
+			<div class="reveal grid gap-4 md:grid-cols-2">
+				<div class="dotted-card relative rounded-2xl border border-white/10 p-6 sm:p-8">
+					<span class="corner-tick corner-tick--tl" aria-hidden="true"></span>
+					<span class="corner-tick corner-tick--br" aria-hidden="true"></span>
+
+					<p class="font-mono text-[10px] uppercase tracking-[0.28em] text-white/40">Idiomas</p>
+
+					<ul class="mt-5 space-y-4">
+						{
+							languages.map((item) => (
+								<li class="flex items-baseline justify-between gap-4 border-b border-white/10 pb-4 last:border-0 last:pb-0">
+									<span class="font-poppins text-base font-bold tracking-tight text-white">
+										{item.language}
+									</span>
+									<span class="font-mono text-[10px] uppercase tracking-[0.2em] text-white/60">
+										{item.fluency}
+									</span>
+								</li>
+							))
+						}
+					</ul>
+				</div>
+
+				<div class="dotted-card relative rounded-2xl border border-white/10 p-6 sm:p-8">
+					<span class="corner-tick corner-tick--tl" aria-hidden="true"></span>
+					<span class="corner-tick corner-tick--br" aria-hidden="true"></span>
+
+					<p class="font-mono text-[10px] uppercase tracking-[0.28em] text-white/40">Intereses</p>
+
+					<div class="mt-5 space-y-5">
+						{
+							interests.map((area) => (
+								<div>
+									<p class="font-poppins text-base font-bold tracking-tight text-white">
+										{area.name}
+									</p>
+									<div class="mt-3 flex flex-wrap gap-2">
+										{area.keywords.map((keyword) => (
+											<span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-white/60">
+												{keyword}
+											</span>
+										))}
+									</div>
+								</div>
+							))
+						}
+					</div>
 				</div>
 			</div>
-		</section>
-	</main>
+		</div>
+	</section>
+
+	<!-- Stats -->
+	<section class="relative px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+		<div class="mx-auto max-w-[1400px]">
+			<div class="reveal grid grid-cols-2 gap-3 md:grid-cols-4">
+				{
+					stats.map((stat) => (
+						<div class="dotted-card relative rounded-2xl border border-white/10 p-6 sm:p-8">
+							<span class="corner-tick corner-tick--tl" aria-hidden="true" />
+							<span class="corner-tick corner-tick--br" aria-hidden="true" />
+
+							<p class="font-poppins text-4xl font-black leading-none tracking-tight text-[#c70039] sm:text-5xl">
+								{String(stat.value).padStart(2, '0')}
+							</p>
+							<p class="mt-3 text-[10px] font-bold uppercase tracking-[0.3em] text-white/60">
+								{stat.label}
+							</p>
+						</div>
+					))
+				}
+			</div>
+		</div>
+	</section>
+
+	<!-- Closing CTA: same visual language as FinalCTA without importing it -->
+	<section
+		class="relative overflow-hidden border-t border-white/10 px-6 py-24 sm:px-10 lg:px-16 lg:py-32"
+	>
+		<div
+			class="pointer-events-none absolute inset-0 z-0"
+			aria-hidden="true"
+			style="background: radial-gradient(ellipse 70% 60% at 50% 110%, rgba(199,0,57,0.12), transparent 65%);"
+		>
+		</div>
+
+		<div class="relative z-10 mx-auto flex max-w-[1400px] flex-col items-center gap-8 text-center">
+			<p class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">Siguiente paso</p>
+
+			<BlockReveal
+				as="h2"
+				class="max-w-3xl font-poppins text-4xl font-black uppercase leading-[0.95] tracking-tight text-white sm:text-6xl lg:text-7xl"
+				boxColor="#c70039"
+				triggerStart="top 98%"
+				duration={0.3}
+				stagger={0.09}
+				lines={['Llevemos esto', 'a tu proyecto']}
+			/>
+
+			<p class="max-w-md text-sm leading-relaxed text-white/60 sm:text-base">
+				Si alguna de estas herramientas encaja con lo que necesitás construir, escribime y lo
+				definimos juntos.
+			</p>
+
+			<div class="mt-2 flex flex-col items-center gap-4 sm:flex-row">
+				<a
+					href="/contact"
+					aria-label="Ir a la página de contacto"
+					class="tap group inline-flex items-center gap-3 rounded-full bg-[#c70039] px-8 py-4 text-sm font-black uppercase tracking-widest text-white transition-all duration-300 hover:scale-105 hover:bg-[#b11141] hover:shadow-[0_0_40px_rgba(199,0,57,0.35)]"
+				>
+					<Icon name="mdi:email-outline" class="h-5 w-5" />
+					Hablemos
+				</a>
+
+				<a
+					href="/about"
+					aria-label="Ver currículum completo"
+					class="tap group inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-8 py-4 text-sm font-black uppercase tracking-widest text-white/80 transition-all duration-300 hover:border-[#c70039]/50 hover:bg-white/10 hover:text-white"
+				>
+					<Icon name="mdi:account-details-outline" class="h-5 w-5" />
+					Ver currículum
+				</a>
+			</div>
+		</div>
+	</section>
 </Layout>

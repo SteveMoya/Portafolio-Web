@@ -1,91 +1,75 @@
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion'
 
 interface ToolProps {
-	name: string;
-	icon?: string;
-	category?: string;
+	name: string
+	/** Optional glyph. The page no longer passes emoji, so the initial is used. */
+	icon?: string
+	category?: string
 }
 
 interface ToolsSectionNewProps {
-	tools: ToolProps[];
+	tools: ToolProps[]
 }
 
 const container = {
-	hidden: { opacity: 0 },
+	hidden: {},
 	visible: {
-		opacity: 1,
 		transition: {
-			staggerChildren: 0.05,
-		},
-	},
-};
+			staggerChildren: 0.05
+		}
+	}
+}
 
+// Opacity is deliberately left at 1 in the hidden state: the server-rendered
+// cards must stay legible if hydration ever fails.
 const item = {
-	hidden: { opacity: 0, scale: 0.8, y: 20 },
+	hidden: { scale: 0.94, y: 20 },
 	visible: {
-		opacity: 1,
 		scale: 1,
 		y: 0,
-		transition: { duration: 0.4 },
-	},
-};
+		transition: { duration: 0.4 }
+	}
+}
 
 export default function ToolsSectionNew({ tools }: ToolsSectionNewProps) {
-	return (
-		<motion.section
-			initial={{ opacity: 0, y: 20 }}
-			whileInView={{ opacity: 1, y: 0 }}
-			viewport={{ once: true }}
-			transition={{ duration: 0.6 }}
-			className="w-full"
-		>
-			{/* Header */}
-			<div className="text-center mb-16">
-				<span className="text-xs font-bold uppercase tracking-[0.4em] text-sky-300 bg-slate-800/20 px-4 py-2 rounded-full border border-slate-700 inline-block mb-6">
-					Workflow & Infrastructure
-				</span>
-				<h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-					Professional Tooling
-				</h2>
-				<p className="text-slate-400 max-w-2xl mx-auto">
-					Leveraging modern platforms for development, design, and deployment to ensure rapid and reliable delivery.
-				</p>
-			</div>
+	const reduce = useReducedMotion() ?? false
 
-			{/* Tools Grid */}
-			<motion.div
-				variants={container}
-				initial="hidden"
-				whileInView="visible"
-				viewport={{ once: true, margin: '-50px' }}
-				className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
-			>
-				{tools.map((tool, idx) => (
-					<motion.div
-						key={idx}
-						variants={item}
-						whileHover={{ scale: 1.05, y: -5 }}
-						className="group relative"
-					>
-						<div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 hover:border-sky-500/50 rounded-xl p-4 h-28 flex flex-col items-center justify-center transition-all duration-300 hover:shadow-[0_0_20px_rgba(14,165,233,0.2)]">
-							{tool.icon && (
-								<span className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">
-									{tool.icon}
-								</span>
-							)}
-							<p className="text-xs font-semibold text-slate-300 text-center line-clamp-2 group-hover:text-slate-100 transition-colors">
-								{tool.name}
-							</p>
-						</div>
+	return (
+		<motion.div
+			variants={reduce ? undefined : container}
+			initial={reduce ? false : 'hidden'}
+			whileInView={reduce ? undefined : 'visible'}
+			viewport={{ once: true, margin: '-50px' }}
+			className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4"
+		>
+			{tools.map((tool) => (
+				<motion.div
+					key={tool.name}
+					variants={reduce ? undefined : item}
+					whileHover={reduce ? undefined : { y: -4 }}
+					transition={{ duration: reduce ? 0 : 0.25 }}
+					className="group relative"
+				>
+					<div className="hover-lift relative flex h-32 flex-col items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 text-center transition-colors duration-300 hover:border-[#c70039]/40">
+						<span className="corner-tick corner-tick--tl" aria-hidden="true" />
+						<span className="corner-tick corner-tick--br" aria-hidden="true" />
+
+						<span className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 font-poppins text-sm font-black uppercase text-[#c70039] transition-colors duration-300 group-hover:border-[#c70039]/40">
+							{tool.icon ?? tool.name.charAt(0)}
+						</span>
+
+						<p className="line-clamp-2 text-xs font-semibold leading-snug text-white">
+							{tool.name}
+						</p>
 
 						{tool.category && (
-							<div className="absolute -bottom-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-								<span className="text-[10px] text-slate-500 font-mono">{tool.category}</span>
-							</div>
+							<p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/60">
+								{tool.category}
+							</p>
 						)}
-					</motion.div>
-				))}
-			</motion.div>
-		</motion.section>
-	);
+					</div>
+				</motion.div>
+			))}
+		</motion.div>
+	)
 }
