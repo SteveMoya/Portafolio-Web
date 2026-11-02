@@ -36,7 +36,7 @@ const fotografia = defineCollection({
 
 const diseno = defineCollection({
 	loader: cldAssetsLoader({
-		folder: 'diseño',
+		folder: 'diseno',
 		limit: 80
 	})
 })
