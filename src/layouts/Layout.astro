@@ -49,16 +49,7 @@ import '@fontsource/monoton'
 		<main class="relative h-auto w-full overflow-clip bg-[#0a0a0a]">
 
 			<!-- Page Content Wrapper with Transition Animation -->
-			<div transition:animate={{
-				forwards: {
-					old: { name: 'page-out', duration: '0.25s', easing: 'ease-in', fillMode: 'both' },
-					new: { name: 'page-in', duration: '0.3s', easing: 'ease-out', fillMode: 'both' }
-				},
-				backwards: {
-					old: { name: 'page-out', duration: '0.25s', easing: 'ease-in', fillMode: 'both' },
-					new: { name: 'page-in', duration: '0.3s', easing: 'ease-out', fillMode: 'both' }
-				}
-			}}>
+			<div transition:animate="fade" transition:name="page">
 				<slot />
 			</div>
 			{Astro.url.pathname.includes('/blog/') && <BotonIrArriba />}
