@@ -38,7 +38,6 @@ const pageDescription = 'My photography and design work';
 						<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 							{allImages.map((image, idx) => (
 								<div
-									key={image.id}
 									class="group relative overflow-hidden rounded-lg aspect-square bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10"
 								>
 									<CldImage
@@ -60,7 +59,6 @@ const pageDescription = 'My photography and design work';
 												<div class="flex gap-2 mt-2 flex-wrap">
 													{image.data.tags.slice(0, 2).map((tag: string) => (
 														<span
-															key={tag}
 															class="text-xs bg-blue-500/80 text-white px-2 py-1 rounded"
 														>
 															{tag}
