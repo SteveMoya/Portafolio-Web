@@ -50,11 +50,11 @@
 | T3 | S2 | ExperienceStickyScroll | ✅ DONE | 955732a |
 | T4 | S2 | HardSkills | ✅ DONE | 955732a |
 | T5 | S2 | ToolsSection | ✅ DONE | 955732a |
-| T6 | S2 | CleanFilmGrid | RED | — |
-| T7 | S3 | `/experience` redesign | RED | — |
-| T8 | S3 | `/skills` redesign | RED | — |
-| T9 | S3 | `/gallery` redesign | RED | — |
-| T10 | S4 | ChatbotWidget animation | RED | — |
+| T6 | S2 | CleanFilmGrid | ✅ DONE | 6f3f42f |
+| T7 | S3 | `/experience` redesign | ✅ DONE | 6f3f42f |
+| T8 | S3 | `/skills` redesign | ✅ DONE | 6f3f42f |
+| T9 | S3 | `/gallery` redesign | ✅ DONE | 6f3f42f |
+| T10 | S4 | ChatbotWidget animation | ✅ DONE | c026e93 |
 
 ---
 
@@ -71,7 +71,19 @@
 - HardSkills: barras de habilidades con progress animado
 - ToolsSection: grid de herramientas con hover animations
 
-50% del trabajo completado (5 de 10 tareas). Listos para integración en páginas.
+**L5** — Integración de componentes en páginas (6f3f42f):
+- ExperienceMarquee con logos en /experience
+- HardSkills + ToolsSection en /skills
+- ExperienceStickyScroll en /education
+- CleanFilmGrid en /gallery
+
+**L6** — Animaciones ChatbotWidget (c026e93):
+- Entrance/exit: scale + fade (300ms)
+- Message stagger: opacity + translate
+- Button: whileHover, whileTap, animated glow shadow
+- Icon rotation en open state
+
+✅ **COMPLETADO (100%): Todas las 10 tareas terminadas y compiladas sin errores**
 
 ---
 
