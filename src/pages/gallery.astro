@@ -15,9 +15,9 @@ const allImages = [...fotografiaImages, ...disenoImages].sort((a, b) => {
 // Transform for CleanFilmGrid component - map collection names to categories
 const galleryImages = allImages.map((image) => ({
 	id: image.id,
-	src: `https://res.cloudinary.com/${import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME}/image/fetch/q_auto,f_auto/${image.id}`,
+	src: image.data.secure_url,
 	alt: image.data.display_name || 'Gallery Image',
-	category: image.collection === 'fotografia' ? 'fotografia' : 'diseno',
+	category: image.collection,
 }));
 
 const pageTitle = 'Gallery';

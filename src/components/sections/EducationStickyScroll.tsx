@@ -9,7 +9,7 @@ import {
 	Clock,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { cn } from '@/utils';
+import { cn } from '@/lib/utils';
 
 interface EducationItem {
 	id: string;
