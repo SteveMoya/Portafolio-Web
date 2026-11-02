@@ -1,13 +1,21 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import { experiences } from '@/data/experiences';
+import ExperienceMarquee from '@/components/sections/ExperienceMarquee';
 
 const pageTitle = 'Experience';
 const pageDescription = 'My professional journey and work experience';
+
+const logos = experiences
+	.filter((exp) => exp.logo)
+	.map((exp) => exp.logo as string);
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
 	<main class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-20">
+		<!-- Logo Marquee -->
+		<ExperienceMarquee client:load logos={logos} />
+
 		<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 			<!-- Header -->
 			<div class="mb-16">

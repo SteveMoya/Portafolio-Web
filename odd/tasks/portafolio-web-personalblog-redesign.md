@@ -46,10 +46,10 @@
 | ID | Spec | Component | Estado | Commit |
 |----|------|-----------|--------|--------|
 | T1 | S1 | — | ✅ DONE | 610e94f |
-| T2 | S2 | ExperienceMarquee | ✅ DONE | — |
-| T3 | S2 | ExperienceStickyScroll | RED | — |
-| T4 | S2 | HardSkills | RED | — |
-| T5 | S2 | ToolsSection | RED | — |
+| T2 | S2 | ExperienceMarquee | ✅ DONE | 7b6b800 |
+| T3 | S2 | ExperienceStickyScroll | ✅ DONE | 955732a |
+| T4 | S2 | HardSkills | ✅ DONE | 955732a |
+| T5 | S2 | ToolsSection | ✅ DONE | 955732a |
 | T6 | S2 | CleanFilmGrid | RED | — |
 | T7 | S3 | `/experience` redesign | RED | — |
 | T8 | S3 | `/skills` redesign | RED | — |
@@ -65,6 +65,13 @@
 **L2** — Instaladas 11 dependencias clave (Framer Motion, Three.js, GSAP, Lenis, etc.)
 
 **L3** — Creado componente ExperienceMarquee adaptado para Astro (React island, compatible con Astro)
+
+**L4** — Creados 3 componentes section más:
+- ExperienceStickyScroll: educación con corner accents, hover effects, animations
+- HardSkills: barras de habilidades con progress animado
+- ToolsSection: grid de herramientas con hover animations
+
+50% del trabajo completado (5 de 10 tareas). Listos para integración en páginas.
 
 ---
 

@@ -1,14 +1,29 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import { education } from '@/data/education';
+import ExperienceStickyScroll from '@/components/sections/ExperienceStickyScroll';
+import { GraduationCap, BookOpen } from 'lucide-react';
 
 const pageTitle = 'Education';
 const pageDescription = 'My academic background and certifications';
+
+// Prepare education data for component
+const educationCards = education.map((edu, idx) => ({
+	institution: edu.institution,
+	degree: edu.degree,
+	major: edu.major,
+	status: edu.isOngoing ? 'Current' : 'Completed',
+	highlights: edu.achievements || edu.activities || [],
+	icon: idx === 0 ? <GraduationCap className="w-20 h-20" /> : <BookOpen className="w-20 h-20" />,
+	iconColor: 'text-white',
+	hoverColor: 'hover:border-blue-500/50',
+	glowColor: 'rgba(59,130,246,0.3)',
+}));
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
 	<main class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-20">
-		<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 			<!-- Header -->
 			<div class="mb-16">
 				<h1
@@ -21,8 +36,11 @@ const pageDescription = 'My academic background and certifications';
 				</p>
 			</div>
 
-			<!-- Timeline -->
-			<div class="relative">
+			<!-- StickyScroll Component -->
+			<ExperienceStickyScroll client:load education={educationCards} />
+
+			<!-- Timeline (Legacy) -->
+			<div class="relative hidden">
 				{/* Vertical line */}
 				<div
 					class="absolute left-0 md:left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-purple-500 to-slate-700 md:-translate-x-1/2"

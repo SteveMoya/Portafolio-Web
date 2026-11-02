@@ -1,9 +1,24 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import { skills, categories, getSkillsByCategory } from '@/data/skills';
+import HardSkills from '@/components/sections/skills/HardSkills';
+import ToolsSection from '@/components/sections/skills/ToolsSection';
 
 const pageTitle = 'Skills';
 const pageDescription = 'My technical skills and expertise';
+
+// Prepare skills data for components
+const hardSkillsData = skills.map((skill) => ({
+	name: skill.name,
+	level: skill.level,
+	icon: skill.icon,
+}));
+
+const toolsData = skills.slice(0, 18).map((skill) => ({
+	name: skill.name,
+	icon: skill.icon,
+	category: skill.category,
+}));
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
@@ -21,64 +36,36 @@ const pageDescription = 'My technical skills and expertise';
 				</p>
 			</div>
 
-			<!-- Skills by Category -->
-			<div class="space-y-16">
+			<!-- HardSkills Component -->
+			<div class="mb-20">
+				<h2 class="text-3xl font-bold text-white mb-12 text-center">
+					Technical Proficiency
+				</h2>
+				<HardSkills client:load skills={hardSkillsData} />
+			</div>
+
+			<!-- Tools & Technologies -->
+			<ToolsSection client:load tools={toolsData} />
+
+			<!-- Skills by Category (condensed) -->
+			<div class="space-y-16 mt-20">
 				{
 					categories.map((category) => {
 						const categorySkills = getSkillsByCategory(category);
 						return (
 							<section>
 								<div class="mb-8">
-									<h2 class="text-3xl font-bold text-white mb-2">
+									<h3 class="text-2xl font-bold text-white mb-2">
 										{category}
-									</h2>
+									</h3>
 									<div class="w-12 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
 								</div>
 
-								<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+								<div class="flex flex-wrap gap-2">
 									{categorySkills.map((skill) => (
-										<div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-lg p-4 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10">
-											<div class="flex items-center justify-between mb-3">
-												<div class="flex items-center gap-3">
-													<span class="text-2xl">
-														{skill.icon}
-													</span>
-													<h3 class="font-semibold text-white">
-														{skill.name}
-													</h3>
-												</div>
-											</div>
-
-											{/* Level indicator */}
-											<div class="flex items-center gap-2">
-												<div class="flex-1 bg-slate-700 rounded-full h-1.5">
-													<div
-														class={`h-full rounded-full ${
-															skill.level === 'expert'
-																? 'w-full bg-green-500'
-																: skill.level === 'advanced'
-																	? 'w-3/4 bg-blue-500'
-																	: skill.level === 'intermediate'
-																		? 'w-1/2 bg-yellow-500'
-																		: 'w-1/4 bg-orange-500'
-														}`}
-													></div>
-												</div>
-												<span
-													class={`text-xs font-semibold px-2 py-1 rounded-full ${
-														skill.level === 'expert'
-															? 'text-green-200 bg-green-500/20'
-															: skill.level === 'advanced'
-																? 'text-blue-200 bg-blue-500/20'
-																: skill.level === 'intermediate'
-																	? 'text-yellow-200 bg-yellow-500/20'
-																	: 'text-orange-200 bg-orange-500/20'
-													}`}
-												>
-													{skill.level}
-												</span>
-											</div>
-										</div>
+										<span class="bg-slate-700/50 text-slate-200 px-3 py-1 rounded-lg text-sm border border-slate-600 hover:border-blue-400 transition-colors">
+											{skill.name}
+										</span>
 									))}
 								</div>
 							</section>

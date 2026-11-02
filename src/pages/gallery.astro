@@ -1,7 +1,7 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import { getCollection } from 'astro:content';
-import { CldImage } from 'astro-cloudinary';
+import CleanFilmGrid from '@/components/sections/gallery/CleanFilmGrid';
 
 // Get images from Cloudinary collections
 const fotografiaImages = await getCollection('fotografia');
@@ -11,6 +11,14 @@ const disenoImages = await getCollection('diseno');
 const allImages = [...fotografiaImages, ...disenoImages].sort((a, b) => {
 	return new Date(b.data.uploaded_at || 0).getTime() - new Date(a.data.uploaded_at || 0).getTime();
 });
+
+// Transform for CleanFilmGrid component
+const galleryImages = allImages.map((image) => ({
+	id: image.id,
+	src: `https://res.cloudinary.com/${import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME}/image/fetch/q_auto,f_auto/${image.id}`,
+	alt: image.data.display_name || 'Gallery Image',
+	category: image.data.tags?.[0] || undefined,
+}));
 
 const pageTitle = 'Gallery';
 const pageDescription = 'My photography and design work';
@@ -32,45 +40,10 @@ const pageDescription = 'My photography and design work';
 			</div>
 
 			{
-				allImages.length > 0 ? (
+				galleryImages.length > 0 ? (
 					<>
-						{/* Grid */}
-						<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-							{allImages.map((image, idx) => (
-								<div
-									class="group relative overflow-hidden rounded-lg aspect-square bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10"
-								>
-									<CldImage
-										src={image.id}
-										alt={image.data.display_name || `Gallery image ${idx + 1}`}
-										width={400}
-										height={400}
-										crop="fill"
-										class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-									/>
-
-									{/* Overlay */}
-									<div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300 flex items-end opacity-0 group-hover:opacity-100">
-										<div class="p-4 w-full">
-											<p class="text-white text-sm font-medium truncate">
-												{image.data.display_name || 'Gallery Image'}
-											</p>
-											{image.data.tags && image.data.tags.length > 0 && (
-												<div class="flex gap-2 mt-2 flex-wrap">
-													{image.data.tags.slice(0, 2).map((tag: string) => (
-														<span
-															class="text-xs bg-blue-500/80 text-white px-2 py-1 rounded"
-														>
-															{tag}
-														</span>
-													))}
-												</div>
-											)}
-										</div>
-									</div>
-								</div>
-							))}
-						</div>
+						{/* CleanFilmGrid Component */}
+						<CleanFilmGrid client:load images={galleryImages} columns={3} />
 
 						<!-- Stats -->
 						<div class="mt-16 grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
