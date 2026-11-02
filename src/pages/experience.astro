@@ -1,0 +1,141 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { experiences } from '@/data/experiences';
+
+const pageTitle = 'Experience';
+const pageDescription = 'My professional journey and work experience';
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+	<main class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-20">
+		<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+			<!-- Header -->
+			<div class="mb-16">
+				<h1
+					class="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight"
+				>
+					Experience
+				</h1>
+				<p class="text-xl text-slate-300 max-w-2xl">
+					Professional roles, projects, and career milestones
+				</p>
+			</div>
+
+			<!-- Timeline -->
+			<div class="relative">
+				<!-- Vertical line -->
+				<div
+					class="absolute left-0 md:left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 to-slate-700 md:-translate-x-1/2"
+				></div>
+
+				<!-- Experiences -->
+				<div class="space-y-12">
+					{
+						experiences.map((exp, index) => (
+							<div class="relative">
+								<!-- Timeline dot -->
+								<div class="absolute left-0 md:left-1/2 -top-1 w-4 h-4 bg-blue-500 rounded-full border-4 border-slate-900 md:-translate-x-1/2"></div>
+
+								<!-- Content -->
+								<div
+									class={`ml-8 md:ml-0 ${
+										index % 2 === 0 ? 'md:mr-1/2 md:pr-8' : 'md:ml-1/2 md:pl-8'
+									}`}
+								>
+									<div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-6 hover:border-blue-500/50 transition-colors duration-300">
+										{/* Header */}
+										<div class="mb-4">
+											<div class="flex items-start justify-between mb-2">
+												<div>
+													<h3 class="text-xl font-bold text-white">
+														{exp.position}
+													</h3>
+													<p class="text-blue-400 font-semibold">
+														{exp.company}
+													</p>
+												</div>
+												<span class="text-xs font-mono bg-blue-500/20 text-blue-200 px-3 py-1 rounded-full">
+													{exp.type}
+												</span>
+											</div>
+										</div>
+
+										{/* Date and Location */}
+										<div class="flex flex-wrap gap-4 text-sm text-slate-400 mb-4 pb-4 border-b border-slate-700">
+											<span class="flex items-center gap-2">
+												📅
+												{new Date(exp.startDate).toLocaleDateString('es-DO', {
+													month: 'short',
+													year: 'numeric',
+												})}
+												{exp.endDate
+													? ` - ${new Date(exp.endDate).toLocaleDateString('es-DO', {
+														month: 'short',
+														year: 'numeric',
+													})}`
+													: exp.isOngoing
+														? ' - Present'
+														: ''}
+											</span>
+											<span class="flex items-center gap-2">
+												📍 {exp.location}
+											</span>
+										</div>
+
+										{/* Description */}
+										<p class="text-slate-300 mb-4 leading-relaxed">
+											{exp.description}
+										</p>
+
+										{/* Responsibilities */}
+										<div class="mb-6">
+											<h4 class="text-sm font-semibold text-slate-200 mb-3 uppercase tracking-wide">
+												Key Responsibilities
+											</h4>
+											<ul class="space-y-2">
+												{exp.responsibilities.slice(0, 3).map((resp) => (
+													<li class="flex items-start gap-3 text-sm text-slate-400">
+														<span class="text-blue-400 mt-1">→</span>
+														<span>{resp}</span>
+													</li>
+												))}
+											</ul>
+										</div>
+
+										{/* Skills */}
+										<div>
+											<h4 class="text-sm font-semibold text-slate-200 mb-3 uppercase tracking-wide">
+												Technologies
+											</h4>
+											<div class="flex flex-wrap gap-2">
+												{exp.skills.map((skill) => (
+													<span class="bg-slate-700/50 text-slate-200 px-3 py-1 rounded-lg text-sm border border-slate-600 hover:border-blue-400 transition-colors">
+														{skill}
+													</span>
+												))}
+											</div>
+										</div>
+
+										{/* External Link */}
+										{exp.externalLink && (
+											<div class="mt-6 pt-4 border-t border-slate-700">
+												<a
+													href={Array.isArray(exp.externalLink) ? exp.externalLink[0] : exp.externalLink}
+													target="_blank"
+													rel="noopener noreferrer"
+													class="text-blue-400 hover:text-blue-300 text-sm font-medium flex items-center gap-2 transition-colors"
+												>
+													View More →
+												</a>
+											</div>
+										)}
+									</div>
+								</div>
+							</div>
+						))
+					}
+				</div>
+			</div>
+		</div>
+	</main>
+</Layout>

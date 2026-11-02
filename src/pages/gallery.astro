@@ -1,0 +1,109 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { CldImage } from 'astro-cloudinary';
+
+// Get images from Cloudinary collections
+const fotografiaImages = await getCollection('fotografia');
+const disenoImages = await getCollection('diseno');
+
+// Combine and sort by date (newest first)
+const allImages = [...fotografiaImages, ...disenoImages].sort((a, b) => {
+	return new Date(b.data.uploaded_at || 0).getTime() - new Date(a.data.uploaded_at || 0).getTime();
+});
+
+const pageTitle = 'Gallery';
+const pageDescription = 'My photography and design work';
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+	<main class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-20">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<!-- Header -->
+			<div class="mb-16 text-center">
+				<h1
+					class="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight"
+				>
+					Gallery
+				</h1>
+				<p class="text-xl text-slate-300 max-w-2xl mx-auto">
+					A collection of my photography and design projects
+				</p>
+			</div>
+
+			{
+				allImages.length > 0 ? (
+					<>
+						{/* Grid */}
+						<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+							{allImages.map((image, idx) => (
+								<div
+									key={image.id}
+									class="group relative overflow-hidden rounded-lg aspect-square bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10"
+								>
+									<CldImage
+										src={image.id}
+										alt={image.data.display_name || `Gallery image ${idx + 1}`}
+										width={400}
+										height={400}
+										crop="fill"
+										class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+									/>
+
+									{/* Overlay */}
+									<div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300 flex items-end opacity-0 group-hover:opacity-100">
+										<div class="p-4 w-full">
+											<p class="text-white text-sm font-medium truncate">
+												{image.data.display_name || 'Gallery Image'}
+											</p>
+											{image.data.tags && image.data.tags.length > 0 && (
+												<div class="flex gap-2 mt-2 flex-wrap">
+													{image.data.tags.slice(0, 2).map((tag: string) => (
+														<span
+															key={tag}
+															class="text-xs bg-blue-500/80 text-white px-2 py-1 rounded"
+														>
+															{tag}
+														</span>
+													))}
+												</div>
+											)}
+										</div>
+									</div>
+								</div>
+							))}
+						</div>
+
+						<!-- Stats -->
+						<div class="mt-16 grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
+							<div class="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-slate-700 rounded-lg p-6">
+								<p class="text-3xl font-bold text-white mb-2">
+									{allImages.length}
+								</p>
+								<p class="text-slate-400 text-sm">Total Images</p>
+							</div>
+							<div class="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-slate-700 rounded-lg p-6">
+								<p class="text-3xl font-bold text-white mb-2">
+									{disenoImages.length}
+								</p>
+								<p class="text-slate-400 text-sm">Design Works</p>
+							</div>
+							<div class="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-slate-700 rounded-lg p-6">
+								<p class="text-3xl font-bold text-white mb-2">
+									{fotografiaImages.length}
+								</p>
+								<p class="text-slate-400 text-sm">Photography</p>
+							</div>
+						</div>
+					</>
+				) : (
+					<div class="text-center py-20">
+						<p class="text-slate-400 text-lg">
+							No images available at the moment
+						</p>
+					</div>
+				)
+			}
+		</div>
+	</main>
+</Layout>

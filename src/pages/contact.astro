@@ -7,6 +7,7 @@ import Button from '@components/ui/Button.astro'
 import { Icon } from 'astro-icon/components'
 import socialLinks from '@src/data/socialLinks.json'
 import ContactScene3D from '@components/contact/ContactScene3D.astro'
+import ScrollReveal from '@components/ui/ScrollReveal.astro'
 
 const { author } = siteConfig
 
@@ -126,7 +127,14 @@ const faqs = [
 						style="--reveal-delay: 90ms"
 					>
 						<div class="c-reveal mb-6" style="--reveal-delay: 150ms">
-							<h3 class="form-title text-2xl font-bold text-white tracking-tight">Hablemos</h3>
+							<ScrollReveal
+								as="h3"
+								text="Hablemos"
+								class="form-title text-2xl font-bold tracking-tight text-white"
+								stagger={0.06}
+								blur={3}
+								rotate={4}
+							/>
 							<p class="mt-1 max-w-md text-sm leading-relaxed text-white/70">
 								¿Tienes una idea o alguna necesidad específica? Llena el formulario y trabajemos juntos
 								construyendo algo extraordinario.
@@ -277,6 +285,19 @@ const faqs = [
 			</div>
 		</div>
 	</section>
+
+	{/* Progressive enhancement: keep every block visible when JS is unavailable */}
+	<noscript>
+		<style>
+			.c-reveal {
+				opacity: 1 !important;
+				animation: none !important;
+			}
+			.form-title::after {
+				width: 3.75rem;
+			}
+		</style>
+	</noscript>
 </Layout>
 
 <style>
