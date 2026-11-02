@@ -2,6 +2,7 @@
 import Layout from '@/layouts/Layout.astro';
 import { experiences } from '@/data/experiences';
 import ExperienceMarquee from '@/components/sections/ExperienceMarqueeSimple';
+import ExpandableExperienceCard from '@/components/sections/ExpandableExperienceCard';
 
 const pageTitle = 'Experience';
 const pageDescription = 'My professional journey and work experience';
@@ -9,141 +10,147 @@ const pageDescription = 'My professional journey and work experience';
 const logos = experiences
 	.filter((exp) => exp.logo)
 	.map((exp) => exp.logo as string);
+
+// Group experiences by type
+const groupedByType = experiences.reduce(
+	(acc, exp) => {
+		if (!acc[exp.type]) {
+			acc[exp.type] = [];
+		}
+		acc[exp.type].push(exp);
+		return acc;
+	},
+	{} as Record<string, typeof experiences>
+);
+
+// Sort by date (newest first)
+const sortedExperiences = [...experiences].sort(
+	(a, b) =>
+		new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+);
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
-	<main class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-20">
-		<!-- Logo Marquee -->
-		<ExperienceMarquee client:load logos={logos} />
-
-		<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-			<!-- Header -->
-			<div class="mb-16">
-				<h1
-					class="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight"
-				>
-					Experience
-				</h1>
-				<p class="text-xl text-slate-300 max-w-2xl">
-					Professional roles, projects, and career milestones
-				</p>
+	<main class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+		<!-- Hero Section -->
+		<section class="relative py-16 md:py-24 overflow-hidden">
+			<!-- Decorative background elements -->
+			<div class="absolute inset-0 pointer-events-none">
+				<div
+					class="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"
+				></div>
+				<div
+					class="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"
+				></div>
 			</div>
 
-			<!-- Timeline -->
-			<div class="relative">
-				<!-- Vertical line -->
-				<div
-					class="absolute left-0 md:left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 to-slate-700 md:-translate-x-1/2"
-				></div>
+			<div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+				<div class="mb-6">
+					<span
+						class="text-xs md:text-sm font-semibold text-blue-400 uppercase tracking-widest"
+					>
+						Professional Journey
+					</span>
+				</div>
+				<h1
+					class="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 tracking-tight"
+				>
+					Experience & Career
+				</h1>
+				<p class="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
+					Crafting solutions across diverse roles and industries. From development
+					to strategy, building expertise one project at a time.
+				</p>
+			</div>
+		</section>
 
-				<!-- Experiences -->
-				<div class="space-y-12">
+		<!-- Logo Marquee Section -->
+		<ExperienceMarquee client:load logos={logos} />
+
+		<!-- Main Content Section -->
+		<section class="py-20 relative z-10">
+			<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+				<!-- Section Header -->
+				<div class="mb-16">
+					<h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+						Career Timeline
+					</h2>
+					<div class="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+					<p class="text-slate-300 mt-4 max-w-xl">
+						Here's a chronological look at my professional experiences, roles,
+						and key responsibilities across different organizations.
+					</p>
+				</div>
+
+				<!-- Experience Cards Grid -->
+				<div class="space-y-4 md:space-y-6">
 					{
-						experiences.map((exp, index) => (
-							<div class="relative">
-								<!-- Timeline dot -->
-								<div class="absolute left-0 md:left-1/2 -top-1 w-4 h-4 bg-blue-500 rounded-full border-4 border-slate-900 md:-translate-x-1/2"></div>
-
-								<!-- Content -->
-								<div
-									class={`ml-8 md:ml-0 ${
-										index % 2 === 0 ? 'md:mr-1/2 md:pr-8' : 'md:ml-1/2 md:pl-8'
-									}`}
-								>
-									<div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-6 hover:border-blue-500/50 transition-colors duration-300">
-										{/* Header */}
-										<div class="mb-4">
-											<div class="flex items-start justify-between mb-2">
-												<div>
-													<h3 class="text-xl font-bold text-white">
-														{exp.position}
-													</h3>
-													<p class="text-blue-400 font-semibold">
-														{exp.company}
-													</p>
-												</div>
-												<span class="text-xs font-mono bg-blue-500/20 text-blue-200 px-3 py-1 rounded-full">
-													{exp.type}
-												</span>
-											</div>
-										</div>
-
-										{/* Date and Location */}
-										<div class="flex flex-wrap gap-4 text-sm text-slate-400 mb-4 pb-4 border-b border-slate-700">
-											<span class="flex items-center gap-2">
-												📅
-												{new Date(exp.startDate).toLocaleDateString('es-DO', {
-													month: 'short',
-													year: 'numeric',
-												})}
-												{exp.endDate
-													? ` - ${new Date(exp.endDate).toLocaleDateString('es-DO', {
-														month: 'short',
-														year: 'numeric',
-													})}`
-													: exp.isOngoing
-														? ' - Present'
-														: ''}
-											</span>
-											<span class="flex items-center gap-2">
-												📍 {exp.location}
-											</span>
-										</div>
-
-										{/* Description */}
-										<p class="text-slate-300 mb-4 leading-relaxed">
-											{exp.description}
-										</p>
-
-										{/* Responsibilities */}
-										<div class="mb-6">
-											<h4 class="text-sm font-semibold text-slate-200 mb-3 uppercase tracking-wide">
-												Key Responsibilities
-											</h4>
-											<ul class="space-y-2">
-												{exp.responsibilities.slice(0, 3).map((resp) => (
-													<li class="flex items-start gap-3 text-sm text-slate-400">
-														<span class="text-blue-400 mt-1">→</span>
-														<span>{resp}</span>
-													</li>
-												))}
-											</ul>
-										</div>
-
-										{/* Skills */}
-										<div>
-											<h4 class="text-sm font-semibold text-slate-200 mb-3 uppercase tracking-wide">
-												Technologies
-											</h4>
-											<div class="flex flex-wrap gap-2">
-												{exp.skills.map((skill) => (
-													<span class="bg-slate-700/50 text-slate-200 px-3 py-1 rounded-lg text-sm border border-slate-600 hover:border-blue-400 transition-colors">
-														{skill}
-													</span>
-												))}
-											</div>
-										</div>
-
-										{/* External Link */}
-										{exp.externalLink && (
-											<div class="mt-6 pt-4 border-t border-slate-700">
-												<a
-													href={Array.isArray(exp.externalLink) ? exp.externalLink[0] : exp.externalLink}
-													target="_blank"
-													rel="noopener noreferrer"
-													class="text-blue-400 hover:text-blue-300 text-sm font-medium flex items-center gap-2 transition-colors"
-												>
-													View More →
-												</a>
-											</div>
-										)}
-									</div>
-								</div>
-							</div>
+						sortedExperiences.map((exp, index) => (
+							<ExpandableExperienceCard
+								client:load
+								exp={exp}
+								index={index}
+							/>
 						))
 					}
 				</div>
+
+				<!-- Stats Section -->
+				<div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mt-20 pt-20 border-t border-slate-700">
+					<div class="text-center">
+						<div class="text-3xl md:text-4xl font-bold text-blue-400 mb-2">
+							{experiences.length}
+						</div>
+						<p class="text-sm text-slate-400">Positions</p>
+					</div>
+					<div class="text-center">
+						<div class="text-3xl md:text-4xl font-bold text-purple-400 mb-2">
+							{
+								new Set(experiences.flatMap((exp) => exp.skills)).size
+							}
+						</div>
+						<p class="text-sm text-slate-400">Technologies</p>
+					</div>
+					<div class="text-center col-span-2 md:col-span-1">
+						<div class="text-3xl md:text-4xl font-bold text-emerald-400 mb-2">
+							{experiences.filter((exp) => exp.isOngoing).length}
+						</div>
+						<p class="text-sm text-slate-400">Active Roles</p>
+					</div>
+				</div>
+
+				<!-- Call to Action -->
+				<div
+					class="mt-20 p-8 md:p-12 rounded-2xl bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-blue-500/10 border border-slate-700 text-center"
+				>
+					<h3 class="text-2xl md:text-3xl font-bold text-white mb-4">
+						Want to work together?
+					</h3>
+					<p class="text-slate-300 mb-6 max-w-2xl mx-auto">
+						I'm always interested in discussing new opportunities, collaborations,
+						and innovative projects.
+					</p>
+					<a
+						href="/contact"
+						class="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg transition-colors duration-300"
+					>
+						Get in Touch
+						<svg
+							class="w-5 h-5"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M13 7l5 5m0 0l-5 5m5-5H6"
+							></path>
+						</svg>
+					</a>
+				</div>
 			</div>
-		</div>
+		</section>
 	</main>
 </Layout>

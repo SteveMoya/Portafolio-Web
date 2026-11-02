@@ -1,20 +1,19 @@
 ---
 import Layout from '@/layouts/Layout.astro';
-import { skills, categories, getSkillsByCategory } from '@/data/skills';
-import HardSkills from '@/components/sections/skills/HardSkills';
-import ToolsSection from '@/components/sections/skills/ToolsSection';
+import { skills, categories } from '@/data/skills';
+import HardSkillsNew from '@/components/sections/skills/HardSkillsNew';
+import ToolsSectionNew from '@/components/sections/skills/ToolsSectionNew';
 
 const pageTitle = 'Skills';
 const pageDescription = 'My technical skills and expertise';
 
-// Prepare skills data for components
-const hardSkillsData = skills.map((skill) => ({
-	name: skill.name,
-	level: skill.level,
-	icon: skill.icon,
-}));
+// Categorize skills by type
+const aiSkills = skills.filter(s => s.category === 'AI & Data');
+const softwareSkills = skills.filter(s => ['Frontend', 'Backend'].includes(s.category));
+const additionalSkills = skills.filter(s => ['DevOps & Tools', 'Marketing'].includes(s.category));
 
-const toolsData = skills.slice(0, 18).map((skill) => ({
+// Prepare tools data
+const toolsData = skills.slice(0, 12).map((skill) => ({
 	name: skill.name,
 	icon: skill.icon,
 	category: skill.category,
@@ -22,87 +21,102 @@ const toolsData = skills.slice(0, 18).map((skill) => ({
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
-	<main class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-20">
-		<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-			<!-- Header -->
-			<div class="mb-16 text-center">
-				<h1
-					class="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight"
-				>
-					Technical Skills
-				</h1>
-				<p class="text-xl text-slate-300 max-w-2xl mx-auto">
-					Technologies and tools I've mastered across different domains
-				</p>
+	<main class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+		<!-- Hero Section -->
+		<section class="relative min-h-screen flex items-center justify-center py-20 overflow-hidden">
+			<!-- Background gradient overlay -->
+			<div class="absolute inset-0 bg-gradient-to-b from-slate-900/50 via-slate-800 to-slate-900 z-0"></div>
+
+			<!-- Hero content -->
+			<div class="relative z-10 text-center px-4 sm:px-6 lg:px-8">
+				<div class="space-y-6 mb-12">
+					<div class="inline-block">
+						<span class="text-xs font-bold uppercase tracking-[0.4em] text-blue-400 bg-blue-500/10 px-4 py-2 rounded-full border border-blue-500/20">
+							Capabilities & Expertise
+						</span>
+					</div>
+					<h1 class="text-6xl md:text-7xl font-bold text-white tracking-tight leading-tight">
+						Skills &<br />Tools
+					</h1>
+					<p class="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
+						Building scalable architectures and innovative solutions across AI, software engineering, and modern development tools.
+					</p>
+				</div>
+
+				<!-- Scroll indicator -->
+				<div class="flex flex-col items-center justify-center gap-3 mt-16">
+					<div class="inline-flex gap-2 text-slate-400 text-sm">
+						<span>Scroll to explore</span>
+					</div>
+					<svg class="w-5 h-5 text-slate-400 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+					</svg>
+				</div>
 			</div>
+		</section>
 
-			<!-- HardSkills Component -->
-			<div class="mb-20">
-				<h2 class="text-3xl font-bold text-white mb-12 text-center">
-					Technical Proficiency
-				</h2>
-				<HardSkills client:load skills={hardSkillsData} />
+		<!-- Core Focus Section with 3-Column Layout -->
+		<section class="relative py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-800 to-slate-900">
+			<div class="max-w-7xl mx-auto">
+				<div class="text-center mb-16">
+					<span class="text-xs font-bold uppercase tracking-[0.4em] text-blue-400 bg-blue-500/10 px-4 py-2 rounded-full border border-blue-500/20 inline-block mb-6">
+						Core Focus
+					</span>
+					<h2 class="text-4xl md:text-5xl font-bold text-white mb-4">
+						Hard Skills & Expertise
+					</h2>
+					<p class="text-slate-400 max-w-2xl mx-auto">
+						Technical depth across AI, software engineering, and development tools
+					</p>
+				</div>
+
+				<HardSkillsNew client:load
+					aiSkills={aiSkills}
+					softwareSkills={softwareSkills}
+					additionalSkills={additionalSkills}
+				/>
 			</div>
+		</section>
 
-			<!-- Tools & Technologies -->
-			<ToolsSection client:load tools={toolsData} />
-
-			<!-- Skills by Category (condensed) -->
-			<div class="space-y-16 mt-20">
-				{
-					categories.map((category) => {
-						const categorySkills = getSkillsByCategory(category);
-						return (
-							<section>
-								<div class="mb-8">
-									<h3 class="text-2xl font-bold text-white mb-2">
-										{category}
-									</h3>
-									<div class="w-12 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
-								</div>
-
-								<div class="flex flex-wrap gap-2">
-									{categorySkills.map((skill) => (
-										<span class="bg-slate-700/50 text-slate-200 px-3 py-1 rounded-lg text-sm border border-slate-600 hover:border-blue-400 transition-colors">
-											{skill.name}
-										</span>
-									))}
-								</div>
-							</section>
-						);
-					})
-				}
+		<!-- Professional Tooling Section -->
+		<section class="relative py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-900 to-slate-800">
+			<div class="max-w-7xl mx-auto">
+				<ToolsSectionNew client:load tools={toolsData} />
 			</div>
+		</section>
 
-			<!-- Summary Stats -->
-			<div class="mt-20 grid grid-cols-2 md:grid-cols-4 gap-4">
-				{
-					[
-						{ label: 'Total Skills', value: skills.length },
-						{
-							label: 'Expert Level',
-							value: skills.filter((s) => s.level === 'expert').length,
-						},
-						{
-							label: 'Advanced',
-							value: skills.filter((s) => s.level === 'advanced').length,
-						},
-						{
-							label: 'Categories',
-							value: categories.length,
-						},
-					].map((stat) => (
-						<div class="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-slate-700 rounded-lg p-6 text-center">
-							<p class="text-3xl font-bold text-white mb-2">
-								{stat.value}
-							</p>
-							<p class="text-slate-400 text-sm">
-								{stat.label}
-							</p>
-						</div>
-					))
-				}
+		<!-- Summary Stats -->
+		<section class="relative py-20 px-4 sm:px-6 lg:px-8 bg-slate-900">
+			<div class="max-w-6xl mx-auto">
+				<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+					{
+						[
+							{ label: 'Total Skills', value: skills.length },
+							{
+								label: 'Expert Level',
+								value: skills.filter((s) => s.level === 'expert').length,
+							},
+							{
+								label: 'Advanced',
+								value: skills.filter((s) => s.level === 'advanced').length,
+							},
+							{
+								label: 'Categories',
+								value: categories.length,
+							},
+						].map((stat) => (
+							<div class="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-slate-700 rounded-lg p-6 text-center hover:border-blue-500/50 transition-colors">
+								<p class="text-3xl font-bold text-white mb-2">
+									{stat.value}
+								</p>
+								<p class="text-slate-400 text-sm">
+									{stat.label}
+								</p>
+							</div>
+						))
+					}
+				</div>
 			</div>
-		</div>
+		</section>
 	</main>
 </Layout>

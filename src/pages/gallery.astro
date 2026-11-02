@@ -12,12 +12,12 @@ const allImages = [...fotografiaImages, ...disenoImages].sort((a, b) => {
 	return new Date(b.data.uploaded_at || 0).getTime() - new Date(a.data.uploaded_at || 0).getTime();
 });
 
-// Transform for CleanFilmGrid component
+// Transform for CleanFilmGrid component - map collection names to categories
 const galleryImages = allImages.map((image) => ({
 	id: image.id,
 	src: `https://res.cloudinary.com/${import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME}/image/fetch/q_auto,f_auto/${image.id}`,
 	alt: image.data.display_name || 'Gallery Image',
-	category: image.data.tags?.[0] || undefined,
+	category: image.collection === 'fotografia' ? 'fotografia' : 'diseno',
 }));
 
 const pageTitle = 'Gallery';
@@ -25,56 +25,102 @@ const pageDescription = 'My photography and design work';
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
-	<main class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-20">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-			<!-- Header -->
-			<div class="mb-16 text-center">
-				<h1
-					class="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight"
-				>
-					Gallery
-				</h1>
-				<p class="text-xl text-slate-300 max-w-2xl mx-auto">
-					A collection of my photography and design projects
-				</p>
-			</div>
-
-			{
-				galleryImages.length > 0 ? (
-					<>
-						{/* CleanFilmGrid Component */}
-						<CleanFilmGrid client:load images={galleryImages} columns={3} />
-
-						<!-- Stats -->
-						<div class="mt-16 grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
-							<div class="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-slate-700 rounded-lg p-6">
-								<p class="text-3xl font-bold text-white mb-2">
-									{allImages.length}
-								</p>
-								<p class="text-slate-400 text-sm">Total Images</p>
-							</div>
-							<div class="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-slate-700 rounded-lg p-6">
-								<p class="text-3xl font-bold text-white mb-2">
-									{disenoImages.length}
-								</p>
-								<p class="text-slate-400 text-sm">Design Works</p>
-							</div>
-							<div class="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-slate-700 rounded-lg p-6">
-								<p class="text-3xl font-bold text-white mb-2">
-									{fotografiaImages.length}
-								</p>
-								<p class="text-slate-400 text-sm">Photography</p>
-							</div>
+	<main class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+		<!-- Hero Section with Parallax -->
+		<section class="relative h-[150vh] text-white overflow-hidden">
+			<div class="sticky top-0 h-screen overflow-hidden flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+				<div class="relative z-10 px-4 md:px-12 max-w-7xl mx-auto text-center">
+					<!-- Hero Content -->
+					<div class="flex flex-col gap-6 md:gap-8">
+						<div class="overflow-hidden">
+							<h1 class="text-6xl md:text-8xl font-black tracking-tighter uppercase leading-[0.9] text-transparent bg-clip-text bg-gradient-to-br from-white to-slate-400">
+								<span class="font-serif italic font-light opacity-80 text-slate-300">Visual</span> Archive
+							</h1>
 						</div>
-					</>
-				) : (
+
+						<div class="flex items-center justify-center gap-8 overflow-hidden">
+							<div class="h-px bg-slate-400/30 w-32" />
+							<p class="font-mono text-xs md:text-sm uppercase tracking-widest text-slate-400">
+								Photography & Design
+							</p>
+							<div class="h-px bg-slate-400/30 w-32" />
+						</div>
+
+						<div class="overflow-hidden">
+							<h2 class="text-4xl md:text-7xl font-black tracking-tighter uppercase leading-[0.9] text-transparent bg-clip-text bg-gradient-to-br from-white to-slate-400">
+								Selected <span class="font-serif italic font-light text-sky-300">Moments.</span>
+							</h2>
+						</div>
+					</div>
+
+					<div class="mt-6 md:mt-10 max-w-2xl mx-auto">
+						<p class="text-lg md:text-xl font-light text-slate-300 leading-relaxed">
+							A curated collection of photography and design work that captures the intersection of technical precision and creative vision.
+						</p>
+					</div>
+				</div>
+
+				<!-- Scroll Prompt -->
+				<div class="absolute bottom-12 flex flex-col items-center gap-4 z-10 animate-bounce">
+					<span class="text-[10px] font-mono uppercase tracking-widest text-slate-400">See More</span>
+					<svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+					</svg>
+				</div>
+			</div>
+		</section>
+
+		<!-- Gallery Grid Component -->
+		{
+			galleryImages.length > 0 ? (
+				<CleanFilmGrid client:load images={galleryImages} />
+			) : (
+				<div class="min-h-screen flex items-center justify-center">
 					<div class="text-center py-20">
-						<p class="text-slate-400 text-lg">
+						<p class="text-slate-400 text-lg font-mono">
 							No images available at the moment
 						</p>
 					</div>
-				)
-			}
-		</div>
+				</div>
+			)
+		}
+
+		<!-- Stats Section -->
+		<section class="relative py-24 px-6 md:px-16 lg:px-24 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border-t border-slate-700">
+			<div class="max-w-7xl mx-auto">
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+					<div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-lg p-8 text-center group hover:border-sky-500/50 transition-all duration-300">
+						<p class="text-4xl md:text-5xl font-bold text-white mb-3 group-hover:text-sky-400 transition-colors">
+							{allImages.length}
+						</p>
+						<p class="text-slate-400 text-sm font-mono uppercase tracking-widest">
+							Total Works
+						</p>
+					</div>
+					<div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-lg p-8 text-center group hover:border-sky-500/50 transition-all duration-300">
+						<p class="text-4xl md:text-5xl font-bold text-white mb-3 group-hover:text-sky-400 transition-colors">
+							{disenoImages.length}
+						</p>
+						<p class="text-slate-400 text-sm font-mono uppercase tracking-widest">
+							Design Pieces
+						</p>
+					</div>
+					<div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-lg p-8 text-center group hover:border-sky-500/50 transition-all duration-300">
+						<p class="text-4xl md:text-5xl font-bold text-white mb-3 group-hover:text-sky-400 transition-colors">
+							{fotografiaImages.length}
+						</p>
+						<p class="text-slate-400 text-sm font-mono uppercase tracking-widest">
+							Photographs
+						</p>
+					</div>
+				</div>
+			</div>
+		</section>
 	</main>
 </Layout>
+
+<style>
+	:global(html) {
+		scroll-behavior: smooth;
+	}
+</style>
