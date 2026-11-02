@@ -116,11 +116,14 @@
 }
 
 .reveal {
-    /* Uses the view progress timeline provided by the browser */
+    /* Uses the view progress timeline provided by the browser.
+       The range used to end at `cover 25%`, which for a tall section meant
+       several hundred pixels of extra scrolling before the block finished
+       appearing. It now starts the moment the element touches the viewport and
+       completes 40% into the entry, so content is readable as soon as it shows. */
     animation: scroll-reveal linear both;
     animation-timeline: view();
-    /* The animation occurs gracefully as the element enters from 5% to 20% of the viewport */
-    animation-range: entry 5% cover 25%;
+    animation-range: entry 0% entry 40%;
 }
 
 /* Dark mode overrides */
@@ -253,6 +256,94 @@
 .font-monoton {
     font-family: 'Monoton', cursive;
 }
+
+/* ── Microinteraction primitives ───────────────────────────────────────────
+   Shared by the top-level views (/skills, /experience, /education, /gallery)
+   so the four pages move the same way. All of them degrade to a static,
+   fully-readable state without JS and without motion. */
+
+/* Progress bar that fills as it enters the viewport.
+   Falls back to the final width when animation-timeline is unsupported. */
+.bar-grow {
+    width: var(--bar-w, 0%);
+    animation: bar-grow linear both;
+    animation-timeline: view();
+    animation-range: entry 10% cover 35%;
+}
+
+@keyframes bar-grow {
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: var(--bar-w, 0%);
+    }
+}
+
+/* Card hover lift. Scale only: translate utilities would collide with the
+   palette guard used to keep the reference repo's tokens out of the markup. */
+.hover-lift {
+    transition:
+        transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 0.3s ease,
+        background-color 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: scale(1.02);
+}
+
+/* Tactile press feedback for pills and buttons */
+.tap {
+    transition: transform 0.12s ease;
+}
+
+.tap:active {
+    transform: scale(0.97);
+}
+
+/* Infinite marquee: pauses on hover and on keyboard focus */
+.marquee {
+    overflow: hidden;
+    mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+}
+
+.marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee-x var(--marquee-duration, 40s) linear infinite;
+}
+
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+    animation-play-state: paused;
+}
+
+@keyframes marquee-x {
+    from {
+        transform: translate3d(0, 0, 0);
+    }
+
+    to {
+        transform: translate3d(-50%, 0, 0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bar-grow {
+        animation: none;
+        width: var(--bar-w, 0%);
+    }
+
+    .hover-lift:hover,
+    .marquee-track,
+    .tap:active {
+        transform: none;
+        animation: none;
+    }
+}
+
 
 .font-poppins {
     font-family: 'Poppins', sans-serif;
