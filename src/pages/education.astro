@@ -1,89 +1,488 @@
 ---
-import Layout from '@/layouts/Layout.astro';
-import { education } from '@/data/education';
-import EducationStickyScroll from '@/components/sections/EducationStickyScroll';
+import { Icon } from 'astro-icon/components'
+import Layout from '@/layouts/Layout.astro'
+import PageHero from '@/components/ui/PageHero.astro'
+import SectionHeading from '@/components/ui/SectionHeading.astro'
+import BlockReveal from '@/components/ui/BlockReveal.astro'
+import PostCard from '@/components/PostCard.astro'
+import EducationStickyScroll from '@/components/sections/EducationStickyScroll'
+import { education } from '@/data/education'
+import { certifications } from '@/data/certifications'
+import { getPosts } from '@src/utils'
+import { languages, interests } from '@cv'
 
-const pageTitle = 'Education';
-const pageDescription = 'My academic background and certifications';
+const pageTitle = 'Formación'
+const pageDescription =
+	'Mi formación académica y el archivo de certificaciones: dónde estudié, qué sigo cursando y cada credencial obtenida, filtrable por entidad emisora y por nombre.'
+
+const ongoingCount = education.filter((item) => item.isOngoing).length
+
+// Issuer buckets drive the filter pills. Order follows the data file so the
+// list stays stable between builds.
+const issuerCounts = Array.from(new Set(certifications.map((cert) => cert.issuer))).map(
+	(issuer) => ({
+		issuer,
+		count: certifications.filter((cert) => cert.issuer === issuer).length
+	})
+)
+
+// Newest first: the archive reads like a timeline.
+const archivedCertifications = [...certifications].sort((a, b) => b.date.localeCompare(a.date))
+
+const formatCertDate = (isoMonth: string) => {
+	const [year, month] = isoMonth.split('-')
+	return `${month}/${year}`
+}
+
+// Continuous learning is fed by the real blog: latest posts, newest first.
+// An empty collection renders no section at all instead of an empty shell.
+const latestPosts = await getPosts(3)
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
-	<main class="min-h-screen bg-background text-foreground relative overflow-hidden">
-		<!-- Hero Section -->
-		<section class="relative py-24 md:py-32 px-4 sm:px-6 lg:px-8">
-			<div class="max-w-6xl mx-auto">
-				<div class="text-center mb-16">
-					<h1
-						class="text-5xl md:text-7xl font-black text-foreground mb-6 tracking-tight"
-					>
-						Education
-					</h1>
-					<p class="text-xl md:text-2xl text-foreground/60 max-w-2xl mx-auto leading-relaxed">
-						Building strong foundations through academic excellence and continuous learning
-					</p>
-				</div>
-			</div>
+	<PageHero
+		eyebrow="Formación"
+		lines={['Education', '& Learning']}
+		accentIndex={1}
+		subtitle="De la universidad a las plataformas online: la base académica detrás del trabajo técnico, más un archivo de certificaciones que no deja de crecer."
+		meta={[
+			`${education.length} programas`,
+			`${ongoingCount} en curso`,
+			`${certifications.length} certificados`,
+			`${languages.length} idiomas`
+		]}
+	/>
 
-			<!-- Animated Background Elements -->
-			<div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
-				<div
-					class="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-foreground/[0.02] blur-3xl animate-pulse"
-					style="animation-duration: 5s"
-				></div>
-				<div
-					class="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-foreground/[0.015] blur-3xl animate-pulse"
-					style="animation-duration: 6s; animation-delay: 1s"
-				></div>
-			</div>
-		</section>
+	<!-- Academic track -->
+	<section class="relative bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+		<div class="mx-auto max-w-[1400px]">
+			<SectionHeading
+				eyebrow="Trayectoria académica"
+				title="Formación académica"
+				description="Los programas que sostienen el resto: grado universitario en curso, formación técnica y aprendizaje autodidacta sobre plataformas."
+			/>
 
-		<!-- Education Cards Section -->
-		<section class="relative z-10 py-12">
-			<div class="max-w-6xl mx-auto px-4">
-				<EducationStickyScroll client:load education={education} />
-			</div>
-		</section>
+			<EducationStickyScroll client:visible education={education} />
+		</div>
+	</section>
 
-		<!-- Additional Information Section -->
-		<section class="relative z-10 py-24 border-t border-foreground/10">
-			<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-					{
-						education.map((edu) => (
-							<div class="group relative p-6 rounded-2xl border border-foreground/10 bg-foreground/[0.02] hover:bg-foreground/[0.05] hover:border-foreground/20 transition-all duration-300">
-								<div class="absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-500 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-500/10 via-transparent to-transparent rounded-2xl" />
+	<!-- Certification archive: sticky search rail + card grid -->
+	<section class="relative bg-[#0a0a0a] px-6 pb-20 sm:px-10 lg:px-16 lg:pb-28">
+		<div class="mx-auto max-w-[1400px]" data-cert-archive>
+			<SectionHeading
+				eyebrow="Certificaciones"
+				title="Archivo de certificaciones"
+				description="Buscá por nombre o filtrá por entidad emisora. Cada tarjeta abre la credencial original cuando está disponible."
+			/>
 
-								<div class="relative z-10">
-									<h3 class="text-lg font-bold text-foreground mb-2 leading-tight">
-										{edu.institution}
-									</h3>
-									<p class="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-2">
-										{edu.degree}
-									</p>
-									<p class="text-xs text-foreground/60 mb-4">{edu.major}</p>
+			<div
+				class="grid gap-10 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-14 xl:grid-cols-[320px_minmax(0,1fr)]"
+			>
+				<!-- Sticky rail: search, issuer pills, live counter -->
+				<aside class="self-start lg:sticky lg:top-24">
+					<div class="flex flex-col gap-7">
+						<div>
+							<label
+								for="cert-search"
+								class="mb-3 block text-[10px] font-bold uppercase tracking-[0.3em] text-white/40"
+							>
+								Buscar
+							</label>
 
-									<div class="flex flex-wrap gap-2 mb-4">
-										{edu.isOngoing && (
-											<span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/30">
-												Current
-											</span>
-										)}
-										{edu.gpa && (
-											<span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-foreground/10 text-foreground/70 border border-foreground/20">
-												GPA {edu.gpa}
-											</span>
-										)}
-									</div>
+							<div class="relative flex items-center">
+								<input
+									id="cert-search"
+									type="search"
+									data-cert-search
+									autocomplete="off"
+									placeholder="Nombre del certificado"
+									aria-describedby="cert-search-hint"
+									class="w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 pr-10 text-sm text-white transition-colors duration-300 placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c70039] [&::-webkit-search-cancel-button]:appearance-none"
+								/>
 
-									{(edu.activities || []).slice(0, 2).map((activity) => (
-										<p class="text-xs text-foreground/50 mb-1">• {activity}</p>
-									))}
-								</div>
+								<button
+									type="button"
+									data-cert-clear
+									aria-label="Limpiar búsqueda"
+									class="tap pointer-events-none absolute inset-y-0 right-1 flex w-8 items-center justify-center rounded-full text-white/40 opacity-0 hover:text-white"
+								>
+									<Icon name="mdi:close" class="h-4 w-4" />
+								</button>
 							</div>
-						))
+
+							<p id="cert-search-hint" class="mt-2 text-xs text-white/40">
+								Se combina con el filtro de entidad.
+							</p>
+						</div>
+
+						<div role="group" aria-label="Filtrar por entidad emisora">
+							<p class="mb-3 text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">
+								Entidad emisora
+							</p>
+
+							<div class="flex flex-wrap gap-2">
+								<button
+									type="button"
+									data-filter="todas"
+									aria-pressed="true"
+									class="tap inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#c70039] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c70039]"
+								>
+									Todas
+									<span class="text-white/70" aria-hidden="true">{certifications.length}</span>
+								</button>
+
+								{
+									issuerCounts.map(({ issuer, count }) => (
+										<button
+											type="button"
+											data-filter={issuer}
+											aria-pressed="false"
+											class="tap inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c70039]"
+										>
+											{issuer}
+											<span class="text-white/40" aria-hidden="true">
+												{count}
+											</span>
+										</button>
+									))
+								}
+							</div>
+						</div>
+
+						<!-- Live counter: the primary feedback of the filter. -->
+						<div class="border-t border-white/10 pt-6">
+							<p class="flex items-baseline gap-2" aria-live="polite" aria-atomic="true">
+								<span
+									data-cert-count
+									class="inline-block font-poppins text-4xl font-black leading-none text-[#c70039]"
+								>
+									{archivedCertifications.length}
+								</span>
+								<span
+									data-cert-count-label
+									class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40"
+								>
+									entradas
+								</span>
+							</p>
+
+							<p class="mt-3 text-xs leading-relaxed text-white/40">
+								De {issuerCounts.length} entidades emisoras distintas.
+							</p>
+						</div>
+					</div>
+				</aside>
+
+				<!-- Card grid -->
+				<div class="grid gap-4 sm:grid-cols-2">
+					<!-- Server-rendered empty state; JS flips the `hidden` flag. -->
+					<p
+						data-cert-empty
+						hidden
+						class="col-span-full rounded-2xl border border-white/10 bg-white/[0.02] px-6 py-12 text-center text-sm leading-relaxed text-white/60"
+					>
+						Ningún certificado coincide con la búsqueda. Probá con otro término o volvé a «Todas».
+					</p>
+
+					{
+						archivedCertifications.map((cert) =>
+							cert.credentialUrl ? (
+								<a
+									href={cert.credentialUrl}
+									target="_blank"
+									rel="noopener noreferrer"
+									data-cert-issuer={cert.issuer}
+									data-cert-name={cert.name}
+									class="dotted-card hover-lift group relative flex flex-col rounded-2xl border border-white/10 p-6 hover:border-[#c70039]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c70039]"
+								>
+									<span class="corner-tick corner-tick--tl" aria-hidden="true" />
+									<span class="corner-tick corner-tick--br" aria-hidden="true" />
+									<Icon name={cert.icon} class="mb-4 h-6 w-6 text-[#c70039]" />
+									<h3 class="font-poppins text-base font-bold leading-snug text-white">
+										{cert.name}
+									</h3>
+									<p class="mt-2 text-sm text-white/60">{cert.issuer}</p>
+									<p class="mt-4 flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-white/40">
+										<time datetime={cert.date}>{formatCertDate(cert.date)}</time>
+										<span class="text-[#c70039] transition-colors duration-300 group-hover:text-white">
+											Ver credencial &rarr;
+										</span>
+									</p>
+								</a>
+							) : (
+								/* No credential URL: a plain article, not a dead link. */
+								<article
+									data-cert-issuer={cert.issuer}
+									data-cert-name={cert.name}
+									class="dotted-card hover-lift relative flex flex-col rounded-2xl border border-white/10 p-6"
+								>
+									<span class="corner-tick corner-tick--tl" aria-hidden="true" />
+									<span class="corner-tick corner-tick--br" aria-hidden="true" />
+									<Icon name={cert.icon} class="mb-4 h-6 w-6 text-[#c70039]" />
+									<h3 class="font-poppins text-base font-bold leading-snug text-white">
+										{cert.name}
+									</h3>
+									<p class="mt-2 text-sm text-white/60">{cert.issuer}</p>
+									<p class="mt-4 flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-white/40">
+										<time datetime={cert.date}>{formatCertDate(cert.date)}</time>
+									</p>
+								</article>
+							)
+						)
 					}
 				</div>
 			</div>
-		</section>
-	</main>
+		</div>
+	</section>
+
+	<!-- Languages + interests -->
+	<section
+		class="relative border-t border-white/10 bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16 lg:py-28"
+	>
+		<div class="mx-auto max-w-[1400px]">
+			<SectionHeading
+				eyebrow="Idiomas"
+				title="Idiomas e intereses"
+				description="Los idiomas en los que trabajo y los temas que me mantienen leyendo documentación fuera del horario de clase."
+			/>
+
+			<div class="grid gap-4 sm:grid-cols-2">
+				{
+					languages.map((language, index) => (
+						<div class="hover-lift dotted-card relative rounded-2xl border border-white/10 p-6 hover:border-[#c70039]/40">
+							<span class="corner-tick corner-tick--tl" aria-hidden="true" />
+							<span class="corner-tick corner-tick--br" aria-hidden="true" />
+							<div class="flex items-start justify-between gap-4">
+								<h3 class="font-poppins text-2xl font-black uppercase leading-none tracking-tight text-white">
+									{language.language}
+								</h3>
+								<span class="font-mono text-[10px] uppercase tracking-[0.2em] text-white/30">
+									{String(index + 1).padStart(2, '0')}
+								</span>
+							</div>
+							<p class="mt-4 text-sm text-white/60">{language.fluency}</p>
+						</div>
+					))
+				}
+			</div>
+
+			{
+				interests.map((interest) => (
+					<div class="mt-10 border-t border-white/10 pt-8">
+						<p class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">
+							{interest.name}
+						</p>
+						<ul class="mt-4 flex flex-wrap gap-2">
+							{interest.keywords.map((keyword) => (
+								<li class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.3em] text-white/60">
+									{keyword}
+								</li>
+							))}
+						</ul>
+					</div>
+				))
+			}
+		</div>
+	</section>
+
+	<!-- Continuous learning: the latest blog posts. Hidden when the blog is empty. -->
+	{
+		latestPosts.length > 0 && (
+			<section class="relative bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+				<div class="mx-auto max-w-[1400px]">
+					<SectionHeading
+						eyebrow="Blog"
+						title="Aprendizaje continuo"
+						description="Lo que voy aprendiendo queda escrito: notas técnicas, procesos y hallazgos del día a día."
+					/>
+
+					<div class="reveal grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+						{latestPosts.map((post) => (
+							<PostCard data={post.data} id={post.id} />
+						))}
+					</div>
+
+					<div class="mt-12">
+						<a
+							href="/blog/todos-los-blogs/1"
+							class="hover-lift group inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.3em] text-white/70 hover:border-[#c70039]/50 hover:text-white"
+						>
+							Ver todas las historias
+							<Icon
+								name="mdi:arrow-right"
+								class="h-4 w-4 transition-colors duration-300 group-hover:text-[#c70039]"
+							/>
+						</a>
+					</div>
+				</div>
+			</section>
+		)
+	}
+
+	<!-- Closing CTA: same visual language as FinalCTA -->
+	<section
+		class="relative overflow-hidden border-t border-white/10 px-6 py-24 sm:px-10 lg:px-16 lg:py-32"
+	>
+		<div
+			class="pointer-events-none absolute inset-0 z-0"
+			aria-hidden="true"
+			style="background: radial-gradient(ellipse 70% 60% at 50% 110%, rgba(199,0,57,0.12), transparent 65%);"
+		>
+		</div>
+
+		<div class="relative z-10 mx-auto flex max-w-[1400px] flex-col items-center gap-8 text-center">
+			<p class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">Siguiente paso</p>
+
+			<BlockReveal
+				as="h2"
+				class="max-w-3xl font-poppins text-4xl font-black uppercase leading-[0.95] tracking-tight text-white sm:text-6xl lg:text-7xl"
+				boxColor="#c70039"
+				triggerStart="top 98%"
+				duration={0.3}
+				stagger={0.09}
+				lines={['Sigamos', 'construyendo']}
+			/>
+
+			<p class="max-w-md text-sm leading-relaxed text-white/60 sm:text-base">
+				Si buscás a alguien que combine formación técnica con ejecución real, escribime y vemos cómo
+				encaja.
+			</p>
+
+			<div class="mt-2 flex flex-col items-center gap-4 sm:flex-row">
+				<a
+					href="/contact"
+					aria-label="Ir a la página de contacto"
+					class="group inline-flex items-center gap-3 rounded-full bg-[#c70039] px-8 py-4 text-sm font-black uppercase tracking-widest text-white transition-all duration-300 hover:scale-105 hover:bg-[#b11141] hover:shadow-[0_0_40px_rgba(199,0,57,0.35)]"
+				>
+					<Icon name="mdi:email-outline" class="h-5 w-5" />
+					Hablemos
+				</a>
+
+				<a
+					href="/about"
+					aria-label="Ver currículum completo"
+					class="group inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-8 py-4 text-sm font-black uppercase tracking-widest text-white/80 transition-all duration-300 hover:border-[#c70039]/50 hover:bg-white/10 hover:text-white"
+				>
+					<Icon name="mdi:account-details-outline" class="h-5 w-5" />
+					Ver currículum
+				</a>
+			</div>
+		</div>
+	</section>
 </Layout>
+
+<script>
+	// Progressive enhancement: without JS every card stays visible, the counter
+	// renders the server-side total and the pills are static labels. With JS the
+	// search field and the issuer pills filter the archive together (AND).
+	const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+
+	// Diacritic- and case-insensitive comparison, so "certificacion" matches
+	// "Certificación" and "SENATI" matches "Senati".
+	const normalize = (value: string) =>
+		value
+			.normalize('NFD')
+			.replace(/[\u0300-\u036f]/g, '')
+			.toLowerCase()
+			.trim()
+
+	// The counter is the main feedback of the filter: make each change visible.
+	const pulseCounter = (element: HTMLElement) => {
+		if (reducedMotionQuery.matches || typeof element.animate !== 'function') return
+
+		element.animate(
+			[
+				{ transform: 'scale(1)', color: 'rgb(199, 0, 57)' },
+				{ transform: 'scale(1.25)', color: 'rgb(255, 255, 255)', offset: 0.4 },
+				{ transform: 'scale(1)', color: 'rgb(199, 0, 57)' }
+			],
+			{ duration: 360, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' }
+		)
+	}
+
+	const initCertFilters = () => {
+		document.querySelectorAll<HTMLElement>('[data-cert-archive]').forEach((archive) => {
+			// Astro hoists this script into one shared module: guard against
+			// wiring the same DOM node twice on the same page instance.
+			if (archive.dataset.certArchiveInit === 'true') return
+			archive.dataset.certArchiveInit = 'true'
+
+			const buttons = Array.from(archive.querySelectorAll<HTMLButtonElement>('[data-filter]'))
+			const cards = Array.from(archive.querySelectorAll<HTMLElement>('[data-cert-issuer]'))
+			const search = archive.querySelector<HTMLInputElement>('[data-cert-search]')
+			const clearButton = archive.querySelector<HTMLButtonElement>('[data-cert-clear]')
+			const countLabel = archive.querySelector<HTMLElement>('[data-cert-count]')
+			const countLabelText = archive.querySelector<HTMLElement>('[data-cert-count-label]')
+			const emptyState = archive.querySelector<HTMLElement>('[data-cert-empty]')
+
+			let activeIssuer = 'todas'
+
+			const apply = (animate = true) => {
+				const query = normalize(search?.value ?? '')
+				let visible = 0
+
+				buttons.forEach((button) => {
+					const active = button.dataset.filter === activeIssuer
+					button.setAttribute('aria-pressed', String(active))
+					button.classList.toggle('bg-[#c70039]', active)
+					button.classList.toggle('text-white', active)
+					button.classList.toggle('bg-white/5', !active)
+					button.classList.toggle('text-white/60', !active)
+				})
+
+				cards.forEach((card) => {
+					const matchesIssuer = activeIssuer === 'todas' || card.dataset.certIssuer === activeIssuer
+					const matchesQuery = !query || normalize(card.dataset.certName ?? '').includes(query)
+					const match = matchesIssuer && matchesQuery
+
+					// Inline display rather than a utility class: `hidden` can
+					// lose to another display utility depending on CSS order.
+					card.style.display = match ? '' : 'none'
+					if (match) visible += 1
+				})
+
+				if (countLabel && countLabel.textContent?.trim() !== String(visible)) {
+					countLabel.textContent = String(visible)
+					if (animate) pulseCounter(countLabel)
+				}
+
+				// Spanish agreement: "1 entrada" / "6 entradas".
+				if (countLabelText) countLabelText.textContent = visible === 1 ? 'entrada' : 'entradas'
+
+				if (emptyState) emptyState.hidden = visible > 0
+
+				if (clearButton) {
+					const hasText = (search?.value ?? '').length > 0
+					clearButton.classList.toggle('opacity-100', hasText)
+					clearButton.classList.toggle('pointer-events-none', !hasText)
+					clearButton.classList.toggle('opacity-0', !hasText)
+				}
+			}
+
+			buttons.forEach((button) => {
+				button.addEventListener('click', () => {
+					activeIssuer = button.dataset.filter ?? 'todas'
+					apply()
+				})
+			})
+
+			search?.addEventListener('input', () => apply())
+			// type="search" fires `search` when the field is cleared (Escape / native X).
+			search?.addEventListener('search', () => apply())
+
+			clearButton?.addEventListener('click', () => {
+				if (!search) return
+				search.value = ''
+				apply()
+				search.focus()
+			})
+
+			// First paint: sync aria-pressed and the clear affordance without
+			// animating a counter that did not change.
+			apply(false)
+		})
+	}
+
+	initCertFilters()
+	document.addEventListener('astro:page-load', initCertFilters)
+</script>
