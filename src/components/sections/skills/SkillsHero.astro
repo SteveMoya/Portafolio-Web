@@ -384,7 +384,7 @@ const orbit = [
 			envMapIntensity: 1.4
 		})
 		const hardware = new THREE.MeshStandardMaterial({
-			color: 0x8e949c,
+			color: 0x6d737b,
 			metalness: 0.7,
 			roughness: 0.35,
 			envMapIntensity: 0.8
@@ -396,10 +396,11 @@ const orbit = [
 		const head = new THREE.Group()
 		head.add(new THREE.Mesh(new THREE.SphereGeometry(0.62, 96, 96), shell))
 
-		const visor = new THREE.Mesh(
-			new THREE.SphereGeometry(0.626, 96, 96, Math.PI / 2 - 0.62, 1.24, 1.0, 1.0),
-			visorGlass
-		)
+		// Bubble visor: a shallow ellipsoid whose edges sink back into the shell,
+		// so what surfaces is a rounded window instead of a flat rectangle.
+		const visor = new THREE.Mesh(new THREE.SphereGeometry(1, 96, 96), visorGlass)
+		visor.scale.set(0.46, 0.38, 0.28)
+		visor.position.set(0, -0.03, 0.38)
 		head.add(visor)
 
 		// Side comms pods: small asymmetric hardware that makes the turn read.
