@@ -25,36 +25,36 @@ const pageDescription = 'My photography and design work';
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
-	<main class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+	<main class="min-h-screen bg-[#0a0a0a]">
 		<!-- Hero Section with Parallax -->
 		<section class="relative h-[150vh] text-white overflow-hidden">
-			<div class="sticky top-0 h-screen overflow-hidden flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+			<div class="sticky top-0 h-screen overflow-hidden flex flex-col items-center justify-center bg-[#0a0a0a]">
 				<div class="relative z-10 px-4 md:px-12 max-w-7xl mx-auto text-center">
 					<!-- Hero Content -->
 					<div class="flex flex-col gap-6 md:gap-8">
 						<div class="overflow-hidden">
 							<h1 class="text-6xl md:text-8xl font-black tracking-tighter uppercase leading-[0.9] text-white">
-								<span class="font-serif italic font-light opacity-70 text-slate-300">Visual</span> Archive
+								<span class="font-serif italic font-light opacity-70 text-[#a8a29e]">Visual</span> Archive
 							</h1>
 						</div>
 
 						<div class="flex items-center justify-center gap-8 overflow-hidden">
-							<div class="h-px bg-slate-400/30 w-32" />
-							<p class="font-mono text-xs md:text-sm uppercase tracking-widest text-slate-400">
+							<div class="h-px bg-[#3d3d3d]/30 w-32" />
+							<p class="font-mono text-xs md:text-sm uppercase tracking-widest text-[#a8a29e]">
 								Photography & Design
 							</p>
-							<div class="h-px bg-slate-400/30 w-32" />
+							<div class="h-px bg-[#3d3d3d]/30 w-32" />
 						</div>
 
 						<div class="overflow-hidden">
 							<h2 class="text-4xl md:text-7xl font-black tracking-tighter uppercase leading-[0.9] text-white">
-								Selected <span class="font-serif italic font-light text-sky-300">Moments.</span>
+								Selected <span class="font-serif italic font-light text-[#c70039]">Moments.</span>
 							</h2>
 						</div>
 					</div>
 
 					<div class="mt-6 md:mt-10 max-w-2xl mx-auto">
-						<p class="text-lg md:text-xl font-light text-slate-300 leading-relaxed">
+						<p class="text-lg md:text-xl font-light text-[#a8a29e] leading-relaxed">
 							A curated collection of photography and design work that captures the intersection of technical precision and creative vision.
 						</p>
 					</div>
@@ -62,8 +62,8 @@ const pageDescription = 'My photography and design work';
 
 				<!-- Scroll Prompt -->
 				<div class="absolute bottom-12 flex flex-col items-center gap-4 z-10 animate-bounce">
-					<span class="text-[10px] font-mono uppercase tracking-widest text-slate-400">See More</span>
-					<svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<span class="text-[10px] font-mono uppercase tracking-widest text-[#a8a29e]">See More</span>
+					<svg class="w-5 h-5 text-[#a8a29e]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
 					</svg>
 				</div>
@@ -77,7 +77,7 @@ const pageDescription = 'My photography and design work';
 			) : (
 				<div class="min-h-screen flex items-center justify-center">
 					<div class="text-center py-20">
-						<p class="text-slate-400 text-lg font-mono">
+						<p class="text-[#a8a29e] text-lg font-mono">
 							No images available at the moment
 						</p>
 					</div>
@@ -86,30 +86,30 @@ const pageDescription = 'My photography and design work';
 		}
 
 		<!-- Stats Section -->
-		<section class="relative py-24 px-6 md:px-16 lg:px-24 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border-t border-slate-700">
+		<section class="relative py-24 px-6 md:px-16 lg:px-24 bg-[#0a0a0a] border-t border-[#2d2d2d]">
 			<div class="max-w-7xl mx-auto">
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-					<div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-lg p-8 text-center group hover:border-sky-500/50 transition-all duration-300">
-						<p class="text-4xl md:text-5xl font-bold text-white mb-3 group-hover:text-sky-400 transition-colors">
+					<div class="bg-[#151515] border border-[#2d2d2d] rounded-lg p-8 text-center group hover:border-[#c70039]/50 transition-all duration-300">
+						<p class="text-4xl md:text-5xl font-bold text-white mb-3 group-hover:text-[#c70039] transition-colors">
 							{allImages.length}
 						</p>
-						<p class="text-slate-400 text-sm font-mono uppercase tracking-widest">
+						<p class="text-[#a8a29e] text-sm font-mono uppercase tracking-widest">
 							Total Works
 						</p>
 					</div>
-					<div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-lg p-8 text-center group hover:border-sky-500/50 transition-all duration-300">
-						<p class="text-4xl md:text-5xl font-bold text-white mb-3 group-hover:text-sky-400 transition-colors">
+					<div class="bg-[#151515] border border-[#2d2d2d] rounded-lg p-8 text-center group hover:border-[#c70039]/50 transition-all duration-300">
+						<p class="text-4xl md:text-5xl font-bold text-white mb-3 group-hover:text-[#c70039] transition-colors">
 							{disenoImages.length}
 						</p>
-						<p class="text-slate-400 text-sm font-mono uppercase tracking-widest">
+						<p class="text-[#a8a29e] text-sm font-mono uppercase tracking-widest">
 							Design Pieces
 						</p>
 					</div>
-					<div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-lg p-8 text-center group hover:border-sky-500/50 transition-all duration-300">
-						<p class="text-4xl md:text-5xl font-bold text-white mb-3 group-hover:text-sky-400 transition-colors">
+					<div class="bg-[#151515] border border-[#2d2d2d] rounded-lg p-8 text-center group hover:border-[#c70039]/50 transition-all duration-300">
+						<p class="text-4xl md:text-5xl font-bold text-white mb-3 group-hover:text-[#c70039] transition-colors">
 							{fotografiaImages.length}
 						</p>
-						<p class="text-slate-400 text-sm font-mono uppercase tracking-widest">
+						<p class="text-[#a8a29e] text-sm font-mono uppercase tracking-widest">
 							Photographs
 						</p>
 					</div>
