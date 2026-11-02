@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "tinacms dev -c \"astro dev\"",
     "start": "astro dev",
-    "build": "astro build",
+    "build": "astro build && rm -rf node_modules/.vite",
     "preview": "astro preview",
     "astro": "astro",
     "check": "astro-check",
