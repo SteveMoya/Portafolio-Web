@@ -74,14 +74,14 @@ const faqs = [
 				{/* Right Column - Form & Channels */}
 				<div class="flex flex-col gap-10">
 					{/* Direct Channels Section */}
-					<div class="social-section">
+					<div class="social-section c-reveal" style="--reveal-delay: 0ms">
 						<div class="mb-4">
 							<h3 class="text-xl font-bold text-white tracking-tight">Canales directos</h3>
 						</div>
 
 						{/* Social Networks Carousel with Fade */}
 						<div class="carousel-fade relative w-full overflow-hidden rounded-xl border border-white/10 bg-[#0a0a0a]/50 p-4">
-							<div id="social-carousel-track" class="flex gap-4 transition-transform duration-500 ease-out" style="width: max-content;">
+							<div id="social-carousel-track" class="flex gap-4 will-change-transform" data-marquee-repeat="3" style="width: max-content;">
 								{
 									[...connectLinks, ...connectLinks, ...connectLinks].map((link) => (
 										<div class="flex-shrink-0" style="width: 240px;">
@@ -120,16 +120,21 @@ const faqs = [
 					</div>
 
 					{/* Contact Form Section */}
-					<div id="contact-form-section" class="contact-section rounded-2xl border border-white/10 bg-white/[0.02] p-6 sm:p-8 backdrop-blur-sm transition-all duration-300">
-						<div class="mb-6">
-							<h3 class="text-2xl font-bold text-white tracking-tight">Escribime un mensaje</h3>
-							<p class="mt-1 text-sm text-white/70">
-								Contame sobre tu idea, alcance y objetivos. Respondé en menos de 24 horas.
+					<div
+						id="contact-form-section"
+						class="contact-section c-reveal rounded-2xl border border-white/10 bg-white/[0.02] p-6 sm:p-8 backdrop-blur-sm"
+						style="--reveal-delay: 90ms"
+					>
+						<div class="c-reveal mb-6" style="--reveal-delay: 150ms">
+							<h3 class="form-title text-2xl font-bold text-white tracking-tight">Hablemos</h3>
+							<p class="mt-1 max-w-md text-sm leading-relaxed text-white/70">
+								¿Tienes una idea o alguna necesidad específica? Llena el formulario y trabajemos juntos
+								construyendo algo extraordinario.
 							</p>
 						</div>
 
 						{/* Interactive Project Scope Chips */}
-						<div class="mb-6">
+						<div class="c-reveal mb-6" style="--reveal-delay: 210ms">
 							<p id="project-type-label" class="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/70">
 								Tipo de proyecto o servicio
 							</p>
@@ -152,33 +157,33 @@ const faqs = [
 
 						<form id="contact-form" novalidate class="space-y-5">
 							<div class="grid gap-4 sm:grid-cols-2">
-								<div>
+								<div class="field-group c-reveal" style="--reveal-delay: 270ms">
 									<label for="nombre" class="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/70">Nombre *</label>
 									<Input id="nombre" name="nombre" type="text" required placeholder="Tu nombre o empresa" class="m-0 w-full border border-white/10 focus:border-[#c70039] focus:ring-1 focus:ring-[#c70039]" />
 									<p data-error-for="nombre" class="mt-1.5 hidden text-xs font-medium text-[#ff6b7a]" role="alert">Ingresá tu nombre.</p>
 								</div>
 
-								<div>
+								<div class="field-group c-reveal" style="--reveal-delay: 330ms">
 									<label for="email" class="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/70">Email *</label>
 									<Input id="email" name="email" type="email" required placeholder="tu@email.com" class="m-0 w-full border border-white/10 focus:border-[#c70039] focus:ring-1 focus:ring-[#c70039]" />
 									<p data-error-for="email" class="mt-1.5 hidden text-xs font-medium text-[#ff6b7a]" role="alert">Ingresá un email válido.</p>
 								</div>
 							</div>
 
-							<div>
+							<div class="field-group c-reveal" style="--reveal-delay: 390ms">
 								<label for="asunto" class="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/70">Asunto *</label>
 								<Input id="asunto" name="asunto" type="text" required placeholder="Ej: Nuevo sitio web / Rediseño de plataforma" class="m-0 w-full border border-white/10 focus:border-[#c70039] focus:ring-1 focus:ring-[#c70039]" />
 								<p data-error-for="asunto" class="mt-1.5 hidden text-xs font-medium text-[#ff6b7a]" role="alert">Contame de qué se trata el proyecto.</p>
 							</div>
 
-							<div>
+							<div class="field-group c-reveal" style="--reveal-delay: 450ms">
 								<label for="descripcion" class="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/70">Descripción del proyecto *</label>
 								<Input id="descripcion" name="descripcion" type="textarea" required placeholder="Describí los requerimientos principales, tiempos estimados y cualquier detalle clave..." class="m-0 w-full border border-white/10 focus:border-[#c70039] focus:ring-1 focus:ring-[#c70039]" />
 								<p data-error-for="descripcion" class="mt-1.5 hidden text-xs font-medium text-[#ff6b7a]" role="alert">Escribí algunos detalles sobre lo que necesitás.</p>
 							</div>
 
 							{/* Form Submission CTA Area */}
-							<div class="pt-2">
+							<div class="c-reveal pt-2" style="--reveal-delay: 510ms">
 								<div class="flex flex-col gap-3">
 									<div class="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
 										<Button
@@ -242,32 +247,31 @@ const faqs = [
 	{/* FAQ Section - Full Width */}
 	<section class="relative w-full bg-gradient-to-b from-[#0a0a0a] to-[#050505] px-6 py-24 sm:px-10 lg:px-16">
 		<div class="mx-auto max-w-4xl">
-			<div class="mb-12 text-center">
+			<div class="c-reveal mb-12 text-center">
 				<h2 class="text-3xl font-bold text-white sm:text-4xl tracking-tight">Preguntas frecuentes</h2>
 			</div>
 
 			<div class="space-y-3">
 				{
 					faqs.map((faq, index) => (
-						<details
-							class="group rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm transition-all duration-300 open:border-[#c70039]/30 open:bg-white/8"
-							style={`animation-delay: ${index * 0.05}s`}
-						>
-							<summary class="flex cursor-pointer list-none items-start justify-between gap-4 px-5 py-4 text-base font-semibold text-white select-none hover:text-[#c70039] transition-colors duration-300">
-								<span>{faq.question}</span>
-								<svg
-									class="mt-0.5 h-5 w-5 shrink-0 text-white/40 transition-all duration-300 group-open:rotate-180 group-open:text-[#c70039]"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-								</svg>
-							</summary>
-							<div class="border-t border-white/10 px-5 pb-4 pt-4">
-								<p class="text-sm leading-relaxed text-white/70">{faq.answer}</p>
-							</div>
-						</details>
+						<div class="c-reveal" style={`--reveal-delay: ${index * 70}ms`}>
+							<details class="group rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm transition-all duration-300 hover:border-white/20 hover:bg-white/[0.07] open:border-[#c70039]/30 open:bg-white/8">
+								<summary class="flex cursor-pointer list-none items-start justify-between gap-4 px-5 py-4 text-base font-semibold text-white select-none hover:text-[#c70039] transition-colors duration-300">
+									<span>{faq.question}</span>
+									<svg
+										class="mt-0.5 h-5 w-5 shrink-0 text-white/40 transition-all duration-300 group-open:rotate-180 group-open:text-[#c70039]"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+									>
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+									</svg>
+								</summary>
+								<div class="border-t border-white/10 px-5 pb-4 pt-4">
+									<p class="text-sm leading-relaxed text-white/70">{faq.answer}</p>
+								</div>
+							</details>
+						</div>
 					))
 				}
 			</div>
@@ -287,19 +291,110 @@ const faqs = [
 		}
 	}
 
-	.social-section,
-	.contact-section {
-		animation: fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+	/* FAQ Accordion Animations */
+	@keyframes faq-expand {
+		from {
+			opacity: 0;
+			max-height: 0;
+			overflow: hidden;
+		}
+		to {
+			opacity: 1;
+			max-height: 500px;
+			overflow: hidden;
+		}
 	}
 
-	details[open] {
-		animation: fade-in-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	@keyframes faq-collapse {
+		from {
+			opacity: 1;
+			max-height: 500px;
+			overflow: hidden;
+		}
+		to {
+			opacity: 0;
+			max-height: 0;
+			overflow: hidden;
+		}
+	}
+
+	details[open] summary ~ * {
+		animation: faq-expand 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	}
+
+	details:not([open]) summary ~ * {
+		animation: faq-collapse 0.3s cubic-bezier(0.7, 0, 0.84, 0) forwards;
+	}
+
+	details summary {
+		transition: color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	details summary svg {
+		transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	details[open] summary svg {
+		transform: rotate(180deg);
+	}
+
+	/* ── Scroll microinteraction: staggered reveal ── */
+	@keyframes reveal-up {
+		from {
+			opacity: 0;
+			transform: translateY(28px) scale(0.985);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+		}
+	}
+
+	.c-reveal {
+		opacity: 0;
+	}
+
+	.c-reveal.is-revealed {
+		animation: reveal-up 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+		animation-delay: var(--reveal-delay, 0ms);
+	}
+
+	/* Accent rule that draws itself once the form header enters the viewport */
+	.form-title {
+		position: relative;
+		padding-bottom: 0.55rem;
+	}
+
+	.form-title::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		bottom: 0;
+		width: 0;
+		height: 2px;
+		border-radius: 9999px;
+		background: linear-gradient(90deg, #c70039, rgba(199, 0, 57, 0));
+		transition: width 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+	}
+
+	.c-reveal.is-revealed .form-title::after {
+		width: 3.75rem;
 	}
 
 	/* Carousel Fade Styles */
 	.carousel-fade {
 		mask-image: linear-gradient(to right, transparent, #000 15%, #000 85%, transparent);
 		-webkit-mask-image: linear-gradient(to right, transparent, #000 15%, #000 85%, transparent);
+		transition:
+			border-color 0.35s ease,
+			background-color 0.35s ease,
+			box-shadow 0.45s ease;
+	}
+
+	.carousel-fade:hover {
+		border-color: rgba(255, 255, 255, 0.2);
+		background-color: rgba(255, 255, 255, 0.05);
+		box-shadow: 0 30px 70px -60px rgba(199, 0, 57, 0.8);
 	}
 
 	@keyframes links-in {
@@ -331,10 +426,212 @@ const faqs = [
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.social-section,
-		.contact-section,
+		details[open] summary ~ *,
+		details:not([open]) summary ~ *,
 		details[open],
 		.connect-card {
+			animation: none;
+		}
+
+		details summary svg {
+			transition: none;
+		}
+
+		details[open] summary svg {
+			transform: none;
+		}
+	}
+</style>
+
+<style is:global>
+	/* ── Microinteractions: form surface (hover) ── */
+	#contact-form-section {
+		transition:
+			border-color 0.35s ease,
+			background-color 0.35s ease,
+			box-shadow 0.45s ease;
+	}
+
+	#contact-form-section:hover {
+		border-color: rgba(199, 0, 57, 0.35);
+		background-color: rgba(255, 255, 255, 0.04);
+		box-shadow:
+			0 40px 90px -60px rgba(199, 0, 57, 0.9),
+			inset 0 1px 0 rgba(255, 255, 255, 0.06);
+	}
+
+	/* ── Microinteractions: fields (hover + focus/active) ── */
+	.field-group {
+		position: relative;
+	}
+
+	.field-group > label {
+		transition:
+			color 0.22s ease,
+			letter-spacing 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	/* Accent tick that slides in before the label on focus */
+	.field-group > label::before {
+		content: '';
+		display: inline-block;
+		width: 0;
+		height: 2px;
+		margin-right: 0;
+		vertical-align: middle;
+		border-radius: 9999px;
+		background: #c70039;
+		transition:
+			width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+			margin-right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.field-group:hover > label {
+		color: rgba(255, 255, 255, 0.92);
+	}
+
+	.field-group:focus-within > label {
+		color: #ff6b7a;
+	}
+
+	.field-group:focus-within > label::before {
+		width: 0.875rem;
+		margin-right: 0.5rem;
+	}
+
+	#contact-form input,
+	#contact-form textarea {
+		caret-color: #c70039;
+		transition:
+			border-color 0.22s ease,
+			background-color 0.22s ease,
+			box-shadow 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+			transform 0.22s ease;
+	}
+
+	#contact-form input::placeholder,
+	#contact-form textarea::placeholder {
+		color: rgba(255, 255, 255, 0.32);
+		transition: color 0.22s ease;
+	}
+
+	#contact-form input:hover,
+	#contact-form textarea:hover {
+		border-color: rgba(255, 255, 255, 0.28);
+		background-color: rgba(255, 255, 255, 0.045);
+	}
+
+	#contact-form input:focus,
+	#contact-form textarea:focus {
+		border-color: rgba(199, 0, 57, 0.85);
+		background-color: rgba(199, 0, 57, 0.06);
+		box-shadow:
+			0 0 0 3px rgba(199, 0, 57, 0.16),
+			0 14px 34px -24px rgba(199, 0, 57, 0.95);
+		transform: translateY(-1px);
+	}
+
+	#contact-form input:focus::placeholder,
+	#contact-form textarea:focus::placeholder {
+		color: rgba(255, 255, 255, 0.2);
+	}
+
+	/* Invalid field: shake once when the error message appears */
+	@keyframes field-shake {
+		0%,
+		100% {
+			transform: translateX(0);
+		}
+		22% {
+			transform: translateX(-5px);
+		}
+		45% {
+			transform: translateX(4px);
+		}
+		68% {
+			transform: translateX(-2px);
+		}
+	}
+
+	#contact-form input.is-invalid,
+	#contact-form textarea.is-invalid {
+		border-color: rgba(255, 107, 122, 0.75);
+		animation: field-shake 0.42s ease-in-out;
+	}
+
+	/* ── Microinteractions: press (active) on controls ── */
+	.project-chip {
+		transition:
+			transform 0.18s ease,
+			border-color 0.2s ease,
+			background-color 0.2s ease,
+			color 0.2s ease,
+			box-shadow 0.25s ease;
+	}
+
+	.project-chip:hover {
+		transform: translateY(-2px);
+	}
+
+	.project-chip:active {
+		transform: scale(0.95);
+	}
+
+	#contact-form button[type='submit'] {
+		transition:
+			transform 0.16s ease,
+			box-shadow 0.3s ease,
+			filter 0.3s ease;
+	}
+
+	#contact-form button[type='submit']:not(:disabled):hover {
+		transform: translateY(-1px);
+		box-shadow: 0 18px 40px -22px rgba(199, 0, 57, 0.95);
+	}
+
+	#contact-form button[type='submit']:not(:disabled):active {
+		transform: scale(0.975);
+		box-shadow: 0 8px 18px -14px rgba(199, 0, 57, 0.9);
+	}
+
+	#btn-copy-summary:active,
+	#btn-whatsapp-direct:active {
+		transform: scale(0.97);
+	}
+
+	#btn-copy-summary,
+	#btn-whatsapp-direct {
+		transition:
+			transform 0.16s ease,
+			background-color 0.2s ease,
+			color 0.2s ease;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.c-reveal,
+		.c-reveal.is-revealed {
+			opacity: 1 !important;
+			animation: none !important;
+		}
+
+		.form-title::after {
+			width: 3.75rem;
+			transition: none;
+		}
+
+		.project-chip:hover,
+		.project-chip:active,
+		#contact-form input:focus,
+		#contact-form textarea:focus,
+		#contact-form button[type='submit']:not(:disabled):hover,
+		#contact-form button[type='submit']:not(:disabled):active,
+		#btn-copy-summary:active,
+		#btn-whatsapp-direct:active {
+			transform: none;
+		}
+
+		#contact-form input.is-invalid,
+		#contact-form textarea.is-invalid {
 			animation: none;
 		}
 	}
@@ -347,11 +644,17 @@ const faqs = [
 	const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 	let stopCarouselScroll: (() => void) | null = null
+	let stopRevealObserver: (() => void) | null = null
 
 	function initContactPage() {
 		if (stopCarouselScroll) {
 			stopCarouselScroll()
 			stopCarouselScroll = null
+		}
+
+		if (stopRevealObserver) {
+			stopRevealObserver()
+			stopRevealObserver = null
 		}
 
 		const form = document.getElementById('contact-form') as HTMLFormElement | null
@@ -371,6 +674,35 @@ const faqs = [
 
 		let activeSelectedProjectType = ''
 		let lastFormattedMessage = ''
+
+		// Scroll microinteraction: staggered reveal as each block enters the viewport
+		const revealTargets = Array.from(document.querySelectorAll<HTMLElement>('.c-reveal'))
+
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			revealTargets.forEach((el) => el.classList.add('is-revealed'))
+		} else if (revealTargets.length) {
+			const revealObserver = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((entry) => {
+						if (!entry.isIntersecting) return
+						entry.target.classList.add('is-revealed')
+						revealObserver.unobserve(entry.target)
+					})
+				},
+				{ threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+			)
+
+			revealTargets.forEach((el) => {
+				// Blocks already on screen animate right away, keeping their stagger
+				if (el.getBoundingClientRect().top < window.innerHeight * 0.9) {
+					el.classList.add('is-revealed')
+					return
+				}
+				revealObserver.observe(el)
+			})
+
+			stopRevealObserver = () => revealObserver.disconnect()
+		}
 
 	// Project Type Chip selection
 	projectChips.forEach((chip) => {
@@ -433,9 +765,28 @@ const faqs = [
 	})
 
 	const setError = (field: string, show: boolean) => {
-		const el = form?.querySelector<HTMLElement>(`[data-error-for="${field}"]`)
-		el?.classList.toggle('hidden', !show)
+		const message = form?.querySelector<HTMLElement>(`[data-error-for="${field}"]`)
+		message?.classList.toggle('hidden', !show)
+
+		const input = form?.querySelector<HTMLInputElement | HTMLTextAreaElement>(`#${field}`)
+		if (!input) return
+
+		input.classList.remove('is-invalid')
+
+		if (show) {
+			// Force a reflow so the shake runs again on every failed submit
+			void input.offsetWidth
+			input.classList.add('is-invalid')
+		}
 	}
+
+	// Clear a field's error as soon as the user starts fixing it
+	form?.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea').forEach((field) => {
+		field.addEventListener('input', () => {
+			if (!field.classList.contains('is-invalid') || !field.id) return
+			setError(field.id, false)
+		})
+	})
 
 	const showFeedback = (message: string, tone: 'success' | 'error', formattedBody: string = '', subject: string = '') => {
 		if (!feedbackCard || !statusMessage) return
@@ -534,53 +885,78 @@ const faqs = [
 		}
 	})
 
-	// Social Cards Scroll Carousel
+	// Social Cards Marquee — always moving, pauses on hover / keyboard focus
 	const carouselTrack = document.getElementById('social-carousel-track')
 	if (carouselTrack) {
-		const carouselContainer = carouselTrack.closest('.carousel-fade')
-		const cardWidth = 240 + 16 // card width + gap
-		const totalOriginalCards = 7 // connectLinks.length
-		let currentPosition = 0
-		let scrollInterval: ReturnType<typeof setInterval> | null = null
-		let isScrolling = false
+		const hoverZone = carouselTrack.closest('.social-section') ?? carouselTrack.closest('.carousel-fade')
+		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
 
-		const updatePosition = () => {
-			currentPosition += 2
-			carouselTrack.style.transform = `translateX(-${currentPosition}px)`
+		const cards = Array.from(carouselTrack.children) as HTMLElement[]
+		const repeat = Number(carouselTrack.dataset.marqueeRepeat) || 1
+		const originalCount = cards.length > repeat ? cards.length / repeat : 0
+		const firstCard = cards[0]
+		const cycleCard = originalCount > 0 ? cards[originalCount] : undefined
+		const cycleWidth = firstCard && cycleCard ? cycleCard.offsetLeft - firstCard.offsetLeft : 0
 
-			// Reset to beginning when reaching end of first cycle
-			if (currentPosition >= cardWidth * totalOriginalCards) {
-				carouselTrack.style.transition = 'none'
-				currentPosition = 0
-				carouselTrack.style.transform = `translateX(0)`
-				setTimeout(() => {
-					carouselTrack.style.transition = 'transform 500ms ease-out'
-				}, 50)
-			}
+		const SPEED = 40 // px per second
+		let position = 0
+		let frameId: number | null = null
+		let lastTime = 0
+		let isPaused = false
+
+		const render = () => {
+			carouselTrack.style.transform = `translate3d(-${position}px, 0, 0)`
 		}
 
-		const startScroll = () => {
-			if (!isScrolling) {
-				isScrolling = true
-				scrollInterval = setInterval(updatePosition, 30)
+		const tick = (time: number) => {
+			if (!lastTime) lastTime = time
+			const delta = Math.min((time - lastTime) / 1000, 0.1)
+			lastTime = time
+
+			if (cycleWidth > 0) {
+				position = (position + SPEED * delta) % cycleWidth
+				render()
 			}
+
+			frameId = requestAnimationFrame(tick)
 		}
 
-		const stopScroll = () => {
-			isScrolling = false
-			if (scrollInterval) {
-				clearInterval(scrollInterval)
-				scrollInterval = null
-			}
+		const startMarquee = () => {
+			if (frameId !== null || cycleWidth <= 0 || reduceMotion.matches) return
+			lastTime = 0
+			frameId = requestAnimationFrame(tick)
 		}
 
-		stopCarouselScroll = stopScroll
+		const stopMarquee = () => {
+			if (frameId !== null) cancelAnimationFrame(frameId)
+			frameId = null
+			lastTime = 0
+		}
 
-		carouselTrack.style.transition = 'transform 500ms ease-out'
+		const setPaused = (paused: boolean) => {
+			if (isPaused === paused) return
+			isPaused = paused
+			if (paused) stopMarquee()
+			else startMarquee()
+		}
 
-		if (carouselContainer) {
-			carouselContainer.addEventListener('mouseenter', startScroll)
-			carouselContainer.addEventListener('mouseleave', stopScroll)
+		stopCarouselScroll = () => {
+			isPaused = false
+			stopMarquee()
+		}
+
+		render()
+		startMarquee()
+
+		if (hoverZone) {
+			hoverZone.addEventListener('mouseenter', () => setPaused(true))
+			hoverZone.addEventListener('mouseleave', () => setPaused(false))
+			hoverZone.addEventListener('focusin', () => setPaused(true))
+			hoverZone.addEventListener('focusout', (event) => {
+				const next = (event as FocusEvent).relatedTarget
+				if (next instanceof Node && hoverZone.contains(next)) return
+				setPaused(false)
+			})
 		}
 	}
 }
@@ -593,11 +969,19 @@ document.addEventListener('astro:before-swap', () => {
 		stopCarouselScroll()
 		stopCarouselScroll = null
 	}
+	if (stopRevealObserver) {
+		stopRevealObserver()
+		stopRevealObserver = null
+	}
 })
 window.addEventListener('beforeunload', () => {
 	if (stopCarouselScroll) {
 		stopCarouselScroll()
 		stopCarouselScroll = null
+	}
+	if (stopRevealObserver) {
+		stopRevealObserver()
+		stopRevealObserver = null
 	}
 })
 </script>
