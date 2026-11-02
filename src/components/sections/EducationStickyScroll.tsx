@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import {
 	GraduationCap,
@@ -5,7 +7,6 @@ import {
 	Binary,
 	Sparkles,
 	Clock,
-	LucideIcon,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/utils';
@@ -54,68 +55,69 @@ const CornerAccents = ({ hoverClass }: { hoverClass: string }) => (
 
 interface EducationCardProps {
 	education: EducationItem;
-	index: number;
 	variant: 'primary' | 'secondary' | 'tertiary';
 	isLowPowerMode?: boolean;
 }
 
-const EducationCard: React.FC<EducationCardProps> = ({
-	education,
-	index,
-	variant,
-	isLowPowerMode = false,
-}) => {
-	const variantConfig = {
+type VariantStyle = {
+	hoverClass: string;
+	glowClass: string;
+	hoverEffect: string;
+	hoverTextClass: string;
+	icon: React.ReactNode;
+	accentIcon: React.ReactNode;
+	accentColor: string;
+	statusLabel: string;
+	delay: number;
+};
+
+const getVariantStyle = (variant: 'primary' | 'secondary' | 'tertiary'): VariantStyle => {
+	const styles = {
 		primary: {
 			hoverClass: 'group-hover:border-blue-500 dark:group-hover:border-blue-400',
-			glowClass:
-				'hover:shadow-[0_20px_40px_-15px_rgba(59,130,246,0.3)] hover:border-blue-500/50',
-			translateClass: 'hover:-translate-y-2',
-			hoverTextClass:
-				'group-hover:text-blue-600 dark:group-hover:text-blue-400',
-			tagBgClass: 'group-hover:bg-blue-600/50',
-			icon: GraduationCap,
-			accentIcon: Binary,
+			glowClass: 'hover:shadow-[0_20px_40px_-15px_rgba(59,130,246,0.3)] hover:border-blue-500/50',
+			hoverEffect: 'hover:-translate-y-2',
+			hoverTextClass: 'group-hover:text-blue-600 dark:group-hover:text-blue-400',
+			icon: <GraduationCap className="w-20 h-20 text-white drop-shadow-xl" />,
+			accentIcon: <Binary className="w-8 h-8 text-blue-400 absolute -top-2 -right-2 opacity-80" />,
 			accentColor: 'text-blue-400',
 			statusLabel: 'Higher Education',
 			delay: 0,
 		},
 		secondary: {
 			hoverClass: 'group-hover:border-orange-500 dark:group-hover:border-orange-400',
-			glowClass:
-				'hover:shadow-[0_0_40px_-10px_rgba(249,115,22,0.3)] hover:border-orange-500/50',
-			scaleClass: 'hover:scale-[1.02] hover:z-10',
-			hoverTextClass:
-				'group-hover:text-orange-600 dark:group-hover:text-orange-400',
-			tagBgClass: 'group-hover:bg-orange-600/50',
-			icon: BookOpen,
-			accentIcon: Sparkles,
+			glowClass: 'hover:shadow-[0_0_40px_-10px_rgba(249,115,22,0.3)] hover:border-orange-500/50',
+			hoverEffect: 'hover:scale-[1.02] hover:z-10',
+			hoverTextClass: 'group-hover:text-orange-600 dark:group-hover:text-orange-400',
+			icon: <BookOpen className="w-20 h-20 text-white drop-shadow-xl" />,
+			accentIcon: <Sparkles className="w-6 h-6 text-yellow-400 absolute -bottom-2 -left-2" />,
 			accentColor: 'text-yellow-400',
 			statusLabel: 'Foundation',
 			delay: 0.2,
 		},
 		tertiary: {
 			hoverClass: 'group-hover:border-cyan-500 dark:group-hover:border-cyan-400',
-			glowClass:
-				'hover:border-cyan-500/50 hover:shadow-[inset_0_0_30px_rgba(6,182,212,0.1),0_0_30px_-5px_rgba(6,182,212,0.3)]',
-			hoverTextClass:
-				'group-hover:text-cyan-600 dark:group-hover:text-cyan-400',
-			icon: Clock,
-			accentIcon: Binary,
+			glowClass: 'hover:border-cyan-500/50 hover:shadow-[inset_0_0_30px_rgba(6,182,212,0.1),0_0_30px_-5px_rgba(6,182,212,0.3)]',
+			hoverEffect: '',
+			hoverTextClass: 'group-hover:text-cyan-600 dark:group-hover:text-cyan-400',
+			icon: <Clock className="w-6 h-6 md:w-8 md:h-8 text-neutral-500 dark:text-neutral-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors" />,
+			accentIcon: <Binary className="w-8 h-8 text-cyan-400" />,
 			accentColor: 'text-cyan-400',
 			statusLabel: 'Continuous Learning',
 			delay: 0.4,
 		},
 	};
+	return styles[variant];
+};
 
-	const config = variantConfig[variant];
-	const IconComponent = config.icon;
-	const AccentIconComponent = config.accentIcon;
-
+const EducationCard: React.FC<EducationCardProps> = ({
+	education,
+	variant,
+	isLowPowerMode = false,
+}) => {
+	const style = getVariantStyle(variant);
 	const isTertiary = variant === 'tertiary';
-	const isSecondary = variant === 'secondary';
 
-	// Format display label
 	const displayStatus = education.isOngoing ? 'Current' : 'Completed';
 
 	return (
@@ -123,18 +125,17 @@ const EducationCard: React.FC<EducationCardProps> = ({
 			initial={isLowPowerMode ? {} : { opacity: 0, y: 20 }}
 			whileInView={isLowPowerMode ? {} : { opacity: 1, y: 0 }}
 			viewport={{ once: true }}
-			transition={{ duration: 0.5, delay: config.delay }}
+			transition={{ duration: 0.5, delay: style.delay }}
 			className={cn(
-				'col-span-1 md:col-span-' + (isTertiary ? '2' : '1'),
+				isTertiary ? 'col-span-1 md:col-span-2' : 'col-span-1',
 				'border border-black/10 dark:border-white/10 bg-neutral-100 dark:bg-[#0a0a0a] overflow-hidden relative group',
 				'flex flex-col min-h-[450px] transition-all duration-500',
-				config.glowClass,
-				variant === 'primary' && config.translateClass,
-				variant === 'secondary' && config.scaleClass,
+				style.glowClass,
+				style.hoverEffect,
 				isTertiary && 'p-8 md:p-12 md:flex-row items-center justify-between gap-8'
 			)}
 		>
-			<CornerAccents hoverClass={config.hoverClass} />
+			<CornerAccents hoverClass={style.hoverClass} />
 
 			{/* Text Section */}
 			<div
@@ -148,17 +149,17 @@ const EducationCard: React.FC<EducationCardProps> = ({
 					<span
 						className={cn(
 							'text-xs font-bold uppercase tracking-widest text-neutral-500 dark:text-neutral-400 transition-colors',
-							config.hoverTextClass
+							style.hoverTextClass
 						)}
 					>
 						{isTertiary ? (
 							<>
 								<Sparkles className="w-4 h-4 inline-block mr-2" />
-								{config.statusLabel}
+								{style.statusLabel}
 							</>
 						) : (
 							<>
-								{config.statusLabel}
+								{style.statusLabel}
 								{education.isOngoing && ' • ' + displayStatus}
 							</>
 						)}
@@ -227,23 +228,15 @@ const EducationCard: React.FC<EducationCardProps> = ({
 
 					<div className="relative z-10 flex flex-col items-center transition-transform duration-500 group-hover:scale-105">
 						<div className="relative mb-6">
-							<IconComponent className="w-20 h-20 text-white drop-shadow-xl" />
-							<AccentIconComponent
-								className={cn(
-									'w-8 h-8 absolute -top-2 -right-2 opacity-80',
-									config.accentColor
-								)}
-							/>
+							{style.icon}
+							{style.accentIcon}
 						</div>
 
 						<div className="flex flex-wrap gap-2 justify-center mb-4">
 							{(education.activities || []).slice(0, 2).map((activity, idx) => (
 								<span
 									key={idx}
-									className={cn(
-										'px-3 py-1 rounded-full text-[10px] bg-black/40 dark:bg-white/10 text-white border border-white/20 font-mono font-bold backdrop-blur-md shadow-lg transition-colors',
-										config.tagBgClass
-									)}
+									className="px-3 py-1 rounded-full text-[10px] bg-black/40 dark:bg-white/10 text-white border border-white/20 font-mono font-bold backdrop-blur-md shadow-lg group-hover:bg-blue-600/50 transition-colors"
 								>
 									{activity.split(' ')[0]}
 								</span>
@@ -267,7 +260,7 @@ const EducationCard: React.FC<EducationCardProps> = ({
 						<div className="w-6 h-6 rounded-full border-2 border-dashed border-cyan-500 dark:border-cyan-400 animate-[spin_3s_linear_infinite]"></div>
 					</div>
 					<div className="flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-[0.5rem] bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 backdrop-blur-md group-hover:-translate-y-1 group-hover:bg-cyan-500/10 group-hover:border-cyan-500/30 transition-all duration-300 delay-75 shadow-sm relative">
-						<Clock className="w-6 h-6 md:w-8 md:h-8 text-neutral-500 dark:text-neutral-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors" />
+						{style.icon}
 					</div>
 					<div className="flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-[0.5rem] bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 backdrop-blur-md group-hover:-translate-y-2 group-hover:bg-cyan-500/10 group-hover:border-cyan-500/30 transition-all duration-300 delay-150 shadow-sm relative">
 						<div className="flex gap-1">
@@ -302,10 +295,14 @@ export default function EducationStickyScroll({
 }: EducationStickyScrollProps) {
 	// Separate education items by type
 	const primaryEdu = education.find(
-		(e) => e.degree.toLowerCase().includes('licenciatura') || e.degree.toLowerCase().includes('bachelor')
+		(e) =>
+			e.degree.toLowerCase().includes('licenciatura') ||
+			e.degree.toLowerCase().includes('bachelor')
 	);
 	const secondaryEdu = education.find(
-		(e) => e.degree.toLowerCase().includes('diplomado') || e.degree.toLowerCase().includes('high school')
+		(e) =>
+			e.degree.toLowerCase().includes('diplomado') ||
+			e.degree.toLowerCase().includes('high school')
 	);
 
 	return (
@@ -315,7 +312,6 @@ export default function EducationStickyScroll({
 				{primaryEdu && (
 					<EducationCard
 						education={primaryEdu}
-						index={0}
 						variant="primary"
 						isLowPowerMode={isLowPowerMode}
 					/>
@@ -325,7 +321,6 @@ export default function EducationStickyScroll({
 				{secondaryEdu && (
 					<EducationCard
 						education={secondaryEdu}
-						index={1}
 						variant="secondary"
 						isLowPowerMode={isLowPowerMode}
 					/>
@@ -343,7 +338,6 @@ export default function EducationStickyScroll({
 						activities: [],
 						startDate: new Date().toISOString(),
 					}}
-					index={2}
 					variant="tertiary"
 					isLowPowerMode={isLowPowerMode}
 				/>
@@ -359,11 +353,10 @@ export default function EducationStickyScroll({
 							!e.degree.toLowerCase().includes('diplomado') &&
 							!e.degree.toLowerCase().includes('high school')
 					)
-					.map((edu, idx) => (
+					.map((edu) => (
 						<EducationCard
 							key={edu.id}
 							education={edu}
-							index={idx + 3}
 							variant="primary"
 							isLowPowerMode={isLowPowerMode}
 						/>
