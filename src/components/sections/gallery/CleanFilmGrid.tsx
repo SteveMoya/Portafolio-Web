@@ -117,12 +117,12 @@ export default function CleanFilmGrid({
 
 	return (
 		<>
-			<section className="relative py-24 px-6 md:px-16 lg:px-24 min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+			<section className="relative py-24 px-6 md:px-16 lg:px-24 min-h-screen bg-[#0a0a0a]">
 				{/* Header & Controls */}
-				<div className="relative z-10 max-w-7xl mx-auto mb-12 flex flex-col md:flex-row items-start md:items-end justify-between border-b border-slate-700 pb-6 gap-6">
+				<div className="relative z-10 max-w-7xl mx-auto mb-12 flex flex-col md:flex-row items-start md:items-end justify-between border-b border-[#2d2d2d] pb-6 gap-6">
 					{/* Title */}
 					<div className="flex-1">
-						<span className="text-[11px] md:text-xs font-medium uppercase tracking-[0.3em] text-slate-400 block mb-3">
+						<span className="text-[11px] md:text-xs font-medium uppercase tracking-[0.3em] text-[#a8a29e] block mb-3">
 							Exhibition Space
 						</span>
 						<h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight font-medium leading-tight">
@@ -142,7 +142,7 @@ export default function CleanFilmGrid({
 										'px-5 py-2 rounded-full text-xs font-medium tracking-wide transition-all duration-300',
 										filter === f
 											? 'bg-white/20 text-white shadow-md'
-											: 'text-slate-300 hover:text-white hover:bg-white/10'
+											: 'text-[#a8a29e] hover:text-white hover:bg-white/10'
 									)}
 								>
 									{f === 'all' ? 'All' : f === 'fotografia' ? 'Photography' : 'Design'}
@@ -151,7 +151,7 @@ export default function CleanFilmGrid({
 						</div>
 
 						{/* Divider */}
-						<div className="w-px h-8 bg-slate-700 hidden md:block" />
+						<div className="w-px h-8 bg-[#151515] hidden md:block" />
 
 						{/* View Toggle */}
 						<div className="flex items-center gap-1 bg-white/5 p-1 rounded-full backdrop-blur-md border border-white/10 shadow-inner">
@@ -161,7 +161,7 @@ export default function CleanFilmGrid({
 									'p-2.5 rounded-full transition-all duration-300',
 									viewMode === 'rows'
 										? 'bg-white/20 text-white shadow-md'
-										: 'text-slate-300 hover:text-white hover:bg-white/10'
+										: 'text-[#a8a29e] hover:text-white hover:bg-white/10'
 								)}
 								title="Rows View"
 							>
@@ -173,7 +173,7 @@ export default function CleanFilmGrid({
 									'p-2.5 rounded-full transition-all duration-300',
 									viewMode === 'grid'
 										? 'bg-white/20 text-white shadow-md'
-										: 'text-slate-300 hover:text-white hover:bg-white/10'
+										: 'text-[#a8a29e] hover:text-white hover:bg-white/10'
 								)}
 								title="Grid View"
 							>
@@ -187,8 +187,8 @@ export default function CleanFilmGrid({
 					{/* Quick Index (Sticky Sidebar) - Only visible in Rows mode */}
 					{viewMode === 'rows' && (
 						<div className="hidden lg:block w-48 shrink-0 sticky top-32 h-fit">
-							<div className="border-l border-slate-700 pl-6 py-2">
-								<h3 className="text-xs font-mono uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
+							<div className="border-l border-[#2d2d2d] pl-6 py-2">
+								<h3 className="text-xs font-mono uppercase tracking-widest text-[#a8a29e] mb-6 flex items-center gap-2">
 									Collections
 								</h3>
 								<div className="flex flex-col gap-3">
@@ -196,7 +196,7 @@ export default function CleanFilmGrid({
 										<button
 											key={category}
 											onClick={() => scrollToCategory(category)}
-											className="text-left text-sm text-slate-300 hover:text-white hover:pl-2 transition-all duration-300 capitalize"
+											className="text-left text-sm text-[#a8a29e] hover:text-white hover:pl-2 transition-all duration-300 capitalize"
 										>
 											<span className="font-mono text-[10px] opacity-40 mr-2">
 												{(idx + 1).toString().padStart(2, '0')}
@@ -218,7 +218,7 @@ export default function CleanFilmGrid({
 								<div className="flex items-center justify-between mb-6 px-1">
 									<h3 className="text-xl md:text-2xl font-semibold text-white capitalize flex items-center gap-3">
 										{category}
-										<span className="text-xs font-mono text-slate-400 bg-slate-700/50 px-2 py-0.5 rounded-full">
+										<span className="text-xs font-mono text-[#a8a29e] bg-[#151515]/50 px-2 py-0.5 rounded-full">
 											{groupedItems[category].length}
 										</span>
 									</h3>
@@ -227,15 +227,15 @@ export default function CleanFilmGrid({
 									<div className="hidden md:flex items-center gap-2 opacity-0 group-hover/section:opacity-100 transition-opacity duration-300">
 										<button
 											onClick={() => scrollHorizontal(category, 'left')}
-											className="p-2 rounded-full border border-slate-600 hover:bg-slate-700/50 hover:border-slate-500 transition-all"
+											className="p-2 rounded-full border border-[#2d2d2d] hover:bg-[#151515]/50 hover:border-[#2d2d2d] transition-all"
 										>
-											<ChevronLeft className="w-4 h-4 text-slate-300" />
+											<ChevronLeft className="w-4 h-4 text-[#a8a29e]" />
 										</button>
 										<button
 											onClick={() => scrollHorizontal(category, 'right')}
-											className="p-2 rounded-full border border-slate-600 hover:bg-slate-700/50 hover:border-slate-500 transition-all"
+											className="p-2 rounded-full border border-[#2d2d2d] hover:bg-[#151515]/50 hover:border-[#2d2d2d] transition-all"
 										>
-											<ChevronRight className="w-4 h-4 text-slate-300" />
+											<ChevronRight className="w-4 h-4 text-[#a8a29e]" />
 										</button>
 									</div>
 								</div>
@@ -258,7 +258,7 @@ export default function CleanFilmGrid({
 											className="relative flex-none w-[85vw] md:w-[400px] aspect-video snap-center group/card cursor-pointer"
 											onClick={() => openLightbox(item.id)}
 										>
-											<div className="relative w-full h-full overflow-hidden rounded-sm bg-slate-700">
+											<div className="relative w-full h-full overflow-hidden rounded-sm bg-[#151515]">
 												<img
 													src={item.src}
 													alt={item.alt}
@@ -310,7 +310,7 @@ export default function CleanFilmGrid({
 											className="relative group break-inside-avoid cursor-pointer transition-all"
 											onClick={() => openLightbox(item.id)}
 										>
-											<div className="relative overflow-hidden bg-slate-700 aspect-auto rounded-none group-hover:rounded-3xl transition-all duration-500 ease-out">
+											<div className="relative overflow-hidden bg-[#151515] aspect-auto rounded-none group-hover:rounded-3xl transition-all duration-500 ease-out">
 												<img
 													src={item.src}
 													alt={item.alt}
@@ -346,7 +346,7 @@ export default function CleanFilmGrid({
 											<span className="text-[11px] font-mono uppercase tracking-[3px] font-bold text-white opacity-0 -translate-y-4 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out absolute top-[-10px] whitespace-nowrap">
 												Load More
 											</span>
-											<div className="w-14 h-14 rounded-full border border-slate-500 flex items-center justify-center group-hover:bg-white group-hover:text-slate-900 group-hover:scale-110 transition-all duration-500 ease-out z-10 shadow-sm group-hover:shadow-xl bg-slate-800">
+											<div className="w-14 h-14 rounded-full border border-[#2d2d2d] flex items-center justify-center group-hover:bg-white group-hover:text-[#a8a29e] group-hover:scale-110 transition-all duration-500 ease-out z-10 shadow-sm group-hover:shadow-xl bg-[#151515]">
 												<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 													<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
 												</svg>
@@ -359,7 +359,7 @@ export default function CleanFilmGrid({
 
 						{categories.length === 0 && (
 							<div className="py-20 text-center">
-								<p className="text-slate-400 font-mono">No items found matching filter.</p>
+								<p className="text-[#a8a29e] font-mono">No items found matching filter.</p>
 							</div>
 						)}
 					</div>
@@ -447,7 +447,7 @@ export default function CleanFilmGrid({
 									{flattenedFilteredItems[currentIndex].alt}
 								</h3>
 								{flattenedFilteredItems[currentIndex].category && (
-									<p className="text-sm text-slate-400">
+									<p className="text-sm text-[#a8a29e]">
 										{flattenedFilteredItems[currentIndex].category}
 									</p>
 								)}
