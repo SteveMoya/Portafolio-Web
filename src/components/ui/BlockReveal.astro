@@ -8,6 +8,12 @@ export interface Props {
 	duration?: number
 	stagger?: number
 	delay?: number
+	/**
+	 * ScrollTrigger start position. `top 88%` fires while the element is still
+	 * 12% below the viewport bottom; pass a larger percentage (e.g. `top 98%`)
+	 * when the reveal should begin the moment the element becomes visible.
+	 */
+	triggerStart?: string
 }
 
 const {
@@ -19,10 +25,18 @@ const {
 	duration = 0.45,
 	stagger = 0.2,
 	delay = 0,
+	triggerStart = 'top 88%'
 } = Astro.props as Props
 
 // Parse lines either from array or split by newline if text string provided
-const lines: string[] | null = linesProp ?? (text ? text.split('\n').map((l: string) => l.trim()).filter((l: string) => l.length > 0) : null)
+const lines: string[] | null =
+	linesProp ??
+	(text
+		? text
+				.split('\n')
+				.map((l: string) => l.trim())
+				.filter((l: string) => l.length > 0)
+		: null)
 ---
 
 <Tag
@@ -32,6 +46,7 @@ const lines: string[] | null = linesProp ?? (text ? text.split('\n').map((l: str
 	data-duration={duration}
 	data-stagger={stagger}
 	data-delay={delay}
+	data-trigger-start={triggerStart}
 >
 	{
 		lines ? (
@@ -43,9 +58,7 @@ const lines: string[] | null = linesProp ?? (text ? text.split('\n').map((l: str
 							style={`background-color: ${boxColor};`}
 							aria-hidden="true"
 						/>
-						<span class="block-reveal-content inline-block opacity-0">
-							{line}
-						</span>
+						<span class="block-reveal-content inline-block opacity-0">{line}</span>
 					</span>
 				</span>
 			))
@@ -123,15 +136,18 @@ const lines: string[] | null = linesProp ?? (text ? text.split('\n').map((l: str
 			const duration = parseFloat(container.dataset.duration || '0.45')
 			const stagger = parseFloat(container.dataset.stagger || '0.2')
 			const delay = parseFloat(container.dataset.delay || '0')
+			// Fires when the element becomes visible by default; callers can pass a
+			// larger percentage to trigger even earlier, or a smaller one to wait.
+			const triggerStart = container.dataset.triggerStart || 'top 88%'
 
 			// Create timeline triggered by scroll (or immediate if above fold)
 			const tl = gsap.timeline({
 				delay,
 				scrollTrigger: {
 					trigger: container,
-					start: 'top 88%',
-					once: true,
-				},
+					start: triggerStart,
+					once: true
+				}
 			})
 
 			lines.forEach((line, index) => {
@@ -148,27 +164,23 @@ const lines: string[] | null = linesProp ?? (text ? text.split('\n').map((l: str
 					{
 						scaleX: 1,
 						duration,
-						ease: 'power2.inOut',
+						ease: 'power2.inOut'
 					},
 					lineDelay
 				)
-				// Step 2: Content becomes visible once box covers it
-				.set(
-					content,
-					{ opacity: 1 },
-					lineDelay + duration
-				)
-				// Step 3: Box shrinks away to the right, unveiling the content
-				.to(
-					box,
-					{
-						scaleX: 0,
-						transformOrigin: 'right center',
-						duration,
-						ease: 'power2.inOut',
-					},
-					lineDelay + duration
-				)
+					// Step 2: Content becomes visible once box covers it
+					.set(content, { opacity: 1 }, lineDelay + duration)
+					// Step 3: Box shrinks away to the right, unveiling the content
+					.to(
+						box,
+						{
+							scaleX: 0,
+							transformOrigin: 'right center',
+							duration,
+							ease: 'power2.inOut'
+						},
+						lineDelay + duration
+					)
 			})
 		})
 	}
