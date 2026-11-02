@@ -1,105 +1,180 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import type { Experience } from '@/data/experiences';
+import { useEffect, useId, useRef, useState } from 'react'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import type { Experience } from '@/data/experiences'
 
 interface ExpandableExperienceCardProps {
-	exp: Experience;
-	index?: number;
+	exp: Experience
+	index?: number
+}
+
+// Employment type is data (English enum) but reads as chrome on the card, so it
+// gets a Spanish label here instead of leaking the raw value into the UI.
+const TYPE_LABELS: Record<Experience['type'], string> = {
+	internship: 'Pasantía',
+	freelance: 'Freelance',
+	contract: 'Contrato',
+	'full-time': 'Tiempo completo',
+	'part-time': 'Medio tiempo'
 }
 
 export default function ExpandableExperienceCard({
 	exp,
-	index,
+	index = 0
 }: ExpandableExperienceCardProps) {
-	const [isExpanded, setIsExpanded] = useState(false);
+	const [isExpanded, setIsExpanded] = useState(false)
+	// A missing logo file must not leave a broken-image glyph in the card: it
+	// falls back to the monogram the logo-less entries already use.
+	const [logoFailed, setLogoFailed] = useState(false)
+	// The <img> stays transparent until the file actually decodes, so a 404 never
+	// paints a broken glyph — not even in the window before hydration.
+	const [logoLoaded, setLogoLoaded] = useState(false)
+	const logoRef = useRef<HTMLImageElement>(null)
+	const panelId = useId()
+	const shouldReduceMotion = useReducedMotion()
+
+	// The image is server-rendered, so a 404 can fire before React hydrates and
+	// the onError handler is never attached. Re-check the already-settled state
+	// on mount instead of trusting onError alone.
+	useEffect(() => {
+		const img = logoRef.current
+		if (!img || !img.complete) return
+		if (img.naturalWidth === 0) setLogoFailed(true)
+		else setLogoLoaded(true)
+	}, [])
 
 	const getDuration = (start: string, end?: string | null) => {
-		const startDate = new Date(start);
-		const endDate = end ? new Date(end) : new Date();
-		const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
-		const diffMonths = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30.44));
+		const startDate = new Date(start)
+		const endDate = end ? new Date(end) : new Date()
+		const diffTime = Math.abs(endDate.getTime() - startDate.getTime())
+		const diffMonths = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30.44))
 
-		if (diffMonths < 12) return `${diffMonths} months`;
-		const years = Math.floor(diffMonths / 12);
-		const months = diffMonths % 12;
-		if (months === 0) return `${years} year${years === 1 ? '' : 's'}`;
-		return `${years} year${years === 1 ? '' : 's'} ${months} month${months === 1 ? '' : 's'}`;
-	};
+		if (diffMonths < 12) return `${diffMonths} months`
+		const years = Math.floor(diffMonths / 12)
+		const months = diffMonths % 12
+		if (months === 0) return `${years} year${years === 1 ? '' : 's'}`
+		return `${years} year${years === 1 ? '' : 's'} ${months} month${months === 1 ? '' : 's'}`
+	}
 
 	const formatDate = (dateString: string) => {
-		const date = new Date(dateString);
+		const date = new Date(dateString)
+		// `startDate` values are date-only strings, which JS parses as UTC
+		// midnight. Formatting in local time (UTC-4) would shift them a month
+		// back — 2024-01-01 rendered as "dic 2023" and disagreed with the
+		// year rail. Pin the formatter to UTC.
 		return date.toLocaleDateString('es-DO', {
 			month: 'short',
 			year: 'numeric',
-		});
-	};
+			timeZone: 'UTC'
+		})
+	}
+
+	const ordinal = String(index + 1).padStart(2, '0')
+
+	const period = exp.endDate
+		? `${formatDate(exp.startDate)} — ${formatDate(exp.endDate)}`
+		: exp.isOngoing
+			? `${formatDate(exp.startDate)} — Actual`
+			: formatDate(exp.startDate)
+
+	const externalUrl = Array.isArray(exp.externalLink) ? exp.externalLink[0] : exp.externalLink
+
+	// Logo-less entries get a monogram so the text column keeps the same offset.
+	const initials = exp.company
+		.replace(/[^A-Za-z\u00C0-\u024F ]/g, '')
+		.split(/\s+/)
+		.filter(Boolean)
+		.slice(0, 2)
+		.map((word) => word.charAt(0))
+		.join('')
+		.toUpperCase()
+
+	// Aligns description and detail panel with the header's text column
+	// (padding + 3rem/3.5rem logo tile + gap).
+	const contentIndent = 'pl-[5.25rem] pr-5 md:pl-[6.75rem] md:pr-7'
 
 	return (
-		<div
-			className={`group relative bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-6 md:p-8 transition-all duration-300 overflow-hidden cursor-pointer ${
+		<article
+			className={`hover-lift group relative overflow-hidden rounded-2xl border bg-white/5 ${
 				isExpanded
-					? 'shadow-xl ring-1 ring-blue-500/30'
-					: 'hover:border-blue-500/50 hover:shadow-lg'
+					? 'border-[#c70039]/40 bg-white/[0.07]'
+					: 'border-white/10 hover:border-[#c70039]/40'
 			}`}
-			onClick={() => setIsExpanded(!isExpanded)}
 		>
-			{/* Animated background glow on hover */}
-			<div className="absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-500 bg-gradient-to-br from-blue-500/5 via-transparent to-transparent" />
+			{/* Ambient accent wash, replaces the reference repo's slate/blue glow */}
+			<div
+				className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#c70039]/5 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+				aria-hidden="true"
+			/>
 
-			<div className="relative z-10">
-				{/* Header Section */}
-				<div className="flex gap-4 md:gap-6 items-start mb-6">
-					{/* Logo */}
-					{exp.logo && (
-						<div className="w-14 h-14 md:w-16 md:h-16 rounded-xl flex items-center justify-center shrink-0 bg-white/5 border border-slate-600 overflow-hidden flex-shrink-0 transition-transform duration-300 group-hover:scale-110">
-							<img
-								src={exp.logo}
-								alt={exp.company}
-								className="w-12 h-12 md:w-14 md:h-14 object-contain"
-							/>
-						</div>
+			{/* Heading kept out of the button so the toggle keeps a short, readable name */}
+			<h3 className="sr-only">{`${exp.position} — ${exp.company}`}</h3>
+
+			<button
+				type="button"
+				aria-expanded={isExpanded}
+				aria-controls={panelId}
+				onClick={() => setIsExpanded((open) => !open)}
+				className="tap relative z-10 flex w-full items-start gap-4 p-5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#c70039]/60 md:gap-6 md:p-7"
+			>
+				{/* Fixed logo column on every card so titles line up across the list.
+				    The monogram is always painted underneath; the logo fades over it
+				    only once it decodes, so a 404 leaves clean initials. */}
+				<span className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-white/5 font-poppins text-xs font-black uppercase text-white/40 transition-colors duration-300 group-hover:border-[#c70039]/40 md:h-14 md:w-14">
+					<span aria-hidden="true">{initials}</span>
+					{exp.logo && !logoFailed && (
+						<img
+							ref={logoRef}
+							src={exp.logo}
+							alt=""
+							onError={() => setLogoFailed(true)}
+							onLoad={() => setLogoLoaded(true)}
+							className={`absolute inset-0 m-auto h-9 w-9 object-contain transition-opacity duration-300 md:h-10 md:w-10 ${
+								logoLoaded ? 'opacity-100' : 'opacity-0'
+							}`}
+						/>
 					)}
+				</span>
 
-					{/* Content */}
-					<div className="flex-1 min-w-0">
-						<h3 className="text-xl md:text-2xl font-bold text-white mb-1 group-hover:text-blue-400 transition-colors truncate">
-							{exp.position}
-						</h3>
-						<div className="flex flex-wrap items-center gap-2 text-slate-300 mb-3">
-							<span className="font-semibold text-blue-400">{exp.company}</span>
-							<span className="text-slate-500">•</span>
-							<span className="text-slate-400">{exp.location}</span>
-						</div>
+				<span className="min-w-0 flex-1">
+					<span className="block font-poppins text-lg font-black leading-tight text-white transition-colors duration-300 group-hover:text-[#c70039] md:text-xl">
+						{exp.position}
+					</span>
 
-						{/* Metadata */}
-						<div className="flex flex-wrap gap-3 text-xs md:text-sm text-slate-400">
-							<span className="flex items-center gap-1">
-								📅 {formatDate(exp.startDate)}
-								{exp.endDate
-									? ` - ${formatDate(exp.endDate)}`
-									: exp.isOngoing
-										? ' - Present'
-										: ''}
-							</span>
-							<span>•</span>
-							<span className="bg-blue-500/20 text-blue-200 px-2 py-0.5 rounded-full text-xs font-medium">
-								{exp.type}
-							</span>
-						</div>
-					</div>
+					<span className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-white/60 md:text-sm">
+						<span className="font-semibold text-[#c70039]">{exp.company}</span>
+						<span className="text-white/20" aria-hidden="true">
+							•
+						</span>
+						<span>{exp.location}</span>
+					</span>
 
-					{/* Expand Indicator */}
-					<div
-						className={`text-blue-400 transition-transform duration-300 flex-shrink-0 ${
+					<span className="mt-3 flex flex-wrap items-center gap-2">
+						<span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">
+							{period}
+						</span>
+						<span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-white/60">
+							{TYPE_LABELS[exp.type]}
+						</span>
+					</span>
+				</span>
+
+				<span className="flex shrink-0 flex-col items-end gap-2">
+					<span className="font-poppins text-[10px] font-black tracking-[0.2em] text-white/20">
+						{ordinal}
+					</span>
+					<span
+						className={`text-[#c70039] transition-transform duration-300 ${
 							isExpanded ? 'rotate-180' : ''
 						}`}
 					>
 						<svg
-							className="w-5 h-5 md:w-6 md:h-6"
+							className="h-5 w-5 md:h-6 md:w-6"
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
+							aria-hidden="true"
 						>
 							<path
 								strokeLinecap="round"
@@ -108,98 +183,117 @@ export default function ExpandableExperienceCard({
 								d="M19 14l-7 7m0 0l-7-7m7 7V3"
 							/>
 						</svg>
-					</div>
-				</div>
+					</span>
+				</span>
+			</button>
 
-				{/* Description */}
-				<p className="text-slate-300 text-sm md:text-base leading-relaxed mb-4">
-					{exp.description}
-				</p>
+			<p
+				className={`relative z-10 pb-5 text-sm leading-relaxed text-white/60 md:pb-7 ${contentIndent}`}
+			>
+				{exp.description}
+			</p>
 
-				{/* Expanded Content */}
+			<AnimatePresence initial={false}>
 				{isExpanded && (
-					<>
-						{/* Separator */}
-						<div className="my-4 border-t border-slate-700" />
+					<motion.div
+						key="details"
+						id={panelId}
+						role="region"
+						aria-label={`Detalles de ${exp.position} en ${exp.company}`}
+						initial={shouldReduceMotion ? false : { height: 0, opacity: 0 }}
+						animate={{ height: 'auto', opacity: 1 }}
+						exit={shouldReduceMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
+						transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.35, ease: 'easeOut' }}
+						className="relative z-10 overflow-hidden"
+					>
+						<div className={`pb-5 md:pb-7 ${contentIndent}`}>
+							<div className="dotted-card relative rounded-xl border border-white/10 p-4 md:p-5">
+								<span className="corner-tick corner-tick--tl" aria-hidden="true" />
+								<span className="corner-tick corner-tick--br" aria-hidden="true" />
 
-						{/* Key Responsibilities */}
-						{exp.responsibilities && exp.responsibilities.length > 0 && (
-							<div className="mb-6">
-								<h4 className="text-xs md:text-sm font-semibold text-slate-200 mb-3 uppercase tracking-wide flex items-center gap-2">
-									<span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-									Key Responsibilities
-								</h4>
-								<ul className="space-y-2">
-									{exp.responsibilities.map((resp, i) => (
-										<li
-											key={i}
-											className="flex items-start gap-3 text-xs md:text-sm text-slate-400"
-										>
-											<span className="text-blue-400 mt-1 flex-shrink-0">→</span>
-											<span>{resp}</span>
-										</li>
-									))}
-								</ul>
-							</div>
-						)}
+								{exp.responsibilities.length > 0 && (
+									<div className="mb-5">
+										<h4 className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">
+											<span className="h-1 w-1 rounded-full bg-[#c70039]" aria-hidden="true" />
+											Responsabilidades
+										</h4>
 
-						{/* Technologies */}
-						{exp.skills && exp.skills.length > 0 && (
-							<div className="mb-6">
-								<h4 className="text-xs md:text-sm font-semibold text-slate-200 mb-3 uppercase tracking-wide flex items-center gap-2">
-									<span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
-									Technologies
-								</h4>
-								<div className="flex flex-wrap gap-2">
-									{exp.skills.map((skill, i) => (
-										<span
-											key={i}
-											className="bg-slate-700/50 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-600 hover:border-blue-400 hover:bg-slate-700 transition-all duration-200"
-										>
-											{skill}
-										</span>
-									))}
+										<ul className="mt-3 space-y-2">
+											{exp.responsibilities.map((responsibility, i) => (
+												<li
+													key={i}
+													className="flex items-start gap-3 text-xs leading-relaxed text-white/60 md:text-sm"
+												>
+													<span className="mt-0.5 shrink-0 text-[#c70039]" aria-hidden="true">
+														→
+													</span>
+													<span>{responsibility}</span>
+												</li>
+											))}
+										</ul>
+									</div>
+								)}
+
+								{exp.skills.length > 0 && (
+									<div className="mb-5">
+										<h4 className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">
+											<span className="h-1 w-1 rounded-full bg-[#c70039]" aria-hidden="true" />
+											Tecnologías
+										</h4>
+
+										<div className="mt-3 flex flex-wrap gap-2">
+											{exp.skills.map((skill, i) => (
+												<span
+													key={i}
+													className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-white/60 transition-colors duration-200 hover:border-[#c70039]/40 hover:text-white"
+												>
+													{skill}
+												</span>
+											))}
+										</div>
+									</div>
+								)}
+
+								<div className="border-t border-white/10 pt-3">
+									<p className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">
+										Duración total
+									</p>
+									<p className="mt-1 text-sm font-semibold text-[#c70039]">
+										{getDuration(exp.startDate, exp.endDate)}
+									</p>
 								</div>
-							</div>
-						)}
 
-						{/* Duration */}
-						<div className="text-xs text-slate-400 pt-2 border-t border-slate-700">
-							<span className="text-emerald-400 font-semibold">
-								Total Duration: {getDuration(exp.startDate, exp.endDate)}
-							</span>
+								{externalUrl && (
+									<div className="mt-5 border-t border-white/10 pt-4">
+										<a
+											href={externalUrl}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="group/link inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#c70039] transition-[color,gap] duration-300 hover:gap-3 hover:text-white"
+										>
+											Ver sitio de la empresa
+											<svg
+												className="h-4 w-4"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+												aria-hidden="true"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4m-4-6l6 6m0 0l-6 6m6-6H9"
+												/>
+											</svg>
+										</a>
+									</div>
+								)}
+							</div>
 						</div>
-
-						{/* External Link */}
-						{exp.externalLink && (
-							<div className="mt-4 pt-4 border-t border-slate-700">
-								<a
-									href={Array.isArray(exp.externalLink) ? exp.externalLink[0] : exp.externalLink}
-									target="_blank"
-									rel="noopener noreferrer"
-									className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 text-xs md:text-sm font-medium transition-colors group/link"
-									onClick={(e) => e.stopPropagation()}
-								>
-									Visit Company Website
-									<svg
-										className="w-4 h-4 group-hover/link:translate-x-1 transition-transform"
-										fill="none"
-										stroke="currentColor"
-										viewBox="0 0 24 24"
-									>
-										<path
-											strokeLinecap="round"
-											strokeLinejoin="round"
-											strokeWidth={2}
-											d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4m-4-6l6 6m0 0l-6 6m6-6H9"
-										/>
-									</svg>
-								</a>
-							</div>
-						)}
-					</>
+					</motion.div>
 				)}
-			</div>
-		</div>
-	);
+			</AnimatePresence>
+		</article>
+	)
 }
