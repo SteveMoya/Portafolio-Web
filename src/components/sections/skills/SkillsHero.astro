@@ -13,6 +13,7 @@
  * rotation is ours to control. Without JS (or without WebGL) the copy and the
  * bubbles still render, so the hero never collapses to an empty box.
  */
+import logoSet from '@iconify-json/logos/icons.json'
 import { Icon } from 'astro-icon/components'
 
 interface Props {
@@ -68,6 +69,33 @@ const orbit = [
 		delay: '0.9s'
 	}
 ]
+
+/**
+ * Logos painted on the astronaut's chest display. Resolved here, at build
+ * time, from the local Iconify set into standalone SVG data URIs, so the
+ * WebGL texture can draw them without a network request or a DOM sprite.
+ */
+const displayIcons = [
+	'python',
+	'react',
+	'typescript-icon',
+	'astro-icon',
+	'docker-icon',
+	'git-icon',
+	'postgresql',
+	'tailwindcss-icon'
+]
+
+const displayLogos = displayIcons.flatMap((name) => {
+	const icon = (logoSet.icons as Record<string, { body: string; width?: number; height?: number }>)[
+		name
+	]
+	if (!icon) return []
+	const width = icon.width ?? logoSet.width ?? 16
+	const height = icon.height ?? logoSet.height ?? 16
+	const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width * 2}" height="${height * 2}" viewBox="0 0 ${width} ${height}">${icon.body}</svg>`
+	return [`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`]
+})
 ---
 
 <section
@@ -76,10 +104,21 @@ const orbit = [
 		className
 	]}
 >
+	<!-- Starfield: two slow drifting layers painted behind the figure. -->
+	<div class="pointer-events-none absolute inset-0 z-0" aria-hidden="true">
+		<span class="skills-hero__stars skills-hero__stars--far"></span>
+		<span class="skills-hero__stars skills-hero__stars--near"></span>
+	</div>
+
 	<!-- Figure. The canvas is injected by the script below, so this box stays
 	     empty (and harmless) when JS never runs. -->
 	<div class="skills-hero__stage pointer-events-none absolute inset-0 z-0" data-skills-stage>
-		<div class="h-full w-full" data-skills-canvas></div>
+		<div
+			class="skills-hero__canvas h-full w-full"
+			data-skills-canvas
+			data-logos={JSON.stringify(displayLogos)}
+		>
+		</div>
 	</div>
 
 	<!-- Vignette: darkens the edges and fades the torso into the page. -->
@@ -94,10 +133,10 @@ const orbit = [
 	     the page, so screen readers are not read a second icon dump. -->
 	<ul class="pointer-events-none absolute inset-0 z-[2]" aria-hidden="true">
 		{
-			orbit.map((tool) => (
+			orbit.map((tool, index) => (
 				<li
 					class="skills-bubble absolute"
-					style={`top:${tool.top};${tool.side}:${tool.offset};--delay:${tool.delay}`}
+					style={`top:${tool.top};${tool.side}:${tool.offset};--delay:${tool.delay};--enter:${(1.5 + index * 0.08).toFixed(2)}s`}
 				>
 					<span class="skills-bubble__float">
 						<span class="skills-bubble__disc" data-skills-bubble>
@@ -114,24 +153,28 @@ const orbit = [
 		<h1
 			class="skills-hero__title font-poppins font-black uppercase leading-[0.82] tracking-tighter"
 		>
-			<span class="text-shiny">Skills</span>
-			<span class="text-shiny-accent">&amp;</span>
-			<span class="text-shiny">Tools</span>
+			<span class="skills-hero__word" style="--enter:1.05s"
+				><span class="text-shiny">Skills</span></span
+			>
+			<span class="skills-hero__word" style="--enter:1.2s"
+				><span class="text-shiny-accent">&amp;</span></span
+			>
+			<span class="skills-hero__word" style="--enter:1.35s"
+				><span class="text-shiny">Tools</span></span
+			>
 		</h1>
 
 		<p
-			class="mx-auto mt-5 max-w-2xl font-mono text-[10px] font-medium uppercase tracking-[0.3em] text-white/45 sm:text-[11px] md:tracking-[0.42em]"
+			class="skills-hero__fade mx-auto mt-5 max-w-2xl font-mono text-[10px] font-medium uppercase tracking-[0.3em] text-white/45 sm:text-[11px] md:tracking-[0.42em]"
 		>
 			Tecnologías y herramientas con las que trabajo
 		</p>
 
 		{
 			meta.length > 0 && (
-				<ul class="mx-auto mt-7 flex max-w-3xl flex-wrap items-center justify-center gap-x-6 gap-y-2 border-t border-white/10 pt-5">
+				<ul class="skills-hero__fade skills-hero__fade--late mx-auto mt-7 flex max-w-3xl flex-wrap items-center justify-center gap-x-6 gap-y-2 border-t border-white/10 pt-5">
 					{meta.map((item) => (
-						<li class="font-mono text-[10px] uppercase tracking-[0.25em] text-white/35">
-							{item}
-						</li>
+						<li class="font-mono text-[10px] uppercase tracking-[0.25em] text-white/35">{item}</li>
 					))}
 				</ul>
 			)
@@ -152,6 +195,125 @@ const orbit = [
 		font-size: clamp(2.9rem, 11.5vw, 10.5rem);
 	}
 
+	/* Starfield: tiled radial dots, two densities, drifting at different speeds
+	   so the background has depth without a single image request. */
+	.skills-hero__stars {
+		position: absolute;
+		inset: -10% 0 0;
+		opacity: 0.55;
+	}
+
+	.skills-hero__stars--far {
+		background-image:
+			radial-gradient(1px 1px at 12% 18%, rgba(255, 255, 255, 0.7), transparent 60%),
+			radial-gradient(1px 1px at 38% 72%, rgba(255, 255, 255, 0.5), transparent 60%),
+			radial-gradient(1px 1px at 64% 34%, rgba(255, 255, 255, 0.6), transparent 60%),
+			radial-gradient(1px 1px at 86% 58%, rgba(255, 255, 255, 0.45), transparent 60%),
+			radial-gradient(1px 1px at 24% 46%, rgba(255, 255, 255, 0.4), transparent 60%),
+			radial-gradient(1px 1px at 72% 88%, rgba(255, 255, 255, 0.55), transparent 60%);
+		background-size: 260px 260px;
+	}
+
+	.skills-hero__stars--near {
+		background-image:
+			radial-gradient(1.5px 1.5px at 20% 30%, rgba(255, 255, 255, 0.85), transparent 60%),
+			radial-gradient(1.5px 1.5px at 70% 15%, rgba(255, 210, 220, 0.75), transparent 60%),
+			radial-gradient(1.5px 1.5px at 55% 80%, rgba(255, 255, 255, 0.7), transparent 60%),
+			radial-gradient(2px 2px at 90% 45%, rgba(190, 210, 255, 0.7), transparent 60%);
+		background-size: 520px 520px;
+		opacity: 0.45;
+	}
+
+	/* ── Entrance ────────────────────────────────────────────────────────
+	   Pure CSS so it also plays when JS is slow: stars fade in, the figure
+	   rises (driven in WebGL), then the title words lift out of a mask, the
+	   copy fades, and the tool bubbles pop in one after another. */
+	.skills-hero__word {
+		display: inline-block;
+		overflow: hidden;
+		padding-bottom: 0.06em;
+		vertical-align: bottom;
+	}
+
+	.skills-hero__word > span {
+		display: inline-block;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.skills-hero__stars {
+			animation:
+				skills-stars-in 2.4s ease-out both,
+				skills-stars-drift 90s linear infinite;
+		}
+
+		.skills-hero__stars--near {
+			animation:
+				skills-stars-in 2.4s ease-out both,
+				skills-stars-drift 50s linear infinite;
+		}
+
+		.skills-hero__canvas {
+			animation: skills-canvas-in 1.4s ease-out 0.15s both;
+		}
+
+		.skills-hero__word > span {
+			animation:
+				skills-word-in 1s cubic-bezier(0.2, 0.8, 0.2, 1) var(--enter, 1s) both,
+				text-shiny 4s linear infinite;
+		}
+
+		.skills-hero__fade {
+			animation: skills-fade-in 0.9s ease-out 1.6s both;
+		}
+
+		.skills-hero__fade--late {
+			animation-delay: 1.85s;
+		}
+
+		.skills-bubble {
+			animation: skills-bubble-in 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) var(--enter, 1.5s) both;
+		}
+	}
+
+	@keyframes skills-stars-in {
+		from {
+			opacity: 0;
+		}
+	}
+
+	@keyframes skills-stars-drift {
+		to {
+			background-position: 0 520px;
+		}
+	}
+
+	@keyframes skills-canvas-in {
+		from {
+			opacity: 0;
+			filter: blur(10px);
+		}
+	}
+
+	@keyframes skills-word-in {
+		from {
+			transform: translate3d(0, 105%, 0);
+		}
+	}
+
+	@keyframes skills-fade-in {
+		from {
+			opacity: 0;
+			transform: translate3d(0, 12px, 0);
+		}
+	}
+
+	@keyframes skills-bubble-in {
+		from {
+			opacity: 0;
+			transform: scale(0.3);
+		}
+	}
+
 	/* No WebGL: keep a soft mass where the figure would be instead of a flat
 	   black hole behind the title. */
 	[data-skills-canvas][data-stage='unavailable'] {
@@ -162,7 +324,11 @@ const orbit = [
 		content: '';
 		position: absolute;
 		inset: 0;
-		background: radial-gradient(ellipse 34% 42% at 50% 36%, rgba(255, 255, 255, 0.08), transparent 70%);
+		background: radial-gradient(
+			ellipse 34% 42% at 50% 36%,
+			rgba(255, 255, 255, 0.08),
+			transparent 70%
+		);
 	}
 
 	/* Bubbles: a glass disc per tool. `--near` (0..1) is written by the script
@@ -204,15 +370,15 @@ const orbit = [
 		}
 	}
 
-	/* Narrow screens: keep four bubbles, drop the rest so the figure and the
-	   title are not crowded out. */
+	/* Narrow screens: keep four bubbles, and only the ones anchored near the
+	   edges so they never sit on top of the helmet. */
 	@media (max-width: 639px) {
-		.skills-bubble:nth-child(3),
+		.skills-bubble:nth-child(2),
 		.skills-bubble:nth-child(4),
 		.skills-bubble:nth-child(5),
 		.skills-bubble:nth-child(6),
-		.skills-bubble:nth-child(9),
-		.skills-bubble:nth-child(10) {
+		.skills-bubble:nth-child(7),
+		.skills-bubble:nth-child(9) {
 			display: none;
 		}
 
@@ -324,16 +490,241 @@ const orbit = [
 	}
 
 	/**
-	 * The bust. Built from lathe primitives with a procedural room environment,
-	 * so the chrome has something to reflect without downloading an HDRI. The
-	 * head follows the pointer with damped rotation; the whole bust follows it a
-	 * little, which sells the parallax.
+	 * The astronaut bust. Built from primitives with a procedural room
+	 * environment, so the materials have something to reflect without
+	 * downloading an HDRI. Canvas textures carry the imagery: the chest display
+	 * shows the stack logos, the shoulders carry a mission patch (the site logo)
+	 * and the Dominican flag, and the visor reflects a horizon.
+	 *
+	 * Entrance: the figure rises into frame while it turns to face the camera,
+	 * then "powers on" (visor, lamps, display, status LEDs). After that the
+	 * helmet follows the pointer with damped rotation.
 	 */
 	type ThreeModule = typeof import('three')
+	type Three = typeof import('three')
+
+	const INTRO_SECONDS = 2.6
+	const POWER_ON_AT = 1.7
+	const POWER_ON_SECONDS = 0.9
+
+	const clamp01 = (value: number) => Math.min(1, Math.max(0, value))
+	const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
+	const easeOutBack = (t: number) => {
+		const c = 1.4
+		return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2)
+	}
+
+	const loadImage = (src: string) =>
+		new Promise<HTMLImageElement>((resolve, reject) => {
+			const image = new Image()
+			image.decoding = 'async'
+			image.onload = () => resolve(image)
+			image.onerror = reject
+			image.src = src
+		})
+
+	/** A canvas-backed texture that can be repainted once its images arrive. */
+	function canvasTexture(THREE: Three, width: number, height: number) {
+		const canvas = document.createElement('canvas')
+		canvas.width = width
+		canvas.height = height
+		const context = canvas.getContext('2d') as CanvasRenderingContext2D
+		const texture = new THREE.CanvasTexture(canvas)
+		texture.colorSpace = THREE.SRGBColorSpace
+		texture.anisotropy = 4
+		return { canvas, context, texture }
+	}
+
+	/** Mission patch: the site logo on a brand-red disc with a stitched rim. */
+	function paintMissionPatch(
+		context: CanvasRenderingContext2D,
+		size: number,
+		logo?: HTMLImageElement
+	) {
+		const c = size / 2
+		context.clearRect(0, 0, size, size)
+		context.beginPath()
+		context.arc(c, c, c - 4, 0, Math.PI * 2)
+		context.fillStyle = '#1a1b20'
+		context.fill()
+
+		context.beginPath()
+		context.arc(c, c, c * 0.78, 0, Math.PI * 2)
+		const fill = context.createRadialGradient(c * 0.8, c * 0.7, 10, c, c, c * 0.8)
+		fill.addColorStop(0, '#e0164f')
+		fill.addColorStop(1, '#8a0027')
+		context.fillStyle = fill
+		context.fill()
+
+		// Stitched rim.
+		context.setLineDash([10, 8])
+		context.lineWidth = 4
+		context.strokeStyle = 'rgba(255,255,255,0.55)'
+		context.beginPath()
+		context.arc(c, c, c - 14, 0, Math.PI * 2)
+		context.stroke()
+		context.setLineDash([])
+
+		// Curved lettering on the dark band.
+		const label = 'STEVE MOYA · FULL STACK · '
+		context.fillStyle = '#f2f2f2'
+		context.font = `700 ${Math.round(size * 0.07)}px ui-monospace, monospace`
+		context.textAlign = 'center'
+		context.textBaseline = 'middle'
+		const radius = c * 0.89
+		const step = (Math.PI * 2) / label.length
+		for (let i = 0; i < label.length; i++) {
+			const angle = -Math.PI / 2 + i * step
+			context.save()
+			context.translate(c + Math.cos(angle) * radius, c + Math.sin(angle) * radius)
+			context.rotate(angle + Math.PI / 2)
+			context.fillText(label[i], 0, 0)
+			context.restore()
+		}
+
+		if (logo) {
+			const logoSize = size * 0.46
+			context.drawImage(logo, c - logoSize / 2, c - logoSize / 2, logoSize, logoSize)
+		}
+	}
+
+	/** Dominican Republic flag, simplified, as a sewn-on patch. */
+	function paintFlag(context: CanvasRenderingContext2D, width: number, height: number) {
+		const bar = height * 0.18
+		const halfW = (width - bar) / 2
+		const halfH = (height - bar) / 2
+		context.fillStyle = '#f4f4f4'
+		context.fillRect(0, 0, width, height)
+		context.fillStyle = '#002d62'
+		context.fillRect(0, 0, halfW, halfH)
+		context.fillRect(halfW + bar, halfH + bar, halfW, halfH)
+		context.fillStyle = '#ce1126'
+		context.fillRect(halfW + bar, 0, halfW, halfH)
+		context.fillRect(0, halfH + bar, halfW, halfH)
+		// Coat of arms, reduced to a mark.
+		context.fillStyle = '#2e7d32'
+		context.beginPath()
+		context.arc(width / 2, height / 2, bar * 0.42, 0, Math.PI * 2)
+		context.fill()
+		context.strokeStyle = 'rgba(0,0,0,0.35)'
+		context.lineWidth = 6
+		context.strokeRect(3, 3, width - 6, height - 6)
+	}
+
+	/** Chest display: a dark screen with a grid of stack logos and a status bar. */
+	function paintDisplay(
+		context: CanvasRenderingContext2D,
+		width: number,
+		height: number,
+		logos: HTMLImageElement[]
+	) {
+		const bg = context.createLinearGradient(0, 0, 0, height)
+		bg.addColorStop(0, '#0d1420')
+		bg.addColorStop(1, '#05070c')
+		context.fillStyle = bg
+		context.fillRect(0, 0, width, height)
+
+		// Scanlines.
+		context.fillStyle = 'rgba(255,255,255,0.035)'
+		for (let y = 0; y < height; y += 6) context.fillRect(0, y, width, 2)
+
+		// Header.
+		context.fillStyle = '#c70039'
+		context.fillRect(0, 0, width, height * 0.16)
+		context.fillStyle = '#ffffff'
+		context.font = `700 ${Math.round(height * 0.1)}px ui-monospace, monospace`
+		context.textBaseline = 'middle'
+		context.textAlign = 'left'
+		context.fillText('SYS · STACK', width * 0.04, height * 0.08)
+		context.textAlign = 'right'
+		context.fillText('ONLINE', width * 0.96, height * 0.08)
+
+		// Logos, 4 × 2.
+		const columns = 4
+		const rows = 2
+		const top = height * 0.2
+		const cellW = width / columns
+		const cellH = (height * 0.68) / rows
+		logos.slice(0, columns * rows).forEach((logo, index) => {
+			const col = index % columns
+			const row = Math.floor(index / columns)
+			const box = Math.min(cellW, cellH) * 0.62
+			const ratio = logo.naturalWidth / logo.naturalHeight || 1
+			const w = ratio >= 1 ? box : box * ratio
+			const h = ratio >= 1 ? box / ratio : box
+			const x = col * cellW + (cellW - w) / 2
+			const y = top + row * cellH + (cellH - h) / 2
+			context.fillStyle = 'rgba(255,255,255,0.06)'
+			context.fillRect(
+				col * cellW + cellW * 0.08,
+				top + row * cellH + cellH * 0.08,
+				cellW * 0.84,
+				cellH * 0.84
+			)
+			context.drawImage(logo, x, y, w, h)
+		})
+
+		// Footer bar.
+		context.fillStyle = 'rgba(80,220,140,0.85)'
+		context.fillRect(width * 0.04, height * 0.92, width * 0.62, height * 0.035)
+		context.fillStyle = 'rgba(255,255,255,0.15)'
+		context.fillRect(width * 0.66, height * 0.92, width * 0.3, height * 0.035)
+	}
+
+	/** Visor reflection: stars, the curve of the Earth and a sunrise flare. */
+	function paintVisor(context: CanvasRenderingContext2D, width: number, height: number) {
+		context.fillStyle = '#000000'
+		context.fillRect(0, 0, width, height)
+		// The visor faces +z, which is u = 0.25 on a three.js sphere.
+		const cx = width * 0.25
+		for (let i = 0; i < 160; i++) {
+			const x = cx + (Math.random() - 0.5) * width * 0.4
+			const y = height * (0.2 + Math.random() * 0.4)
+			context.fillStyle = `rgba(255,255,255,${0.25 + Math.random() * 0.6})`
+			context.fillRect(x, y, Math.random() < 0.15 ? 3 : 2, Math.random() < 0.15 ? 3 : 2)
+		}
+		const earthY = height * 1.02
+		const earthR = height * 0.42
+		const earth = context.createRadialGradient(
+			cx - 40,
+			earthY - earthR * 0.6,
+			20,
+			cx,
+			earthY,
+			earthR
+		)
+		earth.addColorStop(0, '#4f8fe0')
+		earth.addColorStop(0.6, '#1d4a8f')
+		earth.addColorStop(1, '#0a1a38')
+		context.fillStyle = earth
+		context.beginPath()
+		context.arc(cx, earthY, earthR, 0, Math.PI * 2)
+		context.fill()
+		context.strokeStyle = 'rgba(140,200,255,0.8)'
+		context.lineWidth = 6
+		context.beginPath()
+		context.arc(cx, earthY, earthR + 3, Math.PI * 1.1, Math.PI * 1.9)
+		context.stroke()
+		const flare = context.createRadialGradient(
+			cx + 70,
+			earthY - earthR - 6,
+			0,
+			cx + 70,
+			earthY - earthR - 6,
+			90
+		)
+		flare.addColorStop(0, 'rgba(255,220,200,0.95)')
+		flare.addColorStop(0.3, 'rgba(199,0,57,0.45)')
+		flare.addColorStop(1, 'rgba(199,0,57,0)')
+		context.fillStyle = flare
+		context.fillRect(0, 0, width, height)
+	}
 
 	async function mountBust(host: HTMLElement) {
 		const THREE: ThreeModule = await import('three')
 		const { RoomEnvironment } = await import('three/examples/jsm/environments/RoomEnvironment.js')
+		const { RoundedBoxGeometry } =
+			await import('three/examples/jsm/geometries/RoundedBoxGeometry.js')
 
 		let renderer: import('three').WebGLRenderer
 		try {
@@ -360,8 +751,7 @@ const orbit = [
 
 		// Procedural environment: gives the metal real reflections with no asset.
 		const pmrem = new THREE.PMREMGenerator(renderer)
-		const environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
-		scene.environment = environment
+		scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
 
 		// White shell for the helmet, graphite for the suit: the white title sits
 		// over the torso, so the body has to stay dark to keep the contrast.
@@ -372,16 +762,10 @@ const orbit = [
 			envMapIntensity: 0.6
 		})
 		const suit = new THREE.MeshStandardMaterial({
-			color: 0x33363e,
+			color: 0x24262c,
 			metalness: 0.12,
 			roughness: 0.6,
 			envMapIntensity: 0.45
-		})
-		const visorGlass = new THREE.MeshStandardMaterial({
-			color: 0x05050a,
-			metalness: 1,
-			roughness: 0.06,
-			envMapIntensity: 1.4
 		})
 		const hardware = new THREE.MeshStandardMaterial({
 			color: 0x6d737b,
@@ -389,39 +773,132 @@ const orbit = [
 			roughness: 0.35,
 			envMapIntensity: 0.8
 		})
+		const gold = new THREE.MeshStandardMaterial({
+			color: 0xb8925a,
+			metalness: 0.9,
+			roughness: 0.28,
+			envMapIntensity: 1
+		})
+		const rubber = new THREE.MeshStandardMaterial({ color: 0x1b1c21, roughness: 0.85 })
+
+		// ── Textures ────────────────────────────────────────────────────────
+		const visorTex = canvasTexture(THREE, 1024, 512)
+		paintVisor(visorTex.context, 1024, 512)
+		const patchTex = canvasTexture(THREE, 512, 512)
+		paintMissionPatch(patchTex.context, 512)
+		const flagTex = canvasTexture(THREE, 480, 320)
+		paintFlag(flagTex.context, 480, 320)
+		const displayTex = canvasTexture(THREE, 1024, 512)
+		paintDisplay(displayTex.context, 1024, 512, [])
+
+		const visorGlass = new THREE.MeshStandardMaterial({
+			color: 0x05050a,
+			metalness: 1,
+			roughness: 0.06,
+			envMapIntensity: 1.4,
+			emissive: 0xffffff,
+			emissiveMap: visorTex.texture,
+			emissiveIntensity: 0
+		})
+		const patchMaterial = new THREE.MeshStandardMaterial({
+			map: patchTex.texture,
+			transparent: true,
+			roughness: 0.8,
+			polygonOffset: true,
+			polygonOffsetFactor: -2
+		})
+		const flagMaterial = new THREE.MeshStandardMaterial({
+			map: flagTex.texture,
+			roughness: 0.85,
+			polygonOffset: true,
+			polygonOffsetFactor: -2
+		})
+		const displayMaterial = new THREE.MeshStandardMaterial({
+			color: 0x000000,
+			emissive: 0xffffff,
+			emissiveMap: displayTex.texture,
+			emissiveIntensity: 0,
+			roughness: 0.2,
+			metalness: 0.2
+		})
+		const lampMaterial = new THREE.MeshStandardMaterial({
+			color: 0x222222,
+			emissive: 0xfff4e0,
+			emissiveIntensity: 0
+		})
 
 		// ── Helmet ──────────────────────────────────────────────────────────
-		// Round shell plus a spherical-cap visor. The visor is asymmetric, so
-		// the pointer tracking is actually visible: it swings with the head.
 		const head = new THREE.Group()
 		head.add(new THREE.Mesh(new THREE.SphereGeometry(0.62, 96, 96), shell))
 
-		// Bubble visor: a shallow ellipsoid whose edges sink back into the shell,
-		// so what surfaces is a rounded window instead of a flat rectangle.
+		// Bubble visor: a shallow ellipsoid whose edges sink back into the shell.
 		const visor = new THREE.Mesh(new THREE.SphereGeometry(1, 96, 96), visorGlass)
 		visor.scale.set(0.46, 0.38, 0.28)
 		visor.position.set(0, -0.03, 0.38)
 		head.add(visor)
 
-		// Side comms pods: small asymmetric hardware that makes the turn read.
+		// Gold rim where the visor meets the shell.
+		const rim = new THREE.Mesh(new THREE.TorusGeometry(0.45, 0.032, 16, 96), gold)
+		rim.scale.set(1, 0.82, 1)
+		rim.position.set(0, -0.03, 0.415)
+		head.add(rim)
+
+		// Ridge running over the crown, from the nape to just above the visor.
+		const ridge = new THREE.Mesh(
+			new THREE.TorusGeometry(0.625, 0.024, 12, 80, Math.PI * 0.8),
+			hardware
+		)
+		ridge.rotation.y = Math.PI / 2
+		head.add(ridge)
+
+		// Side comms pods with a small grille ring each.
 		for (const side of [-1, 1]) {
-			const pod = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.07, 32), hardware)
+			const pod = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.08, 40), hardware)
 			pod.rotation.z = Math.PI / 2
-			pod.position.set(side * 0.605, 0.02, -0.02)
+			pod.position.set(side * 0.6, 0.02, -0.02)
 			head.add(pod)
+			const grille = new THREE.Mesh(new THREE.TorusGeometry(0.065, 0.012, 8, 32), rubber)
+			grille.rotation.y = Math.PI / 2
+			grille.position.set(side * 0.645, 0.02, -0.02)
+			head.add(grille)
+		}
+
+		// Headlamps above the visor corners, pointing along the shell normal.
+		const lamps: import('three').Mesh[] = []
+		for (const side of [-1, 1]) {
+			const normal = new THREE.Vector3(side * 0.44, 0.34, 0.3).normalize()
+			const housing = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.085, 0.07, 32), hardware)
+			housing.position.copy(normal.clone().multiplyScalar(0.62))
+			housing.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), normal)
+			head.add(housing)
+			const lens = new THREE.Mesh(new THREE.CircleGeometry(0.058, 32), lampMaterial)
+			lens.position.copy(normal.clone().multiplyScalar(0.657))
+			lens.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), normal)
+			head.add(lens)
+			lamps.push(lens)
 		}
 
 		const HEAD_Y = 0.66
 		head.position.y = HEAD_Y
 
 		// ── Neck ring and suit ──────────────────────────────────────────────
-		// The collar joint is what sells the helmet as a helmet.
-		const collar = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.065, 24, 64), hardware)
-		collar.rotation.x = Math.PI / 2
+		const collar = new THREE.Group()
+		const collarRing = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.065, 24, 64), hardware)
+		collarRing.rotation.x = Math.PI / 2
+		collar.add(collarRing)
+		const collarBase = new THREE.Mesh(new THREE.TorusGeometry(0.36, 0.045, 16, 64), gold)
+		collarBase.rotation.x = Math.PI / 2
+		collarBase.position.y = -0.05
+		collar.add(collarBase)
+		// Locking bolts around the ring.
+		for (let i = 0; i < 10; i++) {
+			const angle = (i / 10) * Math.PI * 2
+			const bolt = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.05, 12), gold)
+			bolt.position.set(Math.cos(angle) * 0.365, 0.01, Math.sin(angle) * 0.365)
+			collar.add(bolt)
+		}
 		collar.position.y = -0.02
 
-		// Broad shoulders: roughly three helmet-widths across, which is what
-		// makes the silhouette read as a bust instead of a floating head.
 		const torsoProfile: [number, number][] = [
 			[0.32, 0.02],
 			[0.52, -0.08],
@@ -435,23 +912,156 @@ const orbit = [
 			[1.26, -2.4],
 			[1.18, -2.7]
 		]
+		const DEPTH = 0.52
 		const torsoGeometry = new THREE.LatheGeometry(
-			torsoProfile.map(([radius, y]) => new THREE.Vector2(radius, y)),
+			// Bottom-up so the lathe faces point outward (top-down flips them inward).
+			[...torsoProfile].reverse().map(([radius, y]) => new THREE.Vector2(radius, y)),
 			96
 		)
-		torsoGeometry.scale(1, 1, 0.52)
+		torsoGeometry.scale(1, 1, DEPTH)
 		const torso = new THREE.Mesh(torsoGeometry, suit)
-		torso.position.y = 0
+
+		/** Torso radius at height y, linear along the lathe profile. */
+		const radiusAt = (y: number) => {
+			for (let i = 0; i < torsoProfile.length - 1; i++) {
+				const [r0, y0] = torsoProfile[i]
+				const [r1, y1] = torsoProfile[i + 1]
+				if (y <= y0 && y >= y1) return r0 + ((y - y0) / (y1 - y0)) * (r1 - r0)
+			}
+			return torsoProfile[torsoProfile.length - 1][0]
+		}
+
+		/** Front surface point and outward normal of the torso at (x, y). */
+		const surfaceAt = (x: number, y: number) => {
+			const shape = (px: number, py: number, pz: number) => {
+				const r = radiusAt(py)
+				return (px * px) / (r * r) + (pz * pz) / (r * r * DEPTH * DEPTH)
+			}
+			const r = radiusAt(y)
+			const z = DEPTH * Math.sqrt(Math.max(0, r * r - x * x))
+			const e = 0.001
+			const normal = new THREE.Vector3(
+				shape(x + e, y, z) - shape(x - e, y, z),
+				shape(x, y + e, z) - shape(x, y - e, z),
+				shape(x, y, z + e) - shape(x, y, z - e)
+			).normalize()
+			return { point: new THREE.Vector3(x, y, z), normal }
+		}
+
+		/** Sit a +z facing mesh on the torso, nudged out along the normal. */
+		const stick = (mesh: import('three').Object3D, x: number, y: number, lift: number) => {
+			const { point, normal } = surfaceAt(x, y)
+			mesh.position.copy(point.addScaledVector(normal, lift))
+			mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), normal)
+			return mesh
+		}
+
+		const suitDetails = new THREE.Group()
+
+		// Seam band across the chest.
+		const seam = new THREE.Mesh(new THREE.TorusGeometry(1.425, 0.02, 8, 128), rubber)
+		seam.rotation.x = Math.PI / 2
+		seam.scale.set(1, DEPTH, 1)
+		seam.position.y = -1.3
+		suitDetails.add(seam)
+
+		// Shoulder patches: mission patch (site logo) and the flag.
+		suitDetails.add(
+			stick(new THREE.Mesh(new THREE.CircleGeometry(0.2, 48), patchMaterial), 0.86, -0.52, 0.02)
+		)
+		suitDetails.add(
+			stick(new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.23), flagMaterial), -0.86, -0.52, 0.02)
+		)
+
+		// Chest control unit with the display, status LEDs and two dials.
+		const chest = new THREE.Group()
+		chest.add(new THREE.Mesh(new RoundedBoxGeometry(0.74, 0.44, 0.14, 4, 0.04), shell))
+		const screen = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.27), displayMaterial)
+		screen.position.set(0, 0.05, 0.08)
+		chest.add(screen)
+		const bezel = new THREE.Mesh(new RoundedBoxGeometry(0.64, 0.31, 0.02, 2, 0.01), rubber)
+		bezel.position.set(0, 0.05, 0.066)
+		chest.add(bezel)
+
+		const leds: { mesh: import('three').Mesh; speed: number; phase: number }[] = []
+		;[0xff2d55, 0x3ddc84, 0xffb020].forEach((color, index) => {
+			const led = new THREE.Mesh(
+				new THREE.SphereGeometry(0.022, 16, 16),
+				new THREE.MeshStandardMaterial({ color: 0x111111, emissive: color, emissiveIntensity: 0 })
+			)
+			led.position.set(-0.24 + index * 0.07, -0.15, 0.072)
+			chest.add(led)
+			leds.push({ mesh: led, speed: 1.4 + index * 0.9, phase: index * 1.7 })
+		})
+		for (const x of [0.15, 0.26]) {
+			const dial = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.04, 24), hardware)
+			dial.rotation.x = Math.PI / 2
+			dial.position.set(x, -0.15, 0.08)
+			chest.add(dial)
+		}
+		stick(chest, 0, -0.6, 0.05)
+		suitDetails.add(chest)
+
+		// Hoses from the chest unit up into the collar.
+		for (const side of [-1, 1]) {
+			const curve = new THREE.CatmullRomCurve3([
+				new THREE.Vector3(side * 0.34, -0.56, 0.76),
+				new THREE.Vector3(side * 0.52, -0.32, 0.6),
+				new THREE.Vector3(side * 0.42, -0.12, 0.38),
+				new THREE.Vector3(side * 0.3, -0.04, 0.2)
+			])
+			suitDetails.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 48, 0.034, 12, false), rubber))
+			// Couplers at the ends.
+			for (const t of [0, 1]) {
+				const coupler = new THREE.Mesh(new THREE.TorusGeometry(0.038, 0.014, 8, 24), gold)
+				coupler.position.copy(curve.getPoint(t))
+				coupler.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), curve.getTangent(t))
+				suitDetails.add(coupler)
+			}
+		}
+
+		// Life-support backpack peeking over the shoulders, with an antenna.
+		const pack = new THREE.Mesh(new RoundedBoxGeometry(1.25, 1.4, 0.6, 4, 0.12), hardware)
+		pack.position.set(0, -0.72, -0.9)
+		suitDetails.add(pack)
+		const antenna = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.018, 1, 8), hardware)
+		antenna.position.set(-0.48, 0.48, -0.9)
+		suitDetails.add(antenna)
+		const beacon = new THREE.Mesh(
+			new THREE.SphereGeometry(0.035, 16, 16),
+			new THREE.MeshStandardMaterial({ color: 0x220008, emissive: 0xc70039, emissiveIntensity: 0 })
+		)
+		beacon.position.set(-0.48, 0.99, -0.9)
+		suitDetails.add(beacon)
 
 		const bust = new THREE.Group()
-		bust.add(head, collar, torso)
-
-		bust.position.y = 0
+		bust.add(head, collar, torso, suitDetails)
 		scene.add(bust)
 
+		// ── Images ──────────────────────────────────────────────────────────
+		// Painted after the first frame so the figure never waits on them.
+		let logoSources: string[] = []
+		try {
+			logoSources = JSON.parse(host.dataset.logos ?? '[]')
+		} catch {
+			logoSources = []
+		}
+
+		const imagesReady = Promise.allSettled([
+			loadImage('/logo.svg').then((logo) => {
+				paintMissionPatch(patchTex.context, 512, logo)
+				patchTex.texture.needsUpdate = true
+			}),
+			Promise.allSettled(logoSources.map(loadImage)).then((results) => {
+				const logos = results.flatMap((result) =>
+					result.status === 'fulfilled' ? [result.value] : []
+				)
+				paintDisplay(displayTex.context, 1024, 512, logos)
+				displayTex.texture.needsUpdate = true
+			})
+		])
+
 		// ── Light ───────────────────────────────────────────────────────────
-		// The suit is light and the set is black, so the rim lights do most of
-		// the shaping; the brand accent only touches one low side.
 		const key = new THREE.DirectionalLight(0xffffff, 1.5)
 		key.position.set(-3.2, 3.6, 5)
 		const rimLeft = new THREE.DirectionalLight(0xffffff, 2.2)
@@ -462,7 +1072,14 @@ const orbit = [
 		accent.position.set(5, -1.2, 2)
 		const fill = new THREE.DirectionalLight(0x9fb7ff, 0.6)
 		fill.position.set(-4, -2, 2.4)
-		scene.add(key, rimLeft, rimRight, accent, fill, new THREE.HemisphereLight(0xffffff, 0x08080c, 0.25))
+		scene.add(
+			key,
+			rimLeft,
+			rimRight,
+			accent,
+			fill,
+			new THREE.HemisphereLight(0xffffff, 0x08080c, 0.25)
+		)
 
 		// ── Pointer ─────────────────────────────────────────────────────────
 		const pointer = { x: 0, y: 0 }
@@ -492,6 +1109,28 @@ const orbit = [
 			camera.position.set(0, 0, width < 640 ? 9 : width < 1024 ? 7.2 : 6.4)
 			camera.lookAt(0, -0.36, 0)
 			camera.updateProjectionMatrix()
+			if (reducedMotion) renderStatic()
+		}
+
+		// ── Power state ─────────────────────────────────────────────────────
+		/** 0 = dark suit, 1 = everything lit. `time` drives the LED blink. */
+		const applyPower = (power: number, time: number) => {
+			visorGlass.emissiveIntensity = power * 0.5
+			displayMaterial.emissiveIntensity = power * 1.1
+			lampMaterial.emissiveIntensity = power * 2.4
+			for (const led of leds) {
+				const blink = Math.sin(time * led.speed + led.phase) > -0.2 ? 1 : 0.15
+				;(led.mesh.material as import('three').MeshStandardMaterial).emissiveIntensity =
+					power * 2 * blink
+			}
+			const beaconPulse = 0.5 + 0.5 * Math.sin(time * 3)
+			;(beacon.material as import('three').MeshStandardMaterial).emissiveIntensity =
+				power * (0.6 + 2.4 * beaconPulse * beaconPulse)
+		}
+
+		const renderStatic = () => {
+			applyPower(1, 0)
+			renderer.render(scene, camera)
 		}
 
 		resize()
@@ -503,6 +1142,7 @@ const orbit = [
 		const startedAt = performance.now()
 		let frameId = 0
 		let visible = true
+		let followY = 0
 
 		const damp = (current: number, target: number, amount: number) =>
 			current + (target - current) * amount
@@ -510,15 +1150,30 @@ const orbit = [
 		const render = () => {
 			const elapsed = (performance.now() - startedAt) / 1000
 
-			if (!reducedMotion) {
-				head.rotation.y = damp(head.rotation.y, -pointer.x * 0.6, 0.06)
-				head.rotation.x = damp(head.rotation.x, pointer.y * 0.3, 0.06)
-				head.rotation.z = damp(head.rotation.z, -pointer.x * 0.08, 0.06)
-				bust.rotation.y = damp(bust.rotation.y, -pointer.x * 0.2, 0.04)
-				bust.rotation.x = damp(bust.rotation.x, pointer.y * 0.04, 0.04)
-				head.position.y = HEAD_Y + Math.sin(elapsed * 0.9) * 0.008
-			}
+			// Entrance: rise from below the fold while turning to face the camera.
+			const rise = easeOutCubic(clamp01(elapsed / INTRO_SECONDS))
+			const settle = easeOutBack(clamp01((elapsed - 0.2) / INTRO_SECONDS))
+			const power = clamp01((elapsed - POWER_ON_AT) / POWER_ON_SECONDS)
+			// Flicker once while powering on, like a screen warming up.
+			const flicker = power > 0 && power < 1 ? (Math.sin(elapsed * 60) > 0.2 ? 1 : 0.35) : 1
 
+			const introTurn = (1 - settle) * -1.6
+			const introTilt = (1 - rise) * 0.35
+
+			// The bust faces +Z with the camera on +Z, so a positive yaw turns the
+			// visor toward +X, which is screen right: both pointer terms track the
+			// cursor instead of mirroring it.
+			head.rotation.y = damp(head.rotation.y, pointer.x * 0.6 * rise, 0.06)
+			head.rotation.x = damp(head.rotation.x, pointer.y * 0.3 * rise - introTilt, 0.06)
+			head.rotation.z = damp(head.rotation.z, -pointer.x * 0.08, 0.06)
+			followY = damp(followY, pointer.x * 0.2 * rise, 0.04)
+			bust.rotation.y = introTurn + followY
+			bust.rotation.x = damp(bust.rotation.x, pointer.y * 0.04, 0.04)
+			bust.position.y = -3.4 * (1 - rise)
+			bust.scale.setScalar(0.86 + 0.14 * rise)
+			head.position.y = HEAD_Y + Math.sin(elapsed * 0.9) * 0.008
+
+			applyPower(power * flicker, elapsed)
 			renderer.render(scene, camera)
 
 			if (visible) frameId = window.requestAnimationFrame(render)
@@ -526,7 +1181,8 @@ const orbit = [
 
 		// A single static frame is all a reduced-motion visitor needs.
 		if (reducedMotion) {
-			renderer.render(scene, camera)
+			renderStatic()
+			imagesReady.then(renderStatic)
 		} else {
 			frameId = window.requestAnimationFrame(render)
 		}
