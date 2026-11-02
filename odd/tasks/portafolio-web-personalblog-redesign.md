@@ -83,7 +83,13 @@
 - Button: whileHover, whileTap, animated glow shadow
 - Icon rotation en open state
 
-✅ **COMPLETADO (100%): Todas las 10 tareas terminadas y compiladas sin errores**
+**L7** — Bug fix: ExperienceMarquee (cb6674a):
+- Original componente tenía `useScroll()` que colgaba en SSR
+- Reemplazado con versión simplificada usando CSS keyframes
+- Todas las páginas ahora cargan correctamente
+- Mantiene mismo diseño visual + pause-on-hover
+
+✅ **COMPLETADO (100%): Todas las tareas terminadas, compiladas sin errores, y páginas funcionando**
 
 ---
 
