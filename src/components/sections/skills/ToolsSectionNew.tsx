@@ -41,7 +41,7 @@ export default function ToolsSectionNew({ tools }: ToolsSectionNewProps) {
 		>
 			{/* Header */}
 			<div className="text-center mb-16">
-				<span className="text-xs font-bold uppercase tracking-[0.4em] text-blue-400 bg-blue-500/10 px-4 py-2 rounded-full border border-blue-500/20 inline-block mb-6">
+				<span className="text-xs font-bold uppercase tracking-[0.4em] text-sky-300 bg-slate-800/20 px-4 py-2 rounded-full border border-slate-700 inline-block mb-6">
 					Workflow & Infrastructure
 				</span>
 				<h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
@@ -67,7 +67,7 @@ export default function ToolsSectionNew({ tools }: ToolsSectionNewProps) {
 						whileHover={{ scale: 1.05, y: -5 }}
 						className="group relative"
 					>
-						<div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 hover:border-blue-500/50 rounded-xl p-4 h-28 flex flex-col items-center justify-center transition-all duration-300 hover:shadow-[0_0_20px_rgba(59,130,246,0.2)]">
+						<div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 hover:border-sky-500/50 rounded-xl p-4 h-28 flex flex-col items-center justify-center transition-all duration-300 hover:shadow-[0_0_20px_rgba(14,165,233,0.2)]">
 							{tool.icon && (
 								<span className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">
 									{tool.icon}

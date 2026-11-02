@@ -16,10 +16,10 @@ interface HardSkillsNewProps {
 
 const levelConfig = {
 	beginner: {
-		color: 'bg-blue-500',
-		bgColor: 'bg-blue-500/10',
-		borderColor: 'border-blue-500/20',
-		textColor: 'text-blue-400',
+		color: 'bg-sky-500',
+		bgColor: 'bg-sky-500/10',
+		borderColor: 'border-sky-500/20',
+		textColor: 'text-sky-400',
 		label: 'Beginner',
 		width: 40,
 	},
@@ -65,7 +65,7 @@ const SkillCard = ({ skill, delay }: { skill: SkillProps; delay: number }) => {
 				<div className="flex flex-wrap justify-between items-start mb-4 gap-2">
 					<div className="flex items-center gap-2 flex-1">
 						{skill.icon && <span className="text-2xl">{skill.icon}</span>}
-						<h5 className="font-semibold text-base tracking-tight text-slate-100 group-hover:text-blue-400 transition-colors">
+						<h5 className="font-semibold text-base tracking-tight text-slate-100 group-hover:text-sky-300 transition-colors">
 							{skill.name}
 						</h5>
 					</div>
