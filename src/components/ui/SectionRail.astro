@@ -1,0 +1,143 @@
+---
+/**
+ * In-page section index, shared by the top-level views.
+ *
+ * Sticky under the navbar, lights the section whose top has crossed a line
+ * below it, and keeps a real anchor per entry so it works without JS. On
+ * narrow screens the labels do not fit: the list scrolls horizontally and the
+ * edge fade is the only hint that there is more to the right — it removes
+ * itself once the rail reaches its end.
+ */
+interface Props {
+	sections: { id: string; label: string; index: string }[]
+	label?: string
+}
+
+const { sections, label = 'Secciones de esta página' } = Astro.props
+---
+
+<nav
+	class="sticky top-[var(--nav-h)] z-40 border-y border-white/10 bg-[#0a0a0a]/85 backdrop-blur-md"
+	aria-label={label}
+>
+	<div class="relative mx-auto max-w-[1400px] px-6 sm:px-10 lg:px-16">
+		<ul class="flex items-stretch gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+			{
+				sections.map((section) => (
+					<li class="shrink-0">
+						<a
+							href={`#${section.id}`}
+							data-rail-link={section.id}
+							data-active="false"
+							class="tap group relative flex items-center gap-2 px-4 py-3.5 text-[10px] font-bold uppercase tracking-[0.28em] text-white/40 transition-colors duration-150 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c70039] data-[active=true]:text-white"
+						>
+							<span
+								aria-hidden="true"
+								class="font-mono text-[9px] tracking-[0.1em] text-white/25 transition-colors duration-150 group-data-[active=true]:text-[#c70039]"
+							>
+								{section.index}
+							</span>
+							{section.label}
+							<span
+								aria-hidden="true"
+								class="absolute inset-x-3 bottom-0 h-px origin-left scale-x-0 bg-[#c70039] transition-transform duration-200 ease-out group-data-[active=true]:scale-x-100"
+							/>
+						</a>
+					</li>
+				))
+			}
+		</ul>
+
+		<span
+			data-rail-fade
+			aria-hidden="true"
+			class="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-[#0a0a0a] to-transparent opacity-0 transition-opacity duration-150"
+		/>
+	</div>
+</nav>
+
+<script>
+	// One delegated scroll listener for the page lifetime: every sync reads the
+	// DOM fresh, so client-side navigation (where this module is not re-executed
+	// but the elements are new) stays correct.
+	let railBound = false
+	let railFrame = 0
+
+	const railNodes = () => {
+		const links = Array.from(document.querySelectorAll<HTMLElement>('[data-rail-link]'))
+		return { links, list: links[0]?.closest('ul') ?? null }
+	}
+
+	// The fade never lies: it hides once the rail is scrolled to its end.
+	const syncRailFade = () => {
+		const { list } = railNodes()
+		const fade = document.querySelector<HTMLElement>('[data-rail-fade]')
+		if (!list || !fade) return
+
+		const overflowing = list.scrollWidth - list.clientWidth > 4
+		const atEnd = list.scrollLeft + list.clientWidth >= list.scrollWidth - 4
+		fade.style.opacity = overflowing && !atEnd ? '1' : '0'
+	}
+
+	const syncRail = () => {
+		railFrame = 0
+		const { links } = railNodes()
+		if (!links.length) return
+
+		// The line sits below the sticky rail, so the section you are reading is
+		// the one that owns the accent.
+		const line = window.scrollY + 180
+		// Before anything has been crossed the first section stays lit; otherwise
+		// the rail would sit with no active entry at the top of the page.
+		let activeId = links[0]?.dataset.railLink ?? ''
+
+		links.forEach((link) => {
+			const section = document.getElementById(link.dataset.railLink ?? '')
+			if (section && section.offsetTop <= line) activeId = section.id
+		})
+
+		// At the very bottom the last section owns the rail, so it never sits
+		// dead at the end of the page.
+		const atBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 2
+		if (atBottom) activeId = links[links.length - 1].dataset.railLink ?? activeId
+
+		links.forEach((link) => {
+			const isActive = link.dataset.railLink === activeId
+			link.setAttribute('data-active', String(isActive))
+			// What a screen reader hears; the colour is only for sighted users.
+			if (isActive) link.setAttribute('aria-current', 'location')
+			else link.removeAttribute('aria-current')
+		})
+
+		syncRailFade()
+	}
+
+	const requestRailSync = () => {
+		if (railFrame) return
+		railFrame = requestAnimationFrame(syncRail)
+	}
+
+	const initRail = () => {
+		const { list } = railNodes()
+		if (!list) return
+
+		if (!railBound) {
+			railBound = true
+			// Lenis drives native scroll, so these events fire normally.
+			window.addEventListener('scroll', requestRailSync, { passive: true })
+			window.addEventListener('resize', requestRailSync, { passive: true })
+		}
+
+		// Per-element guard: the rail node is replaced on client-side navigation.
+		if (list.dataset.fadeBound !== 'true') {
+			list.dataset.fadeBound = 'true'
+			list.addEventListener('scroll', syncRailFade, { passive: true })
+		}
+
+		syncRail()
+	}
+
+	initRail()
+	document.addEventListener('astro:page-load', initRail)
+	document.addEventListener('astro:after-swap', initRail)
+</script>

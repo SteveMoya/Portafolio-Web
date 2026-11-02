@@ -1,9 +1,12 @@
 ---
 import { Icon } from 'astro-icon/components'
 import Layout from '@/layouts/Layout.astro'
-import PageHero from '@/components/ui/PageHero.astro'
+import SkillsHero from '@/components/sections/skills/SkillsHero.astro'
 import SectionHeading from '@/components/ui/SectionHeading.astro'
 import BlockReveal from '@/components/ui/BlockReveal.astro'
+import SectionRail from '@/components/ui/SectionRail.astro'
+import ScrollReveals from '@/components/ui/ScrollReveals.astro'
+import CountUp from '@/components/ui/CountUp.astro'
 import HardSkillsNew from '@/components/sections/skills/HardSkillsNew'
 import ToolsSectionNew from '@/components/sections/skills/ToolsSectionNew'
 import { skills, categories } from '@/data/skills'
@@ -78,20 +81,41 @@ const stats = [
 	{ label: 'Nivel avanzado', value: advancedCount },
 	{ label: 'Categorías', value: categories.length }
 ]
+
+// In-page index. Built from what actually renders — the projects section is
+// conditional — so the rail can never point at a section that is not on the page.
+const railSections = (
+	[
+		{ id: 'stack', label: 'Stack' },
+		{ id: 'tecnicas', label: 'Técnicas' },
+		{ id: 'herramientas', label: 'Herramientas' },
+		{ id: 'metodo', label: 'Método' },
+		{ id: 'competencias', label: 'Competencias' },
+		...(projects.length > 0 ? [{ id: 'proyectos', label: 'Proyectos' }] : []),
+		{ id: 'contexto', label: 'Contexto' }
+	] as { id: string; label: string }[]
+).map((section, index) => ({ ...section, index: String(index + 1).padStart(2, '0') }))
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
-	<PageHero
-		eyebrow="Capacidades"
-		lines={['Skills', '& Tools']}
-		accentIndex={1}
-		subtitle="Un mapa técnico de lo que hago: lenguajes y frameworks con los que construyo interfaces, la infraestructura que las sostiene y las disciplinas que conectan el producto con su audiencia."
+	<!-- Reading progress: 2px, scroll-driven, no JS. -->
+	<div class="scroll-progress" aria-hidden="true"></div>
+
+	<!-- Arms the `[data-reveal]` elements of this page (no markup of its own). -->
+	<ScrollReveals />
+	<!-- Counts the stats up once, when they enter the viewport. -->
+	<CountUp />
+
+	<SkillsHero
 		meta={[
 			`${skills.length} habilidades`,
 			`${categories.length} categorías`,
 			`${expertCount} en nivel experto`
 		]}
 	/>
+
+	<!-- In-page index, shared with the other top-level views. -->
+	<SectionRail sections={railSections} label="Secciones de la página de habilidades" />
 
 	<!-- Technology marquee: the real stack, looping seamlessly. The second copy
 	     exists only to close the loop and is hidden from assistive tech. -->
@@ -124,25 +148,30 @@ const stats = [
 	</div>
 
 	<!-- Core technologies -->
-	<section class="relative px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+	<section id="stack" class="relative scroll-mt-28 px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
 		<div class="mx-auto max-w-[1400px]">
 			<SectionHeading
+				class="reveal"
 				eyebrow="Stack"
 				title="Tecnologías principales"
 				description="Cada herramienta de este mapa está en producción en algún proyecto real, no solo en un tutorial."
 			/>
 
-			<div class="reveal grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+			<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
 				{
-					skills.map((skill) => {
+					skills.map((skill, index) => {
 						const SkillIcon = SKILL_ICONS[skill.name]
 
 						return (
-							<div class="dotted-card hover-lift group relative flex flex-col justify-between gap-6 rounded-2xl border border-white/10 p-4 transition-colors duration-300 hover:border-[#c70039]/40">
+							<div
+								data-reveal
+								style={`--i:${index}`}
+								class="io-reveal dotted-card hover-lift group relative flex flex-col justify-between gap-6 rounded-2xl border border-white/10 p-4 transition-colors duration-200 hover:border-[#c70039]/40"
+							>
 								<span class="corner-tick corner-tick--tl" aria-hidden="true" />
 								<span class="corner-tick corner-tick--br" aria-hidden="true" />
 
-								<span class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[#c70039] transition-colors duration-300 group-hover:border-[#c70039]/40 [&>svg]:h-5 [&>svg]:w-5">
+								<span class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[#c70039] transition-[transform,border-color] duration-200 group-hover:-translate-y-0.5 group-hover:scale-110 group-hover:border-[#c70039]/40 [&>svg]:h-5 [&>svg]:w-5">
 									{SkillIcon ? (
 										<SkillIcon />
 									) : (
@@ -169,9 +198,10 @@ const stats = [
 	</section>
 
 	<!-- Hard skills -->
-	<section class="relative px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+	<section id="tecnicas" class="relative scroll-mt-28 px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
 		<div class="mx-auto max-w-[1400px]">
 			<SectionHeading
+				class="reveal"
 				eyebrow="Profundidad"
 				title="Habilidades técnicas"
 				description="Tres frentes de trabajo: la capa de datos e inteligencia artificial, el desarrollo de producto y las herramientas que sostienen la entrega."
@@ -187,9 +217,10 @@ const stats = [
 	</section>
 
 	<!-- Tooling -->
-	<section class="relative px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+	<section id="herramientas" class="relative scroll-mt-28 px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
 		<div class="mx-auto max-w-[1400px]">
 			<SectionHeading
+				class="reveal"
 				eyebrow="Flujo de trabajo"
 				title="Herramientas y plataformas"
 				description="El resto de la cadena: versionado, despliegue, analítica y los canales donde el producto se encuentra con la gente."
@@ -200,18 +231,23 @@ const stats = [
 	</section>
 
 	<!-- Principles: how the work is approached -->
-	<section class="relative px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+	<section id="metodo" class="relative scroll-mt-28 px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
 		<div class="mx-auto max-w-[1400px]">
 			<SectionHeading
+				class="reveal"
 				eyebrow="Método"
 				title="Cómo trabajo"
 				description="Cuatro reglas que se repiten en cada proyecto, del primer boceto al último despliegue."
 			/>
 
-			<div class="reveal grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 				{
-					principles.map((principle) => (
-						<article class="dotted-card hover-lift group relative flex flex-col gap-3 rounded-2xl border border-white/10 p-6 transition-colors duration-300 hover:border-[#c70039]/40">
+					principles.map((principle, index) => (
+						<article
+							data-reveal
+							style={`--i:${index}`}
+							class="io-reveal dotted-card hover-lift group relative flex flex-col gap-3 rounded-2xl border border-white/10 p-6 transition-colors duration-200 hover:border-[#c70039]/40"
+						>
 							<span class="corner-tick corner-tick--tl" aria-hidden="true" />
 							<span class="corner-tick corner-tick--br" aria-hidden="true" />
 
@@ -226,7 +262,7 @@ const stats = [
 							<p class="text-sm leading-relaxed text-white/60">{principle.description}</p>
 
 							<span
-								class="mt-auto h-px w-8 bg-[#c70039]/70 transition-all duration-500 group-hover:w-16"
+								class="mt-auto h-px w-8 bg-[#c70039]/70 transition-[width] duration-300 ease-out group-hover:w-16"
 								aria-hidden="true"
 							/>
 						</article>
@@ -237,19 +273,24 @@ const stats = [
 	</section>
 
 	<!-- Soft skills -->
-	<section class="relative px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+	<section id="competencias" class="relative scroll-mt-28 px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
 		<div class="mx-auto max-w-[1400px]">
 			<SectionHeading
+				class="reveal"
 				eyebrow="Transversal"
 				title="Competencias"
 				description="Lo que no aparece en el stack pero decide si un proyecto llega bien a producción."
 			/>
 
-			<div class="reveal grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 				{
-					softSkills.map((skill) => (
-						<article class="hover-lift group relative flex gap-4 rounded-2xl border border-white/10 bg-white/[0.02] p-5 transition-colors duration-300 hover:border-[#c70039]/40 hover:bg-white/[0.04]">
-							<span class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-[#c70039] transition-colors duration-300 group-hover:border-[#c70039]/40">
+					softSkills.map((skill, index) => (
+						<article
+							data-reveal
+							style={`--i:${index}`}
+							class="io-reveal hover-lift group relative flex gap-4 rounded-2xl border border-white/10 bg-white/[0.02] p-5 transition-colors duration-200 hover:border-[#c70039]/40 hover:bg-white/[0.04]"
+						>
+							<span class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-[#c70039] transition-[transform,border-color] duration-200 group-hover:-rotate-6 group-hover:border-[#c70039]/40">
 								<Icon name={skill.icon} class="h-5 w-5" aria-hidden="true" />
 							</span>
 
@@ -269,17 +310,22 @@ const stats = [
 	<!-- Projects: only rendered when the collection actually returns items -->
 	{
 		projects.length > 0 && (
-			<section class="relative px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+			<section id="proyectos" class="relative scroll-mt-28 px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
 				<div class="mx-auto max-w-[1400px]">
 					<SectionHeading
+						class="reveal"
 						eyebrow="Selección"
 						title="Proyectos en producción"
 						description="Trabajo que está vivo hoy: código desplegado, no maquetas de presentación."
 					/>
 
-					<div class="reveal grid gap-5 md:grid-cols-3">
+					<div class="grid gap-5 md:grid-cols-3">
 						{projects.map((project, index) => (
-							<article class="dotted-card hover-lift group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 transition-colors duration-300 hover:border-[#c70039]/40">
+							<article
+								data-reveal
+								style={`--i:${index}`}
+								class="io-reveal dotted-card hover-lift group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 transition-colors duration-200 hover:border-[#c70039]/40"
+							>
 								<span class="corner-tick corner-tick--tl" aria-hidden="true" />
 
 								<div class="relative aspect-[16/10] w-full overflow-hidden border-b border-white/10 bg-black/40">
@@ -287,7 +333,7 @@ const stats = [
 										src={project.image || (placeholderImage as unknown as string)}
 										alt={`${project.title} imagen`}
 										loading="lazy"
-										class="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
+										class="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-[400ms] ease-out group-hover:scale-105"
 									/>
 									<div
 										class="pointer-events-none absolute inset-0"
@@ -319,11 +365,16 @@ const stats = [
 										target={project.demo ? '_blank' : undefined}
 										rel={project.demo ? 'noopener noreferrer' : undefined}
 										aria-label={`Ver ${project.title}`}
-										class="tap mt-auto inline-flex w-fit items-center gap-2 pt-2 text-[10px] font-bold uppercase tracking-[0.28em] text-white/60 transition-colors duration-300 hover:text-[#c70039]"
-									>
+										class="tap mt-auto inline-flex min-h-[28px] w-fit items-center gap-2 pt-2 text-[10px] font-bold uppercase tracking-[0.28em] text-white/60 transition-colors duration-150 hover:text-[#c70039]"
+										>
 										{project.demo ? 'Abrir sitio' : 'Ver portafolio'}
-										<span aria-hidden="true">&rarr;</span>
-									</a>
+										<span
+											aria-hidden="true"
+											class="transition-transform duration-200 group-hover:translate-x-1"
+										>
+											&rarr;
+										</span>
+										</a>
 								</div>
 							</article>
 						))}
@@ -344,16 +395,21 @@ const stats = [
 	}
 
 	<!-- Languages and interests, straight from cv.json -->
-	<section class="relative px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+	<section id="contexto" class="relative scroll-mt-28 px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
 		<div class="mx-auto max-w-[1400px]">
 			<SectionHeading
+				class="reveal"
 				eyebrow="Contexto"
 				title="Idiomas e intereses"
 				description="Los idiomas en los que trabajo y los temas que sigo por fuera de la entrega."
 			/>
 
-			<div class="reveal grid gap-4 md:grid-cols-2">
-				<div class="dotted-card relative rounded-2xl border border-white/10 p-6 sm:p-8">
+			<div class="grid gap-4 md:grid-cols-2">
+				<div
+					data-reveal
+					style="--i:0"
+					class="io-reveal dotted-card relative rounded-2xl border border-white/10 p-6 sm:p-8"
+				>
 					<span class="corner-tick corner-tick--tl" aria-hidden="true"></span>
 					<span class="corner-tick corner-tick--br" aria-hidden="true"></span>
 
@@ -362,7 +418,7 @@ const stats = [
 					<ul class="mt-5 space-y-4">
 						{
 							languages.map((item) => (
-								<li class="flex items-baseline justify-between gap-4 border-b border-white/10 pb-4 last:border-0 last:pb-0">
+								<li class="group flex items-baseline justify-between gap-4 border-b border-white/10 pb-4 transition-colors duration-200 last:border-0 last:pb-0 hover:border-[#c70039]/40">
 									<span class="font-poppins text-base font-bold tracking-tight text-white">
 										{item.language}
 									</span>
@@ -375,7 +431,11 @@ const stats = [
 					</ul>
 				</div>
 
-				<div class="dotted-card relative rounded-2xl border border-white/10 p-6 sm:p-8">
+				<div
+					data-reveal
+					style="--i:1"
+					class="io-reveal dotted-card relative rounded-2xl border border-white/10 p-6 sm:p-8"
+				>
 					<span class="corner-tick corner-tick--tl" aria-hidden="true"></span>
 					<span class="corner-tick corner-tick--br" aria-hidden="true"></span>
 
@@ -390,7 +450,7 @@ const stats = [
 									</p>
 									<div class="mt-3 flex flex-wrap gap-2">
 										{area.keywords.map((keyword) => (
-											<span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-white/60">
+											<span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-white/60 transition-colors duration-150 hover:border-[#c70039]/40 hover:text-white">
 												{keyword}
 											</span>
 										))}
@@ -407,14 +467,22 @@ const stats = [
 	<!-- Stats -->
 	<section class="relative px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
 		<div class="mx-auto max-w-[1400px]">
-			<div class="reveal grid grid-cols-2 gap-3 md:grid-cols-4">
+			<div class="grid grid-cols-2 gap-3 md:grid-cols-4">
 				{
-					stats.map((stat) => (
-						<div class="dotted-card relative rounded-2xl border border-white/10 p-6 sm:p-8">
+					stats.map((stat, index) => (
+						<div
+							data-reveal
+							style={`--i:${index}`}
+							class="io-reveal dotted-card relative rounded-2xl border border-white/10 p-6 sm:p-8"
+						>
 							<span class="corner-tick corner-tick--tl" aria-hidden="true" />
 							<span class="corner-tick corner-tick--br" aria-hidden="true" />
 
-							<p class="font-poppins text-4xl font-black leading-none tracking-tight text-[#c70039] sm:text-5xl">
+							<p
+								data-count-to={stat.value}
+								data-count-pad="2"
+								class="font-poppins text-4xl font-black leading-none tabular-nums tracking-tight text-[#c70039] sm:text-5xl"
+							>
 								{String(stat.value).padStart(2, '0')}
 							</p>
 							<p class="mt-3 text-[10px] font-bold uppercase tracking-[0.3em] text-white/60">
@@ -460,7 +528,7 @@ const stats = [
 				<a
 					href="/contact"
 					aria-label="Ir a la página de contacto"
-					class="tap group inline-flex items-center gap-3 rounded-full bg-[#c70039] px-8 py-4 text-sm font-black uppercase tracking-widest text-white transition-all duration-300 hover:scale-105 hover:bg-[#b11141] hover:shadow-[0_0_40px_rgba(199,0,57,0.35)]"
+					class="tap group inline-flex items-center gap-3 rounded-full bg-[#c70039] px-8 py-4 text-sm font-black uppercase tracking-widest text-white transition duration-200 hover:scale-105 hover:bg-[#b11141] hover:shadow-[0_0_40px_rgba(199,0,57,0.35)]"
 				>
 					<Icon name="mdi:email-outline" class="h-5 w-5" />
 					Hablemos
@@ -469,7 +537,7 @@ const stats = [
 				<a
 					href="/about"
 					aria-label="Ver currículum completo"
-					class="tap group inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-8 py-4 text-sm font-black uppercase tracking-widest text-white/80 transition-all duration-300 hover:border-[#c70039]/50 hover:bg-white/10 hover:text-white"
+					class="tap group inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-8 py-4 text-sm font-black uppercase tracking-widest text-white/80 transition duration-200 hover:border-[#c70039]/50 hover:bg-white/10 hover:text-white"
 				>
 					<Icon name="mdi:account-details-outline" class="h-5 w-5" />
 					Ver currículum

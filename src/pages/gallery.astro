@@ -4,6 +4,9 @@ import { getCollection } from 'astro:content'
 import CleanFilmGrid from '@/components/sections/gallery/CleanFilmGrid'
 import PageHero from '@/components/ui/PageHero.astro'
 import SectionHeading from '@/components/ui/SectionHeading.astro'
+import SectionRail from '@/components/ui/SectionRail.astro'
+import ScrollReveals from '@/components/ui/ScrollReveals.astro'
+import CountUp from '@/components/ui/CountUp.astro'
 import FormattedDate from '@/components/ui/FormattedDate.astro'
 import { getPosts } from '@src/utils'
 import { principles } from '@/data/capabilities'
@@ -71,9 +74,26 @@ const marqueeDuration = Math.max(30, marqueeNames.length * 3.5)
 
 // Newest published story, reused by the editorial feature block.
 const [featuredPost] = await getPosts(1)
+
+// In-page index: the story block only exists when the blog returned a post.
+const railSections = (
+	[
+		{ id: 'archivo', label: 'Archivo' },
+		{ id: 'proceso', label: 'Proceso' },
+		{ id: 'numeros', label: 'Números' },
+		...(featuredPost ? [{ id: 'historia', label: 'Historia' }] : [])
+	] as { id: string; label: string }[]
+).map((section, index) => ({ ...section, index: String(index + 1).padStart(2, '0') }))
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
+	<!-- Reading progress: 2px, scroll-driven, no JS. -->
+	<div class="scroll-progress" aria-hidden="true"></div>
+
+	<!-- Arms the `[data-reveal]` elements of this page and counts the stats. -->
+	<ScrollReveals />
+	<CountUp />
+
 	<!-- Layout.astro already renders the page <main>; nesting another one is
 	     invalid HTML and breaks the landmark structure for screen readers. -->
 	<div class="min-h-screen bg-[#0a0a0a]">
@@ -81,13 +101,20 @@ const [featuredPost] = await getPosts(1)
 			eyebrow="Archivo visual"
 			lines={['Visual', 'Archive']}
 			accentIndex={1}
+			align="center"
+			background="pattern"
+			motion="scroll"
 			subtitle="Un archivo abierto de fotografía y diseño: imagen documental, composición y experimentación gráfica, ordenados del trabajo más reciente al más antiguo."
 			meta={heroMeta}
 		/>
 
+		<!-- In-page index, shared with the other top-level views. -->
+		<SectionRail sections={railSections} label="Secciones del archivo visual" />
+
 		<!-- Gallery heading -->
-		<div class="mx-auto max-w-7xl px-6 pt-20 sm:px-10 lg:px-16 lg:pt-24">
+		<div id="archivo" class="mx-auto max-w-7xl scroll-mt-28 px-6 pt-20 sm:px-10 lg:px-16 lg:pt-24">
 			<SectionHeading
+				scrub
 				eyebrow="Selección"
 				title="Momentos seleccionados"
 				description="Filtrá por colección o cambiá la vista para recorrer el archivo completo."
@@ -146,11 +173,13 @@ const [featuredPost] = await getPosts(1)
 
 		<!-- Process: the four principles, in the same order used site-wide -->
 		<section
-			class="relative bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16 lg:py-24"
+			id="proceso"
+			class="relative scroll-mt-28 bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16 lg:py-24"
 			aria-label="El proceso"
 		>
 			<div class="mx-auto max-w-7xl">
 				<SectionHeading
+					scrub
 					eyebrow="Método"
 					title="El proceso"
 					description="Cuatro reglas que se repiten en cada pieza del archivo, del primer boceto a la entrega final."
@@ -158,11 +187,22 @@ const [featuredPost] = await getPosts(1)
 
 				<ol class="border-t border-white/10">
 					{
-						principles.map((principle) => (
-							<li class="border-b border-white/10">
-								<div class="hover-lift grid grid-cols-1 items-start gap-4 px-1 py-8 sm:grid-cols-[auto_1fr] sm:gap-8 md:grid-cols-[140px_minmax(0,1fr)_minmax(0,1.1fr)] md:gap-12 md:px-4 md:py-10">
+						principles.map((principle, index) => (
+							<li
+								data-reveal
+								style={`--i:${index}`}
+								class="io-reveal border-b border-white/10"
+							>
+								<div class="group relative grid grid-cols-1 items-start gap-4 px-1 py-8 transition-colors duration-200 hover:bg-white/[0.02] sm:grid-cols-[auto_1fr] sm:gap-8 md:grid-cols-[140px_minmax(0,1fr)_minmax(0,1.1fr)] md:gap-12 md:px-4 md:py-10">
+									{/* Accent rule that grows on hover, instead of scaling a
+									    full-width row. */}
 									<span
-										class="font-poppins text-5xl font-black leading-none text-white/10"
+										class="absolute left-0 top-0 h-full w-px origin-top scale-y-0 bg-[#c70039] transition-transform duration-300 ease-out group-hover:scale-y-100"
+										aria-hidden="true"
+									/>
+
+									<span
+										class="font-poppins text-5xl font-black leading-none text-white/10 transition-colors duration-200 group-hover:text-[#c70039]/60"
 										aria-hidden="true"
 									>
 										{principle.number}
@@ -185,18 +225,29 @@ const [featuredPost] = await getPosts(1)
 
 		<!-- Stats Section -->
 		<section
-			class="relative border-t border-white/10 bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16 lg:py-24"
+			id="numeros"
+			class="relative scroll-mt-28 border-t border-white/10 bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16 lg:py-24"
 		>
 			<div class="mx-auto max-w-7xl">
-				<SectionHeading eyebrow="Archivo en números" title="El volumen del trabajo" />
+				<SectionHeading scrub eyebrow="Archivo en números" title="El volumen del trabajo" />
 
 				<div class="grid grid-cols-1 gap-6 md:grid-cols-3">
 					{
-						stats.map((stat) => (
-							<div class="dotted-card hover-lift group relative rounded-2xl border border-white/10 p-8 text-center transition-colors duration-300 hover:border-[#c70039]/40">
+						stats.map((stat, index) => (
+							<div
+								data-reveal
+								style={`--i:${index}`}
+								class="io-reveal dotted-card hover-lift group relative rounded-2xl border border-white/10 p-8 text-center transition-colors duration-200 hover:border-[#c70039]/40"
+							>
 								<span class="corner-tick corner-tick--tl" aria-hidden="true" />
 								<span class="corner-tick corner-tick--br" aria-hidden="true" />
-								<p class="font-poppins text-4xl font-black text-white">{stat.value}</p>
+								<p
+									data-count-to={stat.value}
+									data-count-pad="2"
+									class="font-poppins text-4xl font-black tabular-nums text-white"
+								>
+									{String(stat.value).padStart(2, '0')}
+								</p>
 								<p class="mt-3 text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">
 									{stat.label}
 								</p>
@@ -211,7 +262,8 @@ const [featuredPost] = await getPosts(1)
 		{
 			featuredPost && (
 				<section
-					class="relative border-t border-white/10 bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16 lg:py-24"
+					id="historia"
+					class="relative scroll-mt-28 border-t border-white/10 bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16 lg:py-24"
 					aria-labelledby="ultima-historia"
 				>
 					<div class="mx-auto max-w-7xl">
@@ -227,7 +279,9 @@ const [featuredPost] = await getPosts(1)
 
 						<a
 							href={`/blog/${featuredPost.id}/`}
-							class="dotted-card hover-lift group relative block rounded-2xl border border-white/10 p-8 transition-colors duration-300 hover:border-[#c70039]/40 sm:p-10 lg:p-14"
+							data-reveal
+							style="--i:0"
+							class="io-reveal dotted-card hover-lift group relative block rounded-2xl border border-white/10 p-8 transition-colors duration-200 hover:border-[#c70039]/40 sm:p-10 lg:p-14"
 						>
 							<span class="corner-tick corner-tick--tl" aria-hidden="true" />
 							<span class="corner-tick corner-tick--br" aria-hidden="true" />
@@ -249,7 +303,7 @@ const [featuredPost] = await getPosts(1)
 							<span class="mt-10 inline-flex items-center gap-3 text-xs font-black uppercase tracking-widest text-white">
 								Leer la historia
 								<svg
-									class="h-4 w-4 transition-transform duration-300 group-hover:scale-110"
+									class="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
 									viewBox="0 0 24 24"
 									fill="none"
 									stroke="currentColor"
@@ -274,7 +328,7 @@ const [featuredPost] = await getPosts(1)
 							>
 								Todas las historias
 								<svg
-									class="h-4 w-4 transition-transform duration-300 group-hover:scale-110"
+									class="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
 									viewBox="0 0 24 24"
 									fill="none"
 									stroke="currentColor"
@@ -321,7 +375,7 @@ const [featuredPost] = await getPosts(1)
 				<div class="mt-2 flex flex-col items-center gap-4 sm:flex-row">
 					<a
 						href="/contact"
-						class="inline-flex items-center gap-3 rounded-full bg-[#c70039] px-8 py-4 text-sm font-black uppercase tracking-widest text-white transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(199,0,57,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]"
+						class="inline-flex items-center gap-3 rounded-full bg-[#c70039] px-8 py-4 text-sm font-black uppercase tracking-widest text-white transition duration-200 hover:scale-105 hover:shadow-[0_0_40px_rgba(199,0,57,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]"
 					>
 						Hablemos
 						<svg
@@ -340,7 +394,7 @@ const [featuredPost] = await getPosts(1)
 
 					<a
 						href="/about"
-						class="inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-8 py-4 text-sm font-black uppercase tracking-widest text-white/80 transition-all duration-300 hover:border-[#c70039]/50 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]"
+						class="inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-8 py-4 text-sm font-black uppercase tracking-widest text-white/80 transition duration-200 hover:border-[#c70039]/50 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a]"
 					>
 						Sobre mí
 					</a>

@@ -1,0 +1,71 @@
+---
+/**
+ * Script-only island: counts `[data-count-to]` up once, the first time the
+ * number enters the viewport.
+ *
+ * The markup already holds the final value, so a browser with JS disabled — or
+ * with `prefers-reduced-motion` — reads the real number and nothing moves.
+ * `data-count-pad` zero-pads the output (`04` instead of `4`).
+ */
+---
+
+<script>
+	const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+
+	const countUp = (element: HTMLElement, target: number) => {
+		if (motionQuery.matches || typeof requestAnimationFrame !== 'function') return
+
+		const pad = Number(element.dataset.countPad ?? 0)
+		const format = (value: number) => String(value).padStart(pad, '0')
+
+		const duration = 450
+		const started = performance.now()
+
+		const step = (now: number) => {
+			// rAF timestamps can predate `performance.now()` at start by a frame, so
+			// progress is clamped at both ends instead of going negative.
+			const progress = Math.max(0, Math.min(1, (now - started) / duration))
+			const eased = 1 - Math.pow(1 - progress, 3)
+			element.textContent = format(Math.round(target * eased))
+			if (progress < 1) requestAnimationFrame(step)
+			else element.textContent = format(target)
+		}
+
+		requestAnimationFrame(step)
+	}
+
+	const initCounters = () => {
+		const counters = Array.from(document.querySelectorAll<HTMLElement>('[data-count-to]'))
+		if (!counters.length || !('IntersectionObserver' in window)) return
+
+		counters.forEach((counter) => {
+			if (counter.dataset.countInit === 'true') return
+			counter.dataset.countInit = 'true'
+
+			const target = Number(counter.dataset.countTo ?? 0)
+
+			// Already on screen at load: animate from zero once, no observer needed.
+			if (counter.getBoundingClientRect().top < window.innerHeight * 0.92) {
+				countUp(counter, target)
+				return
+			}
+
+			const observer = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((entry) => {
+						if (!entry.isIntersecting) return
+						observer.disconnect()
+						countUp(counter, target)
+					})
+				},
+				{ threshold: 0.6 }
+			)
+
+			observer.observe(counter)
+		})
+	}
+
+	initCounters()
+	document.addEventListener('astro:page-load', initCounters)
+	document.addEventListener('astro:after-swap', initCounters)
+</script>

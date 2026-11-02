@@ -5,7 +5,9 @@ import PageHero from '@/components/ui/PageHero.astro'
 import SectionHeading from '@/components/ui/SectionHeading.astro'
 import BlockReveal from '@/components/ui/BlockReveal.astro'
 import PostCard from '@/components/PostCard.astro'
-import EducationStickyScroll from '@/components/sections/EducationStickyScroll'
+import SectionRail from '@/components/ui/SectionRail.astro'
+import ScrollReveals from '@/components/ui/ScrollReveals.astro'
+import EducationTimeline from '@/components/sections/EducationTimeline.astro'
 import { education } from '@/data/education'
 import { certifications } from '@/data/certifications'
 import { getPosts } from '@src/utils'
@@ -37,13 +39,32 @@ const formatCertDate = (isoMonth: string) => {
 // Continuous learning is fed by the real blog: latest posts, newest first.
 // An empty collection renders no section at all instead of an empty shell.
 const latestPosts = await getPosts(3)
+
+// In-page index. Built from what actually renders, so the rail can never point
+// at a section that is not on the page.
+const railSections = [
+	{ id: 'trayectoria', label: 'Trayectoria', index: '01' },
+	{ id: 'certificaciones', label: 'Certificaciones', index: '02' },
+	{ id: 'idiomas', label: 'Idiomas', index: '03' },
+	...(latestPosts.length > 0 ? [{ id: 'blog', label: 'Blog', index: '04' }] : [])
+]
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
+	<!-- Reading progress: 2px, scroll-driven, no JS. The one indicator that
+	     stays on screen for the whole page. -->
+	<div class="scroll-progress" aria-hidden="true"></div>
+
+	<!-- Arms the `[data-reveal]` elements of this page (no markup of its own). -->
+	<ScrollReveals />
+
 	<PageHero
 		eyebrow="Formación"
 		lines={['Education', '& Learning']}
 		accentIndex={1}
+		align="center"
+		background="pattern"
+		motion="scroll"
 		subtitle="De la universidad a las plataformas online: la base académica detrás del trabajo técnico, más un archivo de certificaciones que no deja de crecer."
 		meta={[
 			`${education.length} programas`,
@@ -53,23 +74,35 @@ const latestPosts = await getPosts(3)
 		]}
 	/>
 
+	<!-- In-page index: sticky under the navbar, lights the section crossing the
+	     viewport. Extracted so all four views share one rail. -->
+	<SectionRail sections={railSections} label="Secciones de la página de formación" />
+
 	<!-- Academic track -->
-	<section class="relative bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+	<section
+		id="trayectoria"
+		class="relative scroll-mt-28 bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16 lg:py-28"
+	>
 		<div class="mx-auto max-w-[1400px]">
 			<SectionHeading
+				class="reveal"
 				eyebrow="Trayectoria académica"
 				title="Formación académica"
 				description="Los programas que sostienen el resto: grado universitario en curso, formación técnica y aprendizaje autodidacta sobre plataformas."
 			/>
 
-			<EducationStickyScroll client:visible education={education} />
+			<EducationTimeline items={education} />
 		</div>
 	</section>
 
 	<!-- Certification archive: sticky search rail + card grid -->
-	<section class="relative bg-[#0a0a0a] px-6 pb-20 sm:px-10 lg:px-16 lg:pb-28">
+	<section
+		id="certificaciones"
+		class="relative scroll-mt-28 bg-[#0a0a0a] px-6 pb-20 sm:px-10 lg:px-16 lg:pb-28"
+	>
 		<div class="mx-auto max-w-[1400px]" data-cert-archive>
 			<SectionHeading
+				class="reveal"
 				eyebrow="Certificaciones"
 				title="Archivo de certificaciones"
 				description="Buscá por nombre o filtrá por entidad emisora. Cada tarjeta abre la credencial original cuando está disponible."
@@ -79,7 +112,7 @@ const latestPosts = await getPosts(3)
 				class="grid gap-10 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-14 xl:grid-cols-[320px_minmax(0,1fr)]"
 			>
 				<!-- Sticky rail: search, issuer pills, live counter -->
-				<aside class="self-start lg:sticky lg:top-24">
+				<aside class="io-reveal self-start lg:sticky lg:top-32" data-reveal>
 					<div class="flex flex-col gap-7">
 						<div>
 							<label
@@ -97,21 +130,24 @@ const latestPosts = await getPosts(3)
 									autocomplete="off"
 									placeholder="Nombre del certificado"
 									aria-describedby="cert-search-hint"
-									class="w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 pr-10 text-sm text-white transition-colors duration-300 placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c70039] [&::-webkit-search-cancel-button]:appearance-none"
+									class="w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 pr-10 text-sm text-white transition-colors duration-150 placeholder:text-white/40 focus-visible:border-[#c70039]/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c70039] [&::-webkit-search-cancel-button]:appearance-none"
 								/>
 
 								<button
 									type="button"
 									data-cert-clear
 									aria-label="Limpiar búsqueda"
-									class="tap pointer-events-none absolute inset-y-0 right-1 flex w-8 items-center justify-center rounded-full text-white/40 opacity-0 hover:text-white"
+									class="tap pointer-events-none absolute inset-y-0 right-1 flex w-8 items-center justify-center rounded-full text-white/40 opacity-0 transition-opacity duration-150 hover:text-white"
 								>
-									<Icon name="mdi:close" class="h-4 w-4" />
+									<Icon name="mdi:close" class="h-4 w-4" aria-hidden="true" />
 								</button>
 							</div>
 
-							<p id="cert-search-hint" class="mt-2 text-xs text-white/40">
-								Se combina con el filtro de entidad.
+							<p id="cert-search-hint" class="mt-2 text-xs leading-relaxed text-white/40">
+								Se combina con el filtro de entidad. Pulsá <kbd
+									class="rounded border border-white/15 bg-white/5 px-1.5 py-0.5 font-mono text-[10px] not-italic text-white/70"
+									>/</kbd
+								> para ir al buscador.
 							</p>
 						</div>
 
@@ -137,7 +173,7 @@ const latestPosts = await getPosts(3)
 											type="button"
 											data-filter={issuer}
 											aria-pressed="false"
-											class="tap inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c70039]"
+											class="tap inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/60 transition-colors duration-150 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c70039]"
 										>
 											{issuer}
 											<span class="text-white/40" aria-hidden="true">
@@ -149,22 +185,29 @@ const latestPosts = await getPosts(3)
 							</div>
 						</div>
 
-						<!-- Live counter: the primary feedback of the filter. -->
+						<!-- Live counter: the primary feedback of the filter. The visual
+						     number is decorative (it counts up); the announcement lives in
+						     the sr-only region below, so a count-up is never read out digit
+						     by digit. -->
 						<div class="border-t border-white/10 pt-6">
-							<p class="flex items-baseline gap-2" aria-live="polite" aria-atomic="true">
+							<p class="flex items-baseline gap-2">
 								<span
 									data-cert-count
-									class="inline-block font-poppins text-4xl font-black leading-none text-[#c70039]"
+									aria-hidden="true"
+									class="inline-block font-poppins text-4xl font-black leading-none tabular-nums text-[#c70039]"
 								>
 									{archivedCertifications.length}
 								</span>
 								<span
 									data-cert-count-label
+									aria-hidden="true"
 									class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40"
 								>
 									entradas
 								</span>
 							</p>
+
+							<p class="sr-only" data-cert-live aria-live="polite" aria-atomic="true"></p>
 
 							<p class="mt-3 text-xs leading-relaxed text-white/40">
 								De {issuerCounts.length} entidades emisoras distintas.
@@ -174,7 +217,7 @@ const latestPosts = await getPosts(3)
 				</aside>
 
 				<!-- Card grid -->
-				<div class="grid gap-4 sm:grid-cols-2">
+				<div data-cert-grid class="grid gap-4 sm:grid-cols-2">
 					<!-- Server-rendered empty state; JS flips the `hidden` flag. -->
 					<p
 						data-cert-empty
@@ -185,7 +228,7 @@ const latestPosts = await getPosts(3)
 					</p>
 
 					{
-						archivedCertifications.map((cert) =>
+						archivedCertifications.map((cert, index) =>
 							cert.credentialUrl ? (
 								<a
 									href={cert.credentialUrl}
@@ -193,19 +236,31 @@ const latestPosts = await getPosts(3)
 									rel="noopener noreferrer"
 									data-cert-issuer={cert.issuer}
 									data-cert-name={cert.name}
-									class="dotted-card hover-lift group relative flex flex-col rounded-2xl border border-white/10 p-6 hover:border-[#c70039]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c70039]"
+									data-reveal
+									style={`--i:${index}`}
+									class="io-reveal dotted-card hover-lift group relative flex flex-col rounded-2xl border border-white/10 p-6 hover:border-[#c70039]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c70039]"
 								>
 									<span class="corner-tick corner-tick--tl" aria-hidden="true" />
 									<span class="corner-tick corner-tick--br" aria-hidden="true" />
-									<Icon name={cert.icon} class="mb-4 h-6 w-6 text-[#c70039]" />
+									<Icon
+										name={cert.icon}
+										class="mb-4 h-6 w-6 text-[#c70039] transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:scale-110"
+										aria-hidden="true"
+									/>
 									<h3 class="font-poppins text-base font-bold leading-snug text-white">
 										{cert.name}
 									</h3>
 									<p class="mt-2 text-sm text-white/60">{cert.issuer}</p>
 									<p class="mt-4 flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-white/40">
 										<time datetime={cert.date}>{formatCertDate(cert.date)}</time>
-										<span class="text-[#c70039] transition-colors duration-300 group-hover:text-white">
-											Ver credencial &rarr;
+										<span class="inline-flex items-center gap-1 text-[#c70039] transition-colors duration-150 group-hover:text-white">
+											Ver credencial
+											<span
+												aria-hidden="true"
+												class="transition-transform duration-200 group-hover:translate-x-1"
+											>
+												&rarr;
+											</span>
 										</span>
 									</p>
 								</a>
@@ -214,15 +269,34 @@ const latestPosts = await getPosts(3)
 								<article
 									data-cert-issuer={cert.issuer}
 									data-cert-name={cert.name}
-									class="dotted-card hover-lift relative flex flex-col rounded-2xl border border-white/10 p-6"
+									data-reveal
+									style={`--i:${index}`}
+									class="io-reveal dotted-card hover-lift group relative flex flex-col rounded-2xl border border-white/10 p-6"
 								>
 									<span class="corner-tick corner-tick--tl" aria-hidden="true" />
 									<span class="corner-tick corner-tick--br" aria-hidden="true" />
-									<Icon name={cert.icon} class="mb-4 h-6 w-6 text-[#c70039]" />
+									<Icon name={cert.icon} class="mb-4 h-6 w-6 text-[#c70039]" aria-hidden="true" />
 									<h3 class="font-poppins text-base font-bold leading-snug text-white">
 										{cert.name}
 									</h3>
-									<p class="mt-2 text-sm text-white/60">{cert.issuer}</p>
+
+									{/* No credential URL: the issuer itself is the one action the
+									     card can offer — it filters the archive to that entity. */}
+									<button
+										type="button"
+										data-cert-suggest={cert.issuer}
+										class="tap mt-1 inline-flex w-fit items-center gap-1.5 py-1 text-left text-sm text-white/60 transition-colors duration-150 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c70039]"
+									>
+										<span class="sr-only">Filtrar por </span>
+										{cert.issuer}
+										<span
+											aria-hidden="true"
+											class="text-[#c70039] opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100"
+										>
+											&rarr;
+										</span>
+									</button>
+
 									<p class="mt-4 flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-white/40">
 										<time datetime={cert.date}>{formatCertDate(cert.date)}</time>
 									</p>
@@ -237,21 +311,36 @@ const latestPosts = await getPosts(3)
 
 	<!-- Languages + interests -->
 	<section
-		class="relative border-t border-white/10 bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16 lg:py-28"
+		id="idiomas"
+		class="relative scroll-mt-28 border-t border-white/10 bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16 lg:py-28"
 	>
 		<div class="mx-auto max-w-[1400px]">
 			<SectionHeading
+				class="reveal"
 				eyebrow="Idiomas"
 				title="Idiomas e intereses"
 				description="Los idiomas en los que trabajo y los temas que me mantienen leyendo documentación fuera del horario de clase."
 			/>
 
+			<!-- Scroll-drawn rule: the same primitive the skill bars use, so the
+			     section opens itself as it enters. -->
+			<span
+				aria-hidden="true"
+				class="bar-grow mb-8 block h-px bg-gradient-to-r from-[#c70039]/60 via-white/20 to-transparent"
+				style="--bar-w: 100%"
+			></span>
+
 			<div class="grid gap-4 sm:grid-cols-2">
 				{
 					languages.map((language, index) => (
-						<div class="hover-lift dotted-card relative rounded-2xl border border-white/10 p-6 hover:border-[#c70039]/40">
+						<div
+							data-reveal
+							style={`--i:${index}`}
+							class="io-reveal hover-lift dotted-card group relative overflow-hidden rounded-2xl border border-white/10 p-6 transition-colors duration-300 hover:border-[#c70039]/40"
+						>
 							<span class="corner-tick corner-tick--tl" aria-hidden="true" />
 							<span class="corner-tick corner-tick--br" aria-hidden="true" />
+
 							<div class="flex items-start justify-between gap-4">
 								<h3 class="font-poppins text-2xl font-black uppercase leading-none tracking-tight text-white">
 									{language.language}
@@ -260,7 +349,15 @@ const latestPosts = await getPosts(3)
 									{String(index + 1).padStart(2, '0')}
 								</span>
 							</div>
-							<p class="mt-4 text-sm text-white/60">{language.fluency}</p>
+
+							<!-- Fluency sits over a rule that fills on hover/focus. -->
+							<div class="mt-5">
+								<p class="text-sm text-white/60">{language.fluency}</p>
+								<span
+									aria-hidden="true"
+									class="mt-3 block h-px origin-left scale-x-[0.18] bg-[#c70039]/50 transition-transform duration-300 ease-out group-hover:scale-x-100 group-focus-within:scale-x-100"
+								/>
+							</div>
 						</div>
 					))
 				}
@@ -273,8 +370,12 @@ const latestPosts = await getPosts(3)
 							{interest.name}
 						</p>
 						<ul class="mt-4 flex flex-wrap gap-2">
-							{interest.keywords.map((keyword) => (
-								<li class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.3em] text-white/60">
+							{interest.keywords.map((keyword, index) => (
+								<li
+									data-reveal
+									style={`--i:${index}`}
+									class="io-reveal rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.3em] text-white/60 transition-colors duration-150 hover:border-[#c70039]/40 hover:text-white"
+								>
 									{keyword}
 								</li>
 							))}
@@ -288,9 +389,13 @@ const latestPosts = await getPosts(3)
 	<!-- Continuous learning: the latest blog posts. Hidden when the blog is empty. -->
 	{
 		latestPosts.length > 0 && (
-			<section class="relative bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+			<section
+				id="blog"
+				class="relative scroll-mt-28 bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16 lg:py-28"
+			>
 				<div class="mx-auto max-w-[1400px]">
 					<SectionHeading
+						class="reveal"
 						eyebrow="Blog"
 						title="Aprendizaje continuo"
 						description="Lo que voy aprendiendo queda escrito: notas técnicas, procesos y hallazgos del día a día."
@@ -311,6 +416,7 @@ const latestPosts = await getPosts(3)
 							<Icon
 								name="mdi:arrow-right"
 								class="h-4 w-4 transition-colors duration-300 group-hover:text-[#c70039]"
+								aria-hidden="true"
 							/>
 						</a>
 					</div>
@@ -352,18 +458,18 @@ const latestPosts = await getPosts(3)
 				<a
 					href="/contact"
 					aria-label="Ir a la página de contacto"
-					class="group inline-flex items-center gap-3 rounded-full bg-[#c70039] px-8 py-4 text-sm font-black uppercase tracking-widest text-white transition-all duration-300 hover:scale-105 hover:bg-[#b11141] hover:shadow-[0_0_40px_rgba(199,0,57,0.35)]"
+					class="tap group inline-flex items-center gap-3 rounded-full bg-[#c70039] px-8 py-4 text-sm font-black uppercase tracking-widest text-white transition duration-200 hover:scale-105 hover:bg-[#b11141] hover:shadow-[0_0_40px_rgba(199,0,57,0.35)]"
 				>
-					<Icon name="mdi:email-outline" class="h-5 w-5" />
+					<Icon name="mdi:email-outline" class="h-5 w-5" aria-hidden="true" />
 					Hablemos
 				</a>
 
 				<a
 					href="/about"
 					aria-label="Ver currículum completo"
-					class="group inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-8 py-4 text-sm font-black uppercase tracking-widest text-white/80 transition-all duration-300 hover:border-[#c70039]/50 hover:bg-white/10 hover:text-white"
+					class="tap group inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-8 py-4 text-sm font-black uppercase tracking-widest text-white/80 transition duration-200 hover:border-[#c70039]/50 hover:bg-white/10 hover:text-white"
 				>
-					<Icon name="mdi:account-details-outline" class="h-5 w-5" />
+					<Icon name="mdi:account-details-outline" class="h-5 w-5" aria-hidden="true" />
 					Ver currículum
 				</a>
 			</div>
@@ -374,8 +480,11 @@ const latestPosts = await getPosts(3)
 <script>
 	// Progressive enhancement: without JS every card stays visible, the counter
 	// renders the server-side total and the pills are static labels. With JS the
-	// search field and the issuer pills filter the archive together (AND).
+	// search field and the issuer pills filter the archive together (AND), the
+	// reveal classes are armed per element and the index rail tracks the section
+	// crossing the viewport.
 	const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+	const prefersReducedMotion = () => reducedMotionQuery.matches
 
 	// Diacritic- and case-insensitive comparison, so "certificacion" matches
 	// "Certificación" and "SENATI" matches "Senati".
@@ -386,9 +495,66 @@ const latestPosts = await getPosts(3)
 			.toLowerCase()
 			.trim()
 
-	// The counter is the main feedback of the filter: make each change visible.
+	const isTypingTarget = (target: EventTarget | null) => {
+		const element = target as HTMLElement | null
+		if (!element) return false
+		return (
+			element.tagName === 'INPUT' ||
+			element.tagName === 'TEXTAREA' ||
+			element.tagName === 'SELECT' ||
+			element.isContentEditable
+		)
+	}
+
+	/* ── academic timeline: the year crossing the band is lit ────────────────── */
+	let yearObserver: IntersectionObserver | null = null
+
+	const initYearHighlight = () => {
+		const entries = Array.from(document.querySelectorAll<HTMLElement>('[data-edu-entry]'))
+		if (!entries.length) return
+
+		yearObserver?.disconnect()
+
+		if (!('IntersectionObserver' in window)) {
+			entries.forEach((entry) => {
+				entry.querySelector('[data-edu-year]')?.setAttribute('data-active', 'true')
+			})
+			return
+		}
+
+		const inBand = new Set<HTMLElement>()
+
+		const sync = () => {
+			// Document order decides the winner when two entries share the band.
+			const active = entries.find((entry) => inBand.has(entry)) ?? null
+			entries.forEach((entry) => {
+				entry.querySelector('[data-edu-year]')?.setAttribute('data-active', String(entry === active))
+			})
+		}
+
+		yearObserver = new IntersectionObserver(
+			(records) => {
+				records.forEach((record) => {
+					const target = record.target as HTMLElement
+					if (record.isIntersecting) inBand.add(target)
+					else inBand.delete(target)
+				})
+				sync()
+			},
+			// Same band as /experience: the block crossing the middle of the
+			// viewport owns the accent.
+			{ rootMargin: '-20% 0px -55% 0px', threshold: 0 }
+		)
+
+		entries.forEach((entry) => yearObserver?.observe(entry))
+		sync()
+	}
+
+	/* ── certification archive ───────────────────────────────────────────────── */
+	// The counter is the main feedback of the filter. It pulses on a pill click
+	// only: a pulse per keystroke would be motion on a repeated action.
 	const pulseCounter = (element: HTMLElement) => {
-		if (reducedMotionQuery.matches || typeof element.animate !== 'function') return
+		if (prefersReducedMotion() || typeof element.animate !== 'function') return
 
 		element.animate(
 			[
@@ -396,8 +562,34 @@ const latestPosts = await getPosts(3)
 				{ transform: 'scale(1.25)', color: 'rgb(255, 255, 255)', offset: 0.4 },
 				{ transform: 'scale(1)', color: 'rgb(199, 0, 57)' }
 			],
-			{ duration: 360, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' }
+			{ duration: 260, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' }
 		)
+	}
+
+	// Counting up is honest — it lands exactly on the real total — and runs once,
+	// the first time the counter is on screen. `from` is explicit because the
+	// server markup already holds the target: reading it back would skip the
+	// animation entirely.
+	const countUp = (element: HTMLElement, target: number, from = 0) => {
+		if (prefersReducedMotion() || typeof requestAnimationFrame !== 'function' || from === target) {
+			element.textContent = String(target)
+			return
+		}
+
+		const duration = 450
+		const started = performance.now()
+
+		const step = (now: number) => {
+			// rAF timestamps can predate `performance.now()` at start by a frame, so
+			// progress is clamped at both ends instead of going negative.
+			const progress = Math.max(0, Math.min(1, (now - started) / duration))
+			const eased = 1 - Math.pow(1 - progress, 3)
+			element.textContent = String(Math.round(from + (target - from) * eased))
+			if (progress < 1) requestAnimationFrame(step)
+			else element.textContent = String(target)
+		}
+
+		requestAnimationFrame(step)
 	}
 
 	const initCertFilters = () => {
@@ -413,11 +605,14 @@ const latestPosts = await getPosts(3)
 			const clearButton = archive.querySelector<HTMLButtonElement>('[data-cert-clear]')
 			const countLabel = archive.querySelector<HTMLElement>('[data-cert-count]')
 			const countLabelText = archive.querySelector<HTMLElement>('[data-cert-count-label]')
+			const liveRegion = archive.querySelector<HTMLElement>('[data-cert-live]')
 			const emptyState = archive.querySelector<HTMLElement>('[data-cert-empty]')
+			const grid = archive.querySelector<HTMLElement>('[data-cert-grid]')
 
 			let activeIssuer = 'todas'
+			let announceTimer = 0
 
-			const apply = (animate = true) => {
+			const apply = (source: 'init' | 'click' | 'typing' = 'click') => {
 				const query = normalize(search?.value ?? '')
 				let visible = 0
 
@@ -443,13 +638,21 @@ const latestPosts = await getPosts(3)
 
 				if (countLabel && countLabel.textContent?.trim() !== String(visible)) {
 					countLabel.textContent = String(visible)
-					if (animate) pulseCounter(countLabel)
+					if (source === 'click') pulseCounter(countLabel)
 				}
 
 				// Spanish agreement: "1 entrada" / "6 entradas".
 				if (countLabelText) countLabelText.textContent = visible === 1 ? 'entrada' : 'entradas'
 
 				if (emptyState) emptyState.hidden = visible > 0
+
+				// One announcement per settled change, never one per keystroke.
+				if (liveRegion && source !== 'init') {
+					window.clearTimeout(announceTimer)
+					announceTimer = window.setTimeout(() => {
+						liveRegion.textContent = `${visible} ${visible === 1 ? 'entrada' : 'entradas'} en el archivo`
+					}, 350)
+				}
 
 				if (clearButton) {
 					const hasText = (search?.value ?? '').length > 0
@@ -462,27 +665,141 @@ const latestPosts = await getPosts(3)
 			buttons.forEach((button) => {
 				button.addEventListener('click', () => {
 					activeIssuer = button.dataset.filter ?? 'todas'
-					apply()
+					apply('click')
 				})
 			})
 
-			search?.addEventListener('input', () => apply())
+			search?.addEventListener('input', () => apply('typing'))
 			// type="search" fires `search` when the field is cleared (Escape / native X).
-			search?.addEventListener('search', () => apply())
+			search?.addEventListener('search', () => apply('typing'))
+
+			// Clicking the issuer printed on a card applies that entity as the
+			// filter, so the archive can be narrowed from the content itself and
+			// not only from the rail. Focus follows the state change to the pill
+			// that now owns it.
+			archive.querySelectorAll<HTMLButtonElement>('[data-cert-suggest]').forEach((button) => {
+				button.addEventListener('click', () => {
+					const issuer = button.dataset.certSuggest ?? 'todas'
+					activeIssuer = issuer
+					if (search?.value) search.value = ''
+					apply('click')
+					buttons.find((item) => item.dataset.filter === issuer)?.focus()
+				})
+			})
 
 			clearButton?.addEventListener('click', () => {
 				if (!search) return
 				search.value = ''
-				apply()
+				apply('typing')
 				search.focus()
+			})
+
+			// Arrow keys move between the card actions (credential link, or the
+			// issuer filter). Tab order is untouched, so this adds a path instead
+			// of replacing the native one.
+			grid?.addEventListener('keydown', (event) => {
+				const navigationKeys = ['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp', 'Home', 'End']
+				if (!navigationKeys.includes(event.key)) return
+
+				const links = Array.from(
+					grid.querySelectorAll<HTMLElement>('a[data-cert-issuer], button[data-cert-suggest]')
+				).filter((link) => link.offsetParent !== null)
+				if (!links.length) return
+
+				const current = links.indexOf(document.activeElement as HTMLElement)
+				if (current === -1) return
+
+				const columns = Math.max(
+					1,
+					getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length
+				)
+
+				let next = current
+				switch (event.key) {
+					case 'ArrowRight':
+						next = Math.min(links.length - 1, current + 1)
+						break
+					case 'ArrowLeft':
+						next = Math.max(0, current - 1)
+						break
+					case 'ArrowDown':
+						next = Math.min(links.length - 1, current + columns)
+						break
+					case 'ArrowUp':
+						next = Math.max(0, current - columns)
+						break
+					case 'Home':
+						next = 0
+						break
+					case 'End':
+						next = links.length - 1
+						break
+				}
+
+				event.preventDefault()
+				links[next]?.focus()
 			})
 
 			// First paint: sync aria-pressed and the clear affordance without
 			// animating a counter that did not change.
-			apply(false)
+			apply('init')
+
+			// Count up once, the first time the counter becomes visible — and only
+			// when it started below the fold, so an already-visible counter never
+			// flashes 6 → 0 → 6 on load.
+			if (countLabel) {
+				const startedBelowFold = countLabel.getBoundingClientRect().top > window.innerHeight * 0.9
+
+				if (!('IntersectionObserver' in window) || !startedBelowFold) {
+					countUp(countLabel, Number(countLabel.textContent?.trim() || 0))
+				} else {
+					const counterObserver = new IntersectionObserver(
+						(entries) => {
+							entries.forEach((entry) => {
+								if (!entry.isIntersecting) return
+								counterObserver.disconnect()
+								countUp(countLabel, Number(countLabel.textContent?.trim() || 0))
+							})
+						},
+						{ threshold: 0.6 }
+					)
+					counterObserver.observe(countLabel)
+				}
+			}
 		})
 	}
 
-	initCertFilters()
-	document.addEventListener('astro:page-load', initCertFilters)
+	/* ── keyboard: "/" focuses the archive search ───────────────────────────── */
+	let hotkeyBound = false
+
+	const initSearchHotkey = () => {
+		if (hotkeyBound) return
+		hotkeyBound = true
+
+		document.addEventListener('keydown', (event) => {
+			if (event.key !== '/' || event.metaKey || event.ctrlKey || event.altKey) return
+			if (isTypingTarget(event.target)) return
+
+			const search = document.querySelector<HTMLInputElement>(
+				'[data-cert-archive] [data-cert-search]'
+			)
+			if (!search) return
+
+			event.preventDefault()
+			search.focus()
+			search.select()
+		})
+	}
+
+	const initAll = () => {
+		// Reveals and the section rail live in shared components (ScrollReveals,
+		// SectionRail); this script only owns what is specific to this view.
+		initYearHighlight()
+		initCertFilters()
+		initSearchHotkey()
+	}
+
+	initAll()
+	document.addEventListener('astro:page-load', initAll)
+	document.addEventListener('astro:after-swap', initAll)
 </script>

@@ -3,11 +3,19 @@
  * Section heading shared by the top-level views. Pairs with PageHero so every
  * section in /skills, /experience, /education and /gallery opens the same way.
  */
+import ScrollReveal from './ScrollReveal.astro'
+
 interface Props {
 	eyebrow: string
 	title: string
 	description?: string
 	align?: 'left' | 'center'
+	/**
+	 * Renders the title through `ScrollReveal`: the words resolve one by one as
+	 * the block crosses the viewport, the same scroll effect the home page uses.
+	 * Opt-in, so views that have not adopted it are unchanged.
+	 */
+	scrub?: boolean
 	id?: string
 	class?: string
 }
@@ -17,11 +25,14 @@ const {
 	title,
 	description,
 	align = 'left',
+	scrub = false,
 	id,
 	class: className = '',
 } = Astro.props
 
 const centered = align === 'center'
+const titleClass =
+	'font-poppins text-3xl font-black uppercase leading-[0.95] tracking-tight text-white sm:text-4xl lg:text-5xl'
 ---
 
 <div
@@ -39,11 +50,22 @@ const centered = align === 'center'
 		<span class="h-px max-w-[80px] flex-1 bg-white/20"></span>
 	</div>
 
-	<h2
-		class="font-poppins text-3xl font-black uppercase leading-[0.95] tracking-tight text-white sm:text-4xl lg:text-5xl"
-	>
-		{title}
-	</h2>
+	{
+		scrub ? (
+			<ScrollReveal
+				as="h2"
+				text={title}
+				class={titleClass}
+				stagger={0.05}
+				blur={2}
+				rotate={2}
+				start="top 88%"
+				end="top 55%"
+			/>
+		) : (
+			<h2 class={titleClass}>{title}</h2>
+		)
+	}
 
 	{
 		description && (

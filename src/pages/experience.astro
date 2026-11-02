@@ -4,6 +4,9 @@ import Layout from '@/layouts/Layout.astro'
 import PageHero from '@/components/ui/PageHero.astro'
 import SectionHeading from '@/components/ui/SectionHeading.astro'
 import BlockReveal from '@/components/ui/BlockReveal.astro'
+import SectionRail from '@/components/ui/SectionRail.astro'
+import ScrollReveals from '@/components/ui/ScrollReveals.astro'
+import CountUp from '@/components/ui/CountUp.astro'
 import ExpandableExperienceCard from '@/components/sections/ExpandableExperienceCard'
 import { experiences } from '@/data/experiences'
 import type { Experience } from '@/data/experiences'
@@ -89,6 +92,13 @@ const groupRange = (items: Experience[]) => {
 	return `${monthLabel(earliest.startDate)} — ${end}`
 }
 
+// In-page index: three anchors, built from what actually renders.
+const railSections = [
+	{ id: 'cronologia', label: 'Cronología', index: '01' },
+	{ id: 'numeros', label: 'Números', index: '02' },
+	{ id: 'seguir', label: 'Continuar', index: '03' }
+]
+
 const crossLinks = [
 	{
 		href: '/education',
@@ -111,10 +121,21 @@ const crossLinks = [
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
+	<!-- Reading progress: 2px, scroll-driven, no JS. -->
+	<div class="scroll-progress" aria-hidden="true"></div>
+
+	<!-- Arms the `[data-reveal]` elements of this page (no markup of its own). -->
+	<ScrollReveals />
+	<!-- Counts the stats up once, when they enter the viewport. -->
+	<CountUp />
+
 	<PageHero
 		eyebrow="Trayectoria"
 		lines={['Experience', '& Career']}
 		accentIndex={1}
+		align="center"
+		background="pattern"
+		motion="scroll"
 		subtitle="Tres etapas, tres formas de trabajar: mantenimiento web y campañas en un centro de contacto, producto freelance de punta a punta y modelos de datos aplicados a decisiones de negocio."
 		meta={[
 			`${experiences.length} puestos`,
@@ -122,6 +143,9 @@ const crossLinks = [
 			`${ongoingCount} roles en curso`
 		]}
 	/>
+
+	<!-- In-page index, shared with the other top-level views. -->
+	<SectionRail sections={railSections} label="Secciones de la página de experiencia" />
 
 	<!--
 		Company strip: a marquee of the real employer/project names. Decorative
@@ -157,9 +181,10 @@ const crossLinks = [
 	</section>
 
 	<!-- Timeline -->
-	<section class="relative px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+	<section id="cronologia" class="relative scroll-mt-28 px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
 		<div class="mx-auto max-w-[1400px]">
 			<SectionHeading
+				scrub
 				eyebrow="Cronología"
 				title="Experiencia profesional"
 				description="De la campaña al código: cada etapa con sus responsabilidades concretas y las herramientas que usé para sacarlas adelante."
@@ -203,10 +228,13 @@ const crossLinks = [
 				</div>
 			</div>
 
+			<!-- Live feedback for the filter: the visible list changes silently, so
+			     the count is announced once the change settles. -->
+			<p class="sr-only" data-exp-live aria-live="polite" aria-atomic="true"></p>
 			<!--
 				Year spine: one sticky label per start year, cards hanging off a
-				hairline border. The label is decorative; the sr-only h3 carries the
-				semantic heading for the group.
+				hairline that draws itself as the group crosses the viewport. The
+				label is decorative; the sr-only h3 carries the semantic heading.
 			-->
 			<div class="space-y-14 md:space-y-20">
 				{
@@ -216,7 +244,7 @@ const crossLinks = [
 							class="relative grid grid-cols-1 gap-5 md:grid-cols-[8rem_1fr] md:gap-10 lg:grid-cols-[10rem_1fr]"
 							aria-labelledby={`year-${group.year}`}
 						>
-							<div class="sticky top-24 self-start">
+							<div class="sticky top-[calc(var(--nav-h)+3rem)] self-start">
 								<span
 									data-year
 									data-active="false"
@@ -233,11 +261,26 @@ const crossLinks = [
 								</p>
 							</div>
 
-							<ol class="relative space-y-3 pl-5 before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-gradient-to-b before:from-[#c70039]/40 before:via-white/15 before:to-transparent md:space-y-4 md:pl-8">
+							<ol class="relative space-y-3 pl-5 before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-white/10 md:space-y-4 md:pl-8">
+								{/* Drawn line: fills as the group enters, same primitive as the
+								    academic timeline. */}
+								<span
+									class="pointer-events-none absolute inset-y-0 left-0 w-px"
+									aria-hidden="true"
+								>
+									<span class="spine-draw"></span>
+								</span>
+
 								{group.items.map((exp) => {
 									const index = sortedExperiences.indexOf(exp)
 									return (
-										<li data-exp-card data-exp-type={exp.type}>
+										<li
+											data-exp-card
+											data-exp-type={exp.type}
+											data-reveal
+											style={`--i:${index}`}
+											class="io-reveal"
+										>
 											<ExpandableExperienceCard client:visible exp={exp} index={index} />
 										</li>
 									)
@@ -259,16 +302,24 @@ const crossLinks = [
 	</section>
 
 	<!-- Stats -->
-	<section class="relative px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+	<section id="numeros" class="relative scroll-mt-28 px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
 		<div class="mx-auto max-w-[1400px]">
-			<div class="reveal grid grid-cols-1 gap-3 sm:grid-cols-3">
+			<div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
 				{
-					stats.map((stat) => (
-						<div class="dotted-card relative rounded-2xl border border-white/10 p-6 sm:p-8">
+					stats.map((stat, index) => (
+						<div
+							data-reveal
+							style={`--i:${index}`}
+							class="io-reveal dotted-card relative rounded-2xl border border-white/10 p-6 sm:p-8"
+						>
 							<span class="corner-tick corner-tick--tl" aria-hidden="true" />
 							<span class="corner-tick corner-tick--br" aria-hidden="true" />
 
-							<p class="font-poppins text-4xl font-black leading-none tracking-tight text-[#c70039] sm:text-5xl">
+							<p
+								data-count-to={stat.value}
+								data-count-pad="2"
+								class="font-poppins text-4xl font-black leading-none tabular-nums tracking-tight text-[#c70039] sm:text-5xl"
+							>
 								{String(stat.value).padStart(2, '0')}
 							</p>
 							<p class="mt-3 text-[10px] font-bold uppercase tracking-[0.3em] text-white/60">
@@ -282,7 +333,7 @@ const crossLinks = [
 	</section>
 
 	<!-- Cross-links: the two pages that continue this story -->
-	<section class="relative border-t border-white/10 px-6 py-16 sm:px-10 lg:px-16 lg:py-20">
+	<section id="seguir" class="relative scroll-mt-28 border-t border-white/10 px-6 py-16 sm:px-10 lg:px-16 lg:py-20">
 		<div class="mx-auto max-w-[1400px]">
 			<p class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">
 				Continuar leyendo
@@ -290,10 +341,12 @@ const crossLinks = [
 
 			<div class="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2">
 				{
-					crossLinks.map((link) => (
+					crossLinks.map((link, index) => (
 						<a
 							href={link.href}
-							class="hover-lift group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 transition-colors duration-300 hover:border-[#c70039]/40 sm:p-8"
+							data-reveal
+							style={`--i:${index}`}
+							class="io-reveal hover-lift group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 transition-colors duration-200 hover:border-[#c70039]/40 sm:p-8"
 						>
 							<span class="corner-tick corner-tick--br" aria-hidden="true" />
 
@@ -316,7 +369,7 @@ const crossLinks = [
 
 							<p class="mt-6 flex items-center gap-3 border-t border-white/10 pt-4 text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">
 								{link.meta}
-								<span class="ml-auto text-[#c70039] transition-transform duration-300 group-hover:scale-125">
+								<span class="ml-auto text-[#c70039] transition-transform duration-200 group-hover:translate-x-1">
 									→
 								</span>
 							</p>
@@ -360,7 +413,7 @@ const crossLinks = [
 				<a
 					href="/contact"
 					aria-label="Ir a la página de contacto"
-					class="group inline-flex items-center gap-3 rounded-full bg-[#c70039] px-8 py-4 text-sm font-black uppercase tracking-widest text-white transition-all duration-300 hover:scale-105 hover:bg-[#b11141] hover:shadow-[0_0_40px_rgba(199,0,57,0.35)]"
+					class="group inline-flex items-center gap-3 rounded-full bg-[#c70039] px-8 py-4 text-sm font-black uppercase tracking-widest text-white transition duration-200 hover:scale-105 hover:bg-[#b11141] hover:shadow-[0_0_40px_rgba(199,0,57,0.35)]"
 				>
 					<Icon name="mdi:email-outline" class="h-5 w-5" />
 					Hablemos
@@ -369,7 +422,7 @@ const crossLinks = [
 				<a
 					href="/about"
 					aria-label="Ver currículum completo"
-					class="group inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-8 py-4 text-sm font-black uppercase tracking-widest text-white/80 transition-all duration-300 hover:border-[#c70039]/50 hover:bg-white/10 hover:text-white"
+					class="group inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-8 py-4 text-sm font-black uppercase tracking-widest text-white/80 transition duration-200 hover:border-[#c70039]/50 hover:bg-white/10 hover:text-white"
 				>
 					<Icon name="mdi:account-details-outline" class="h-5 w-5" />
 					Ver currículum
@@ -424,6 +477,8 @@ const crossLinks = [
 		const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-exp-card]'))
 		const groups = Array.from(document.querySelectorAll<HTMLElement>('[data-year-group]'))
 		const empty = document.querySelector<HTMLElement>('[data-exp-empty]')
+		const live = document.querySelector<HTMLElement>('[data-exp-live]')
+		let announceTimer = 0
 
 		const applyFilter = (value: string) => {
 			buttons.forEach((button) => {
@@ -451,6 +506,15 @@ const crossLinks = [
 			})
 
 			if (empty) empty.classList.toggle('hidden', visible !== 0)
+
+			// One announcement per settled change, so the result of the filter is
+			// not silent for screen-reader users.
+			if (live) {
+				window.clearTimeout(announceTimer)
+				announceTimer = window.setTimeout(() => {
+					live.textContent = `${visible} ${visible === 1 ? 'puesto' : 'puestos'}`
+				}, 350)
+			}
 		}
 
 		buttons.forEach((button) => {
