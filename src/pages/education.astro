@@ -8,8 +8,10 @@ import PostCard from '@/components/PostCard.astro'
 import SectionRail from '@/components/ui/SectionRail.astro'
 import ScrollReveals from '@/components/ui/ScrollReveals.astro'
 import EducationTimeline from '@/components/sections/EducationTimeline.astro'
+import TechUniversePhysics from '@/components/sections/education/TechUniversePhysics'
 import { education } from '@/data/education'
 import { certifications } from '@/data/certifications'
+import { skills } from '@/data/skills'
 import { getPosts } from '@src/utils'
 import { languages, interests } from '@cv'
 
@@ -40,13 +42,32 @@ const formatCertDate = (isoMonth: string) => {
 // An empty collection renders no section at all instead of an empty shell.
 const latestPosts = await getPosts(3)
 
+// "Technical Universe": the words are the real stack, not a decorative list.
+// Technical categories only (marketing is not a technology), beginners left out
+// so nothing lands in the physics field at a level the site does not claim.
+const TECHNICAL_CATEGORIES = ['Frontend', 'Backend', 'AI & Data', 'DevOps & Tools']
+const SHORT_LABEL: Record<string, string> = {
+	'Tailwind CSS': 'Tailwind',
+	'Node.js': 'Node'
+}
+const shortLabel = (name: string) => SHORT_LABEL[name] ?? name
+
+const technicalSkills = skills.filter(
+	(skill) => TECHNICAL_CATEGORIES.includes(skill.category) && skill.level !== 'beginner'
+)
+const techWords = technicalSkills.map((skill) => shortLabel(skill.name))
+const techHighlights = technicalSkills
+	.filter((skill) => skill.level === 'expert')
+	.map((skill) => shortLabel(skill.name))
+
 // In-page index. Built from what actually renders, so the rail can never point
 // at a section that is not on the page.
 const railSections = [
 	{ id: 'trayectoria', label: 'Trayectoria', index: '01' },
 	{ id: 'certificaciones', label: 'Certificaciones', index: '02' },
 	{ id: 'idiomas', label: 'Idiomas', index: '03' },
-	...(latestPosts.length > 0 ? [{ id: 'blog', label: 'Blog', index: '04' }] : [])
+	...(latestPosts.length > 0 ? [{ id: 'blog', label: 'Blog', index: '04' }] : []),
+	{ id: 'universo', label: 'Universo técnico', index: latestPosts.length > 0 ? '05' : '04' }
 ]
 ---
 
@@ -424,6 +445,24 @@ const railSections = [
 			</section>
 		)
 	}
+
+	<!-- Technical universe: the stack as rigid bodies. The words come from
+	     src/data/skills.ts, so the field can never disagree with /skills. -->
+	<section
+		id="universo"
+		class="relative scroll-mt-28 border-t border-white/10 bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16 lg:py-28"
+	>
+		<div class="mx-auto max-w-[1400px]">
+			<SectionHeading
+				class="reveal"
+				eyebrow="Universo técnico"
+				title="Technical Universe"
+				description="Las tecnologías que uso, convertidas en cuerpos con peso: caen, chocan y rebotan. Arrastrá una palabra y tirala para abrir el campo."
+			/>
+
+			<TechUniversePhysics client:visible words={techWords} highlightWords={techHighlights} />
+		</div>
+	</section>
 
 	<!-- Closing CTA: same visual language as FinalCTA -->
 	<section
