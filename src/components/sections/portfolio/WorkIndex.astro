@@ -1,0 +1,151 @@
+---
+/**
+ * Filterable project index, shared by /portafolio and /portafolio/webs.
+ *
+ * One implementation for the pills, the live counter and the grid, so the hub
+ * and the full list cannot drift into two different filter behaviours.
+ */
+import WorkCard from '@components/ui/WorkCard.astro'
+import type { CategoryCount } from '@src/utils/projectCategories'
+import type { Project } from '@src/types/project'
+
+interface Props {
+	projects: Project[]
+	counts: CategoryCount[]
+	/** Counted label, e.g. "proyectos". */
+	unit?: string
+}
+
+const { projects, counts, unit = 'proyectos' } = Astro.props
+---
+
+<div data-work-archive>
+	{
+		counts.length > 1 && (
+			<div class="flex flex-wrap items-center justify-between gap-6">
+				<div class="flex flex-wrap gap-2" role="group" aria-label="Filtrar por tipo de proyecto">
+					<button
+						type="button"
+						data-filter="todos"
+						aria-pressed="true"
+						class="tap inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#c70039] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c70039]"
+					>
+						Todos
+						<span class="text-white/70" aria-hidden="true">{projects.length}</span>
+					</button>
+
+					{counts.map(({ category, count, label }) => (
+						<button
+							type="button"
+							data-filter={category}
+							aria-pressed="false"
+							class="tap inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/60 transition-colors duration-150 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c70039]"
+						>
+							{label}
+							<span class="text-white/40" aria-hidden="true">{count}</span>
+						</button>
+					))}
+				</div>
+
+				<p class="flex items-baseline gap-2">
+					<span
+						data-work-count
+						aria-hidden="true"
+						class="inline-block font-poppins text-3xl font-black leading-none tabular-nums text-[#c70039]"
+					>
+						{projects.length}
+					</span>
+					<span class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">{unit}</span>
+				</p>
+			</div>
+		)
+	}
+
+	<p data-work-live class="sr-only" role="status" aria-live="polite"></p>
+
+	<div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
+		{projects.map((project) => <WorkCard project={project} />)}
+	</div>
+
+	<div
+		data-work-empty
+		hidden
+		class="dotted-card relative mt-10 rounded-2xl border border-white/10 p-10 text-center"
+	>
+		<span class="corner-tick corner-tick--tl" aria-hidden="true" />
+		<span class="corner-tick corner-tick--br" aria-hidden="true" />
+		<p class="text-sm leading-relaxed text-white/60">
+			No hay proyectos de ese tipo todavía. Probá con otro filtro.
+		</p>
+	</div>
+</div>
+
+<script>
+	/**
+	 * Category filter for the project index.
+	 *
+	 * Cards are hidden with inline `display` (a `hidden` utility can lose to
+	 * another display utility depending on CSS order) and the live region
+	 * announces the count once per settled change, never per interaction. The
+	 * archive node is guarded because Astro hoists this module into a bundle that
+	 * survives client-side navigation and would otherwise wire stale nodes twice.
+	 */
+	const initWorkFilters = () => {
+		document.querySelectorAll<HTMLElement>('[data-work-archive]').forEach((archive) => {
+			if (archive.dataset.workInit === 'true') return
+			archive.dataset.workInit = 'true'
+
+			const buttons = Array.from(archive.querySelectorAll<HTMLButtonElement>('[data-filter]'))
+			const cards = Array.from(archive.querySelectorAll<HTMLElement>('[data-project-card]'))
+			const countLabel = archive.querySelector<HTMLElement>('[data-work-count]')
+			const liveRegion = archive.querySelector<HTMLElement>('[data-work-live]')
+			const emptyState = archive.querySelector<HTMLElement>('[data-work-empty]')
+
+			if (!buttons.length) return
+
+			let active = 'todos'
+			let announceTimer = 0
+
+			const apply = (announce: boolean) => {
+				let visible = 0
+
+				buttons.forEach((button) => {
+					const isActive = button.dataset.filter === active
+					button.setAttribute('aria-pressed', String(isActive))
+					button.classList.toggle('bg-[#c70039]', isActive)
+					button.classList.toggle('text-white', isActive)
+					button.classList.toggle('bg-white/5', !isActive)
+					button.classList.toggle('text-white/60', !isActive)
+				})
+
+				cards.forEach((card) => {
+					const match = active === 'todos' || card.dataset.category === active
+					card.style.display = match ? '' : 'none'
+					if (match) visible += 1
+				})
+
+				if (countLabel) countLabel.textContent = String(visible)
+				if (emptyState) emptyState.hidden = visible > 0
+
+				if (liveRegion && announce) {
+					window.clearTimeout(announceTimer)
+					announceTimer = window.setTimeout(() => {
+						liveRegion.textContent = `${visible} ${visible === 1 ? 'proyecto visible' : 'proyectos visibles'}`
+					}, 300)
+				}
+			}
+
+			buttons.forEach((button) => {
+				button.addEventListener('click', () => {
+					active = button.dataset.filter ?? 'todos'
+					apply(true)
+				})
+			})
+
+			apply(false)
+		})
+	}
+
+	initWorkFilters()
+	document.addEventListener('astro:after-swap', initWorkFilters)
+</script>

@@ -31,6 +31,17 @@ export default defineConfig({
   adapter: vercel(),
   prefetch: true,
 
+  // /portafolio/diseno and /portafolio/fotografia rendered the same Cloudinary
+  // collections as /gallery with the legacy Gallery.astro; the visual archive
+  // has exactly one view now. /portafolio/marketing was declared in the old
+  // catch-all route but never had a render branch (it shipped an empty page);
+  // the case studies it promised live in the blog category.
+  redirects: {
+    '/portafolio/diseno': '/gallery',
+    '/portafolio/fotografia': '/gallery',
+    '/portafolio/marketing': '/blog/category/marketing/1',
+  },
+
   vite: {
     css: {
       lightningcss: {

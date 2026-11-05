@@ -1,0 +1,208 @@
+---
+/**
+ * Project card shared by /portafolio and /portafolio/webs.
+ *
+ * It reproduces the card language the project already had (device frame header,
+ * 16/10 cover, blueprint corner ticks, tilt + glare, content lifted on Z) so the
+ * two portfolio surfaces cannot drift into two different card designs again.
+ *
+ * Cover sources, in order: the project image, then the placeholder. It is never
+ * an empty string — a card with no cover is a card that looks broken.
+ */
+import ProjectBadge from '@components/ProjectBadge.astro'
+import ProjectTecnology from '@components/ProjectTecnology.astro'
+import { CATEGORY_LABELS, categoryOf } from '@src/utils/projectCategories'
+import { formatDate } from '@src/utils'
+import type { Project } from '@src/types/project'
+import placeholderImage from '/public/img/place-holder-image.webp'
+
+interface Props {
+	project: Project
+	/** Above-the-fold cover: eager decode instead of lazy. */
+	priority?: boolean
+	class?: string
+}
+
+const { project, priority = false, class: className = '' } = Astro.props
+
+const cover = project.image || (placeholderImage as unknown as string)
+const category = categoryOf(project)
+const categoryLabel = CATEGORY_LABELS[category] ?? category
+// A GitHub repository carries `status: 'active'` only because it is not
+// archived; painting "En curso" on it would claim work in progress that nobody
+// is doing. The badge is reserved for tracked engagements.
+const isActive =
+	project.source === 'content' &&
+	(project.status === 'active' || project.status === 'in_progress')
+const MAX_TECH = 4
+const techs = project.technologies.slice(0, MAX_TECH)
+const extraTech = project.technologies.length - techs.length
+const hasFooter = Boolean(project.demo) || Boolean(project.repository && !project.private)
+---
+
+<article
+	data-tilt-card
+	data-project-card
+	data-category={category}
+	class:list={[
+		'dotted-card group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0a0a0a] shadow-lg transition-all duration-300 hover:border-[#c70039]/60 hover:shadow-[0_16px_36px_rgba(199,0,57,0.25)]',
+		className,
+	]}
+	style="transform-style: preserve-3d; transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));"
+>
+	<span class="corner-tick corner-tick--tl" aria-hidden="true" />
+	<span class="corner-tick corner-tick--tr" aria-hidden="true" />
+	<span class="corner-tick corner-tick--bl" aria-hidden="true" />
+	<span class="corner-tick corner-tick--br" aria-hidden="true" />
+
+	<div class="flex items-center justify-between border-b border-white/10 bg-[#0d0d11] px-4 py-2.5">
+		<div class="flex items-center gap-1.5" aria-hidden="true">
+			<span class="h-2 w-2 rounded-full bg-white/20 transition-colors group-hover:bg-white/40" />
+			<span class="h-2 w-2 rounded-full bg-white/20" />
+			<span class="h-2 w-2 rounded-full bg-white/20" />
+		</div>
+		<span class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">
+			{categoryLabel}
+		</span>
+	</div>
+
+	<div
+		class="relative aspect-[16/10] w-full overflow-hidden bg-[#0b0b0d]"
+		style="transform: translateZ(5px);"
+	>
+		<img
+			src={cover}
+			data-project-cover
+			alt={`Portada del proyecto ${project.title}`}
+			class="absolute inset-0 h-full w-full object-contain transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+			loading={priority ? 'eager' : 'lazy'}
+			fetchpriority={priority ? 'high' : 'auto'}
+			decoding="async"
+			width="800"
+			height="500"
+		/>
+		<div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-black/30 to-transparent"></div>
+
+		{
+			isActive && (
+				<span
+					class="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-[#c70039]/60 bg-[#0a0a0a]/80 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-white backdrop-blur-md"
+					style="transform: translateZ(15px);"
+				>
+					<span class="h-1.5 w-1.5 animate-pulse rounded-full bg-[#c70039]" aria-hidden="true" />
+					En curso
+				</span>
+			)
+		}
+
+		<time
+			datetime={project.updatedAt.toISOString()}
+			class="absolute bottom-3 left-4 rounded-md border border-white/10 bg-[#0a0a0a]/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white/70 shadow backdrop-blur-md"
+			style="transform: translateZ(15px);"
+		>
+			{formatDate(project.updatedAt)}
+		</time>
+	</div>
+
+	<div
+		class="pointer-events-none absolute inset-0 z-20 transition-opacity duration-300"
+		style="opacity: var(--glare-opacity, 0); background: radial-gradient(circle 320px at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, 0.12) 0%, rgba(199, 0, 57, 0.15) 35%, transparent 70%); mix-blend-mode: screen;"
+		aria-hidden="true"
+	>
+	</div>
+
+	<div class="flex flex-1 flex-col p-6" style="transform-style: preserve-3d; transform: translateZ(25px);">
+		<h3 class="mb-1 font-poppins text-xl font-bold tracking-tight text-white transition-colors duration-300 group-hover:text-[#c70039]">
+			{project.title}
+		</h3>
+
+		{
+			(project.company || project.client || project.role) && (
+				<p class="mb-3 text-xs font-medium text-white/50">
+					{project.client ?? project.company}
+					{(project.client ?? project.company) && project.role && <span aria-hidden="true"> · </span>}
+					{project.role && <span class="italic text-white/40">{project.role}</span>}
+				</p>
+			)
+		}
+
+		<p class="mb-4 flex-1 text-sm leading-relaxed text-white/60">
+			{project.description}
+		</p>
+
+		{
+			project.badges && project.badges.length > 0 && (
+				<div class="mb-3 flex flex-wrap gap-1.5">
+					{project.badges.map((badge) => <ProjectBadge badge={badge} />)}
+				</div>
+			)
+		}
+
+		{
+			techs.length > 0 && (
+				<ul class="mb-5 flex flex-wrap items-center gap-2">
+					{techs.map((tech) => (
+						<ProjectTecnology tecnology={tech.name} />
+					))}
+					{extraTech > 0 && (
+						<li class="rounded-full border border-white/10 px-2.5 py-1.5 text-xs text-white/50">
+							+{extraTech}
+						</li>
+					)}
+				</ul>
+			)
+		}
+
+		{
+			hasFooter && (
+				<div class="mt-auto flex w-full items-center gap-3 border-t border-white/10 pt-4">
+					{project.demo && (
+						<a
+							href={project.demo}
+							target="_blank"
+							rel="noopener noreferrer"
+							title={`Ver demo de ${project.title}`}
+							aria-label={`Ver demo de ${project.title}`}
+							class="inline-flex items-center justify-center rounded-lg border border-[#c70039] bg-[#c70039]/15 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white transition-all duration-300 hover:bg-[#c70039] hover:shadow-[0_0_15px_rgba(199,0,57,0.5)] active:scale-95"
+						>
+							Ver demo
+						</a>
+					)}
+					{project.repository && !project.private && (
+						<a
+							href={project.repository}
+							target="_blank"
+							rel="noopener noreferrer"
+							title={`Ver código de ${project.title}`}
+							aria-label={`Ver código de ${project.title}`}
+							class="inline-flex items-center justify-center rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white/80 transition-all duration-300 hover:border-white/30 hover:bg-white/10 hover:text-white active:scale-95"
+						>
+							Ver código
+						</a>
+					)}
+				</div>
+			)
+		}
+	</div>
+</article>
+
+<script>
+	/**
+	 * Cover fallback. Project covers can come from README parsing or a CMS, so a
+	 * URL can point at something that is not an image and the card would show a
+	 * broken icon with no build error. `error` does not bubble, so the listener
+	 * runs in the capture phase; it only touches covers and applies once.
+	 */
+	document.addEventListener(
+		'error',
+		(event) => {
+			const target = event.target
+			if (!(target instanceof HTMLImageElement)) return
+			if (!target.hasAttribute('data-project-cover')) return
+			if (target.dataset.coverFallback === 'applied') return
+			target.dataset.coverFallback = 'applied'
+			target.src = '/img/place-holder-image.webp'
+		},
+		true
+	)
+</script>
