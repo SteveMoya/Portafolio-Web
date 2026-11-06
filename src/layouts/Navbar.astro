@@ -2,7 +2,7 @@
 import { Icon } from 'astro-icon/components'
 import Search from '@components/Search.astro'
 import BentoCard from '@components/ui/BentoCard.astro'
-import { getPosts, formatDate } from '@utils/index'
+import { getPosts, getCategories, formatDate, sluglify } from '@utils/index'
 import { Picture } from 'astro:assets'
 
 const navItems = [
@@ -15,6 +15,49 @@ const navItems = [
 
 const posts = await getPosts(1)
 const latestPost = posts.length > 0 ? posts[0] : null
+
+// The blog menu advertises categories, so it can only advertise the ones that
+// have a page. A category with no published posts generates no route: linking it
+// shipped a 404 ("Diseño" held a single draft), and a hand-written slug dropped
+// the accent the route keeps ("programacion" vs "programación"). Both come from
+// the data now, built with the same sluglify the route uses.
+const publishedCategories = await getCategories()
+const hasCategory = (name: string) =>
+	publishedCategories.some((category) => category.toLowerCase() === name.toLowerCase())
+const categoryHref = (name: string) => `/blog/category/${sluglify(name.toLowerCase())}/1`
+
+const blogCategoryCards = (
+	[
+		{
+			title: 'Programación',
+			category: 'Programación',
+			description: 'Código, stacks & dev',
+			icon: 'mdi:code-tags',
+			theme: 'code'
+		},
+		{
+			title: 'Diseño',
+			category: 'Diseño',
+			description: 'UI/UX y sistemas visuales',
+			icon: 'mdi:palette-outline',
+			theme: 'palette'
+		},
+		{
+			title: 'Marketing',
+			category: 'Marketing',
+			description: 'Estrategia y crecimiento',
+			icon: 'mdi:bullhorn-outline',
+			theme: 'marketing'
+		}
+	] as const
+).filter((card) => hasCategory(card.category))
+
+const categoryGridClass =
+	blogCategoryCards.length >= 3
+		? 'grid-cols-3'
+		: blogCategoryCards.length === 2
+			? 'grid-cols-2'
+			: 'grid-cols-1'
 
 const latestPostSummary = latestPost
 	? latestPost.data.description
@@ -203,32 +246,20 @@ const isActive = (path: string) => {
 									href="/blog/todos-los-blogs/1"
 								/>
 							</div>
-							<!-- Bottom row: 3 Compact cards -->
-							<div class="grid grid-cols-3 gap-2.5">
-								<BentoCard
-									variant="compact"
-									theme="code"
-									icon="mdi:code-tags"
-									title="Programación"
-									description="Código, stacks & dev"
-									href="/blog/category/programacion/1"
-								/>
-								<BentoCard
-									variant="compact"
-									theme="palette"
-									icon="mdi:palette-outline"
-									title="Diseño"
-									description="UI/UX y sistemas visuales"
-									href="/blog/category/diseno/1"
-								/>
-								<BentoCard
-									variant="compact"
-									theme="marketing"
-									icon="mdi:bullhorn-outline"
-									title="Marketing"
-									description="Estrategia y crecimiento"
-									href="/blog/category/marketing/1"
-								/>
+							<!-- Bottom row: one card per category that has published posts -->
+							<div class:list={['grid gap-2.5', categoryGridClass]}>
+								{
+									blogCategoryCards.map((card) => (
+										<BentoCard
+											variant="compact"
+											theme={card.theme}
+											icon={card.icon}
+											title={card.title}
+											description={card.description}
+											href={categoryHref(card.category)}
+										/>
+									))
+								}
 							</div>
 						</div>
 

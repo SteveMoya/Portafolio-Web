@@ -42,7 +42,6 @@ export const experiences: Experience[] = [
 		location: 'Santo Domingo, Dominican Republic',
 		type: 'full-time',
 		externalLink: 'https://icontactcenter.com/',
-		logo: '/logos/icc.svg',
 	},
 	{
 		id: 'exp-2',
