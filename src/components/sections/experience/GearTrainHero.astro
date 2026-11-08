@@ -1,0 +1,941 @@
+---
+/**
+ * Experience hero background: a brass gear train on a watchmaker's bench.
+ *
+ * One gear per stage (see `src/data/experienceGears.ts`), sized by time worked.
+ * The train turns continuously, can be dragged, and a click on a gear scrolls
+ * to that stage's card in the timeline and opens it.
+ *
+ * The meshing is real: profiles, centre distances and assembly angles come from
+ * `src/lib/gears.ts` and are verified against tooth-polygon intersections before
+ * anything is rendered (`.hermes/plans/experience-gears.md`).
+ *
+ * No physics engine: this is kinematics. Only `three`, loaded behind an idle
+ * gate, so a visitor who never reaches the hero never downloads it.
+ *
+ * Fallbacks are the current design: without JS, without WebGL and under
+ * reduced motion the hero keeps the dot-grid background PageHero already
+ * paints behind this slot.
+ */
+import { gearStages, driverStage } from '../../../data/experienceGears'
+
+interface Props {
+	class?: string
+}
+
+const { class: className = '' } = Astro.props
+
+// Text equivalent of the scene: the canvas is aria-hidden, so this is the only
+// path by which the mechanism's content reaches a screen reader.
+const trainSummary = gearStages
+	.map(
+		(stage) =>
+			`${stage.company}, ${stage.period}, ${stage.state === 'ongoing' ? 'en curso' : 'completada'}`
+	)
+	.join('; ')
+---
+
+<div class:list={['gear-hero absolute inset-0', className]} data-gear-hero>
+	<!-- Canvas host. Empty until the script mounts: the pattern layers below stay
+	     visible through the transparent canvas and forever after a failure. -->
+	<div class="absolute inset-0 z-0" data-gear-stage aria-hidden="true"></div>
+
+	<!-- Scrim. The copy sits on the lower half; the bench keeps its light. -->
+	<div
+		class="pointer-events-none absolute inset-0 z-[1]"
+		aria-hidden="true"
+		style="background: radial-gradient(ellipse 60% 52% at 50% 32%, rgba(10,10,10,0.02) 0%, rgba(10,10,10,0.22) 58%, rgba(10,10,10,0.72) 100%), linear-gradient(180deg, rgba(10,10,10,0.30) 0%, rgba(10,10,10,0.02) 30%, rgba(10,10,10,0.26) 54%, rgba(10,10,10,0.84) 76%, #0a0a0a 100%);"
+	></div>
+
+	<!-- Hover chip. The stage name is DOM text, not a 3D plaque: it stays crisp,
+	     and the composition has nothing to hide behind the headline. -->
+	<div
+		data-gear-tip
+		class="pointer-events-none absolute left-0 top-0 z-[3] hidden -translate-x-1/2 -translate-y-[130%] whitespace-nowrap rounded-full border border-white/15 bg-black/75 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-white/80 backdrop-blur-md"
+		aria-hidden="true"
+	>
+		<span data-gear-tip-title></span>
+		<span data-gear-tip-meta class="ml-2 font-mono tracking-normal text-white/45"></span>
+	</div>
+
+	<p class="sr-only">
+		Fondo decorativo: un banco de relojería con {gearStages.length} engranajes engranados, uno por
+		etapa profesional, del más antiguo al más reciente. El tamaño de cada rueda es el tiempo
+		trabajado en esa etapa. {trainSummary}. La manivela está en {driverStage.company}, la etapa en
+		curso.
+	</p>
+</div>
+
+<script>
+	import { gearStages, driverStage } from '../../../data/experienceGears'
+	import { placeTrain, resolveAngles, toothPolygon, gearRadii, lighteningHoles } from '../../../lib/gears'
+
+	type ThreeNS = typeof import('three')
+	type Mesh = import('three').Mesh
+	type Object3D = import('three').Object3D
+	type Group = import('three').Group
+	type Material = import('three').Material
+	type Texture = import('three').Texture
+	type BufferGeometry = import('three').BufferGeometry
+
+	/* ── Scene constants (1 unit ≈ 10 cm) ─────────────────────────────────── */
+
+	/** Thickness of every gear, so the train reads as one set of parts. */
+	const GEAR_THICKNESS = 0.16
+	/** Radians per second at rest: slow enough to keep the type readable. */
+	const SPIN = 0.11
+	/** Degrees of camera tilt. Flat plaques need this or they vanish edge-on. */
+	const CAMERA_TILT = 0.17
+	const FOV = 38
+	/** Fraction of the hero the gears should occupy, and the top gap. */
+	const TARGET = { height: 0.38, width: 0.86 }
+	const TOP_MARGIN = 0.02
+	const SIDE_MARGIN = 1.04
+
+	const REDUCED_MOTION = '(prefers-reduced-motion: reduce)'
+	const NARROW_VIEW = '(max-width: 767px)'
+
+	interface Built {
+		group: Group
+		meshes: Mesh[]
+		gears: ReturnType<typeof placeTrain>
+		disposables: (BufferGeometry | Material)[]
+		textures: Texture[]
+		/** Content box used by the camera fit. */
+		box: { minX: number; maxX: number; minY: number; maxY: number }
+	}
+
+	/* ── Canvas helpers ───────────────────────────────────────────────────── */
+
+	const canvas2d = (three: ThreeNS, width: number, height: number) => {
+		const canvas = document.createElement('canvas')
+		canvas.width = width
+		canvas.height = height
+		const context = canvas.getContext('2d')
+		if (!context) throw new Error('[gear-hero] 2d context unavailable')
+		const texture = new three.CanvasTexture(canvas)
+		texture.colorSpace = three.SRGBColorSpace
+		texture.anisotropy = 4
+		return { canvas, context, texture }
+	}
+
+	/** Concentric tool marks. Mapped by world XY, so the rings centre on the hub. */
+	const paintLatheMarks = (context: CanvasRenderingContext2D, size: number) => {
+		context.fillStyle = '#8a8a8a'
+		context.fillRect(0, 0, size, size)
+		const centre = size / 2
+		for (let radius = 2; radius < centre; radius += 2.2) {
+			const shade = 0.5 + Math.random() * 0.5
+			context.beginPath()
+			context.arc(centre, centre, radius, 0, Math.PI * 2)
+			context.strokeStyle = `rgba(${Math.round(255 * shade)},${Math.round(255 * shade)},${Math.round(255 * shade)},${0.1 + Math.random() * 0.12})`
+			context.lineWidth = 0.8 + Math.random() * 0.7
+			context.stroke()
+		}
+	}
+
+	const paintBench = (context: CanvasRenderingContext2D, width: number, height: number) => {
+		context.fillStyle = '#2a1d15'
+		context.fillRect(0, 0, width, height)
+		for (let index = 0; index < 240; index += 1) {
+			const y = Math.random() * height
+			context.beginPath()
+			context.moveTo(0, y)
+			context.bezierCurveTo(
+				width * 0.3,
+				y + (Math.random() - 0.5) * 18,
+				width * 0.7,
+				y + (Math.random() - 0.5) * 18,
+				width,
+				y + (Math.random() - 0.5) * 10
+			)
+			context.strokeStyle = `rgba(${20 + Math.random() * 40},${12 + Math.random() * 22},${8 + Math.random() * 14},${0.18 + Math.random() * 0.3})`
+			context.lineWidth = 0.6 + Math.random() * 2.4
+			context.stroke()
+		}
+	}
+
+	/** The wall behind: a dark workshop with a pegboard, painted once. */
+	const paintBackdrop = (context: CanvasRenderingContext2D, width: number, height: number) => {
+		const base = context.createLinearGradient(0, 0, 0, height)
+		base.addColorStop(0, '#0b0c10')
+		base.addColorStop(0.55, '#12100e')
+		base.addColorStop(1, '#08070a')
+		context.fillStyle = base
+		context.fillRect(0, 0, width, height)
+
+		// Warm pool where the key light lands.
+		const pool = context.createRadialGradient(
+			width * 0.5,
+			height * 0.32,
+			0,
+			width * 0.5,
+			height * 0.32,
+			width * 0.42
+		)
+		pool.addColorStop(0, 'rgba(255,206,150,0.16)')
+		pool.addColorStop(0.55, 'rgba(255,180,120,0.05)')
+		pool.addColorStop(1, 'rgba(255,170,110,0)')
+		context.fillStyle = pool
+		context.fillRect(0, 0, width, height)
+
+		// Pegboard: the workshop's signature texture.
+		const step = width / 96
+		context.fillStyle = 'rgba(255,255,255,0.05)'
+		for (let y = height * 0.08; y < height * 0.72; y += step) {
+			for (let x = width * 0.04; x < width * 0.96; x += step) {
+				context.beginPath()
+				context.arc(x, y, step * 0.1, 0, Math.PI * 2)
+				context.fill()
+			}
+		}
+
+		// Hanging tools, as silhouettes: enough to read as a wall, not enough to
+		// compete with the gears.
+		context.fillStyle = 'rgba(0,0,0,0.55)'
+		const tools = [
+			[0.1, 0.24, 0.012, 0.2],
+			[0.15, 0.2, 0.03, 0.03],
+			[0.19, 0.26, 0.008, 0.16],
+			[0.82, 0.22, 0.016, 0.24],
+			[0.87, 0.3, 0.026, 0.026],
+			[0.91, 0.24, 0.01, 0.18]
+		]
+		for (const [x, y, w, h] of tools) {
+			context.fillRect(width * x, height * y, width * w, height * h)
+		}
+
+		// Vignette, so the painted wall never fights the type.
+		const vignette = context.createRadialGradient(
+			width / 2,
+			height * 0.42,
+			width * 0.22,
+			width / 2,
+			height * 0.42,
+			width * 0.72
+		)
+		vignette.addColorStop(0, 'rgba(0,0,0,0)')
+		vignette.addColorStop(1, 'rgba(0,0,0,0.82)')
+		context.fillStyle = vignette
+		context.fillRect(0, 0, width, height)
+	}
+
+	/* ── Mount ────────────────────────────────────────────────────────────── */
+
+	const mount = async (host: HTMLElement) => {
+		const three = await import('three')
+		const THREE = three as unknown as ThreeNS
+
+		const renderer = new THREE.WebGLRenderer({
+			alpha: true,
+			antialias: true,
+			powerPreference: 'high-performance'
+		})
+		renderer.setPixelRatio(
+			Math.min(window.devicePixelRatio || 1, window.matchMedia('(pointer: coarse)').matches ? 1.5 : 2)
+		)
+		renderer.setClearAlpha(0)
+		renderer.outputColorSpace = THREE.SRGBColorSpace
+		const canvas = renderer.domElement
+		canvas.style.width = '100%'
+		canvas.style.height = '100%'
+		canvas.style.display = 'block'
+		host.appendChild(canvas)
+
+		const scene = new THREE.Scene()
+		const camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 120)
+
+		/* ── Lights ─────────────────────────────────────────────────────── */
+
+		const key = new THREE.DirectionalLight(0xffe7c4, 1.85)
+		key.position.set(-3.4, 4.6, 5.4)
+
+		const rim = new THREE.DirectionalLight(0xa9c4ff, 0.95)
+		rim.position.set(3.8, 1.4, -4.2)
+
+		const fill = new THREE.DirectionalLight(0xd6cec0, 0.55)
+		fill.position.set(1.8, -0.6, 5.6)
+
+		const accent = new THREE.DirectionalLight(0xc70039, 0.5)
+		accent.position.set(2.4, 3, 2.2)
+
+		const hemi = new THREE.HemisphereLight(0xfff0dc, 0x0a0a0e, 0.85)
+
+		scene.add(key, rim, fill, accent, hemi)
+
+		/* ── Materials ──────────────────────────────────────────────────── */
+
+		const lathe = canvas2d(THREE, 256, 256)
+		paintLatheMarks(lathe.context, 256)
+
+		const backdropCanvas: CanvasRenderingContext2D[] = []
+		void backdropCanvas
+
+		const backdrop = canvas2d(THREE, 2048, 1024)
+		paintBackdrop(backdrop.context, 2048, 1024)
+
+		const benchCanvas = canvas2d(THREE, 1024, 256)
+		paintBench(benchCanvas.context, 1024, 256)
+		benchCanvas.texture.wrapS = THREE.RepeatWrapping
+		benchCanvas.texture.wrapT = THREE.RepeatWrapping
+		benchCanvas.texture.repeat.set(3, 1)
+
+		const steel = new THREE.MeshStandardMaterial({ color: 0x9aa0a8, roughness: 0.34, metalness: 0.95 })
+		const darkSteel = new THREE.MeshStandardMaterial({ color: 0x4c5057, roughness: 0.5, metalness: 0.9 })
+		const wood = new THREE.MeshStandardMaterial({
+			map: benchCanvas.texture,
+			color: 0x6b4a33,
+			roughness: 0.86,
+			metalness: 0.03
+		})
+		const velvet = new THREE.MeshStandardMaterial({ color: 0x3a0d16, roughness: 0.94, metalness: 0 })
+
+		/* ── Build ──────────────────────────────────────────────────────── */
+
+		const build = (layout: 'row' | 'column'): Built => {
+			const group = new THREE.Group()
+			const disposables: (BufferGeometry | Material)[] = []
+			const textures: Texture[] = [backdrop.texture, benchCanvas.texture, lathe.texture]
+			const meshes: Mesh[] = []
+
+			// The wall, far enough back to read as depth.
+			const wallGeometry = new THREE.PlaneGeometry(30, 15)
+			const wallMaterial = new THREE.MeshBasicMaterial({ map: backdrop.texture })
+			const wall = new THREE.Mesh(wallGeometry, wallMaterial)
+			wall.position.set(0, 1.2, -6)
+			disposables.push(wallGeometry, wallMaterial)
+			group.add(wall)
+
+			const gears = placeTrain(
+				gearStages.map((stage) => ({ id: stage.id, teeth: stage.teeth, module: stage.module })),
+				layout
+			)
+
+			const maxOuter = Math.max(...gears.map((gear) => gear.outerRadius))
+			const matMinX = Math.min(...gears.map((gear) => gear.x - gear.outerRadius))
+			const matMaxX = Math.max(...gears.map((gear) => gear.x + gear.outerRadius))
+			// The bench is the floor: it sits under the lowest gear in either layout.
+			const benchTop = Math.min(...gears.map((gear) => gear.y - gear.outerRadius)) - 0.32
+
+			// Bench: a slab with its front edge catching the key light.
+			const benchHeight = 0.34
+			const benchGeometry = new THREE.BoxGeometry(16, benchHeight, 3.4)
+			const bench = new THREE.Mesh(benchGeometry, wood)
+			bench.position.set(0, benchTop - benchHeight / 2, -0.3)
+			disposables.push(benchGeometry)
+			group.add(bench)
+
+			// Velvet mat under the train.
+			const matGeometry = new THREE.PlaneGeometry(
+				Math.min(14, matMaxX - matMinX + maxOuter * 1.6),
+				layout === 'row' ? 2.1 : 2.6
+			)
+			const mat = new THREE.Mesh(matGeometry, velvet)
+			mat.rotation.x = -Math.PI / 2
+			mat.position.set(0, benchTop + 0.002, 0.1)
+			disposables.push(matGeometry)
+			group.add(mat)
+
+			/* Gears */
+
+			gears.forEach((gear, index) => {
+				const stage = gearStages[index]
+				const radii = gearRadii(gear)
+				const patina = stage.patina
+
+				const latheMap = lathe.texture.clone()
+				latheMap.needsUpdate = true
+				latheMap.wrapS = THREE.RepeatWrapping
+				latheMap.wrapT = THREE.RepeatWrapping
+				const scale = 1 / (gear.outerRadius * 2.2)
+				latheMap.repeat.set(scale, scale)
+				latheMap.offset.set(0.5, 0.5)
+				textures.push(latheMap)
+
+				const brass = new THREE.MeshStandardMaterial({
+					color: patina > 0.3 ? new THREE.Color(0x8a6a35).lerp(new THREE.Color(0x5d4a24), patina) : new THREE.Color(0xd6ae5e),
+					map: latheMap,
+					roughness: 0.3 + patina * 0.42,
+					metalness: 0.92 - patina * 0.25,
+					emissive: new THREE.Color(0x000000)
+				})
+				disposables.push(brass)
+
+				const shape = new THREE.Shape(
+					toothPolygon(gear).map(([x, y]) => new THREE.Vector2(x, y))
+				)
+
+				for (const hole of lighteningHoles(gear, 5)) {
+					const path = new THREE.Path()
+					path.absarc(hole.x, hole.y, hole.r, 0, Math.PI * 2, true)
+					shape.holes.push(path)
+				}
+
+				const geometry = new THREE.ExtrudeGeometry(shape, {
+					depth: GEAR_THICKNESS,
+					bevelEnabled: true,
+					bevelThickness: 0.008,
+					bevelSize: 0.008,
+					bevelSegments: 1,
+					curveSegments: 3,
+					steps: 1
+				})
+				geometry.translate(0, 0, -GEAR_THICKNESS / 2)
+				disposables.push(geometry)
+
+				const mesh = new THREE.Mesh(geometry, brass)
+				mesh.position.set(gear.x, gear.y, 0)
+				mesh.rotation.z = gear.angle
+				group.add(mesh)
+				meshes.push(mesh)
+
+				// Hub: the boss the gear rides on.
+				const hubGeometry = new THREE.CylinderGeometry(
+					radii.hubRadius,
+					radii.hubRadius,
+					GEAR_THICKNESS * 1.5,
+					20
+				)
+				hubGeometry.rotateX(Math.PI / 2)
+				const hub = new THREE.Mesh(hubGeometry, brass)
+				hub.position.set(gear.x, gear.y, 0)
+				disposables.push(hubGeometry)
+				group.add(hub)
+
+				// Axle and its slotted cap.
+				const axleGeometry = new THREE.CylinderGeometry(radii.boreRadius * 0.9, radii.boreRadius * 0.9, GEAR_THICKNESS * 3.4, 12)
+				axleGeometry.rotateX(Math.PI / 2)
+				const axle = new THREE.Mesh(axleGeometry, steel)
+				axle.position.set(gear.x, gear.y, 0)
+				disposables.push(axleGeometry)
+				group.add(axle)
+
+				const capGeometry = new THREE.CylinderGeometry(radii.boreRadius * 1.7, radii.boreRadius * 1.7, GEAR_THICKNESS * 0.3, 12)
+				capGeometry.rotateX(Math.PI / 2)
+				const cap = new THREE.Mesh(capGeometry, darkSteel)
+				cap.position.set(gear.x, gear.y, GEAR_THICKNESS * 0.95)
+				disposables.push(capGeometry)
+				group.add(cap)
+
+			})
+
+			// Machine frame. Without it the gears are axles in mid-air; with it they
+			// are mounted on a beam that stands on the bench.
+			const frameMinX = Math.min(...gears.map((gear) => gear.x - gear.outerRadius)) - 0.34
+			const frameMaxX = Math.max(...gears.map((gear) => gear.x + gear.outerRadius)) + 0.34
+			const frameMinY = Math.min(...gears.map((gear) => gear.y)) 
+			const beamZ = -0.34
+
+			if (layout === 'row') {
+				const beamGeometry = new THREE.BoxGeometry(frameMaxX - frameMinX, 0.11, 0.13)
+				const beam = new THREE.Mesh(beamGeometry, darkSteel)
+				beam.position.set((frameMinX + frameMaxX) / 2, frameMinY, beamZ)
+				disposables.push(beamGeometry)
+				group.add(beam)
+
+				const postHeight = Math.max(0.2, frameMinY - benchTop)
+				for (const postX of [frameMinX + 0.12, frameMaxX - 0.12]) {
+					const postGeometry = new THREE.BoxGeometry(0.13, postHeight, 0.15)
+					const post = new THREE.Mesh(postGeometry, darkSteel)
+					post.position.set(postX, benchTop + postHeight / 2, beamZ)
+					disposables.push(postGeometry)
+					group.add(post)
+				}
+			} else {
+				const topY = Math.max(...gears.map((gear) => gear.y))
+				const beamGeometry = new THREE.BoxGeometry(0.13, topY - frameMinY + 0.3, 0.13)
+				const beam = new THREE.Mesh(beamGeometry, darkSteel)
+				beam.position.set(frameMinX, (topY + frameMinY) / 2, beamZ)
+				disposables.push(beamGeometry)
+				group.add(beam)
+
+				const footGeometry = new THREE.BoxGeometry(0.55, 0.1, 0.5)
+				const foot = new THREE.Mesh(footGeometry, darkSteel)
+				foot.position.set(frameMinX, benchTop + 0.05, beamZ + 0.06)
+				disposables.push(footGeometry)
+				group.add(foot)
+
+				const postHeight = Math.max(0.2, frameMinY - benchTop)
+				const postGeometry = new THREE.BoxGeometry(0.13, postHeight, 0.15)
+				const post = new THREE.Mesh(postGeometry, darkSteel)
+				post.position.set(frameMinX, benchTop + postHeight / 2, beamZ)
+				disposables.push(postGeometry)
+				group.add(post)
+			}
+
+			// Crank on the stage that is still running.
+			const driverIndex = gears.findIndex((gear) => gear.id === `gear-${driverStage.experienceId}`)
+			const driver = gears[driverIndex === -1 ? gears.length - 1 : driverIndex]
+			const crank = new THREE.Group()
+			crank.position.set(driver.x, driver.y, GEAR_THICKNESS * 0.9)
+
+			const armGeometry = new THREE.BoxGeometry(driver.pitchRadius * 0.72, 0.075, 0.05)
+			const arm = new THREE.Mesh(armGeometry, steel)
+			arm.position.x = driver.pitchRadius * 0.36
+			disposables.push(armGeometry)
+			crank.add(arm)
+
+			const handleGeometry = new THREE.CylinderGeometry(0.032, 0.032, 0.34, 10)
+			handleGeometry.rotateX(Math.PI / 2)
+			const handle = new THREE.Mesh(handleGeometry, wood)
+			handle.position.set(driver.pitchRadius * 0.72, 0, 0.16)
+			disposables.push(handleGeometry)
+			crank.add(handle)
+
+			const knobGeometry = new THREE.SphereGeometry(0.045, 10, 8)
+			const knob = new THREE.Mesh(knobGeometry, wood)
+			knob.position.set(driver.pitchRadius * 0.72, 0, 0.34)
+			disposables.push(knobGeometry)
+			crank.add(knob)
+
+			crank.rotation.z = driver.angle
+			group.add(crank)
+
+			/* Bench props, at the ends so they never cover a gear */
+
+			const addMesh = (
+				geometry: BufferGeometry,
+				material: Material | Material[],
+				position: [number, number, number],
+				rotation?: [number, number, number]
+			) => {
+				const mesh = new THREE.Mesh(geometry, material)
+				mesh.position.set(...position)
+				if (rotation) mesh.rotation.set(...rotation)
+				disposables.push(geometry)
+				group.add(mesh)
+				return mesh
+			}
+
+			const leftEdge = gears[0].x - gears[0].outerRadius - 0.7
+			const rightEdge = gears[gears.length - 1].x + gears[gears.length - 1].outerRadius + 0.7
+
+			// Oil can, left.
+			addMesh(
+				new THREE.CylinderGeometry(0.17, 0.19, 0.28, 18),
+				darkSteel,
+				[leftEdge, benchTop + 0.14, 0.35]
+			)
+			addMesh(
+				new THREE.ConeGeometry(0.05, 0.3, 12),
+				steel,
+				[leftEdge + 0.16, benchTop + 0.26, 0.35],
+				[0, 0, -0.9]
+			)
+
+			// Loupe, right.
+			const loupeRing = new THREE.TorusGeometry(0.19, 0.026, 10, 24)
+			addMesh(loupeRing, steel, [rightEdge, benchTop + 0.2, 0.3], [-1.1, 0, 0])
+			addMesh(
+				new THREE.CylinderGeometry(0.155, 0.155, 0.014, 24),
+				new THREE.MeshStandardMaterial({
+					color: 0xbfd6e8,
+					roughness: 0.1,
+					metalness: 0.2,
+					transparent: true,
+					opacity: 0.34
+				}),
+				[rightEdge, benchTop + 0.2, 0.3],
+				[-1.1, 0, 0]
+			)
+			addMesh(
+				new THREE.CylinderGeometry(0.028, 0.032, 0.34, 10),
+				darkSteel,
+				[rightEdge - 0.02, benchTop + 0.05, 0.42],
+				[0.5, 0, 0.3]
+			)
+
+			// Screwdriver, left of centre, lying on the mat.
+			addMesh(
+				new THREE.CylinderGeometry(0.018, 0.018, 0.5, 8),
+				steel,
+				[leftEdge + 0.42, benchTop + 0.03, 0.62],
+				[0, 0, Math.PI / 2]
+			)
+			addMesh(
+				new THREE.CylinderGeometry(0.055, 0.05, 0.28, 12),
+				new THREE.MeshStandardMaterial({ color: 0x8d2f42, roughness: 0.6, metalness: 0.1 }),
+				[leftEdge + 0.75, benchTop + 0.03, 0.62],
+				[0, 0, Math.PI / 2]
+			)
+
+			// Spare gear lying flat, right: the parts bin of a real bench.
+			const spare = placeTrain([{ id: 'spare', teeth: 16, module: 0.1 }], 'row')[0]
+			const spareShape = new THREE.Shape(
+				toothPolygon(spare).map(([x, y]) => new THREE.Vector2(x, y))
+			)
+			const spareGeometry = new THREE.ExtrudeGeometry(spareShape, {
+				depth: 0.05,
+				bevelEnabled: true,
+				bevelThickness: 0.004,
+				bevelSize: 0.004,
+				bevelSegments: 1,
+				curveSegments: 2
+			})
+			addMesh(
+				spareGeometry,
+				new THREE.MeshStandardMaterial({ color: 0xb08f4e, roughness: 0.46, metalness: 0.86 }),
+				[rightEdge - 0.4, benchTop + 0.026, 0.7],
+				[-Math.PI / 2, 0, 0.4]
+			)
+
+			// Brass filings: the mess a lathe leaves behind.
+			const filingGeometry = new THREE.TetrahedronGeometry(0.012)
+			const filingMaterial = new THREE.MeshStandardMaterial({
+				color: 0xd8b463,
+				roughness: 0.35,
+				metalness: 0.9
+			})
+			const filings = new THREE.InstancedMesh(filingGeometry, filingMaterial, 90)
+			const matrix = new THREE.Matrix4()
+			const quaternion = new THREE.Quaternion()
+			const euler = new THREE.Euler()
+			const scale = new THREE.Vector3()
+			const position = new THREE.Vector3()
+			let seed = 7
+			const random = () => {
+				seed = (seed * 16807) % 2147483647
+				return (seed - 1) / 2147483646
+			}
+			for (let index = 0; index < 90; index += 1) {
+				const spreadX = (random() - 0.5) * 8
+				const spreadZ = (random() - 0.5) * 1.4 + 0.25
+				position.set(spreadX, benchTop + 0.006, spreadZ)
+				euler.set(random() * 3, random() * 3, random() * 3)
+				quaternion.setFromEuler(euler)
+				const factor = 0.5 + random() * 1.2
+				scale.set(factor, factor, factor)
+				matrix.compose(position, quaternion, scale)
+				filings.setMatrixAt(index, matrix)
+			}
+			filings.instanceMatrix.needsUpdate = true
+			disposables.push(filingGeometry, filingMaterial)
+			group.add(filings)
+
+			// Content box for the camera: the gears plus their plaques.
+			const minX = frameMinX
+			const maxX = frameMaxX
+			const minY = benchTop - 0.05
+			const maxY = Math.max(...gears.map((gear) => gear.y + gear.outerRadius))
+
+			return {
+				group,
+				meshes,
+				gears,
+				disposables,
+				textures,
+				box: { minX, maxX, minY, maxY }
+			}
+		}
+
+		/* ── Camera fit ─────────────────────────────────────────────────── */
+
+		let layout: 'row' | 'column' = window.matchMedia(NARROW_VIEW).matches ? 'column' : 'row'
+		let built = build(layout)
+		scene.add(built.group)
+
+		const fit = () => {
+			const width = host.clientWidth
+			const height = host.clientHeight
+			if (!width || !height) return
+
+			renderer.setSize(width, height, false)
+			camera.aspect = width / height
+
+			const contentWidth = (built.box.maxX - built.box.minX) * SIDE_MARGIN
+			const contentHeight = built.box.maxY - built.box.minY
+			const fovTan = Math.tan((FOV * Math.PI) / 360)
+
+			const byHeight = contentHeight / TARGET.height / (2 * fovTan)
+			const byWidth = contentWidth / TARGET.width / (2 * fovTan * camera.aspect)
+			const distance = Math.max(byHeight, byWidth)
+
+			const visibleHeight = 2 * distance * fovTan
+			const focusY = built.box.maxY - (0.5 - TOP_MARGIN) * visibleHeight
+
+			camera.position.set(
+				0,
+				focusY + Math.sin(CAMERA_TILT) * distance,
+				Math.cos(CAMERA_TILT) * distance
+			)
+			camera.lookAt(0, focusY, 0)
+			camera.updateProjectionMatrix()
+		}
+
+		fit()
+
+		/* ── Interaction ────────────────────────────────────────────────── */
+
+		const raycaster = new THREE.Raycaster()
+		const pointer = new THREE.Vector2()
+		let hovered: Mesh | null = null
+		let driverAngle = 0
+		let velocity = 0
+		let dragging = false
+		let dragStartX = 0
+		let dragStartAngle = 0
+		let moved = false
+		let lastPointerTime = 0
+
+		const stageFor = (mesh: Mesh) => {
+			const index = built.meshes.indexOf(mesh)
+			return index === -1 ? null : gearStages[index]
+		}
+
+		const tip = document.querySelector<HTMLElement>('[data-gear-tip]')
+		const tipTitle = document.querySelector<HTMLElement>('[data-gear-tip-title]')
+		const tipMeta = document.querySelector<HTMLElement>('[data-gear-tip-meta]')
+
+		const placeTip = (clientX: number, clientY: number) => {
+			if (!tip) return
+			const rect = host.getBoundingClientRect()
+			tip.style.left = `${clientX - rect.left}px`
+			tip.style.top = `${clientY - rect.top}px`
+		}
+
+		const setHover = (mesh: Mesh | null, clientX = 0, clientY = 0) => {
+			if (mesh === hovered) {
+				if (mesh) placeTip(clientX, clientY)
+				return
+			}
+			if (hovered) {
+				const material = hovered.material as import('three').MeshStandardMaterial
+				material.emissive.setHex(0x000000)
+			}
+			hovered = mesh
+			if (tip) tip.classList.add('hidden')
+			if (hovered) {
+				const material = hovered.material as import('three').MeshStandardMaterial
+				material.emissive.setHex(0xffb066)
+				const stage = stageFor(hovered)
+				if (stage && tip && tipTitle && tipMeta) {
+					tipTitle.textContent = stage.company
+					tipMeta.textContent = `${stage.period} · ${stage.state === 'ongoing' ? 'en curso' : 'completada'}`
+					placeTip(clientX, clientY)
+					tip.classList.remove('hidden')
+				}
+			}
+			host.style.cursor = hovered ? 'pointer' : dragging ? 'grabbing' : 'grab'
+		}
+
+		const pick = (clientX: number, clientY: number) => {
+			const rect = host.getBoundingClientRect()
+			pointer.x = ((clientX - rect.left) / rect.width) * 2 - 1
+			pointer.y = -((clientY - rect.top) / rect.height) * 2 + 1
+			raycaster.setFromCamera(pointer, camera)
+			const hits = raycaster.intersectObjects(built.meshes, false)
+			return hits.length ? (hits[0].object as Mesh) : null
+		}
+
+		const openStage = (experienceId: string) => {
+			// The card may be filtered out; `Todos` is always able to show it.
+			const all = document.querySelector<HTMLButtonElement>('[data-filter="all"]')
+			if (all && all.getAttribute('aria-pressed') !== 'true') all.click()
+
+			const card = document.querySelector<HTMLElement>(`[data-exp-id="${experienceId}"]`)
+			if (!card) return
+
+			const reduced = window.matchMedia(REDUCED_MOTION).matches
+			// Scroll explicitly instead of `scrollIntoView`: a smooth animation can be
+			// left short when the reveal animations above grow the page mid-flight,
+			// and `client:visible` never hydrates a card that stayed off-screen.
+			const target = Math.max(
+				0,
+				card.getBoundingClientRect().top +
+					window.scrollY -
+					(window.innerHeight - card.offsetHeight) / 2
+			)
+			window.scrollTo({ top: target, behavior: reduced ? 'auto' : 'smooth' })
+			window.setTimeout(
+				() => {
+					const box = card.getBoundingClientRect()
+					if (box.top < 96 || box.bottom > window.innerHeight - 32) {
+						window.scrollTo({ top: target, behavior: 'auto' })
+					}
+				},
+				reduced ? 0 : 760
+			)
+
+			// The card is a `client:visible` island: it only gets its handler once it
+			// enters the viewport. A single synthetic click on a not-yet-hydrated
+			// button is a no-op, so retry until `aria-expanded` actually flips.
+			let attempts = 0
+			const expand = () => {
+				const toggle = card.querySelector<HTMLButtonElement>('button[aria-expanded]')
+				if (!toggle || toggle.getAttribute('aria-expanded') === 'true') return
+				toggle.click()
+				if (toggle.getAttribute('aria-expanded') === 'true') return
+				attempts += 1
+				if (attempts < 20) window.setTimeout(expand, 180)
+			}
+			if (reduced) expand()
+			else window.setTimeout(expand, 340)
+		}
+
+		const onPointerDown = (event: PointerEvent) => {
+			if (event.button !== 0 && event.pointerType === 'mouse') return
+			dragging = true
+			moved = false
+			dragStartX = event.clientX
+			dragStartAngle = driverAngle
+			lastPointerTime = performance.now()
+			host.setPointerCapture?.(event.pointerId)
+			host.style.cursor = 'grabbing'
+		}
+
+		const onPointerMove = (event: PointerEvent) => {
+			if (dragging) {
+				const delta = (event.clientX - dragStartX) / Math.max(1, host.clientWidth)
+				driverAngle = dragStartAngle + delta * Math.PI * 1.6
+				if (Math.abs(event.clientX - dragStartX) > 4) moved = true
+				const now = performance.now()
+				const dt = Math.max(8, now - lastPointerTime) / 1000
+				velocity = (delta * Math.PI * 1.6) / dt
+				lastPointerTime = now
+				return
+			}
+			setHover(pick(event.clientX, event.clientY), event.clientX, event.clientY)
+		}
+
+		const onPointerUp = (event: PointerEvent) => {
+			if (!dragging) return
+			dragging = false
+			host.style.cursor = hovered ? 'pointer' : 'grab'
+			host.releasePointerCapture?.(event.pointerId)
+
+			if (moved) return
+			const mesh = pick(event.clientX, event.clientY)
+			const stage = mesh ? stageFor(mesh) : null
+			if (stage) openStage(stage.experienceId)
+		}
+
+		host.addEventListener('pointerdown', onPointerDown)
+		host.addEventListener('pointermove', onPointerMove, { passive: true })
+		host.addEventListener('pointerup', onPointerUp)
+		host.addEventListener('pointercancel', onPointerUp)
+		host.addEventListener('pointerleave', () => {
+			if (!dragging) setHover(null)
+		})
+		host.style.cursor = 'grab'
+
+		/* ── Loop ───────────────────────────────────────────────────────── */
+
+		let frame = 0
+		let visible = true
+		let disposed = false
+		let last = performance.now()
+
+		const render = () => {
+			frame = 0
+			if (disposed || !visible) return
+
+			const now = performance.now()
+			const dt = Math.min(0.05, (now - last) / 1000)
+			last = now
+
+			if (!dragging) {
+				// Momentum after a flick, then the idle spin takes over.
+				velocity *= Math.exp(-3.4 * dt)
+				if (Math.abs(velocity) < 0.02) velocity = 0
+				driverAngle += (SPIN + velocity) * dt
+			}
+
+			resolveAngles(built.gears, driverAngle)
+			built.gears.forEach((gear, index) => {
+				built.meshes[index].rotation.z = gear.angle
+			})
+
+			renderer.render(scene, camera)
+			frame = requestAnimationFrame(render)
+		}
+
+		const requestFrame = () => {
+			if (disposed || !visible || frame) return
+			last = performance.now()
+			frame = requestAnimationFrame(render)
+		}
+
+		requestFrame()
+
+		/* ── Observers ──────────────────────────────────────────────────── */
+
+		const resizeObserver = new ResizeObserver(() => {
+			const next = window.matchMedia(NARROW_VIEW).matches ? 'column' : 'row'
+			if (next !== layout) {
+				layout = next
+				rebuild()
+				return
+			}
+			fit()
+		})
+		resizeObserver.observe(host)
+
+		const intersection = new IntersectionObserver(
+			([entry]) => {
+				visible = entry.isIntersecting
+				if (visible) requestFrame()
+				else {
+					cancelAnimationFrame(frame)
+					frame = 0
+				}
+			},
+			{ threshold: 0 }
+		)
+		intersection.observe(host)
+
+		const onVisibility = () => {
+			if (document.hidden) {
+				cancelAnimationFrame(frame)
+				frame = 0
+			} else if (visible) requestFrame()
+		}
+		document.addEventListener('visibilitychange', onVisibility)
+
+		document.addEventListener(
+			'astro:before-swap',
+			() => {
+				disposed = true
+				cancelAnimationFrame(frame)
+				resizeObserver.disconnect()
+				intersection.disconnect()
+				document.removeEventListener('visibilitychange', onVisibility)
+				for (const disposable of built.disposables) disposable.dispose()
+				for (const texture of built.textures) texture.dispose()
+				scene.clear()
+				renderer.dispose()
+			},
+			{ once: true }
+		)
+
+		/**
+		 * A row of three gears does not fit a phone. The train stands up instead,
+		 * which also reads bottom-up in time order.
+		 */
+		const rebuild = () => {
+			scene.remove(built.group)
+			for (const disposable of built.disposables) disposable.dispose()
+			for (const texture of built.textures) texture.dispose()
+			built = build(layout)
+			scene.add(built.group)
+			fit()
+			requestFrame()
+		}
+	}
+
+	/* ── Boot ─────────────────────────────────────────────────────────────── */
+
+	const host = document.querySelector<HTMLElement>('[data-gear-stage]')
+
+	// One bail-out before anything expensive: reduced motion keeps the design
+	// that already exists, never a frozen frame of this one.
+	if (host && !window.matchMedia(REDUCED_MOTION).matches) {
+		const root = host.closest<HTMLElement>('[data-gear-hero]')
+		if (root?.dataset.gearInit !== 'true') {
+			if (root) root.dataset.gearInit = 'true'
+			mount(host).catch((error) => {
+				console.warn('[gear-hero] no se pudo montar la escena', error)
+				host.dataset.stage = 'unavailable'
+			})
+		}
+	}
+</script>

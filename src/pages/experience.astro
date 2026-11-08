@@ -8,6 +8,7 @@ import SectionRail from '@/components/ui/SectionRail.astro'
 import ScrollReveals from '@/components/ui/ScrollReveals.astro'
 import CountUp from '@/components/ui/CountUp.astro'
 import ExpandableExperienceCard from '@/components/sections/ExpandableExperienceCard'
+import GearTrainHero from '@/components/sections/experience/GearTrainHero.astro'
 import { experiences } from '@/data/experiences'
 import type { Experience } from '@/data/experiences'
 import { education } from '@/data/education'
@@ -134,7 +135,8 @@ const crossLinks = [
 		lines={['Experience', '& Career']}
 		accentIndex={1}
 		align="center"
-		background="pattern"
+		background="gears"
+		height="tall"
 		motion="scroll"
 		subtitle="Tres etapas, tres formas de trabajar: mantenimiento web y campañas en un centro de contacto, producto freelance de punta a punta y modelos de datos aplicados a decisiones de negocio."
 		meta={[
@@ -142,7 +144,9 @@ const crossLinks = [
 			`${techCount} tecnologías`,
 			`${ongoingCount} roles en curso`
 		]}
-	/>
+	>
+		<GearTrainHero slot="background" />
+	</PageHero>
 
 	<!-- In-page index, shared with the other top-level views. -->
 	<SectionRail sections={railSections} label="Secciones de la página de experiencia" />
@@ -276,6 +280,7 @@ const crossLinks = [
 									return (
 										<li
 											data-exp-card
+											data-exp-id={exp.id}
 											data-exp-type={exp.type}
 											data-reveal
 											style={`--i:${index}`}
