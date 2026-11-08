@@ -361,6 +361,38 @@ const displayLogos = displayIcons.flatMap((name) => {
 			transform 0.35s ease,
 			border-color 0.35s ease;
 		will-change: transform, filter, opacity;
+		/* The list is decorative and click-through, but each disc takes hover so
+		   the astronaut can reach for it. */
+		pointer-events: auto;
+	}
+
+	/* Set by the script while the astronaut reaches for a bubble: `point` while
+	   the arm is extended toward it, `grab` once the glove closes around it. */
+	.skills-bubble__disc[data-reach] {
+		border-color: rgba(199, 0, 57, 0.6);
+	}
+
+	.skills-bubble__disc[data-reach='point'] {
+		box-shadow:
+			0 0 0 1px rgba(199, 0, 57, 0.35),
+			0 0 36px rgba(199, 0, 57, 0.35);
+	}
+
+	.skills-bubble__disc[data-reach='grab'] {
+		box-shadow:
+			0 0 0 2px rgba(199, 0, 57, 0.75),
+			0 0 48px rgba(199, 0, 57, 0.55);
+		animation: skills-bubble-grab 0.9s ease-in-out infinite;
+	}
+
+	@keyframes skills-bubble-grab {
+		0%,
+		100% {
+			transform: scale(1.06) rotate(-4deg);
+		}
+		50% {
+			transform: scale(0.97) rotate(4deg);
+		}
 	}
 
 	@media (min-width: 768px) {
@@ -451,6 +483,18 @@ const displayLogos = displayIcons.flatMap((name) => {
 	 */
 	const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 	const bubbles = Array.from(document.querySelectorAll<HTMLElement>('[data-skills-bubble]'))
+
+	/** The bubble under the pointer, read by the 3D loop to aim an arm at it. */
+	const hover: { bubble: HTMLElement | null } = { bubble: null }
+
+	for (const bubble of bubbles) {
+		bubble.addEventListener('pointerenter', () => {
+			hover.bubble = bubble
+		})
+		bubble.addEventListener('pointerleave', () => {
+			if (hover.bubble === bubble) hover.bubble = null
+		})
+	}
 
 	if (bubbles.length > 0 && !reducedMotion) {
 		let pointerX = Number.NEGATIVE_INFINITY
@@ -1034,9 +1078,347 @@ const displayLogos = displayIcons.flatMap((name) => {
 		beacon.position.set(-0.48, 0.99, -0.9)
 		suitDetails.add(beacon)
 
+		// ── Arms ────────────────────────────────────────────────────────────
+		// Two-bone chains solved analytically every frame (shoulder → elbow →
+		// hand). At rest they hang at the sides; when a tool bubble is hovered,
+		// the arm on that side reaches for it, pointing with the index finger,
+		// and closes the glove around it once the hand gets there.
+		const UPPER = 1
+		const LOWER = 0.95
+		const REACH = UPPER + LOWER - 0.02
+		const Y_AXIS = new THREE.Vector3(0, 1, 0)
+
+		/** Distance from the wrist to the centre of the palm, along the forearm. */
+		const PALM = 0.2
+
+		type Finger = { base: import('three').Group; mid: import('three').Group }
+
+		type Arm = {
+			side: number
+			shoulder: import('three').Vector3
+			rest: import('three').Vector3
+			target: import('three').Vector3
+			upper: import('three').Mesh
+			lower: import('three').Mesh
+			elbow: import('three').Mesh
+			ring: import('three').Mesh
+			hand: import('three').Group
+			index: Finger
+			fingers: Finger[]
+			thumb: Finger
+			point: number
+			grab: number
+			/** 0 → 1: every finger curled with the thumb out (thumbs up). */
+			fist: number
+		}
+
+		/** An idle gesture or a reaction driving one arm in place of its rest pose. */
+		type Pose = { target: import('three').Vector3; fist: number; rate: number } | null
+
+		// Brand red for the gauntlet stripe, matching the patch and the display.
+		const accentRed = new THREE.MeshStandardMaterial({
+			color: 0xc70039,
+			roughness: 0.45,
+			metalness: 0.1,
+			emissive: 0x3a0010
+		})
+
+		/**
+		 * A two-segment glove finger. Each capsule's rounded ends sit exactly on
+		 * its joints (the capsule spans pivot → next pivot), so a segment rotates
+		 * like a ball joint and never opens a gap at the knuckle while curling.
+		 * `scale` sets the finger length (middle longest, pinky shortest).
+		 */
+		const makeFinger = (x: number, y: number, z: number, scale: number): Finger => {
+			const radius = 0.036
+			const proximalLength = 0.1 * scale
+			const distalLength = 0.075 * scale
+
+			const base = new THREE.Group()
+			base.position.set(x, y, z)
+			const proximal = new THREE.Mesh(
+				new THREE.CapsuleGeometry(radius, proximalLength, 6, 14),
+				shell
+			)
+			proximal.position.y = proximalLength / 2
+			base.add(proximal)
+
+			const mid = new THREE.Group()
+			mid.position.y = proximalLength
+			const knuckle = new THREE.Mesh(new THREE.SphereGeometry(radius * 1.08, 16, 16), hardware)
+			mid.add(knuckle)
+			const distal = new THREE.Mesh(
+				new THREE.CapsuleGeometry(radius * 0.94, distalLength, 6, 14),
+				shell
+			)
+			distal.position.y = distalLength / 2
+			mid.add(distal)
+			const pad = new THREE.Mesh(new THREE.SphereGeometry(radius * 0.8, 12, 12), rubber)
+			pad.position.set(0, distalLength, -radius * 0.45)
+			mid.add(pad)
+			base.add(mid)
+			return { base, mid }
+		}
+
+		const makeArm = (side: number): Arm => {
+			const shoulder = new THREE.Vector3(side * 1.18, -0.74, 0.02)
+			const rest = new THREE.Vector3(side * 1.52, -2.4, 0.3)
+
+			const shoulderCap = new THREE.Mesh(new THREE.SphereGeometry(0.27, 32, 32), suit)
+			shoulderCap.position.copy(shoulder)
+			const ring = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.035, 12, 40), gold)
+			const upper = new THREE.Mesh(new THREE.CapsuleGeometry(0.19, UPPER - 0.2, 8, 24), suit)
+			const lower = new THREE.Mesh(new THREE.CapsuleGeometry(0.16, LOWER - 0.24, 8, 24), suit)
+			const elbow = new THREE.Mesh(new THREE.SphereGeometry(0.17, 24, 24), hardware)
+
+			// EVA glove. Local frame: +Y runs from the wrist to the fingertips, +Z
+			// is the back of the hand (turned toward the camera), -Z the palm.
+			const hand = new THREE.Group()
+
+			// Gauntlet: white shell cuff with the brand-red stripe.
+			const gauntlet = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.195, 0.2, 32), shell)
+			gauntlet.position.y = -0.07
+			hand.add(gauntlet)
+			const stripe = new THREE.Mesh(new THREE.TorusGeometry(0.183, 0.018, 8, 40), accentRed)
+			stripe.rotation.x = Math.PI / 2
+			stripe.position.y = -0.04
+			hand.add(stripe)
+
+			// Bayonet wrist ring, bolted like the neck ring.
+			const bayonet = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.04, 12, 40), gold)
+			bayonet.rotation.x = Math.PI / 2
+			bayonet.position.y = 0.04
+			hand.add(bayonet)
+			for (let i = 0; i < 4; i++) {
+				const angle = (i / 4) * Math.PI * 2 + Math.PI / 4
+				const bolt = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.03, 10), gold)
+				bolt.rotation.z = Math.PI / 2
+				bolt.rotation.y = -angle
+				bolt.position.set(Math.cos(angle) * 0.2, 0.04, Math.sin(angle) * 0.2)
+				hand.add(bolt)
+			}
+
+			// Wrist panel with a status light, on the back of the gauntlet.
+			const panel = new THREE.Mesh(new RoundedBoxGeometry(0.13, 0.1, 0.04, 2, 0.012), hardware)
+			panel.position.set(0, -0.08, 0.19)
+			hand.add(panel)
+			const status = new THREE.Mesh(
+				new THREE.SphereGeometry(0.016, 10, 10),
+				new THREE.MeshStandardMaterial({
+					color: 0x220008,
+					emissive: 0xc70039,
+					emissiveIntensity: 2
+				})
+			)
+			status.position.set(0, -0.08, 0.212)
+			hand.add(status)
+
+			// Padded palm, rubber grip on the inside, metal plate on the back.
+			const palm = new THREE.Mesh(new RoundedBoxGeometry(0.27, 0.22, 0.15, 3, 0.06), shell)
+			palm.position.y = 0.19
+			hand.add(palm)
+			const grip = new THREE.Mesh(new RoundedBoxGeometry(0.2, 0.15, 0.02, 2, 0.008), rubber)
+			grip.position.set(0, 0.19, -0.075)
+			hand.add(grip)
+			const plate = new THREE.Mesh(new RoundedBoxGeometry(0.2, 0.15, 0.03, 2, 0.012), hardware)
+			plate.position.set(0, 0.2, 0.075)
+			hand.add(plate)
+			const guard = new THREE.Mesh(new THREE.CapsuleGeometry(0.03, 0.2, 4, 12), rubber)
+			guard.rotation.z = Math.PI / 2
+			guard.position.set(0, 0.3, 0.04)
+			hand.add(guard)
+
+			// Index sits next to the thumb, which is on the side facing the body.
+			const fingers = [
+				{ x: -0.09, scale: 1 },
+				{ x: -0.03, scale: 1.1 },
+				{ x: 0.03, scale: 1 },
+				{ x: 0.09, scale: 0.85 }
+			].map(({ x, scale }) => makeFinger(x * side, 0.3, 0, scale))
+			// The thumb roots inside the palm edge. Splay first, then curl about its
+			// own axis: 'ZXY' applies Z before X, so the curl follows the splay
+			// instead of swinging the whole thumb around the hand.
+			const thumb = makeFinger(side * -0.11, 0.15, -0.03, 0.8)
+			thumb.base.rotation.order = 'ZXY'
+			thumb.base.rotation.z = side * 0.6
+			for (const finger of [...fingers, thumb]) hand.add(finger.base)
+
+			suitDetails.add(shoulderCap, ring, upper, lower, elbow, hand)
+
+			return {
+				side,
+				shoulder,
+				rest,
+				target: rest.clone(),
+				upper,
+				lower,
+				elbow,
+				ring,
+				hand,
+				index: fingers[0],
+				fingers: fingers.slice(1),
+				thumb,
+				point: 0,
+				grab: 0,
+				fist: 0
+			}
+		}
+
+		const arms = [makeArm(-1), makeArm(1)]
+
+		const ikAxis = new THREE.Vector3()
+		const ikPole = new THREE.Vector3()
+		const ikElbow = new THREE.Vector3()
+		const ikHand = new THREE.Vector3()
+		const ikDir = new THREE.Vector3()
+		const handX = new THREE.Vector3()
+		const handY = new THREE.Vector3()
+		const handZ = new THREE.Vector3()
+		const handBasis = new THREE.Matrix4()
+		const TOWARD_CAMERA = new THREE.Vector3(0, 0, 1)
+
+		/** Stretch a Y-aligned capsule between two points. */
+		const placeBone = (
+			mesh: import('three').Object3D,
+			from: import('three').Vector3,
+			to: import('three').Vector3
+		) => {
+			mesh.position.lerpVectors(from, to, 0.5)
+			ikDir.subVectors(to, from).normalize()
+			mesh.quaternion.setFromUnitVectors(Y_AXIS, ikDir)
+		}
+
+		const solveArm = (arm: Arm) => {
+			ikAxis.subVectors(arm.target, arm.shoulder)
+			// Aim the palm, not the wrist, at the target.
+			const distance = THREE.MathUtils.clamp(ikAxis.length() - PALM, 0.35, REACH)
+			ikAxis.normalize()
+
+			// Law of cosines: how far along the shoulder→hand axis the elbow sits,
+			// and how far it bends away from it.
+			const along = (UPPER * UPPER - LOWER * LOWER + distance * distance) / (2 * distance)
+			const bend = Math.sqrt(Math.max(0, UPPER * UPPER - along * along))
+
+			// Elbows bend out, down and back, like a real arm.
+			ikPole.set(arm.side * 0.5, -1, -0.7).normalize()
+			ikPole.addScaledVector(ikAxis, -ikPole.dot(ikAxis)).normalize()
+
+			ikElbow.copy(arm.shoulder).addScaledVector(ikAxis, along).addScaledVector(ikPole, bend)
+			ikHand.copy(arm.shoulder).addScaledVector(ikAxis, distance)
+
+			placeBone(arm.upper, arm.shoulder, ikElbow)
+			placeBone(arm.lower, ikElbow, ikHand)
+			arm.elbow.position.copy(ikElbow)
+			arm.ring.position
+				.copy(arm.shoulder)
+				.addScaledVector(ikDir.subVectors(ikElbow, arm.shoulder).normalize(), 0.2)
+			arm.ring.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), ikDir)
+			arm.hand.position.copy(ikHand)
+
+			// Full basis instead of a bare direction, so the hand never rolls at
+			// random: fingers along the forearm, back of the hand to the camera.
+			handY.subVectors(ikHand, ikElbow).normalize()
+			handX.crossVectors(handY, TOWARD_CAMERA)
+			if (handX.lengthSq() < 1e-4) handX.set(1, 0, 0)
+			handX.normalize()
+			handZ.crossVectors(handX, handY).normalize()
+			handBasis.makeBasis(handX, handY, handZ)
+			arm.hand.quaternion.setFromRotationMatrix(handBasis)
+
+			// Fingers: relaxed at rest, a fist with the index out while pointing,
+			// and all of them wrapped around the bubble while grabbing. The second
+			// joint curls a little more than the first, like a real grip.
+			const lerp = THREE.MathUtils.lerp
+			const curl = (finger: Finger, amount: number) => {
+				finger.base.rotation.x = -amount
+				finger.mid.rotation.x = -amount * 1.2
+			}
+			curl(arm.index, lerp(lerp(lerp(0.3, 0, arm.point), 0.95, arm.grab), 1.4, arm.fist))
+			for (const finger of arm.fingers)
+				curl(finger, lerp(lerp(lerp(0.3, 1.35, arm.point), 0.95, arm.grab), 1.4, arm.fist))
+			curl(arm.thumb, lerp(lerp(0.25, 1.05, Math.max(arm.point, arm.grab)), -0.3, arm.fist))
+		}
+
+		for (const arm of arms) solveArm(arm)
+
 		const bust = new THREE.Group()
 		bust.add(head, collar, torso, suitDetails)
 		scene.add(bust)
+
+		// ── Hover target ────────────────────────────────────────────────────
+		// The hovered bubble's screen centre is cast onto a plane just in front
+		// of the chest, then brought into the bust's space for the IK.
+		const raycaster = new THREE.Raycaster()
+		const reachPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -0.9)
+		const ndc = new THREE.Vector2()
+		const goal = new THREE.Vector3()
+
+		const bubbleGoal = (bubble: HTMLElement) => {
+			const rect = bubble.getBoundingClientRect()
+			const frame = host.getBoundingClientRect()
+			if (!frame.width || !frame.height) return null
+			ndc.set(
+				((rect.left + rect.width / 2 - frame.left) / frame.width) * 2 - 1,
+				-((rect.top + rect.height / 2 - frame.top) / frame.height) * 2 + 1
+			)
+			raycaster.setFromCamera(ndc, camera)
+			if (!raycaster.ray.intersectPlane(reachPlane, goal)) return null
+			bust.updateMatrixWorld()
+			return bust.worldToLocal(goal)
+		}
+
+		let reachedBubble: HTMLElement | null = null
+		let reachedState = ''
+
+		/** Mirror the arm's state on the bubble, touching the DOM only on change. */
+		const markBubble = (bubble: HTMLElement | null, state: string) => {
+			if (bubble === reachedBubble && state === reachedState) return
+			if (reachedBubble) delete reachedBubble.dataset.reach
+			reachedBubble = state ? bubble : null
+			reachedState = state
+			if (reachedBubble) reachedBubble.dataset.reach = state
+		}
+
+		/** `dt` in seconds: easing is time-based so slow devices still arrive. */
+		/**
+		 * `poses` is indexed like `arms` (left, right). A hovered bubble wins over
+		 * an idle gesture; `override` (the bonk reaction) wins over both.
+		 */
+		const updateArms = (
+			elapsed: number,
+			dt: number,
+			ready: boolean,
+			poses: [Pose, Pose],
+			override: boolean
+		) => {
+			const ease = (rate: number) => 1 - Math.exp(-rate * dt)
+			const bubble = ready && !override ? hover.bubble : null
+			const target = bubble ? bubbleGoal(bubble) : null
+			const activeSide = target ? (target.x >= 0 ? 1 : -1) : 0
+			let state = ''
+
+			for (const [i, arm] of arms.entries()) {
+				const active = arm.side === activeSide && target !== null
+				const pose = active ? null : poses[i]
+				const desired = active
+					? target
+					: pose
+						? pose.target
+						: ikDir.copy(arm.rest).setY(arm.rest.y + Math.sin(elapsed * 1.1 + arm.side) * 0.03)
+				arm.target.lerp(desired, ease(active ? 6 : pose ? pose.rate : 4))
+
+				const reachable = active && target.distanceTo(arm.shoulder) <= REACH + PALM
+				const arrived = active && arm.target.distanceTo(target) < 0.1
+				arm.point = THREE.MathUtils.lerp(arm.point, active ? 1 : 0, ease(7))
+				arm.grab = THREE.MathUtils.lerp(arm.grab, reachable && arrived ? 1 : 0, ease(9))
+				arm.fist = THREE.MathUtils.lerp(arm.fist, pose ? pose.fist : 0, ease(8))
+				solveArm(arm)
+
+				if (active) state = arm.grab > 0.6 ? 'grab' : 'point'
+			}
+
+			markBubble(bubble, state)
+		}
 
 		// ── Images ──────────────────────────────────────────────────────────
 		// Painted after the first frame so the figure never waits on them.
@@ -1083,6 +1465,26 @@ const displayLogos = displayIcons.flatMap((name) => {
 
 		// ── Pointer ─────────────────────────────────────────────────────────
 		const pointer = { x: 0, y: 0 }
+		/** Last pointer position in client pixels, for the helmet hit test. */
+		const client = { x: Number.NEGATIVE_INFINITY, y: 0, moved: false }
+		/** `performance.now()` of the last pointer activity; drives the idle mode. */
+		let lastActivity = performance.now()
+		/** Set by a click on the helmet; consumed by the loop. */
+		let pendingBonk = false
+		const section = host.closest('section')
+		const headSphere = new THREE.Sphere(new THREE.Vector3(), 0.7)
+
+		/** True when the client point lands on the helmet. */
+		const hitsHead = (x: number, y: number) => {
+			const frame = host.getBoundingClientRect()
+			if (!frame.width || !frame.height) return false
+			ndc.set(((x - frame.left) / frame.width) * 2 - 1, -((y - frame.top) / frame.height) * 2 + 1)
+			raycaster.setFromCamera(ndc, camera)
+			// A bounding sphere is enough for a helmet and skips the triangle test.
+			head.getWorldPosition(headSphere.center)
+			headSphere.radius = 0.7 * bust.scale.x
+			return raycaster.ray.intersectsSphere(headSphere)
+		}
 
 		if (!reducedMotion) {
 			window.addEventListener(
@@ -1090,9 +1492,22 @@ const displayLogos = displayIcons.flatMap((name) => {
 				(event) => {
 					pointer.x = (event.clientX / window.innerWidth) * 2 - 1
 					pointer.y = (event.clientY / window.innerHeight) * 2 - 1
+					client.x = event.clientX
+					client.y = event.clientY
+					client.moved = true
+					lastActivity = performance.now()
 				},
 				{ passive: true }
 			)
+
+			// The canvas ignores pointer events so the bubbles stay hoverable, so the
+			// helmet is hit-tested from the window instead.
+			window.addEventListener('pointerdown', (event) => {
+				lastActivity = performance.now()
+				const target = event.target as Element | null
+				if (target?.closest('a, button, input, textarea, select, [data-skills-bubble]')) return
+				if (hitsHead(event.clientX, event.clientY)) pendingBonk = true
+			})
 		}
 
 		// ── Sizing ──────────────────────────────────────────────────────────
@@ -1102,7 +1517,10 @@ const displayLogos = displayIcons.flatMap((name) => {
 			if (!width || !height) return
 
 			renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75))
-			renderer.setSize(width, height, false)
+			// Let three size the canvas in CSS pixels too. With `false` the canvas
+			// kept its device-pixel size, so on HiDPI screens the scene rendered
+			// larger than the hero and drifted away from the DOM bubbles.
+			renderer.setSize(width, height)
 
 			camera.aspect = width / height
 			// Pull back on narrow viewports so the shoulders stay in frame.
@@ -1143,12 +1561,157 @@ const displayLogos = displayIcons.flatMap((name) => {
 		let frameId = 0
 		let visible = true
 		let followY = 0
+		let lastFrame = startedAt
 
 		const damp = (current: number, target: number, amount: number) =>
 			current + (target - current) * amount
 
+		// ── Idle life ───────────────────────────────────────────────────────
+		// After a few seconds without pointer activity the astronaut glances
+		// around on its own and, now and then, plays a gesture. Gaze is in the
+		// same units as `pointer` (-1 → 1 covers the screen) so both blend.
+		const IDLE_AFTER = 3.5
+		type GestureKind = 'wave' | 'wrist' | 'thumbs'
+		const GESTURES: { kind: GestureKind; duration: number }[] = [
+			{ kind: 'wave', duration: 2.8 },
+			{ kind: 'wrist', duration: 2.6 },
+			{ kind: 'thumbs', duration: 2.2 }
+		]
+		const random = (min: number, max: number) => min + Math.random() * (max - min)
+
+		let idle = 0
+		let lifeTime = 0
+		const gaze = { x: 0, y: 0, goalX: 0, goalY: 0, nextAt: 0 }
+		let gesture: { kind: GestureKind; start: number; duration: number } | null = null
+		let lastGesture: GestureKind | null = null
+		let nextGestureAt = 0
+		let baseYaw = 0
+		let basePitch = 0
+		let baseRoll = 0
+
+		const leftGoal = new THREE.Vector3()
+		const rightGoal = new THREE.Vector3()
+		const poses: [Pose, Pose] = [null, null]
+
+		// ── Bonk ────────────────────────────────────────────────────────────
+		// A click on the helmet kicks an underdamped spring (head snaps back,
+		// wobbles and squashes), flashes the visor and brings both gloves up to
+		// rub the helmet.
+		const BONK_SECONDS = 1.4
+		const spring = { pitch: 0, pitchV: 0, roll: 0, rollV: 0, squash: 0, squashV: 0 }
+		let bonkAt = Number.NEGATIVE_INFINITY
+		let flash = 0
+		const stepSpring = (dt: number) => {
+			// Two sub-steps keep the stiff spring stable on a slow 10 fps frame.
+			const h = dt / 2
+			for (let i = 0; i < 2; i++) {
+				spring.pitchV += (-140 * spring.pitch - 9 * spring.pitchV) * h
+				spring.pitch += spring.pitchV * h
+				spring.rollV += (-110 * spring.roll - 7 * spring.rollV) * h
+				spring.roll += spring.rollV * h
+				spring.squashV += (-260 * spring.squash - 12 * spring.squashV) * h
+				spring.squash += spring.squashV * h
+			}
+		}
+
+		/** Idle gaze, gesture poses and the bonk reaction for this frame. */
+		const updateLife = (now: number, elapsed: number, dt: number) => {
+			const ease = (rate: number) => 1 - Math.exp(-rate * dt)
+			const isIdle = (now - lastActivity) / 1000 > IDLE_AFTER && !hover.bubble
+			idle = damp(idle, isIdle ? 1 : 0, ease(isIdle ? 1.2 : 4))
+			poses[0] = null
+			poses[1] = null
+			let roll = 0
+
+			// Glances: quick turn, then hold, sometimes back to the camera.
+			if (elapsed >= gaze.nextAt) {
+				const center = Math.random() < 0.3
+				gaze.goalX = center ? 0 : random(-0.75, 0.75)
+				gaze.goalY = center ? 0 : random(-0.45, 0.4)
+				gaze.nextAt = elapsed + random(1.4, 3.4)
+			}
+
+			if (!isIdle) {
+				gesture = null
+				nextGestureAt = elapsed + 1.6
+			} else if (!gesture && elapsed >= nextGestureAt) {
+				const options = GESTURES.filter((option) => option.kind !== lastGesture)
+				const pick = options[Math.floor(Math.random() * options.length)]
+				gesture = { kind: pick.kind, start: elapsed, duration: pick.duration }
+				lastGesture = pick.kind
+			}
+
+			let goalX = gaze.goalX
+			let goalY = gaze.goalY
+			if (gesture) {
+				const t = elapsed - gesture.start
+				if (t >= gesture.duration) {
+					gesture = null
+					nextGestureAt = elapsed + random(4, 7.5)
+				} else if (t < gesture.duration - 0.5) {
+					// The last half second has no pose, so the arm eases home.
+					if (gesture.kind === 'wave') {
+						rightGoal.set(1.5 + Math.sin(t * 7.5) * 0.16, 0.5, 0.5)
+						poses[1] = { target: rightGoal, fist: 0, rate: 5 }
+						goalX = 0.05
+						goalY = -0.05
+						roll = -0.1
+					} else if (gesture.kind === 'wrist') {
+						// Held high enough to clear the title that covers the waist.
+						leftGoal.set(-0.45, -0.55 + Math.sin(t * 2) * 0.03, 1.05)
+						poses[0] = { target: leftGoal, fist: 0, rate: 4.5 }
+						goalX = -0.5
+						goalY = 1.1
+						roll = 0.06
+					} else {
+						rightGoal.set(1.35, -0.45, 0.95)
+						poses[1] = { target: rightGoal, fist: 1, rate: 5 }
+						goalX = 0.1
+						goalY = -0.1 + (t > 0.6 ? Math.sin((t - 0.6) * 7) * 0.25 : 0)
+						roll = -0.08
+					}
+				}
+			}
+
+			const bonkT = elapsed - bonkAt
+			const bonking = bonkT < BONK_SECONDS
+			if (bonking) {
+				const rub = Math.sin(bonkT * 16) * 0.05
+				rightGoal.set(0.85, 0.7 + rub, 0.3)
+				leftGoal.set(-0.85, 0.7 - rub, 0.3)
+				poses[0] = { target: leftGoal, fist: 0, rate: 9 }
+				poses[1] = { target: rightGoal, fist: 0, rate: 9 }
+				goalX = 0
+				goalY = -0.2
+				roll = 0
+			}
+
+			const gazeRate = ease(bonking ? 8 : 4)
+			gaze.x = damp(gaze.x, goalX, gazeRate)
+			gaze.y = damp(gaze.y, goalY, gazeRate)
+			stepSpring(dt)
+			flash *= Math.exp(-5 * dt)
+
+			return { roll, bonking, blend: bonking ? 1 : idle }
+		}
+
+		const bonk = (elapsed: number) => {
+			// Repeated clicks stack, but never faster than a bounce.
+			if (elapsed - bonkAt < 0.25) return
+			bonkAt = elapsed
+			lastActivity = performance.now()
+			spring.pitchV -= 5
+			spring.rollV += (Math.random() < 0.5 ? -1 : 1) * 4
+			spring.squashV -= 2.6
+			flash = 1
+		}
+
 		const render = () => {
-			const elapsed = (performance.now() - startedAt) / 1000
+			const now = performance.now()
+			const elapsed = (now - startedAt) / 1000
+			// Clamp so a frame after a hidden tab does not teleport the arms.
+			const dt = Math.min(0.1, (now - lastFrame) / 1000)
+			lastFrame = now
 
 			// Entrance: rise from below the fold while turning to face the camera.
 			const rise = easeOutCubic(clamp01(elapsed / INTRO_SECONDS))
@@ -1163,17 +1726,43 @@ const displayLogos = displayIcons.flatMap((name) => {
 			// The bust faces +Z with the camera on +Z, so a positive yaw turns the
 			// visor toward +X, which is screen right: both pointer terms track the
 			// cursor instead of mirroring it.
-			head.rotation.y = damp(head.rotation.y, pointer.x * 0.6 * rise, 0.06)
-			head.rotation.x = damp(head.rotation.x, pointer.y * 0.3 * rise - introTilt, 0.06)
-			head.rotation.z = damp(head.rotation.z, -pointer.x * 0.08, 0.06)
-			followY = damp(followY, pointer.x * 0.2 * rise, 0.04)
+			const ready = rise >= 1
+			// Gestures run on the clamped clock the arms ease with, so a slow
+			// device plays them slower instead of cutting them before they land.
+			lifeTime += dt
+			if (pendingBonk) {
+				pendingBonk = false
+				if (ready) bonk(lifeTime)
+			}
+			const life = updateLife(now, lifeTime, dt)
+			const lookX = THREE.MathUtils.lerp(pointer.x, gaze.x, life.blend)
+			const lookY = THREE.MathUtils.lerp(pointer.y, gaze.y, life.blend)
+
+			baseYaw = damp(baseYaw, lookX * 0.6 * rise, 0.06)
+			basePitch = damp(basePitch, lookY * 0.3 * rise - introTilt, 0.06)
+			baseRoll = damp(baseRoll, -lookX * 0.08 + life.roll, 0.06)
+			head.rotation.set(basePitch + spring.pitch, baseYaw, baseRoll + spring.roll)
+			const squash = THREE.MathUtils.clamp(spring.squash, -0.3, 0.3)
+			head.scale.set(1 - squash * 0.4, 1 + squash * 0.6, 1 - squash * 0.4)
+
+			followY = damp(followY, lookX * 0.2 * rise, 0.04)
 			bust.rotation.y = introTurn + followY
-			bust.rotation.x = damp(bust.rotation.x, pointer.y * 0.04, 0.04)
-			bust.position.y = -3.4 * (1 - rise)
+			bust.rotation.x = damp(bust.rotation.x, lookY * 0.04, 0.04)
+			// Slow breathing, a touch deeper while idle.
+			const breath = Math.sin(elapsed * 1.3) * (0.012 + 0.01 * idle)
+			bust.position.y = -3.4 * (1 - rise) + breath * rise
 			bust.scale.setScalar(0.86 + 0.14 * rise)
 			head.position.y = HEAD_Y + Math.sin(elapsed * 0.9) * 0.008
+			updateArms(elapsed, dt, ready, poses, life.bonking)
+
+			// Pointer cursor over the helmet, tested at most once per frame.
+			if (client.moved && section) {
+				client.moved = false
+				section.style.cursor = ready && hitsHead(client.x, client.y) ? 'pointer' : ''
+			}
 
 			applyPower(power * flicker, elapsed)
+			visorGlass.emissiveIntensity += flash * 1.8
 			renderer.render(scene, camera)
 
 			if (visible) frameId = window.requestAnimationFrame(render)
