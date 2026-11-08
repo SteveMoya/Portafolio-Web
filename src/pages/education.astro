@@ -8,6 +8,7 @@ import PostCard from '@/components/PostCard.astro'
 import SectionRail from '@/components/ui/SectionRail.astro'
 import ScrollReveals from '@/components/ui/ScrollReveals.astro'
 import EducationTimeline from '@/components/sections/EducationTimeline.astro'
+import ShelfHero from '@/components/sections/education/ShelfHero.astro'
 import TechUniversePhysics from '@/components/sections/education/TechUniversePhysics'
 import { education } from '@/data/education'
 import { certifications } from '@/data/certifications'
@@ -84,8 +85,9 @@ const railSections = [
 		lines={['Education', '& Learning']}
 		accentIndex={1}
 		align="center"
-		background="pattern"
+		background="shelves"
 		motion="scroll"
+		height="tall"
 		subtitle="De la universidad a las plataformas online: la base académica detrás del trabajo técnico, más un archivo de certificaciones que no deja de crecer."
 		meta={[
 			`${education.length} programas`,
@@ -93,7 +95,11 @@ const railSections = [
 			`${certifications.length} certificados`,
 			`${languages.length} idiomas`
 		]}
-	/>
+	>
+		<!-- The reference library: four shelves that restack themselves by
+		     category, and collapse when you knock them. -->
+		<ShelfHero slot="background" />
+	</PageHero>
 
 	<!-- In-page index: sticky under the navbar, lights the section crossing the
 	     viewport. Extracted so all four views share one rail. -->
