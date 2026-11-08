@@ -1,62 +1,152 @@
 ---
 /**
- * Filterable project index, shared by /portafolio and /portafolio/webs.
+ * Filterable, paginated project index, shared by /portafolio and /portafolio/webs.
  *
- * One implementation for the pills, the live counter and the grid, so the hub
- * and the full list cannot drift into two different filter behaviours.
+ * One implementation for the pills, the search box, the pager and the grid, so
+ * the hub and the full list cannot drift into two different behaviours. The
+ * server renders the markup plus the first page; every filter and the page
+ * number live in the client script. Without JS nothing is lost: the
+ * `is-paged-out` marker is only honoured when a flag set by an inline script is
+ * present (see the `.is-paged-out` rule in global.css).
  */
 import WorkCard from '@components/ui/WorkCard.astro'
-import type { CategoryCount } from '@src/utils/projectCategories'
+import { countByCategory, countByStatus } from '@src/utils/projectCategories'
 import type { Project } from '@src/types/project'
 
 interface Props {
 	projects: Project[]
-	counts: CategoryCount[]
 	/** Counted label, e.g. "proyectos". */
 	unit?: string
+	/** Cards per page. 9 fills the three-column grid exactly. */
+	pageSize?: number
 }
 
-const { projects, counts, unit = 'proyectos' } = Astro.props
+const { projects, unit = 'proyectos', pageSize = 9 } = Astro.props
+
+const categoryCounts = countByCategory(projects)
+const statusCounts = countByStatus(projects)
+const hasFilters = categoryCounts.length > 1
+
+/**
+ * Pill anatomy. The pressed state is painted by the script by toggling these
+ * exact classes, which also appear in the server-rendered markup: a class that
+ * only existed in the script would never reach the Tailwind output.
+ */
+const pill =
+	'tap inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c70039]'
+const pillIdle = 'bg-white/5 text-white/60 transition-colors duration-150 hover:text-white'
+const pillActive = 'bg-[#c70039] text-white'
+
+const lastOnFirstPage = Math.min(pageSize, projects.length)
 ---
 
-<div data-work-archive>
-	{
-		counts.length > 1 && (
-			<div class="flex flex-wrap items-center justify-between gap-6">
-				<div class="flex flex-wrap gap-2" role="group" aria-label="Filtrar por tipo de proyecto">
-					<button
-						type="button"
-						data-filter="todos"
-						aria-pressed="true"
-						class="tap inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#c70039] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c70039]"
-					>
-						Todos
-						<span class="text-white/70" aria-hidden="true">{projects.length}</span>
-					</button>
+<div data-work-archive data-page-size={pageSize}>
+	<!-- Pagination is honoured by CSS only when JS is alive: a visitor without
+	     JS keeps every project, and the first paint already shows page 1 instead
+	     of flashing the whole catalog while the module below starts up. The
+	     timeout is the safety net for a module that never runs. -->
+	<script is:inline>
+		document.documentElement.dataset.pager = 'on'
+		window.setTimeout(function () {
+			if (document.documentElement.dataset.pagerReady !== 'on') {
+				document.documentElement.removeAttribute('data-pager')
+			}
+		}, 4000)
+	</script>
 
-					{counts.map(({ category, count, label }) => (
-						<button
-							type="button"
-							data-filter={category}
-							aria-pressed="false"
-							class="tap inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/60 transition-colors duration-150 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c70039]"
-						>
-							{label}
-							<span class="text-white/40" aria-hidden="true">{count}</span>
+	{
+		hasFilters && (
+			<div class="flex flex-col gap-5">
+				<div class="flex flex-wrap items-center justify-between gap-6">
+					<div class="flex flex-wrap gap-2" role="group" aria-label="Filtrar por tipo de proyecto">
+						<button type="button" data-filter="todos" aria-pressed="true" class={`${pill} ${pillActive}`}>
+							Todos
+							<span class="text-white/70" aria-hidden="true">
+								{projects.length}
+							</span>
 						</button>
-					))}
+
+						{categoryCounts.map(({ category, count, label }) => (
+							<button
+								type="button"
+								data-filter={category}
+								aria-pressed="false"
+								class={`${pill} ${pillIdle}`}
+							>
+								{label}
+								<span class="text-white/40" aria-hidden="true">
+									{count}
+								</span>
+							</button>
+						))}
+					</div>
+
+					<p class="ml-auto flex items-baseline gap-2">
+						<span
+							data-work-count
+							aria-hidden="true"
+							class="inline-block font-poppins text-3xl font-black leading-none tabular-nums text-[#c70039]"
+						>
+							{projects.length}
+						</span>
+						<span class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">{unit}</span>
+					</p>
 				</div>
 
-				<p class="flex items-baseline gap-2">
-					<span
-						data-work-count
-						aria-hidden="true"
-						class="inline-block font-poppins text-3xl font-black leading-none tabular-nums text-[#c70039]"
-					>
-						{projects.length}
-					</span>
-					<span class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">{unit}</span>
-				</p>
+				<div class="flex flex-col gap-4 border-t border-white/10 pt-5 sm:flex-row sm:items-center sm:justify-between">
+					<div class="flex flex-wrap items-center gap-2" role="group" aria-label="Filtrar por estado">
+						{/* Full width on mobile so the pills of a wrapped line share one
+						    left edge instead of starting under the caption. */}
+						<span class="mb-1 w-full text-[10px] font-bold uppercase tracking-[0.3em] text-white/30 sm:mb-0 sm:mr-1 sm:w-auto">
+							Estado
+						</span>
+						<button
+							type="button"
+							data-status-filter="todos"
+							aria-pressed="true"
+							class={`${pill} ${pillActive}`}
+						>
+							Todos
+						</button>
+
+						{statusCounts.map(({ status, count, label }) => (
+							<button
+								type="button"
+								data-status-filter={status}
+								aria-pressed="false"
+								class={`${pill} ${pillIdle}`}
+							>
+								{label}
+								<span class="text-white/40" aria-hidden="true">
+									{count}
+								</span>
+							</button>
+						))}
+					</div>
+
+					<label class="relative flex w-full items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 transition-colors duration-150 focus-within:border-[#c70039]/60 sm:w-80">
+						<svg
+							class="h-3.5 w-3.5 shrink-0 text-white/30"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							aria-hidden="true"
+						>
+							<circle cx="11" cy="11" r="7"></circle>
+							<path d="m20 20-3.5-3.5" stroke-linecap="round"></path>
+						</svg>
+						<span class="sr-only">Buscar proyectos</span>
+						<input
+							data-work-search
+							type="search"
+							autocomplete="off"
+							spellcheck="false"
+							placeholder="Nombre, stack o cliente"
+							class="w-full bg-transparent text-xs text-white placeholder:text-white/35 focus:outline-none"
+						/>
+					</label>
+				</div>
 			</div>
 		)
 	}
@@ -64,88 +154,286 @@ const { projects, counts, unit = 'proyectos' } = Astro.props
 	<p data-work-live class="sr-only" role="status" aria-live="polite"></p>
 
 	<div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
-		{projects.map((project) => <WorkCard project={project} />)}
+		{
+			projects.map((project, index) => (
+				<WorkCard project={project} class={index >= pageSize ? 'is-paged-out' : ''} />
+			))
+		}
 	</div>
+
+	<nav
+		data-work-pagination
+		aria-label="Paginación de proyectos"
+		style="display: none"
+		class="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row"
+	>
+		<p class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">
+			<span data-work-range>{`1–${lastOnFirstPage} de ${projects.length}`}</span>
+		</p>
+
+		<div class="flex items-center gap-2">
+			<button type="button" data-page-prev class="pager-btn" aria-label="Página anterior">←</button>
+			<div data-page-list class="flex items-center gap-1"></div>
+			<button type="button" data-page-next class="pager-btn" aria-label="Página siguiente">→</button>
+		</div>
+	</nav>
 
 	<div
 		data-work-empty
 		hidden
 		class="dotted-card relative mt-10 rounded-2xl border border-white/10 p-10 text-center"
 	>
-		<span class="corner-tick corner-tick--tl" aria-hidden="true" />
-		<span class="corner-tick corner-tick--br" aria-hidden="true" />
+		<span class="corner-tick corner-tick--tl" aria-hidden="true"></span>
+		<span class="corner-tick corner-tick--br" aria-hidden="true"></span>
 		<p class="text-sm leading-relaxed text-white/60">
-			No hay proyectos de ese tipo todavía. Probá con otro filtro.
+			Ningún proyecto coincide con ese filtro. Probá con otro tipo, otro estado, o borrá la
+			búsqueda.
 		</p>
 	</div>
 </div>
 
 <script>
+	import { normalizeText } from '@src/utils/projectCategories'
+
 	/**
-	 * Category filter for the project index.
+	 * Category + status + text filters and the pagination for the project index.
 	 *
-	 * Cards are hidden with inline `display` (a `hidden` utility can lose to
-	 * another display utility depending on CSS order) and the live region
-	 * announces the count once per settled change, never per interaction. The
-	 * archive node is guarded because Astro hoists this module into a bundle that
-	 * survives client-side navigation and would otherwise wire stale nodes twice.
+	 * Cards are hidden with the `is-paged-out` class instead of an inline style:
+	 * global.css gates that rule on the flag the inline script above sets, so a
+	 * visitor without JS still gets the full catalog. The archive node is
+	 * guarded because Astro hoists this module into a bundle that survives
+	 * client-side navigation and would otherwise wire the same nodes twice.
 	 */
-	const initWorkFilters = () => {
-		document.querySelectorAll<HTMLElement>('[data-work-archive]').forEach((archive) => {
-			if (archive.dataset.workInit === 'true') return
-			archive.dataset.workInit = 'true'
+	const PAGE_SIZE_FALLBACK = 9
+	const SEARCH_DELAY = 150
+	/** The live region speaks once per settled change, never per keystroke. */
+	const ANNOUNCE_DELAY = 300
 
-			const buttons = Array.from(archive.querySelectorAll<HTMLButtonElement>('[data-filter]'))
-			const cards = Array.from(archive.querySelectorAll<HTMLElement>('[data-project-card]'))
-			const countLabel = archive.querySelector<HTMLElement>('[data-work-count]')
-			const liveRegion = archive.querySelector<HTMLElement>('[data-work-live]')
-			const emptyState = archive.querySelector<HTMLElement>('[data-work-empty]')
+	const PILL_ACTIVE = ['bg-[#c70039]', 'text-white']
+	const PILL_IDLE = ['bg-white/5', 'text-white/60']
 
-			if (!buttons.length) return
+	const paintPill = (button: HTMLButtonElement, isActive: boolean) => {
+		button.setAttribute('aria-pressed', String(isActive))
+		PILL_ACTIVE.forEach((token) => button.classList.toggle(token, isActive))
+		PILL_IDLE.forEach((token) => button.classList.toggle(token, !isActive))
+	}
 
-			let active = 'todos'
-			let announceTimer = 0
+	/** `?pagina=2` makes a page of the index shareable; 1 is the clean URL. */
+	const readPageParameter = (): number => {
+		const raw = new URLSearchParams(window.location.search).get('pagina')
+		const page = raw === null ? 1 : Number.parseInt(raw, 10)
+		return Number.isFinite(page) && page > 0 ? page : 1
+	}
 
-			const apply = (announce: boolean) => {
-				let visible = 0
+	const syncPageParameter = (page: number) => {
+		const url = new URL(window.location.href)
+		if (page > 1) url.searchParams.set('pagina', String(page))
+		else url.searchParams.delete('pagina')
 
-				buttons.forEach((button) => {
-					const isActive = button.dataset.filter === active
-					button.setAttribute('aria-pressed', String(isActive))
-					button.classList.toggle('bg-[#c70039]', isActive)
-					button.classList.toggle('text-white', isActive)
-					button.classList.toggle('bg-white/5', !isActive)
-					button.classList.toggle('text-white/60', !isActive)
-				})
+		if (url.href !== window.location.href) {
+			window.history.replaceState(window.history.state, '', url)
+		}
+	}
 
-				cards.forEach((card) => {
-					const match = active === 'todos' || card.dataset.category === active
-					card.style.display = match ? '' : 'none'
-					if (match) visible += 1
-				})
+	/** Page numbers to paint, with the gaps collapsed once the range gets long. */
+	const pageWindow = (current: number, total: number): (number | 'gap')[] => {
+		if (total <= 7) return Array.from({ length: total }, (_, index) => index + 1)
 
-				if (countLabel) countLabel.textContent = String(visible)
-				if (emptyState) emptyState.hidden = visible > 0
+		const pages = Array.from(new Set([1, current - 1, current, current + 1, total]))
+			.filter((page) => page >= 1 && page <= total)
+			.sort((a, b) => a - b)
 
-				if (liveRegion && announce) {
-					window.clearTimeout(announceTimer)
-					announceTimer = window.setTimeout(() => {
-						liveRegion.textContent = `${visible} ${visible === 1 ? 'proyecto visible' : 'proyectos visibles'}`
-					}, 300)
-				}
-			}
-
-			buttons.forEach((button) => {
-				button.addEventListener('click', () => {
-					active = button.dataset.filter ?? 'todos'
-					apply(true)
-				})
-			})
-
-			apply(false)
+		return pages.flatMap((page, index) => {
+			const previous = pages[index - 1]
+			return previous !== undefined && page - previous > 1 ? ['gap' as const, page] : [page]
 		})
 	}
 
-	initWorkFilters()
-	document.addEventListener('astro:after-swap', initWorkFilters)
+	const initArchive = (archive: HTMLElement) => {
+		if (archive.dataset.workInit === 'true') return
+		archive.dataset.workInit = 'true'
+
+		const cards = Array.from(archive.querySelectorAll<HTMLElement>('[data-project-card]'))
+		if (!cards.length) return
+
+		const categoryButtons = Array.from(archive.querySelectorAll<HTMLButtonElement>('[data-filter]'))
+		const statusButtons = Array.from(
+			archive.querySelectorAll<HTMLButtonElement>('[data-status-filter]')
+		)
+		const search = archive.querySelector<HTMLInputElement>('[data-work-search]')
+		const countLabel = archive.querySelector<HTMLElement>('[data-work-count]')
+		const liveRegion = archive.querySelector<HTMLElement>('[data-work-live]')
+		const emptyState = archive.querySelector<HTMLElement>('[data-work-empty]')
+		const pager = archive.querySelector<HTMLElement>('[data-work-pagination]')
+		const pageList = pager?.querySelector<HTMLElement>('[data-page-list]') ?? null
+		const previousButton = pager?.querySelector<HTMLButtonElement>('[data-page-prev]') ?? null
+		const nextButton = pager?.querySelector<HTMLButtonElement>('[data-page-next]') ?? null
+		const rangeLabel = pager?.querySelector<HTMLElement>('[data-work-range]') ?? null
+		const section = archive.closest('section')
+		const pageSize = Math.max(1, Number(archive.dataset.pageSize) || PAGE_SIZE_FALLBACK)
+
+		const filters = { category: 'todos', status: 'todos', query: '', page: readPageParameter() }
+		let announceTimer = 0
+		let searchTimer = 0
+		let paintedPages = ''
+
+		const matches = (card: HTMLElement): boolean => {
+			if (filters.category !== 'todos' && card.dataset.category !== filters.category) return false
+			if (filters.status !== 'todos' && card.dataset.status !== filters.status) return false
+			if (filters.query && !(card.dataset.search ?? '').includes(filters.query)) return false
+			return true
+		}
+
+		const paintPager = (totalPages: number) => {
+			if (!pageList) return
+
+			const entries = pageWindow(filters.page, totalPages)
+			const signature = entries.join(',')
+
+			// Rebuild only when the set of numbers changes, so the button the
+			// reader just pressed is not replaced under the focus ring.
+			if (signature !== paintedPages) {
+				paintedPages = signature
+				pageList.replaceChildren(
+					...entries.map((entry) => {
+						if (entry === 'gap') {
+							const gap = document.createElement('span')
+							gap.className = 'pager-gap'
+							gap.setAttribute('aria-hidden', 'true')
+							gap.textContent = '…'
+							return gap
+						}
+
+						const button = document.createElement('button')
+						button.type = 'button'
+						button.className = 'pager-btn'
+						button.dataset.page = String(entry)
+						button.textContent = String(entry)
+						button.setAttribute('aria-label', `Página ${entry}`)
+						return button
+					})
+				)
+			}
+
+			pageList.querySelectorAll<HTMLButtonElement>('[data-page]').forEach((button) => {
+				if (Number(button.dataset.page) === filters.page) button.setAttribute('aria-current', 'page')
+				else button.removeAttribute('aria-current')
+			})
+		}
+
+		const scrollToResults = () => {
+			if (!section) return
+			const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+			section.scrollIntoView({ block: 'start', behavior: reduceMotion ? 'auto' : 'smooth' })
+		}
+
+		const announce = (total: number, totalPages: number, start: number, shown: number) => {
+			if (!liveRegion) return
+			window.clearTimeout(announceTimer)
+			announceTimer = window.setTimeout(() => {
+				liveRegion.textContent =
+					total === 0
+						? 'Ningún proyecto coincide con ese filtro.'
+						: `Página ${filters.page} de ${totalPages}, proyectos ${start + 1} a ${start + shown} de ${total}.`
+			}, ANNOUNCE_DELAY)
+		}
+
+		const apply = (options: { announce?: boolean; scroll?: boolean } = {}) => {
+			const matching = cards.filter(matches)
+			const total = matching.length
+			const totalPages = Math.max(1, Math.ceil(total / pageSize))
+
+			filters.page = Math.min(Math.max(filters.page, 1), totalPages)
+
+			const start = (filters.page - 1) * pageSize
+			const current = new Set(matching.slice(start, start + pageSize))
+
+			cards.forEach((card) => card.classList.toggle('is-paged-out', !current.has(card)))
+
+			if (countLabel) countLabel.textContent = String(total)
+			if (emptyState) emptyState.hidden = total > 0
+			if (rangeLabel) {
+				rangeLabel.textContent =
+					total === 0 ? 'Sin resultados' : `${start + 1}–${start + current.size} de ${total}`
+			}
+
+			paintPager(totalPages)
+
+			const paged = totalPages > 1
+			// `hidden` as an attribute loses to the `flex` utility, so the pager
+			// is switched with an inline display instead.
+			if (pager) pager.style.display = paged ? '' : 'none'
+			if (previousButton) previousButton.disabled = !paged || filters.page <= 1
+			if (nextButton) nextButton.disabled = !paged || filters.page >= totalPages
+
+			syncPageParameter(filters.page)
+
+			if (options.scroll) scrollToResults()
+			if (options.announce) announce(total, totalPages, start, current.size)
+		}
+
+		const goTo = (page: number) => {
+			if (!Number.isFinite(page) || page === filters.page) return
+			filters.page = page
+			apply({ announce: true, scroll: true })
+		}
+
+		categoryButtons.forEach((button) => {
+			button.addEventListener('click', () => {
+				filters.category = button.dataset.filter ?? 'todos'
+				filters.page = 1
+				categoryButtons.forEach((candidate) => paintPill(candidate, candidate === button))
+				apply({ announce: true })
+			})
+		})
+
+		statusButtons.forEach((button) => {
+			button.addEventListener('click', () => {
+				filters.status = button.dataset.statusFilter ?? 'todos'
+				filters.page = 1
+				statusButtons.forEach((candidate) => paintPill(candidate, candidate === button))
+				apply({ announce: true })
+			})
+		})
+
+		if (search) {
+			search.addEventListener('input', () => {
+				window.clearTimeout(searchTimer)
+				searchTimer = window.setTimeout(() => {
+					filters.query = normalizeText(search.value)
+					filters.page = 1
+					apply({ announce: true })
+				}, SEARCH_DELAY)
+			})
+
+			search.addEventListener('keydown', (event) => {
+				if (event.key !== 'Escape' || !search.value) return
+				event.preventDefault()
+				window.clearTimeout(searchTimer)
+				search.value = ''
+				filters.query = ''
+				filters.page = 1
+				apply({ announce: true })
+			})
+		}
+
+		previousButton?.addEventListener('click', () => goTo(filters.page - 1))
+		nextButton?.addEventListener('click', () => goTo(filters.page + 1))
+
+		pageList?.addEventListener('click', (event) => {
+			const button = (event.target as HTMLElement | null)?.closest<HTMLButtonElement>('[data-page]')
+			if (!button) return
+			goTo(Number(button.dataset.page))
+		})
+
+		apply()
+	}
+
+	const init = () => {
+		document.querySelectorAll<HTMLElement>('[data-work-archive]').forEach(initArchive)
+		document.documentElement.dataset.pagerReady = 'on'
+	}
+
+	init()
+	document.addEventListener('astro:after-swap', init)
 </script>

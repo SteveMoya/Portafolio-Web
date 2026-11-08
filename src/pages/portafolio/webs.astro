@@ -11,14 +11,12 @@ import SectionHeading from '@/components/ui/SectionHeading.astro'
 import ScrollReveals from '@/components/ui/ScrollReveals.astro'
 import WorkIndex from '@/components/sections/portfolio/WorkIndex.astro'
 import { getAllProjects } from '@src/lib/projects'
-import { countByCategory } from '@src/utils/projectCategories'
 
 const pageTitle = 'Todos los proyectos - Steve Moya Cepeda'
 const pageDescription =
 	'Índice completo de proyectos: web, aplicaciones, APIs y datos, con stack, rol y enlaces a demo y código.'
 
 const projects = await getAllProjects()
-const counts = countByCategory(projects)
 const clientCount = new Set(
 	projects.map((project) => project.client ?? project.company).filter(Boolean)
 ).size
@@ -78,10 +76,10 @@ const clientCount = new Set(
 					eyebrow="Trabajo"
 					title="Lista completa"
 					id="lista-proyectos"
-					description="Todo lo construido, del más reciente al más antiguo en cada grupo: proyectos de cliente primero, repositorios después."
+					description="Todo lo construido, del más reciente al más antiguo en cada grupo: proyectos de cliente primero, repositorios después. Nueve por página, con filtros por tipo, estado y texto."
 				/>
 
-				<WorkIndex projects={projects} counts={counts} />
+				<WorkIndex projects={projects} />
 			</div>
 		</section>
 	</div>

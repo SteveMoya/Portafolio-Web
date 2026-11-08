@@ -11,7 +11,7 @@
  */
 import ProjectBadge from '@components/ProjectBadge.astro'
 import ProjectTecnology from '@components/ProjectTecnology.astro'
-import { CATEGORY_LABELS, categoryOf } from '@src/utils/projectCategories'
+import { CATEGORY_LABELS, categoryOf, searchTextOf, statusOf } from '@src/utils/projectCategories'
 import { formatDate } from '@src/utils'
 import type { Project } from '@src/types/project'
 import placeholderImage from '/public/img/place-holder-image.webp'
@@ -44,6 +44,8 @@ const hasFooter = Boolean(project.demo) || Boolean(project.repository && !projec
 	data-tilt-card
 	data-project-card
 	data-category={category}
+	data-status={statusOf(project)}
+	data-search={searchTextOf(project)}
 	class:list={[
 		'dotted-card group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0a0a0a] shadow-lg transition-all duration-300 hover:border-[#c70039]/60 hover:shadow-[0_16px_36px_rgba(199,0,57,0.25)]',
 		className,

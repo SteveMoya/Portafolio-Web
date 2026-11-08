@@ -22,7 +22,7 @@ import FlatFileHero from '@/components/sections/portfolio/FlatFileHero.astro'
 import { getAllProjects } from '@src/lib/projects'
 import { getCollection } from 'astro:content'
 import { formatDate } from '@src/utils'
-import { CATEGORY_LABELS, categoryOf, countByCategory } from '@src/utils/projectCategories'
+import { CATEGORY_LABELS, categoryOf } from '@src/utils/projectCategories'
 
 const pageTitle = 'Portafolio - Steve Moya Cepeda'
 const pageDescription =
@@ -44,10 +44,6 @@ const indexProjects = featured
 const clientCount = new Set(
 	allProjects.map((project) => project.client ?? project.company).filter(Boolean)
 ).size
-
-// Filters come from the data, not from a fixed list, and they count exactly the
-// projects the grid renders (the featured one lives above, not in the index).
-const categoryCounts = countByCategory(indexProjects)
 
 // Visual archive: same collections /gallery renders, counted here instead of
 // duplicated. The tiles point there.
@@ -270,10 +266,10 @@ const featuredTech = featured?.technologies.slice(0, 6) ?? []
 					eyebrow="Índice"
 					title="Los proyectos"
 					id="indice-title"
-					description="Cada tarjeta abre su demo o su código. Filtrá por tipo de trabajo."
+					description="Cada tarjeta abre su demo o su código. Filtrá por tipo, estado o texto, y recorré el índice de nueve en nueve."
 				/>
 
-				<WorkIndex projects={indexProjects} counts={categoryCounts} />
+				<WorkIndex projects={indexProjects} />
 			</div>
 		</section>
 
