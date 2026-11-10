@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type KeyboardEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X, Send } from 'lucide-react';
 
@@ -48,7 +48,7 @@ export default function ChatbotWidget() {
 		}, 800);
 	};
 
-	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === 'Enter' && !e.shiftKey) {
 			e.preventDefault();
 			handleSend();

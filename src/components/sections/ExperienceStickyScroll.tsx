@@ -1,12 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import {
-	GraduationCap,
-	BookOpen,
-	Binary,
-	Sparkles,
-	Clock,
-} from 'lucide-react';
+import { Binary } from 'lucide-react';
 
 interface EducationItemProps {
 	institution: string;
@@ -46,7 +40,6 @@ function EducationCard({
 	status,
 	highlights,
 	icon,
-	iconColor,
 	hoverColor,
 	glowColor,
 	isLowPowerMode = false,
