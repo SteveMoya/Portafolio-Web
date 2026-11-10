@@ -2,7 +2,7 @@ import { CATEGORIES, PROJECT_BADGES, PROJECT_CATEGORIES, PROJECT_STATUSES } from
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
-import { cldAssetsLoader } from 'astro-cloudinary/loaders';
+import { cloudinaryAssets } from './lib/loaders/cloudinary-assets';
 
 const blog = defineCollection({
 	loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
@@ -20,22 +20,27 @@ const blog = defineCollection({
 		})
 });
 
+/**
+ * Las cinco colecciones de Cloudinary usan `cloudinaryAssets`: con credenciales
+ * consultan la Admin API como siempre; sin credenciales leen el snapshot local
+ * de `src/data/cloudinary/`, así el build se reproduce en cualquier clone.
+ */
 const assets = defineCollection({
-	loader: cldAssetsLoader({
+	loader: cloudinaryAssets({
 		folder: 'assets',
 		limit: 200
 	})
 })
 
 const fotografia = defineCollection({
-	loader: cldAssetsLoader({
+	loader: cloudinaryAssets({
 		folder: 'fotografia',
 		limit: 80
 	})
 });
 
 const diseno = defineCollection({
-	loader: cldAssetsLoader({
+	loader: cloudinaryAssets({
 		folder: 'diseno',
 		limit: 80
 	})
@@ -43,15 +48,15 @@ const diseno = defineCollection({
 
 
 const about_images = defineCollection({
-	loader: cldAssetsLoader({
-		folder: 'about_images',
+	loader: cloudinaryAssets({
+		folder: 'about_images'
 	})
 });
 
 
 const portafolio = defineCollection({
-	loader: cldAssetsLoader({
-		folder: 'portafolio',
+	loader: cloudinaryAssets({
+		folder: 'portafolio'
 	})
 })
 

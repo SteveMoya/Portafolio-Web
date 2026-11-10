@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content'
 import { CldImage } from 'astro-cloudinary'
 import BlockReveal from '@components/ui/BlockReveal.astro'
+import { cloudinaryConfig } from '@src/lib/cloudinary'
 
 const images = (await getCollection('fotografia'))
 	.sort((a, b) => a.data.public_id.localeCompare(b.data.public_id))
@@ -66,6 +67,7 @@ const collagePositions = [
 								alt="Imagen del portafolio"
 								class="h-full w-full object-cover"
 								loading="lazy"
+								config={cloudinaryConfig}
 							/>
 						</div>
 					)
@@ -86,6 +88,7 @@ const collagePositions = [
 							alt="Imagen destacada del portafolio de fotografía"
 							class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
 							loading="lazy"
+							config={cloudinaryConfig}
 						/>
 
 						<div class="absolute inset-0 bg-black/50 transition-colors duration-300 group-hover:bg-black/40" />

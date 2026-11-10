@@ -1,0 +1,220 @@
+{
+	"folder": "diseno",
+	"cloudName": "dxji4alip",
+	"generatedAt": "2026-11-10T20:35:00Z",
+	"generatedBy": "seed:live-gallery-props",
+	"uploadedAtSource": "cloudinary-version",
+	"note": "Seed capturado del build publicado de /gallery. Regenerar con `bun run snapshot:cloudinary` cuando haya credenciales.",
+	"assets": [
+		{
+			"public_id": "diseño/1_tzs8qx",
+			"folder": "diseño",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416558,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416558/dise%C3%B1o/1_tzs8qx.webp",
+			"uploaded_at": "2025-02-13T03:15:58Z"
+		},
+		{
+			"public_id": "diseño/10_uuoagi",
+			"folder": "diseño",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416567,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416567/dise%C3%B1o/10_uuoagi.webp",
+			"uploaded_at": "2025-02-13T03:16:07Z"
+		},
+		{
+			"public_id": "diseño/11_snkcsc",
+			"folder": "diseño",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416570,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416570/dise%C3%B1o/11_snkcsc.webp",
+			"uploaded_at": "2025-02-13T03:16:10Z"
+		},
+		{
+			"public_id": "diseño/3_dgf3nm",
+			"folder": "diseño",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416557,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416557/dise%C3%B1o/3_dgf3nm.webp",
+			"uploaded_at": "2025-02-13T03:15:57Z"
+		},
+		{
+			"public_id": "diseño/4_l2av8i",
+			"folder": "diseño",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416559,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416559/dise%C3%B1o/4_l2av8i.webp",
+			"uploaded_at": "2025-02-13T03:15:59Z"
+		},
+		{
+			"public_id": "diseño/5_ozvhnz",
+			"folder": "diseño",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416562,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416562/dise%C3%B1o/5_ozvhnz.webp",
+			"uploaded_at": "2025-02-13T03:16:02Z"
+		},
+		{
+			"public_id": "diseño/6_d0k730",
+			"folder": "diseño",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416564,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416564/dise%C3%B1o/6_d0k730.webp",
+			"uploaded_at": "2025-02-13T03:16:04Z"
+		},
+		{
+			"public_id": "diseño/7_rlgfla",
+			"folder": "diseño",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416565,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416565/dise%C3%B1o/7_rlgfla.webp",
+			"uploaded_at": "2025-02-13T03:16:05Z"
+		},
+		{
+			"public_id": "diseño/8_kmw7hw",
+			"folder": "diseño",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416578,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416578/dise%C3%B1o/8_kmw7hw.webp",
+			"uploaded_at": "2025-02-13T03:16:18Z"
+		},
+		{
+			"public_id": "diseño/9_ddvyql",
+			"folder": "diseño",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416577,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416577/dise%C3%B1o/9_ddvyql.webp",
+			"uploaded_at": "2025-02-13T03:16:17Z"
+		},
+		{
+			"public_id": "diseño/Cover_Maniac_nqk4je",
+			"folder": "diseño",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416576,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416576/dise%C3%B1o/Cover_Maniac_nqk4je.webp",
+			"uploaded_at": "2025-02-13T03:16:16Z"
+		},
+		{
+			"public_id": "diseño/Frito_Lay_01_1_f4vkxf",
+			"folder": "diseño",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416576,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416576/dise%C3%B1o/Frito_Lay_01_1_f4vkxf.webp",
+			"uploaded_at": "2025-02-13T03:16:16Z"
+		},
+		{
+			"public_id": "diseño/Menu_vertical_bebidas_restaurante_blanco_y_negro_1_gicn6p",
+			"folder": "diseño",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416560,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416560/dise%C3%B1o/Menu_vertical_bebidas_restaurante_blanco_y_negro_1_gicn6p.webp",
+			"uploaded_at": "2025-02-13T03:16:00Z"
+		},
+		{
+			"public_id": "diseño/mujer_1_txkubl",
+			"folder": "diseño",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416574,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416574/dise%C3%B1o/mujer_1_txkubl.webp",
+			"uploaded_at": "2025-02-13T03:16:14Z"
+		},
+		{
+			"public_id": "diseño/photo1601945522_d3ccvg",
+			"folder": "diseño",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416575,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416575/dise%C3%B1o/photo1601945522_d3ccvg.webp",
+			"uploaded_at": "2025-02-13T03:16:15Z"
+		},
+		{
+			"public_id": "diseño/photo1602361416_fzuf1p",
+			"folder": "diseño",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416573,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416573/dise%C3%B1o/photo1602361416_fzuf1p.webp",
+			"uploaded_at": "2025-02-13T03:16:13Z"
+		},
+		{
+			"public_id": "diseño/photo1602361428_u42l2m",
+			"folder": "diseño",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416568,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416568/dise%C3%B1o/photo1602361428_u42l2m.webp",
+			"uploaded_at": "2025-02-13T03:16:08Z"
+		},
+		{
+			"public_id": "diseño/photo1602361443_nstr4u",
+			"folder": "diseño",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416572,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416572/dise%C3%B1o/photo1602361443_nstr4u.webp",
+			"uploaded_at": "2025-02-13T03:16:12Z"
+		},
+		{
+			"public_id": "diseño/photo1602361459_jnb4d8",
+			"folder": "diseño",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416573,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416573/dise%C3%B1o/photo1602361459_jnb4d8.webp",
+			"uploaded_at": "2025-02-13T03:16:13Z"
+		},
+		{
+			"public_id": "diseño/photo1634761645_xbedew",
+			"folder": "diseño",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416571,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416571/dise%C3%B1o/photo1634761645_xbedew.webp",
+			"uploaded_at": "2025-02-13T03:16:11Z"
+		},
+		{
+			"public_id": "diseño/Sin_título-1_hhfu3a",
+			"folder": "diseño",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416562,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416562/dise%C3%B1o/Sin_t%C3%ADtulo-1_hhfu3a.webp",
+			"uploaded_at": "2025-02-13T03:16:02Z"
+		}
+	]
+}

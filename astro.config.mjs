@@ -50,13 +50,16 @@ export default defineConfig({
     },
   },
 
+  // Todas las variables externas son opcionales: el sitio degrada a contenido
+  // local (snapshot de Cloudinary y repos de GitHub omitidos) en vez de romper
+  // el build. Vercel las sigue inyectando, así que producción no cambia.
   env: {
     schema: {
-      GITHUB_USERNAME: envField.string({ context: "server", access: "public" }),
-      GITHUB_TOKEN: envField.string({ context: "server", access: "secret" }),
-      CLOUDINARY_CLOUD_NAME: envField.string({ context: "server", access: "public" }),
-      CLOUDINARY_API_KEY: envField.string({ context: "server", access: "secret" }),
-      CLOUDINARY_API_SECRET: envField.string({ context: "server", access: "secret" }),
+      GITHUB_USERNAME: envField.string({ context: "server", access: "public", optional: true }),
+      GITHUB_TOKEN: envField.string({ context: "server", access: "secret", optional: true }),
+      CLOUDINARY_CLOUD_NAME: envField.string({ context: "server", access: "public", optional: true }),
+      CLOUDINARY_API_KEY: envField.string({ context: "server", access: "secret", optional: true }),
+      CLOUDINARY_API_SECRET: envField.string({ context: "server", access: "secret", optional: true }),
     },
   },
 });

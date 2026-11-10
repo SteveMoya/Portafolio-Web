@@ -1,0 +1,64 @@
+name: CI
+
+# El objetivo de este workflow es probar que el sitio se reconstruye desde un
+# clone limpio y sin ningún secreto: las colecciones de Cloudinary caen al
+# snapshot versionado de `src/data/cloudinary/`. Si algún día el build vuelve
+# a depender de la Admin API, este job falla.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build reproducible (sin secretos)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Puppeteer solo lo usan las devtools; bajar Chrome en CI no aporta nada.
+      PUPPETEER_SKIP_DOWNLOAD: '1'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # better-sqlite3 publica binarios para Node 22 (el `engines` del repo);
+      # con Node 26 intenta compilar y falla.
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+
+      - name: Instalar dependencias
+        run: bun install --frozen-lockfile
+
+      - name: Verificar que no haya credenciales de Cloudinary
+        run: |
+          for name in CLOUDINARY_CLOUD_NAME CLOUDINARY_API_KEY CLOUDINARY_API_SECRET \
+            PUBLIC_CLOUDINARY_CLOUD_NAME PUBLIC_CLOUDINARY_API_KEY; do
+            if [ -n "${!name}" ]; then
+              echo "::error::$name está definida; este job debe construir sin secretos."
+              exit 1
+            fi
+          done
+
+      - name: Validar snapshots de Cloudinary
+        run: bun run snapshot:cloudinary --check
+
+      - name: Typecheck
+        run: bun run check
+
+      - name: Build
+        run: bun run build

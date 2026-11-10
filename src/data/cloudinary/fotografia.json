@@ -1,0 +1,430 @@
+{
+	"folder": "fotografia",
+	"cloudName": "dxji4alip",
+	"generatedAt": "2026-11-10T20:35:00Z",
+	"generatedBy": "seed:live-gallery-props",
+	"uploadedAtSource": "cloudinary-version",
+	"note": "Seed capturado del build publicado de /gallery. Regenerar con `bun run snapshot:cloudinary` cuando haya credenciales.",
+	"assets": [
+		{
+			"public_id": "fotografia/10_founc4",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416626,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416626/fotografia/10_founc4.webp",
+			"uploaded_at": "2025-02-13T03:17:06Z"
+		},
+		{
+			"public_id": "fotografia/100_a7zbj8",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416645,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416645/fotografia/100_a7zbj8.webp",
+			"uploaded_at": "2025-02-13T03:17:25Z"
+		},
+		{
+			"public_id": "fotografia/12_znc5as",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416592,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416592/fotografia/12_znc5as.webp",
+			"uploaded_at": "2025-02-13T03:16:32Z"
+		},
+		{
+			"public_id": "fotografia/13_ycsnjw",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416595,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416595/fotografia/13_ycsnjw.webp",
+			"uploaded_at": "2025-02-13T03:16:35Z"
+		},
+		{
+			"public_id": "fotografia/18_gz1wye",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416604,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416604/fotografia/18_gz1wye.webp",
+			"uploaded_at": "2025-02-13T03:16:44Z"
+		},
+		{
+			"public_id": "fotografia/19_oiewtk",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416637,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416637/fotografia/19_oiewtk.webp",
+			"uploaded_at": "2025-02-13T03:17:17Z"
+		},
+		{
+			"public_id": "fotografia/2_vht3zc",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416625,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416625/fotografia/2_vht3zc.webp",
+			"uploaded_at": "2025-02-13T03:17:05Z"
+		},
+		{
+			"public_id": "fotografia/22_hxeftf",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416642,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416642/fotografia/22_hxeftf.webp",
+			"uploaded_at": "2025-02-13T03:17:22Z"
+		},
+		{
+			"public_id": "fotografia/24_fiozm1",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416641,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416641/fotografia/24_fiozm1.webp",
+			"uploaded_at": "2025-02-13T03:17:21Z"
+		},
+		{
+			"public_id": "fotografia/29_nrpfyc",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416607,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416607/fotografia/29_nrpfyc.webp",
+			"uploaded_at": "2025-02-13T03:16:47Z"
+		},
+		{
+			"public_id": "fotografia/31_lrb0hg",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416602,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416602/fotografia/31_lrb0hg.webp",
+			"uploaded_at": "2025-02-13T03:16:42Z"
+		},
+		{
+			"public_id": "fotografia/33_iprkxh",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416591,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416591/fotografia/33_iprkxh.webp",
+			"uploaded_at": "2025-02-13T03:16:31Z"
+		},
+		{
+			"public_id": "fotografia/37_ijalrs",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416636,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416636/fotografia/37_ijalrs.webp",
+			"uploaded_at": "2025-02-13T03:17:16Z"
+		},
+		{
+			"public_id": "fotografia/5_mmum35",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416615,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416615/fotografia/5_mmum35.webp",
+			"uploaded_at": "2025-02-13T03:16:55Z"
+		},
+		{
+			"public_id": "fotografia/50_vi8xgl",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416619,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416619/fotografia/50_vi8xgl.webp",
+			"uploaded_at": "2025-02-13T03:16:59Z"
+		},
+		{
+			"public_id": "fotografia/57_skecgq",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416638,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416638/fotografia/57_skecgq.webp",
+			"uploaded_at": "2025-02-13T03:17:18Z"
+		},
+		{
+			"public_id": "fotografia/63_nky4md",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416622,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416622/fotografia/63_nky4md.webp",
+			"uploaded_at": "2025-02-13T03:17:02Z"
+		},
+		{
+			"public_id": "fotografia/64_laylhs",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416629,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416629/fotografia/64_laylhs.webp",
+			"uploaded_at": "2025-02-13T03:17:09Z"
+		},
+		{
+			"public_id": "fotografia/69_o1v0n4",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416611,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416611/fotografia/69_o1v0n4.webp",
+			"uploaded_at": "2025-02-13T03:16:51Z"
+		},
+		{
+			"public_id": "fotografia/71_au4wwu",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416647,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416647/fotografia/71_au4wwu.webp",
+			"uploaded_at": "2025-02-13T03:17:27Z"
+		},
+		{
+			"public_id": "fotografia/73_wrgs0d",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416629,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416629/fotografia/73_wrgs0d.webp",
+			"uploaded_at": "2025-02-13T03:17:09Z"
+		},
+		{
+			"public_id": "fotografia/75_wvp0co",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416622,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416622/fotografia/75_wvp0co.webp",
+			"uploaded_at": "2025-02-13T03:17:02Z"
+		},
+		{
+			"public_id": "fotografia/77_jwegna",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416618,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416618/fotografia/77_jwegna.webp",
+			"uploaded_at": "2025-02-13T03:16:58Z"
+		},
+		{
+			"public_id": "fotografia/80_tg1o1k",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416588,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416588/fotografia/80_tg1o1k.webp",
+			"uploaded_at": "2025-02-13T03:16:28Z"
+		},
+		{
+			"public_id": "fotografia/82_vc8hdf",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416650,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416650/fotografia/82_vc8hdf.webp",
+			"uploaded_at": "2025-02-13T03:17:30Z"
+		},
+		{
+			"public_id": "fotografia/83_peh4gy",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416614,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416614/fotografia/83_peh4gy.webp",
+			"uploaded_at": "2025-02-13T03:16:54Z"
+		},
+		{
+			"public_id": "fotografia/84_qcqbjp",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416597,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416597/fotografia/84_qcqbjp.webp",
+			"uploaded_at": "2025-02-13T03:16:37Z"
+		},
+		{
+			"public_id": "fotografia/85_hsfkjx",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416599,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416599/fotografia/85_hsfkjx.webp",
+			"uploaded_at": "2025-02-13T03:16:39Z"
+		},
+		{
+			"public_id": "fotografia/86_hfenr9",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416602,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416602/fotografia/86_hfenr9.webp",
+			"uploaded_at": "2025-02-13T03:16:42Z"
+		},
+		{
+			"public_id": "fotografia/87_bhjkwv",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416643,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416643/fotografia/87_bhjkwv.webp",
+			"uploaded_at": "2025-02-13T03:17:23Z"
+		},
+		{
+			"public_id": "fotografia/88_p3c7hv",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416586,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416586/fotografia/88_p3c7hv.webp",
+			"uploaded_at": "2025-02-13T03:16:26Z"
+		},
+		{
+			"public_id": "fotografia/89_o8bpwd",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416608,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416608/fotografia/89_o8bpwd.webp",
+			"uploaded_at": "2025-02-13T03:16:48Z"
+		},
+		{
+			"public_id": "fotografia/90_duc2my",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416590,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416590/fotografia/90_duc2my.webp",
+			"uploaded_at": "2025-02-13T03:16:30Z"
+		},
+		{
+			"public_id": "fotografia/91_amkqm2",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416589,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416589/fotografia/91_amkqm2.webp",
+			"uploaded_at": "2025-02-13T03:16:29Z"
+		},
+		{
+			"public_id": "fotografia/92_nnftis",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416607,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416607/fotografia/92_nnftis.webp",
+			"uploaded_at": "2025-02-13T03:16:47Z"
+		},
+		{
+			"public_id": "fotografia/93_cccxa4",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416586,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416586/fotografia/93_cccxa4.webp",
+			"uploaded_at": "2025-02-13T03:16:26Z"
+		},
+		{
+			"public_id": "fotografia/94_letsdv",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416598,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416598/fotografia/94_letsdv.webp",
+			"uploaded_at": "2025-02-13T03:16:38Z"
+		},
+		{
+			"public_id": "fotografia/95_l34b7d",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416613,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416613/fotografia/95_l34b7d.webp",
+			"uploaded_at": "2025-02-13T03:16:53Z"
+		},
+		{
+			"public_id": "fotografia/96_ph2j1t",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416594,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416594/fotografia/96_ph2j1t.webp",
+			"uploaded_at": "2025-02-13T03:16:34Z"
+		},
+		{
+			"public_id": "fotografia/97_yivlrm",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416648,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416648/fotografia/97_yivlrm.webp",
+			"uploaded_at": "2025-02-13T03:17:28Z"
+		},
+		{
+			"public_id": "fotografia/98_oj8paa",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416633,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416633/fotografia/98_oj8paa.webp",
+			"uploaded_at": "2025-02-13T03:17:13Z"
+		},
+		{
+			"public_id": "fotografia/99_ptuilz",
+			"folder": "fotografia",
+			"format": "webp",
+			"resource_type": "image",
+			"type": "upload",
+			"version": 1739416633,
+			"secure_url": "https://res.cloudinary.com/dxji4alip/image/upload/v1739416633/fotografia/99_ptuilz.webp",
+			"uploaded_at": "2025-02-13T03:17:13Z"
+		}
+	]
+}
