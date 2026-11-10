@@ -1,13 +1,75 @@
 ---
 import { Icon } from 'astro-icon/components'
 import Search from '@components/Search.astro'
-import { Image, Picture } from "astro:assets"
+import BentoCard from '@components/ui/BentoCard.astro'
+import { getPosts, getCategories, formatDate, sluglify } from '@utils/index'
+import { Picture } from 'astro:assets'
+
 const navItems = [
 	{ title: 'Inicio', href: '/' },
-	{	 title: 'Sobre mí', href: '/about' },
+	{ title: 'Sobre mí', href: '/about' },
 	{ title: 'Blog', href: '/blog' },
-	{ title: 'Portafolio', href: '/portafolio' }
+	{ title: 'Portafolio', href: '/portafolio' },
+	{ title: 'Contacto', href: '/contact' }
 ]
+
+const posts = await getPosts(1)
+const latestPost = posts.length > 0 ? posts[0] : null
+
+// The blog menu advertises categories, so it can only advertise the ones that
+// have a page. A category with no published posts generates no route: linking it
+// shipped a 404 ("Diseño" held a single draft), and a hand-written slug dropped
+// the accent the route keeps ("programacion" vs "programación"). Both come from
+// the data now, built with the same sluglify the route uses.
+const publishedCategories = await getCategories()
+const hasCategory = (name: string) =>
+	publishedCategories.some((category) => category.toLowerCase() === name.toLowerCase())
+const categoryHref = (name: string) => `/blog/category/${sluglify(name.toLowerCase())}/1`
+
+const blogCategoryCards = (
+	[
+		{
+			title: 'Programación',
+			category: 'Programación',
+			description: 'Código, stacks & dev',
+			icon: 'mdi:code-tags',
+			theme: 'code'
+		},
+		{
+			title: 'Diseño',
+			category: 'Diseño',
+			description: 'UI/UX y sistemas visuales',
+			icon: 'mdi:palette-outline',
+			theme: 'palette'
+		},
+		{
+			title: 'Marketing',
+			category: 'Marketing',
+			description: 'Estrategia y crecimiento',
+			icon: 'mdi:bullhorn-outline',
+			theme: 'marketing'
+		}
+	] as const
+).filter((card) => hasCategory(card.category))
+
+const categoryGridClass =
+	blogCategoryCards.length >= 3
+		? 'grid-cols-3'
+		: blogCategoryCards.length === 2
+			? 'grid-cols-2'
+			: 'grid-cols-1'
+
+const latestPostSummary = latestPost
+	? latestPost.data.description
+		? latestPost.data.description.length > 52
+			? `${latestPost.data.description.slice(0, 48).trim()}...`
+			: latestPost.data.description
+		: 'Último artículo publicado'
+	: 'Los últimos artículos publicados'
+
+const latestPostDesc = latestPost
+	? `${formatDate(latestPost.data.pubDate)} • ${latestPostSummary}`
+	: 'Los últimos artículos publicados'
 
 const isActive = (path: string) => {
 	const currentPath = Astro.url.pathname
@@ -20,26 +82,230 @@ const isActive = (path: string) => {
 		class="bg-dark/70 mx-auto flex h-16 max-w-screen-xl items-center justify-between px-4 backdrop-blur-md"
 	>
 		<!-- Logo -->
-		<a href="/" class="flex items-center space-x-2">
+		<a href="/" class="flex items-center">
 			<Picture
 				src="/img/logo.svg"
 				alt="Steve Moya"
-				width="40"
-				height="40"
+				width="32"
+				height="32"
 				class="transition-transform duration-300 hover:scale-110"
 			/>
 		</a>
 
 		<!-- Desktop Navigation -->
-		<nav class="hidden items-center space-x-6 md:flex print:hidden no-print">
+		<nav class="hidden items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] p-1 md:flex print:hidden no-print">
+			<a
+				href="/"
+				class={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-300 ${
+					isActive('/') ? 'bg-white text-black' : 'text-white/70 hover:text-white'
+				}`}
+			>
+				Inicio
+			</a>
+
+			<!-- Dropdown: Sobre mí -->
+			<nav-dropdown class="relative">
+				<button
+					type="button"
+					aria-expanded="false"
+					class={`flex items-center gap-1 rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-300 ${
+						isActive('/about') ? 'bg-white text-black' : 'text-white/70 hover:text-white'
+					}`}
+				>
+					Sobre mí
+					<Icon name="mdi:chevron-down" class="h-4 w-4 transition-transform duration-300" data-chevron />
+				</button>
+
+				<div
+					data-panel
+					class="pointer-events-none absolute left-1/2 top-[calc(100%+0.75rem)] w-[700px] max-w-[calc(100vw-2rem)] -translate-x-1/2 translate-y-1 rounded-2xl border border-white/10 bg-[#0a0a0c]/95 p-3 opacity-0 shadow-2xl shadow-black/80 backdrop-blur-2xl transition-all duration-300 before:absolute before:-top-3 before:left-0 before:right-0 before:h-3 before:content-['']"
+				>
+					<div class="flex gap-3">
+						<!-- Left Section (~63%) -->
+						<div class="flex flex-1 flex-col gap-2.5">
+							<!-- Top row: 2 Hero cards -->
+							<div class="grid grid-cols-2 gap-2.5">
+								<BentoCard
+									variant="hero"
+									theme="rocket"
+									icon="mdi:rocket-launch-outline"
+									title="Proyectos"
+									description="Descubre mis creaciones y código"
+									href="/portafolio"
+								/>
+								<BentoCard
+									variant="hero"
+									theme="timeline"
+									icon="mdi:briefcase-outline"
+									title="Experiencia"
+									description="Mi trayectoria y empresas"
+									href="/experience"
+								/>
+							</div>
+							<!-- Bottom row: 3 Compact cards -->
+							<div class="grid grid-cols-3 gap-2.5">
+								<BentoCard
+									variant="compact"
+									theme="code"
+									icon="mdi:code-tags"
+									title="Habilidades"
+									description="Stack técnico que domino"
+									href="/skills"
+								/>
+								<BentoCard
+									variant="compact"
+									theme="education"
+									icon="mdi:school-outline"
+									title="Educación"
+									description="Formación y credenciales"
+									href="/education"
+								/>
+								<BentoCard
+									variant="compact"
+									theme="identity"
+									icon="mdi:account-outline"
+									title="Sobre mí"
+									description="Historia, visión y valores"
+									href="/about"
+								/>
+							</div>
+						</div>
+
+						<!-- Vertical Divider -->
+						<div class="w-px self-stretch bg-white/10 my-0.5"></div>
+
+						<!-- Right Section (~37%) -->
+						<div class="flex w-[225px] shrink-0 flex-col gap-2.5 justify-between">
+							<BentoCard
+								variant="stack"
+								theme="gallery"
+								icon="mdi:image-outline"
+								title="Galería"
+								description="Fotografía y capturas"
+								href="/gallery"
+							/>
+							<BentoCard
+								variant="stack"
+								theme="document"
+								icon="mdi:file-document-outline"
+								title="Currículum"
+								description="Ver o descargar CV en PDF"
+								href="/CV.-Steve-Moya-Cepeda.pdf"
+								external={true}
+							/>
+							<BentoCard
+								variant="stack"
+								theme="chat"
+								icon="mdi:chat-processing-outline"
+								title="Contacto"
+								description="Hablemos de tu proyecto"
+								href="/contact"
+							/>
+						</div>
+					</div>
+				</div>
+			</nav-dropdown>
+
+			<!-- Dropdown: Blog -->
+			<nav-dropdown class="relative">
+				<button
+					type="button"
+					aria-expanded="false"
+					class={`flex items-center gap-1 rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-300 ${
+						isActive('/blog') ? 'bg-white text-black' : 'text-white/70 hover:text-white'
+					}`}
+				>
+					Blog
+					<Icon name="mdi:chevron-down" class="h-4 w-4 transition-transform duration-300" data-chevron />
+				</button>
+
+				<div
+					data-panel
+					class="pointer-events-none absolute left-1/2 top-[calc(100%+0.75rem)] w-[700px] max-w-[calc(100vw-2rem)] -translate-x-1/2 translate-y-1 rounded-2xl border border-white/10 bg-[#0a0a0c]/95 p-3 opacity-0 shadow-2xl shadow-black/80 backdrop-blur-2xl transition-all duration-300 before:absolute before:-top-3 before:left-0 before:right-0 before:h-3 before:content-['']"
+				>
+					<div class="flex gap-3">
+						<!-- Left Section (~63%) -->
+						<div class="flex flex-1 flex-col gap-2.5">
+							<!-- Top row: 2 Hero cards -->
+							<div class="grid grid-cols-2 gap-2.5">
+								<BentoCard
+									variant="hero"
+									theme="post"
+									icon="mdi:sparkles"
+									title={latestPost ? latestPost.data.title : 'Los más recientes'}
+									description={latestPostDesc}
+									href={latestPost ? `/blog/${latestPost.id}` : '/blog'}
+									badge={latestPost ? 'NUEVO' : undefined}
+								/>
+								<BentoCard
+									variant="hero"
+									theme="archive"
+									icon="mdi:archive-outline"
+									title="Archivo Completo"
+									description="Todos los artículos con paginación"
+									href="/blog/todos-los-blogs/1"
+								/>
+							</div>
+							<!-- Bottom row: one card per category that has published posts -->
+							<div class:list={['grid gap-2.5', categoryGridClass]}>
+								{
+									blogCategoryCards.map((card) => (
+										<BentoCard
+											variant="compact"
+											theme={card.theme}
+											icon={card.icon}
+											title={card.title}
+											description={card.description}
+											href={categoryHref(card.category)}
+										/>
+									))
+								}
+							</div>
+						</div>
+
+						<!-- Vertical Divider -->
+						<div class="w-px self-stretch bg-white/10 my-0.5"></div>
+
+						<!-- Right Section (~37%) -->
+						<div class="flex w-[225px] shrink-0 flex-col gap-2.5 justify-between">
+							<BentoCard
+								variant="stack"
+								theme="tags"
+								icon="mdi:tag-multiple-outline"
+								title="Etiquetas"
+								description="Explora temas y tags"
+								href="/blog/tags"
+							/>
+							<BentoCard
+								variant="stack"
+								theme="productivity"
+								icon="mdi:checkbox-marked-circle-outline"
+								title="Productividad"
+								description="Hábitos y flujos de trabajo"
+								href="/blog/category/productividad/1"
+							/>
+							<BentoCard
+								variant="stack"
+								theme="rss"
+								icon="mdi:rss"
+								title="Feed RSS"
+								description="Suscríbete en tu lector"
+								href="/rss.xml"
+								external={true}
+							/>
+						</div>
+					</div>
+				</div>
+			</nav-dropdown>
+
 			{
-				navItems.map((item) => (
+				navItems.slice(2).filter((item) => item.title !== 'Blog').map((item) => (
 					<a
 						href={item.href}
-						class={`text-sm font-medium transition-colors duration-300 ${
+						class={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-300 ${
 							isActive(item.href)
-								? 'text-[#c70039]'
-								: 'text-white/80 hover:text-[#c70039]'
+								? 'bg-white text-black'
+								: 'text-white/70 hover:text-white'
 						}`}
 					>
 						{item.title}
@@ -134,4 +400,97 @@ const isActive = (path: string) => {
 			header?.classList.remove('shadow-md')
 		}
 	})
+
+	class NavDropdown extends HTMLElement {
+		connectedCallback() {
+			const button = this.querySelector<HTMLButtonElement>('button')!
+			const panel = this.querySelector<HTMLElement>('[data-panel]')!
+			const chevron = this.querySelector<HTMLElement>('[data-chevron]')!
+
+			let openTimeout: number | undefined
+			let closeTimeout: number | undefined
+
+			const adjustPosition = () => {
+				panel.style.transform = ''
+				const rect = panel.getBoundingClientRect()
+				const margin = 16
+				if (rect.left < margin) {
+					const offset = margin - rect.left
+					panel.style.transform = `translateX(calc(-50% + ${offset}px))`
+				} else if (rect.right > window.innerWidth - margin) {
+					const offset = rect.right - (window.innerWidth - margin)
+					panel.style.transform = `translateX(calc(-50% - ${offset}px))`
+				}
+			}
+
+			const open = () => {
+				clearTimeout(closeTimeout)
+				document.querySelectorAll('nav-dropdown').forEach((dropdown) => {
+					if (dropdown !== this) {
+						const otherPanel = dropdown.querySelector<HTMLElement>('[data-panel]')
+						const otherChevron = dropdown.querySelector<HTMLElement>('[data-chevron]')
+						const otherButton = dropdown.querySelector<HTMLButtonElement>('button')
+						otherPanel?.classList.add('pointer-events-none', 'opacity-0', 'translate-y-1')
+						otherPanel?.classList.remove('translate-y-0')
+						otherChevron?.classList.remove('rotate-180')
+						otherButton?.setAttribute('aria-expanded', 'false')
+					}
+				})
+
+				adjustPosition()
+				panel.classList.remove('pointer-events-none', 'opacity-0', 'translate-y-1')
+				panel.classList.add('translate-y-0')
+				chevron.classList.add('rotate-180')
+				button.setAttribute('aria-expanded', 'true')
+			}
+
+			const close = () => {
+				clearTimeout(openTimeout)
+				panel.classList.add('pointer-events-none', 'opacity-0', 'translate-y-1')
+				panel.classList.remove('translate-y-0')
+				chevron.classList.remove('rotate-180')
+				button.setAttribute('aria-expanded', 'false')
+			}
+
+			this.addEventListener('mouseenter', () => {
+				clearTimeout(closeTimeout)
+				openTimeout = window.setTimeout(() => {
+					open()
+				}, 120)
+			})
+
+			this.addEventListener('mouseleave', () => {
+				clearTimeout(openTimeout)
+				closeTimeout = window.setTimeout(() => {
+					close()
+				}, 150)
+			})
+
+			const toggle = (event: MouseEvent) => {
+				event.stopPropagation()
+				clearTimeout(openTimeout)
+				clearTimeout(closeTimeout)
+				const isOpen = button.getAttribute('aria-expanded') === 'true'
+				isOpen ? close() : open()
+			}
+
+			button.addEventListener('click', toggle)
+
+			document.addEventListener('click', (event) => {
+				if (!this.contains(event.target as Node)) {
+					clearTimeout(openTimeout)
+					close()
+				}
+			})
+			document.addEventListener('keydown', (event) => {
+				if (event.key === 'Escape') {
+					clearTimeout(openTimeout)
+					close()
+				}
+			})
+			document.addEventListener('astro:after-swap', close)
+		}
+	}
+
+	customElements.define('nav-dropdown', NavDropdown)
 </script>

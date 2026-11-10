@@ -6,6 +6,8 @@ dist/
 
 # dependencies
 node_modules/
+.vscode/
+.idea/
 
 # logs
 npm-debug.log*
@@ -13,6 +15,8 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# non-canonical lockfile: this project uses bun.lock (tracked in git)
+pnpm-lock.yaml
 
 # environment variables
 .env
@@ -21,14 +25,6 @@ pnpm-debug.log*
 # macOS-specific files
 .DS_Store
 
-node_modules
-.vscode/
 .vercel/
-dist/
-.idea/
-bun.lock
-pnpm-lock.yaml
-
 
 TODO.md
-.vercel

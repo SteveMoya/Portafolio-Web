@@ -1,5 +1,5 @@
 
-import { CATEGORIES } from '../src/data/categories'
+import { CATEGORIES, PROJECT_BADGES, PROJECT_CATEGORIES, PROJECT_STATUSES } from '../src/data/categories'
 import { defineConfig } from 'tinacms'
 
 // Your hosting provider likely exposes this as an environment variable
@@ -266,7 +266,7 @@ export default defineConfig({
 						name: 'status',
 						label: 'Estado',
 						required: false,
-						options: ['active', 'completed', 'in_progress', 'archived']
+						options: [...PROJECT_STATUSES]
 					},
 					{
 						type: 'boolean',
@@ -280,7 +280,7 @@ export default defineConfig({
 						name: 'category',
 						label: 'Categoria',
 						required: false,
-						options: ['web', 'mobile', 'api', 'ai', 'backend', 'devops', 'frontend', 'fullstack', 'other']
+						options: [...PROJECT_CATEGORIES]
 					},
 					{
 						type: 'string',
@@ -288,7 +288,7 @@ export default defineConfig({
 						label: 'Badges',
 						required: false,
 						list: true,
-						options: ['private', 'client', 'company', 'open_source', 'ai', 'devops', 'freelance', 'work', 'personal']
+						options: [...PROJECT_BADGES]
 					}
 				]
 			}

@@ -3,11 +3,14 @@ import NavbarMinimal from './Navbar.astro'
 import Footer from './Footer.astro'
 import Head from './Head.astro'
 import Cursor from '@src/layouts/Cursor.astro'
+import CursorMenu from '@components/ui/CursorMenu.astro'
+import ChatbotWidget from '@components/ChatbotWidget'
 
 import TwSizeIndicator from '@components/ui/TwSizeIndicator.astro'
 import EditBlog from '@components/ui/editBlog.astro'
 import BotonFlotante from '@components/ui/BotonFlotante.astro'
 import BotonIrArriba from '@components/ui/BotonIrArriba.astro'
+import { WHATSAPP_URL } from '@/data/contact'
 import "@/styles/global.css";
 
 interface Props {
@@ -37,30 +40,16 @@ import '@fontsource/monoton'
 <html lang="es">
 	<Head {...Astro.props} />
 	<body
-		class="body bg-dark h-auto w-full overflow-x-clip text-wrap pt-16 font-poppins text-[whitesmoke]"
+		class="body bg-[#0a0a0a] h-auto w-full overflow-x-clip text-wrap pt-16 font-poppins text-[whitesmoke]"
 	>
 		<Cursor />
+		<CursorMenu />
 		<NavbarMinimal />
 		<slot name="header-progress" />
-		<main class="relative h-auto w-full overflow-clip">
-			<!-- Animated Background Spheres -->
-			<div class="pointer-events-none fixed inset-0 z-[-1] overflow-hidden">
-				<div class="absolute -top-[20%] -left-[10%] h-[600px] w-[600px] rounded-full bg-[#c70039] opacity-20 mix-blend-screen blur-[120px] transition-transform duration-1000"></div>
-				<div class="absolute top-[40%] -right-[10%] h-[500px] w-[500px] rounded-full bg-[#b11141] opacity-20 mix-blend-screen blur-[150px] transition-transform duration-1000"></div>
-				<div class="absolute -bottom-[20%] left-[20%] h-[700px] w-[700px] rounded-full bg-[#c70039] opacity-15 mix-blend-screen blur-[130px] transition-transform duration-1000"></div>
-			</div>
-			
+		<main class="relative h-auto w-full overflow-clip bg-[#0a0a0a]">
+
 			<!-- Page Content Wrapper with Transition Animation -->
-			<div transition:animate={{
-				forwards: {
-					old: { name: 'page-out', duration: '0.25s', easing: 'ease-in', fillMode: 'both' },
-					new: { name: 'page-in', duration: '0.3s', easing: 'ease-out', fillMode: 'both' }
-				},
-				backwards: {
-					old: { name: 'page-out', duration: '0.25s', easing: 'ease-in', fillMode: 'both' },
-					new: { name: 'page-in', duration: '0.3s', easing: 'ease-out', fillMode: 'both' }
-				}
-			}}>
+			<div transition:animate="fade" transition:name="page">
 				<slot />
 			</div>
 			{Astro.url.pathname.includes('/blog/') && <BotonIrArriba />}
@@ -69,7 +58,7 @@ import '@fontsource/monoton'
 				Astro.url.pathname !== '/' && (
 					<BotonFlotante
 						icon="mdi:whatsapp"
-						link="https://api.whatsapp.com/send/?phone=18497511849&text&type=phone_number&app_absent=0"
+						link={WHATSAPP_URL}
 						text="contactame por whatsapp"
 					/>
 				)
@@ -78,7 +67,8 @@ import '@fontsource/monoton'
 		<TwSizeIndicator />
 		<EditBlog />
 		<Footer />
-		
+		<ChatbotWidget client:load />
+
 		<style is:global>
 			::-webkit-scrollbar {
 				width: 4px;
@@ -143,4 +133,19 @@ import '@fontsource/monoton'
 
 	initScrollAnimations()
 	document.addEventListener('astro:after-swap', initScrollAnimations)
+</script>
+
+<script>
+	import { initMotion, getLenis, getScrollTrigger, refreshScrollTriggers } from '@/lib/motion'
+
+	initMotion()
+
+	document.addEventListener('astro:before-swap', () => {
+		getScrollTrigger()?.getAll().forEach((trigger) => trigger.kill())
+	})
+
+	document.addEventListener('astro:after-swap', () => {
+		getLenis()?.resize()
+		refreshScrollTriggers()
+	})
 </script>

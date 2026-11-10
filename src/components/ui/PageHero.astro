@@ -1,0 +1,214 @@
+---
+/**
+ * Page hero shared by the top-level views (/skills, /experience, /education,
+ * /gallery). Single implementation so the four pages cannot drift apart again.
+ *
+ * House rules baked in:
+ * - background is the site canvas #0a0a0a (never a slate/neutral gradient)
+ * - eyebrow is the 10px uppercase 0.3em tracking label used across the site
+ * - display type is font-poppins font-black uppercase tracking-tight
+ * - the optional accent line uses the .text-shiny-accent utility
+ * - `align="center"` centers the copy horizontally and
+ *   `background="pattern"` swaps the wash for the dot grid + accent gradient,
+ *   `shelves` / `gears` keep that design underneath a 3D scene
+ */
+interface Props {
+	eyebrow: string
+	lines: string[]
+	/** Index of the line rendered with the accent sheen, -1 for none. */
+	accentIndex?: number
+	subtitle?: string
+	/** Short mono facts rendered under the subtitle, e.g. ["4 roles", "6 years"] */
+	meta?: string[]
+	/** Horizontal alignment of the hero content. Defaults to the left-aligned layout. */
+	align?: 'start' | 'center'
+	/** Background treatment: ambient accent wash (default) or dot grid + gradient. */
+	background?: 'wash' | 'pattern' | 'shelves' | 'gears' | 'flatfile'
+	/**
+	 * `scroll` adds a gentle scroll-linked drift to the two display lines: the
+	 * second line travels further, so the pair separates as the hero leaves.
+	 * Opt-in only — the other views keep a static hero.
+	 */
+	motion?: 'static' | 'scroll'
+	/**
+	 * `tall` grows the hero from 78vh to 88vh. Used by the one view whose
+	 * background is a scene that needs the room above the copy.
+	 */
+	height?: 'default' | 'tall'
+	class?: string
+}
+
+const {
+	eyebrow,
+	lines,
+	accentIndex = -1,
+	subtitle,
+	meta = [],
+	align = 'start',
+	background = 'wash',
+	motion = 'static',
+	height = 'default',
+	class: className = '',
+} = Astro.props
+
+const isCentered = align === 'center'
+const isScrolling = motion === 'scroll'
+// A single min-height class, chosen here instead of layering `min-h-*` utilities
+// in the class list: two arbitrary values of the same property depend on the
+// order Tailwind emits them, not on the order they are written.
+const heroHeight = height === 'tall' ? 'min-h-[88vh]' : 'min-h-[78vh]'
+---
+
+<section
+	class:list={[
+		'relative flex items-end overflow-hidden bg-[#0a0a0a] px-6 pb-14 pt-32 sm:px-10 lg:px-16 lg:pb-20',
+		heroHeight,
+		className,
+	]}
+>
+	<!-- Ambient accent wash. Inline style keeps the gradient out of the
+	     Tailwind arbitrary-value parser, where an undefined token silently
+	     produces no CSS at all. -->
+	{
+		background === 'wash' && (
+			<div
+				class="pointer-events-none absolute inset-0 z-0"
+				aria-hidden="true"
+				style="background: radial-gradient(ellipse 75% 55% at 50% -10%, rgba(199,0,57,0.10), transparent 62%);"
+			/>
+		)
+	}
+
+	<!-- Dot grid + accent gradient: same dot field the home hero uses, layered
+	     with a top accent glow so the hero reads as a distinct surface. Both
+	     gradients are inline styles for the same parser reason as the wash.
+	     `shelves` and `gears` keep this design underneath their 3D scene, so the
+	     hero is never empty while the engine loads or after it fails. -->
+	{
+		background !== 'wash' && (
+			<>
+				<div
+					class="pointer-events-none absolute inset-0 z-0 opacity-30"
+					aria-hidden="true"
+					style="background-image: radial-gradient(circle, rgba(255,255,255,0.22) 1px, transparent 1px); background-size: 24px 24px; mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%); -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%);"
+				/>
+				<div
+					class="pointer-events-none absolute inset-0 z-0"
+					aria-hidden="true"
+					style="background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(199,0,57,0.22), transparent 65%), linear-gradient(180deg, rgba(199,0,57,0.08), transparent 55%);"
+				/>
+			</>
+		)
+	}
+
+	<!-- Scene slot. The wrapper deliberately has no z-index: a positioned box
+	     with `z-index: auto` does not create a stacking context, so the scene
+	     keeps control of its own layers (canvas at z-0, its control at z-20)
+	     instead of being trapped below the copy at z-10. Rendered only for the
+	     views that mount a scene, so the others end up with identical markup. -->
+	{
+		(background === 'shelves' || background === 'gears' || background === 'flatfile') && (
+			<div class="absolute inset-0">
+				<slot name="background" />
+			</div>
+		)
+	}
+
+	<div class="relative z-10 mx-auto w-full max-w-[1400px]">
+		<div class:list={['mb-6 flex items-center gap-4', isCentered && 'justify-center']}>
+			{isCentered && <span class="h-px w-10 bg-white/20" aria-hidden="true"></span>}
+			<span class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">
+				{eyebrow}
+			</span>
+			<span class:list={['h-px flex-1 bg-white/20', isCentered ? 'max-w-[40px]' : 'max-w-[120px]']}>
+			</span>
+		</div>
+
+		<h1
+			class:list={[
+				'font-poppins text-[15vw] font-black uppercase leading-[0.85] tracking-tight text-white sm:text-[9.5vw] lg:text-[7.5vw]',
+				isCentered && 'text-center',
+			]}
+		>
+			{
+				lines.map((line, index) => (
+					<span
+						class:list={[
+							'block',
+							isScrolling && 'hero-drift',
+							isScrolling && index > 0 && 'hero-drift--far',
+						]}
+					>
+						{index === accentIndex ? <span class="text-shiny-accent">{line}</span> : line}
+					</span>
+				))
+			}
+		</h1>
+
+		{
+			subtitle && (
+				<p
+					class:list={[
+						'mt-8 max-w-2xl text-sm leading-relaxed text-white/60 sm:text-base',
+						isCentered && 'mx-auto text-center',
+					]}
+				>
+					{subtitle}
+				</p>
+			)
+		}
+
+		{
+			meta.length > 0 && (
+				<ul
+					class:list={[
+						'mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-white/10 pt-6',
+						isCentered && 'justify-center',
+					]}
+				>
+					{meta.map((item) => (
+						<li class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">
+							{item}
+						</li>
+					))}
+				</ul>
+			)
+		}
+	</div>
+</section>
+
+<style>
+	/* Scroll-linked drift, opt-in via `motion="scroll"`. Tied to the document
+	   timeline so it starts on the first pixel of scroll, not when the hero
+	   "enters" (it is already in view at load). */
+	.hero-drift {
+		animation: hero-drift-near linear both;
+		animation-timeline: scroll(root block);
+		animation-range: 0 70vh;
+		will-change: transform;
+	}
+
+	.hero-drift--far {
+		animation-name: hero-drift-far;
+	}
+
+	@keyframes hero-drift-near {
+		to {
+			transform: translate3d(0, -18px, 0);
+			opacity: 0.85;
+		}
+	}
+
+	@keyframes hero-drift-far {
+		to {
+			transform: translate3d(0, -44px, 0);
+			opacity: 0.7;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.hero-drift {
+			animation: none;
+		}
+	}
+</style>

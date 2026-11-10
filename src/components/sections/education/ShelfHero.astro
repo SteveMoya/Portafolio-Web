@@ -1,0 +1,1668 @@
+---
+/**
+ * Education hero background: a bookcase built from primitives.
+ *
+ * Four shelves (one per category in `src/data/bookshelf.ts`) hold five real
+ * books each. On entrance the books fall into place and pile up; a click on a
+ * book, a plate or the back of its shelf hands that pile to `cannon-es` and it
+ * collapses. A real button restacks everything and is the keyboard path.
+ *
+ * Deliberate split (see `.hermes/plans/education-shelf-hero.md`):
+ * - resting piles are choreographed, not simulated: deterministic, zero CPU
+ *   when settled, and composed instead of whatever a solver settled on;
+ * - only the collapse is simulated, from bodies created at the current
+ *   transforms, then frozen after 4 s or when every body sleeps;
+ * - the engine loads behind the idle gate, so a visitor who never clicks never
+ *   downloads it.
+ *
+ * Fallbacks are the current design, not a degraded one: without JS, without
+ * WebGL and under reduced motion the hero keeps the dot-grid background that
+ * PageHero already paints behind this slot.
+ */
+import { bookshelf } from '../../../data/bookshelf'
+
+interface Props {
+	class?: string
+}
+
+const { class: className = '' } = Astro.props
+
+const totalBooks = bookshelf.reduce((count, shelf) => count + shelf.books.length, 0)
+
+// Text equivalent of the scene: the canvas is aria-hidden, so this paragraph is
+// the only way the content of the bookcase reaches a screen reader.
+const shelfSummary = bookshelf
+	.map(
+		(shelf) =>
+			`${shelf.label}: ${shelf.books.map((book) => `${book.title}, de ${book.author}`).join('; ')}`
+	)
+	.join('. ')
+---
+
+<div class:list={['shelf-hero absolute inset-0', className]} data-shelf-hero>
+	<!-- Canvas host. Empty until the script mounts, so the hero never depends on
+	     it: the pattern layers below stay visible through the transparent canvas
+	     and forever after a failure. -->
+	<div class="absolute inset-0 z-0" data-shelf-stage aria-hidden="true"></div>
+
+	<!-- Scrim. Keeps the display type readable over a lit scene; the gradient is
+	     inline for the same reason the rest of the site uses inline gradients. -->
+	<div
+		class="pointer-events-none absolute inset-0 z-[1]"
+		aria-hidden="true"
+		style="background: radial-gradient(ellipse 52% 46% at 50% 30%, rgba(10,10,10,0.06) 0%, rgba(10,10,10,0.26) 55%, rgba(10,10,10,0.66) 100%), linear-gradient(180deg, rgba(10,10,10,0.34) 0%, rgba(10,10,10,0.02) 26%, rgba(10,10,10,0.30) 56%, rgba(10,10,10,0.82) 78%, #0a0a0a 100%);"
+	>
+	</div>
+
+	<!-- The one real control. Hidden until the scene is mounted, because a button
+	     that cannot do anything is worse than no button. -->
+	<button
+		type="button"
+		data-shelf-action
+		aria-pressed="false"
+		style="display:none"
+		class="shelf-hero__action tap absolute bottom-5 right-5 z-20 inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/50 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/70 backdrop-blur-md transition-colors duration-150 hover:border-[#c70039]/50 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c70039] sm:bottom-7 sm:right-8"
+	>
+		<span data-shelf-action-label>Derribar los estantes</span>
+		<span aria-hidden="true" class="text-[#c70039]">&#8635;</span>
+	</button>
+
+	<p class="sr-only">
+		Fondo decorativo: una estantería con {totalBooks} libros de referencia repartidos en cuatro
+		estantes. {shelfSummary}.
+	</p>
+</div>
+
+<script>
+	import { bookshelf } from '../../../data/bookshelf'
+
+	type ThreeNS = typeof import('three')
+	type CannonNS = typeof import('cannon-es')
+	type Mesh = import('three').Mesh
+	type Object3D = import('three').Object3D
+	type Group = import('three').Group
+
+	/* ── Scene constants (1 unit ≈ 10 cm) ─────────────────────────────────── */
+	const BOOK_W = 0.4
+	const BOOK_D = 0.3
+	const CASE_BOARD = 0.15
+	const CASE_WALL = 0.1
+	const CASE_DEPTH = 0.82
+	const CASE_BACK = 0.04
+	const CASE_NICHE = 1.16
+	const CASE_LIP = 0.02
+
+	const TIMING = { settle: 130, intro: 360 }
+	/** Longest possible drop: the tallest book starts just under its niche top. */
+	const MAX_DROP = CASE_NICHE - 0.12
+	/** Fall duration for `MAX_DROP`, scaled by √distance so short drops read fast. */
+	const FALL_MS = 470
+	/** Case height as a fraction of the hero. */
+	const TARGET_HEIGHT = { wide: 0.46, narrow: 0.46 }
+	/** Gap between the top of the hero and the top of the case. */
+	const TOP_MARGIN = { wide: 0.03, narrow: 0 }
+	/** Side margin when the width is what constrains the camera. */
+	const SIDE_MARGIN = 1.06
+	/**
+	 * Downward tilt, in radians. A level camera sees the shelf floors edge-on and
+	 * every sheet of paper disappears; ~7° reveals the interiors, which is how a
+	 * bookcase is actually photographed.
+	 */
+	const CAMERA_TILT = 0.2
+	const PHYSICS_LIMIT = 4000
+
+	const REDUCED_MOTION = '(prefers-reduced-motion: reduce)'
+	const NARROW_VIEW = '(max-width: 767px)'
+	const COARSE_POINTER = '(pointer: coarse)'
+
+	const ATLAS_COLS = bookshelf.length
+	const ATLAS_ROWS = bookshelf.reduce((max, shelf) => Math.max(max, shelf.books.length), 1)
+
+	/* ── Types ────────────────────────────────────────────────────────────── */
+	interface CaseBox {
+		width: number
+		height: number
+		depth: number
+		x: number
+		y: number
+		z: number
+	}
+
+	interface Layout {
+		width: number
+		height: number
+		centerY: number
+	}
+
+	interface BookNode {
+		mesh: Mesh
+		category: number
+		thickness: number
+		/** Resting transform. The collapse starts here and a restack returns here. */
+		rest: { x: number; y: number; z: number; yaw: number }
+		/** Drop distance and duration, derived from the book's slot in the niche. */
+		drop: number
+		fall: number
+		/** `performance.now()` of the scheduled drop; 0 when resting or simmed. */
+		at: number
+	}
+
+	interface Built {
+		group: Group
+		books: BookNode[]
+		byCategory: Map<number, BookNode[]>
+		boxes: CaseBox[]
+		targets: Map<Object3D, number>
+		targetList: Object3D[]
+		layout: Layout
+		disposables: { dispose: () => void }[]
+		textures: import('three').Texture[]
+	}
+
+	/** Structural copy of a vector point: `three` is loaded on demand, never imported. */
+	interface Point3 {
+		x: number
+		y: number
+		z: number
+	}
+
+	interface Simulation {
+		world: import('cannon-es').World
+		dynamics: Map<BookNode, import('cannon-es').Body>
+		statics: import('cannon-es').Body[]
+		startedAt: number
+	}
+
+	/* ── Small helpers ────────────────────────────────────────────────────── */
+	const clamp01 = (value: number) => Math.min(1, Math.max(0, value))
+	const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
+
+	/** Deterministic jitter: the composed piles are identical on every load. */
+	const seeded = (seed: number) => () => {
+		seed |= 0
+		seed = (seed + 0x6d2b79f5) | 0
+		let t = Math.imul(seed ^ (seed >>> 15), 1 | seed)
+		t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
+		return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+	}
+
+	const hexToRgb = (hex: string) => {
+		const value = Number.parseInt(hex.replace('#', ''), 16)
+		return { r: (value >> 16) & 255, g: (value >> 8) & 255, b: value & 255 }
+	}
+
+	/** Multiply a hex colour, clamped: used for cloth shading. */
+	const shade = (hex: string, factor: number) => {
+		const { r, g, b } = hexToRgb(hex)
+		const mix = (channel: number) => Math.round(Math.min(255, Math.max(0, channel * factor)))
+		return `rgb(${mix(r)}, ${mix(g)}, ${mix(b)})`
+	}
+
+	const luminance = (hex: string) => {
+		const { r, g, b } = hexToRgb(hex)
+		return (0.299 * r + 0.587 * g + 0.114 * b) / 255
+	}
+
+	const canvasTexture = (THREE: ThreeNS, width: number, height: number) => {
+		const canvas = document.createElement('canvas')
+		canvas.width = width
+		canvas.height = height
+		const context = canvas.getContext('2d') as CanvasRenderingContext2D
+		const texture = new THREE.CanvasTexture(canvas)
+		texture.colorSpace = THREE.SRGBColorSpace
+		texture.anisotropy = 4
+		return { canvas, context, texture }
+	}
+
+	/* ── Textures ─────────────────────────────────────────────────────────── */
+
+	/** Set a font, shrinking until `text` fits `maxWidth`, then ellipsizing. */
+	const stamp = (
+		context: CanvasRenderingContext2D,
+		text: string,
+		x: number,
+		y: number,
+		maxWidth: number,
+		size: number,
+		weight = '700'
+	) => {
+		const font = (points: number) =>
+			`${weight} ${Math.round(points)}px ui-monospace, SFMono-Regular, Menlo, monospace`
+		let points = size
+		context.font = font(points)
+		while (points > size * 0.5 && context.measureText(text).width > maxWidth) {
+			points -= 1
+			context.font = font(points)
+		}
+
+		let cut = text.length
+		while (cut > 4 && context.measureText(`${text.slice(0, cut)}…`).width > maxWidth) cut -= 1
+		const value = cut < text.length ? `${text.slice(0, cut).trimEnd()}…` : text
+		context.fillText(value, x, y)
+		return value
+	}
+
+	/**
+	 * One atlas for the twenty spines. Each cell is 2.5:1, the exact aspect of a
+	 * spine face (0.40 × 0.16), so the stamped title is not stretched. The cloth
+	 * gradient and the two woven cords are what make a box read as a book.
+	 */
+	const paintSpines = (context: CanvasRenderingContext2D, width: number, height: number) => {
+		const cellW = width / ATLAS_COLS
+		const cellH = height / ATLAS_ROWS
+
+		bookshelf.forEach((shelf, col) => {
+			shelf.books.forEach((book, row) => {
+				const x = col * cellW
+				const y = row * cellH
+				const ink = luminance(book.cloth) > 0.56 ? '#1b1512' : '#f4eddd'
+
+				const cloth = context.createLinearGradient(0, y, 0, y + cellH)
+				cloth.addColorStop(0, shade(book.cloth, 0.8))
+				cloth.addColorStop(0.42, book.cloth)
+				cloth.addColorStop(1, shade(book.cloth, 0.62))
+				context.fillStyle = cloth
+				context.fillRect(x, y, cellW, cellH)
+
+				// Woven cords, the two raised bands every cloth spine has.
+				context.fillStyle = shade(book.cloth, 0.5)
+				context.fillRect(x, y + cellH * 0.16, cellW, 3)
+				context.fillRect(x, y + cellH * 0.82, cellW, 3)
+
+				const pad = cellW * 0.07
+				const runway = cellW - pad * 2 - cellW * 0.17
+
+				context.fillStyle = ink
+				context.textAlign = 'left'
+				context.textBaseline = 'alphabetic'
+				stamp(context, (book.spine ?? book.title).toUpperCase(), x + pad, y + cellH * 0.55, runway, cellH * 0.3)
+
+				context.globalAlpha = 0.72
+				stamp(context, book.author.toUpperCase(), x + pad, y + cellH * 0.79, runway, cellH * 0.16, '500')
+				context.globalAlpha = 1
+
+				// Publisher block: a bar and a tick, no logo needed.
+				context.fillStyle = ink
+				context.globalAlpha = 0.55
+				context.fillRect(x + cellW * 0.88, y + cellH * 0.24, 3, cellH * 0.52)
+				context.fillRect(x + cellW * 0.93, y + cellH * 0.44, cellW * 0.03, 6)
+				context.globalAlpha = 1
+			})
+		})
+	}
+
+	/** Shelf plate: a library label, `03 · ANÁLISIS DE DATOS`, on the board's edge. */
+	const paintPlate = (
+		context: CanvasRenderingContext2D,
+		width: number,
+		height: number,
+		index: number,
+		label: string,
+		accent: string
+	) => {
+		context.clearRect(0, 0, width, height)
+
+		// Pale label stock: the one element in the scene meant to be read, so it
+		// is light on purpose — dark ink on dark wood is invisible behind a scrim.
+		context.fillStyle = '#cfc5ae'
+		context.fillRect(0, 0, width, height)
+
+		context.fillStyle = accent
+		context.fillRect(0, 0, width * 0.012, height)
+
+		context.fillStyle = 'rgba(0,0,0,0.28)'
+		context.fillRect(0, height - 2, width, 2)
+
+		context.fillStyle = accent
+		context.font = `700 ${Math.round(height * 0.46)}px ui-monospace, SFMono-Regular, Menlo, monospace`
+		context.textAlign = 'left'
+		context.textBaseline = 'middle'
+		context.fillText(String(index + 1).padStart(2, '0'), width * 0.028, height * 0.55)
+
+		context.fillStyle = '#17130f'
+		stamp(context, label.toUpperCase(), width * 0.115, height * 0.55, width * 0.85, height * 0.44)
+	}
+
+	/* ── Paper: sheets, pinned notes and the wall behind ──────────────────── */
+
+	type Motif = 'funnel' | 'wireframe' | 'chart' | 'network'
+
+	/** A schematic doodle in ink, one per discipline. */
+	const paintMotif = (
+		context: CanvasRenderingContext2D,
+		x: number,
+		y: number,
+		w: number,
+		h: number,
+		motif: Motif
+	) => {
+		context.save()
+		context.strokeStyle = '#33343a'
+		context.fillStyle = '#33343a'
+		context.lineWidth = Math.max(2, w * 0.007)
+		context.lineCap = 'round'
+		context.lineJoin = 'round'
+
+		if (motif === 'funnel') {
+			context.beginPath()
+			context.moveTo(x + w * 0.05, y + h * 0.08)
+			context.lineTo(x + w * 0.95, y + h * 0.08)
+			context.lineTo(x + w * 0.62, y + h * 0.6)
+			context.lineTo(x + w * 0.38, y + h * 0.6)
+			context.closePath()
+			context.stroke()
+			context.strokeRect(x + w * 0.3, y + h * 0.7, w * 0.4, h * 0.2)
+			for (const px of [0.2, 0.5, 0.8]) {
+				context.beginPath()
+				context.moveTo(x + w * px, y + h * 0.2)
+				context.lineTo(x + w * px, y + h * 0.4)
+				context.stroke()
+			}
+		} else if (motif === 'wireframe') {
+			context.strokeRect(x + w * 0.05, y + h * 0.08, w * 0.9, h * 0.84)
+			context.beginPath()
+			context.moveTo(x + w * 0.05, y + h * 0.22)
+			context.lineTo(x + w * 0.95, y + h * 0.22)
+			context.moveTo(x + w * 0.32, y + h * 0.22)
+			context.lineTo(x + w * 0.32, y + h * 0.92)
+			context.stroke()
+			for (let i = 0; i < 3; i++) {
+				context.strokeRect(x + w * 0.4, y + h * (0.3 + i * 0.2), w * 0.48, h * 0.14)
+			}
+			for (let i = 0; i < 3; i++) {
+				context.beginPath()
+				context.arc(x + w * (0.1 + i * 0.05), y + h * 0.15, w * 0.012, 0, Math.PI * 2)
+				context.fill()
+			}
+		} else if (motif === 'chart') {
+			context.beginPath()
+			context.moveTo(x + w * 0.1, y + h * 0.08)
+			context.lineTo(x + w * 0.1, y + h * 0.9)
+			context.lineTo(x + w * 0.95, y + h * 0.9)
+			context.stroke()
+			context.globalAlpha = 0.3
+			for (let i = 0; i < 4; i++) {
+				context.fillRect(x + w * (0.18 + i * 0.2), y + h * (0.52 + i * 0.05), w * 0.11, h * 0.11)
+			}
+			context.globalAlpha = 1
+			context.beginPath()
+			context.moveTo(x + w * 0.16, y + h * 0.75)
+			context.lineTo(x + w * 0.34, y + h * 0.52)
+			context.lineTo(x + w * 0.52, y + h * 0.62)
+			context.lineTo(x + w * 0.7, y + h * 0.32)
+			context.lineTo(x + w * 0.9, y + h * 0.18)
+			context.stroke()
+		} else {
+			const layers = [
+				[0.2, 0.5, 0.8],
+				[0.32, 0.68],
+				[0.5]
+			]
+			const points = layers.map((layer, li) =>
+				layer.map((py) => ({ x: x + w * (0.14 + li * 0.36), y: y + h * py }))
+			)
+			context.globalAlpha = 0.5
+			for (let li = 0; li < points.length - 1; li++) {
+				for (const from of points[li]) {
+					for (const to of points[li + 1]) {
+						context.beginPath()
+						context.moveTo(from.x, from.y)
+						context.lineTo(to.x, to.y)
+						context.stroke()
+					}
+				}
+			}
+			context.globalAlpha = 1
+			for (const layer of points) {
+				for (const point of layer) {
+					context.beginPath()
+					context.arc(point.x, point.y, w * 0.032, 0, Math.PI * 2)
+					context.fill()
+				}
+			}
+		}
+		context.restore()
+	}
+
+	/** A ruled sheet with a doodle: what is lying on the shelves. */
+	const paintSheet = (
+		context: CanvasRenderingContext2D,
+		width: number,
+		height: number,
+		motif: Motif
+	) => {
+		context.fillStyle = '#f1ecdd'
+		context.fillRect(0, 0, width, height)
+
+		context.strokeStyle = 'rgba(70,90,120,0.2)'
+		context.lineWidth = 1
+		for (let y = height * 0.2; y < height * 0.96; y += height * 0.085) {
+			context.beginPath()
+			context.moveTo(width * 0.09, y)
+			context.lineTo(width * 0.94, y)
+			context.stroke()
+		}
+		context.strokeStyle = 'rgba(199,0,57,0.32)'
+		context.beginPath()
+		context.moveTo(width * 0.105, 0)
+		context.lineTo(width * 0.105, height)
+		context.stroke()
+
+		paintMotif(context, width * 0.16, height * 0.06, width * 0.72, height * 0.8, motif)
+
+		const edge = context.createLinearGradient(0, 0, width, 0)
+		edge.addColorStop(0, 'rgba(150,132,104,0.28)')
+		edge.addColorStop(0.08, 'rgba(150,132,104,0)')
+		edge.addColorStop(0.92, 'rgba(150,132,104,0)')
+		edge.addColorStop(1, 'rgba(150,132,104,0.28)')
+		context.fillStyle = edge
+		context.fillRect(0, 0, width, height)
+	}
+
+	/** A small note pinned to the back of a shelf. */
+	const paintNote = (
+		context: CanvasRenderingContext2D,
+		width: number,
+		height: number,
+		motif: Motif
+	) => {
+		context.fillStyle = '#efe8d6'
+		context.fillRect(0, 0, width, height)
+		context.fillStyle = 'rgba(150,132,104,0.16)'
+		context.fillRect(0, height * 0.94, width, height * 0.06)
+		paintMotif(context, width * 0.14, height * 0.1, width * 0.72, height * 0.7, motif)
+	}
+
+	/** Contact shadow: grounds a pile on the board without a shadow map. */
+	const paintShadow = (context: CanvasRenderingContext2D, width: number, height: number) => {
+		const shadow = context.createRadialGradient(
+			width / 2,
+			height / 2,
+			0,
+			width / 2,
+			height / 2,
+			width * 0.5
+		)
+		shadow.addColorStop(0, 'rgba(0,0,0,0.8)')
+		shadow.addColorStop(0.45, 'rgba(0,0,0,0.34)')
+		shadow.addColorStop(1, 'rgba(0,0,0,0)')
+		context.fillStyle = shadow
+		context.fillRect(0, 0, width, height)
+	}
+
+	/** Soft light pool for the back of a shelf. */
+	const paintGlow = (context: CanvasRenderingContext2D, width: number, height: number) => {
+		const glow = context.createRadialGradient(
+			width / 2,
+			height * 0.62,
+			0,
+			width / 2,
+			height * 0.62,
+			width * 0.52
+		)
+		glow.addColorStop(0, 'rgba(255,214,170,0.22)')
+		glow.addColorStop(0.45, 'rgba(255,190,150,0.08)')
+		glow.addColorStop(1, 'rgba(255,180,140,0)')
+		context.fillStyle = glow
+		context.fillRect(0, 0, width, height)
+	}
+
+	/** The wall behind: a whole other library, painted once, never simulated. */
+	const paintBackdrop = (context: CanvasRenderingContext2D, width: number, height: number) => {
+		const random = seeded(1301)
+		const palette = [
+			'#2a2028',
+			'#262a33',
+			'#2f2a22',
+			'#222a26',
+			'#2b2130',
+			'#33262a',
+			'#1d2229',
+			'#2a2622',
+			'#252b2a',
+			'#302430'
+		]
+
+		const wall = context.createLinearGradient(0, 0, 0, height)
+		wall.addColorStop(0, '#08070a')
+		wall.addColorStop(0.5, '#0a090c')
+		wall.addColorStop(1, '#07060a')
+		context.fillStyle = wall
+		context.fillRect(0, 0, width, height)
+
+		const rows = 6
+		const rowHeight = height / rows
+
+		for (let row = 0; row < rows; row++) {
+			const shelfY = row * rowHeight + rowHeight * 0.84
+			let x = -random() * 60
+
+			while (x < width) {
+				const bookWidth = rowHeight * (0.09 + random() * 0.16)
+				const bookHeight = rowHeight * (0.42 + random() * 0.34)
+				context.fillStyle = palette[Math.floor(random() * palette.length)]
+				context.fillRect(x, shelfY - bookHeight, bookWidth, bookHeight)
+				context.fillStyle = 'rgba(255,255,255,0.05)'
+				context.fillRect(x, shelfY - bookHeight, bookWidth, 1.5)
+				context.fillStyle = 'rgba(255,255,255,0.03)'
+				context.fillRect(x, shelfY - bookHeight * 0.42, bookWidth, 1.5)
+
+				x += bookWidth + 1.5 + random() * 4
+				if (random() < 0.05) x += rowHeight * (0.2 + random() * 0.4)
+			}
+
+			context.fillStyle = '#141014'
+			context.fillRect(0, shelfY, width, rowHeight * 0.055)
+			context.fillStyle = 'rgba(255,255,255,0.05)'
+			context.fillRect(0, shelfY, width, 1)
+		}
+
+		// Uprights, so the wall reads as shelves and not as a stripe pattern.
+		context.fillStyle = '#120f12'
+		for (let x = width * 0.08; x < width; x += width * 0.19) {
+			context.fillRect(x, 0, width * 0.008, height)
+		}
+
+		// Light pooling on the wall behind the case.
+		const glow = context.createRadialGradient(
+			width * 0.5,
+			height * 0.34,
+			width * 0.05,
+			width * 0.5,
+			height * 0.4,
+			width * 0.5
+		)
+		glow.addColorStop(0, 'rgba(255,214,170,0.1)')
+		glow.addColorStop(0.55, 'rgba(255,190,150,0.03)')
+		glow.addColorStop(1, 'rgba(0,0,0,0)')
+		context.fillStyle = glow
+		context.fillRect(0, 0, width, height)
+
+		// Fade into the page at the bottom and at the sides.
+		const bottom = context.createLinearGradient(0, height * 0.48, 0, height)
+		bottom.addColorStop(0, 'rgba(10,10,10,0)')
+		bottom.addColorStop(1, 'rgba(10,10,10,1)')
+		context.fillStyle = bottom
+		context.fillRect(0, height * 0.48, width, height * 0.52)
+
+		const sides = context.createLinearGradient(0, 0, width, 0)
+		sides.addColorStop(0, 'rgba(10,10,10,0.96)')
+		sides.addColorStop(0.2, 'rgba(10,10,10,0)')
+		sides.addColorStop(0.8, 'rgba(10,10,10,0)')
+		sides.addColorStop(1, 'rgba(10,10,10,0.96)')
+		context.fillStyle = sides
+		context.fillRect(0, 0, width, height)
+	}
+
+	/* ── World ────────────────────────────────────────────────────────────── */
+
+	const layoutFor = (narrow: boolean): { cols: number; rows: number; nicheWidth: number; rowHeight: number; width: number; height: number } => {
+		const nicheWidth = narrow ? 1.25 : 1.55
+		const cols = narrow ? 2 : 4
+		const rows = narrow ? 2 : 1
+		const rowHeight = CASE_BOARD * 2 + CASE_NICHE
+		return {
+			nicheWidth,
+			cols,
+			rows,
+			rowHeight,
+			width: cols * nicheWidth + (cols + 1) * CASE_WALL,
+			height: rows * rowHeight
+		}
+	}
+
+	const build = (
+		THREE: ThreeNS,
+		narrow: boolean,
+		materials: {
+			wood: import('three').MeshStandardMaterial
+			edge: import('three').MeshStandardMaterial
+			page: import('three').MeshStandardMaterial
+			spine: import('three').MeshStandardMaterial
+		}
+	): Built => {
+		const shape = layoutFor(narrow)
+		const group = new THREE.Group()
+		const books: BookNode[] = []
+		const byCategory = new Map<number, BookNode[]>()
+		const boxes: CaseBox[] = []
+		const targets = new Map<Object3D, number>()
+		const targetList: Object3D[] = []
+		const disposables: { dispose: () => void }[] = []
+		const textures: import('three').Texture[] = []
+		const seen = new Set<string>()
+		const random = seeded(91)
+
+		/**
+		 * A board, wall or panel. Deduped: neighbouring niches share partitions.
+		 * `solid` skips the mesh and adds a collider only, for the invisible front
+		 * that keeps a knocked pile inside its shelf.
+		 */
+		const addBox = (box: CaseBox, category: number | null, target: boolean, solid = true) => {
+			const key = [box.width, box.height, box.depth, box.x, box.y, box.z]
+				.map((value) => value.toFixed(3))
+				.join('|')
+			if (seen.has(key)) return
+			seen.add(key)
+
+			boxes.push(box)
+			if (!solid) return
+
+			const geometry = new THREE.BoxGeometry(box.width, box.height, box.depth)
+			disposables.push(geometry)
+			const mesh = new THREE.Mesh(geometry, materials.wood)
+			mesh.position.set(box.x, box.y, box.z)
+			group.add(mesh)
+
+			if (target && category !== null) {
+				targets.set(mesh, category)
+				targetList.push(mesh)
+			}
+		}
+
+		/* ── Props: what people leave on a shelf ──────────────────────────── */
+
+		const glowTexture = canvasTexture(THREE, 256, 256)
+		paintGlow(glowTexture.context, 256, 256)
+		textures.push(glowTexture.texture)
+		const glowMaterial = new THREE.MeshBasicMaterial({
+			map: glowTexture.texture,
+			transparent: true,
+			blending: THREE.AdditiveBlending,
+			depthWrite: false
+		})
+		disposables.push(glowMaterial)
+
+		const shadowTexture = canvasTexture(THREE, 256, 256)
+		paintShadow(shadowTexture.context, 256, 256)
+		textures.push(shadowTexture.texture)
+		const shadowMaterial = new THREE.MeshBasicMaterial({
+			map: shadowTexture.texture,
+			transparent: true,
+			depthWrite: false
+		})
+		disposables.push(shadowMaterial)
+
+		const propMaterial = (
+			color: string,
+			options: { metalness?: number; roughness?: number; map?: import('three').Texture } = {}
+		) => {
+			const material = new THREE.MeshStandardMaterial({
+				color: new THREE.Color(color),
+				roughness: options.roughness ?? 0.8,
+				metalness: options.metalness ?? 0,
+				map: options.map ?? null
+			})
+			disposables.push(material)
+			return material
+		}
+
+		const addMesh = (
+			parent: Object3D,
+			geometry: import('three').BufferGeometry,
+			material: import('three').Material | import('three').Material[],
+			position: [number, number, number],
+			rotation: [number, number, number] = [0, 0, 0]
+		) => {
+			disposables.push(geometry)
+			const mesh = new THREE.Mesh(geometry, material)
+			mesh.position.set(position[0], position[1], position[2])
+			mesh.rotation.set(rotation[0], rotation[1], rotation[2])
+			parent.add(mesh)
+			return mesh
+		}
+
+		/** A hexagonal pencil: lacquer, exposed wood, graphite, ferrule, eraser. */
+		const makePencil = (color: string) => {
+			const group = new THREE.Group()
+			const lacquer = propMaterial(color, { roughness: 0.55 })
+			const wood = propMaterial('#d8b98a', { roughness: 0.95 })
+			const lead = propMaterial('#3a3a3e', { roughness: 0.5 })
+			const metal = propMaterial('#b9bdc4', { metalness: 0.85, roughness: 0.3 })
+			const rubber = propMaterial('#d98a9b', { roughness: 0.95 })
+
+			addMesh(group, new THREE.CylinderGeometry(0.026, 0.026, 0.5, 6), lacquer, [0, 0, 0], [0, 0, Math.PI / 2])
+			addMesh(group, new THREE.ConeGeometry(0.026, 0.1, 6), wood, [0.3, 0, 0], [0, 0, -Math.PI / 2])
+			addMesh(group, new THREE.ConeGeometry(0.009, 0.022, 6), lead, [0.358, 0, 0], [0, 0, -Math.PI / 2])
+			addMesh(group, new THREE.CylinderGeometry(0.027, 0.027, 0.05, 12), metal, [-0.272, 0, 0], [0, 0, Math.PI / 2])
+			addMesh(group, new THREE.CylinderGeometry(0.024, 0.024, 0.045, 12), rubber, [-0.314, 0, 0], [0, 0, Math.PI / 2])
+			return group
+		}
+
+		/** A fountain pen: barrel, cap, clip and a gold nib. */
+		const makePen = (color: string) => {
+			const group = new THREE.Group()
+			const body = propMaterial(color, { metalness: 0.55, roughness: 0.3 })
+			const metal = propMaterial('#c9ccd2', { metalness: 0.9, roughness: 0.22 })
+			const gold = propMaterial('#c9a24a', { metalness: 0.9, roughness: 0.28 })
+
+			addMesh(group, new THREE.CylinderGeometry(0.021, 0.024, 0.44, 16), body, [0.02, 0, 0], [0, 0, Math.PI / 2])
+			addMesh(group, new THREE.CylinderGeometry(0.025, 0.025, 0.16, 16), body, [-0.2, 0, 0], [0, 0, Math.PI / 2])
+			addMesh(group, new THREE.BoxGeometry(0.1, 0.006, 0.014), metal, [-0.22, 0.026, 0])
+			addMesh(group, new THREE.ConeGeometry(0.02, 0.07, 16), gold, [0.27, 0, 0], [0, 0, -Math.PI / 2])
+			return group
+		}
+
+		/** A sheet of ruled paper with a doodle on its top face. */
+		const makeSheet = (motif: Motif, scale = 1) => {
+			const sheet = canvasTexture(THREE, 512, 384)
+			paintSheet(sheet.context, 512, 384, motif)
+			textures.push(sheet.texture)
+
+			const paper = propMaterial('#efe8d6', { roughness: 0.95 })
+			const face = propMaterial('#ffffff', { roughness: 0.95, map: sheet.texture })
+			const group = new THREE.Group()
+			addMesh(
+				group,
+				new THREE.BoxGeometry(0.34 * scale, 0.005, 0.25 * scale),
+				[paper, paper, face, paper, paper, paper],
+				[0, 0.0025, 0]
+			)
+			return group
+		}
+
+		const makeSticky = (color: string) => {
+			const group = new THREE.Group()
+			addMesh(group, new THREE.BoxGeometry(0.1, 0.004, 0.1), propMaterial(color, { roughness: 0.95 }), [0, 0.002, 0])
+			return group
+		}
+
+		/** A closed notebook: cloth spine, cream page block, elastic band. */
+		const makeNotebook = (color: string) => {
+			const group = new THREE.Group()
+			const cover = propMaterial(color, { roughness: 0.7 })
+			const pages = propMaterial('#e8e0cc', { roughness: 0.95 })
+			const band = propMaterial('#1a1614', { roughness: 0.6 })
+
+			addMesh(group, new THREE.BoxGeometry(0.02, 0.036, 0.19), cover, [-0.12, 0.018, 0])
+			addMesh(group, new THREE.BoxGeometry(0.24, 0.03, 0.182), pages, [0, 0.018, 0])
+			addMesh(group, new THREE.BoxGeometry(0.262, 0.004, 0.19), cover, [0, 0.035, 0])
+			addMesh(group, new THREE.BoxGeometry(0.262, 0.004, 0.19), cover, [0, 0.002, 0])
+			addMesh(group, new THREE.BoxGeometry(0.005, 0.038, 0.196), band, [0.07, 0.018, 0])
+			return group
+		}
+
+		/** A note pinned to the back of a shelf. */
+		const makePinnedNote = (motif: Motif) => {
+			const note = canvasTexture(THREE, 384, 288)
+			paintNote(note.context, 384, 288, motif)
+			textures.push(note.texture)
+
+			const group = new THREE.Group()
+			addMesh(
+				group,
+				new THREE.PlaneGeometry(0.22, 0.16),
+				propMaterial('#ffffff', { roughness: 0.95, map: note.texture }),
+				[0, 0, 0]
+			)
+			addMesh(group, new THREE.SphereGeometry(0.011, 12, 12), propMaterial('#c70039', { roughness: 0.4, metalness: 0.3 }), [0, 0.066, 0.008])
+			return group
+		}
+
+		interface PropSpec {
+			kind: 'pencil' | 'pen' | 'sheet' | 'sticky' | 'notebook' | 'pinned'
+			dx: number
+			dy: number
+			dz: number
+			yaw: number
+			/** Pitch, for a sheet propped against the back of the shelf. */
+			rx?: number
+			motif?: Motif
+			color?: string
+		}
+
+		// One composition per shelf, hand-placed: pile in the middle, props at the
+		// ends so a collapse never has to fight them for space.
+		const PROP_SETS: PropSpec[][] = [
+			[
+				{ kind: 'sheet', dx: 0.44, dy: 0.125, dz: -0.14, yaw: -0.12, rx: 1.35, motif: 'funnel' },
+				{ kind: 'sheet', dx: -0.47, dy: 0.003, dz: 0.06, yaw: 0.12, motif: 'funnel' },
+				{ kind: 'pencil', dx: -0.44, dy: 0.028, dz: 0.2, yaw: 0.5, color: '#c9a24a' },
+				{ kind: 'sticky', dx: 0.47, dy: 0.003, dz: 0.08, yaw: -0.2, color: '#e9d06a' },
+				{ kind: 'sticky', dx: 0.41, dy: 0.008, dz: 0.17, yaw: 0.12, color: '#e39ba4' },
+				{ kind: 'pinned', dx: 0.46, dy: 0.7, dz: -0.36, yaw: -0.05, motif: 'funnel' }
+			],
+			[
+				{ kind: 'sheet', dx: -0.44, dy: 0.125, dz: -0.14, yaw: 0.1, rx: 1.35, motif: 'wireframe' },
+				{ kind: 'pen', dx: -0.46, dy: 0.024, dz: 0.14, yaw: 0.42, color: '#2f5f8f' },
+				{ kind: 'sheet', dx: -0.42, dy: 0.003, dz: -0.02, yaw: 0.05, motif: 'wireframe' },
+				{ kind: 'notebook', dx: 0.46, dy: 0, dz: 0.02, yaw: -0.14, color: '#1f3d55' },
+				{ kind: 'pinned', dx: 0.45, dy: 0.7, dz: -0.36, yaw: 0.06, motif: 'wireframe' }
+			],
+			[
+				{ kind: 'sheet', dx: 0.44, dy: 0.125, dz: -0.16, yaw: 0.06, rx: 1.35, motif: 'chart' },
+				{ kind: 'sheet', dx: -0.46, dy: 0.003, dz: 0.1, yaw: 0.09, motif: 'chart' },
+				{ kind: 'sheet', dx: -0.43, dy: 0.008, dz: 0.06, yaw: -0.06, motif: 'chart' },
+				{ kind: 'pencil', dx: -0.4, dy: 0.028, dz: 0.2, yaw: -0.45, color: '#4f8f6b' },
+				{ kind: 'sticky', dx: 0.47, dy: 0.003, dz: 0.12, yaw: 0.16, color: '#c3d97a' },
+				{ kind: 'pinned', dx: 0.44, dy: 0.7, dz: -0.36, yaw: -0.04, motif: 'chart' }
+			],
+			[
+				{ kind: 'sheet', dx: -0.42, dy: 0.125, dz: -0.16, yaw: -0.08, rx: 1.35, motif: 'network' },
+				{ kind: 'notebook', dx: -0.47, dy: 0, dz: 0.04, yaw: 0.12, color: '#8d2f42' },
+				{ kind: 'pen', dx: 0.45, dy: 0.024, dz: 0.16, yaw: -0.5, color: '#a8324a' },
+				{ kind: 'sheet', dx: 0.43, dy: 0.003, dz: -0.04, yaw: -0.1, motif: 'network' },
+				{ kind: 'sticky', dx: 0.5, dy: 0.003, dz: 0.2, yaw: 0.2, color: '#e9d06a' },
+				{ kind: 'pinned', dx: -0.45, dy: 0.7, dz: -0.36, yaw: 0.05, motif: 'network' }
+			]
+		]
+
+		const addProps = (category: number, centerX: number, floorY: number, squeeze: number) => {
+			for (const spec of PROP_SETS[category] ?? []) {
+				const object =
+					spec.kind === 'pencil'
+						? makePencil(spec.color ?? '#c9a24a')
+						: spec.kind === 'pen'
+							? makePen(spec.color ?? '#3f7fa8')
+							: spec.kind === 'sheet'
+								? makeSheet(spec.motif ?? 'chart')
+								: spec.kind === 'sticky'
+									? makeSticky(spec.color ?? '#e9d06a')
+									: spec.kind === 'notebook'
+										? makeNotebook(spec.color ?? '#1f3d55')
+										: makePinnedNote(spec.motif ?? 'chart')
+
+				object.position.set(centerX + spec.dx * squeeze, floorY + spec.dy, spec.dz)
+				object.rotation.set(spec.rx ?? 0, spec.yaw, 0)
+				group.add(object)
+			}
+		}
+
+		bookshelf.forEach((shelf, category) => {
+			const col = category % shape.cols
+			const row = Math.floor(category / shape.cols)
+			const x = -shape.width / 2 + CASE_WALL + shape.nicheWidth / 2 + col * (shape.nicheWidth + CASE_WALL)
+			const floor = row * shape.rowHeight + CASE_BOARD
+
+			addBox({ width: shape.nicheWidth, height: CASE_BOARD, depth: CASE_DEPTH, x, y: floor - CASE_BOARD / 2, z: 0 }, category, true)
+			addBox({ width: shape.nicheWidth, height: CASE_BOARD, depth: CASE_DEPTH, x, y: floor + CASE_NICHE + CASE_BOARD / 2, z: 0 }, category, false)
+			addBox({ width: shape.nicheWidth, height: CASE_NICHE, depth: CASE_BACK, x, y: floor + CASE_NICHE / 2, z: -CASE_DEPTH / 2 + CASE_BACK / 2 }, category, true)
+			addBox({ width: CASE_WALL, height: CASE_NICHE, depth: CASE_DEPTH, x: x - shape.nicheWidth / 2 - CASE_WALL / 2, y: floor + CASE_NICHE / 2, z: 0 }, null, false)
+			addBox({ width: CASE_WALL, height: CASE_NICHE, depth: CASE_DEPTH, x: x + shape.nicheWidth / 2 + CASE_WALL / 2, y: floor + CASE_NICHE / 2, z: 0 }, null, false)
+			// Front lip: catches a tumbling book instead of letting it slide out.
+			addBox({ width: shape.nicheWidth, height: CASE_LIP, depth: 0.03, x, y: floor + CASE_LIP / 2, z: CASE_DEPTH / 2 - 0.11 }, category, true)
+			// Invisible front: without it a hard knock sends books over the lip and
+			// out of the case, where there is no floor to land on. Sits behind the
+			// plate so the label stays visible.
+			addBox({ width: shape.nicheWidth, height: CASE_NICHE, depth: 0.02, x, y: floor + CASE_NICHE / 2, z: CASE_DEPTH / 2 - 0.06 }, null, false, false)
+
+			// Plate on the visible front edge of the bottom board.
+			const plate = canvasTexture(THREE, 1024, 96)
+			paintPlate(plate.context, 1024, 96, category, shelf.label, shelf.accent)
+			textures.push(plate.texture)
+			const plateMaterial = new THREE.MeshBasicMaterial({ map: plate.texture, transparent: true })
+			disposables.push(plateMaterial)
+			const plateGeometry = new THREE.PlaneGeometry(shape.nicheWidth * 0.84, CASE_BOARD * 0.82)
+			disposables.push(plateGeometry)
+			const plateMesh = new THREE.Mesh(plateGeometry, plateMaterial)
+			plateMesh.position.set(x, floor - CASE_BOARD / 2, CASE_DEPTH / 2 + 0.004)
+			group.add(plateMesh)
+			targets.set(plateMesh, category)
+			targetList.push(plateMesh)
+
+			// Lit fillet along the top board's front edge: gives the shelf a real
+			// thickness instead of a flat black band.
+			const fillet = new THREE.Mesh(
+				new THREE.BoxGeometry(shape.nicheWidth, 0.012, 0.014),
+				materials.edge
+			)
+			fillet.position.set(x, floor + CASE_NICHE + CASE_BOARD - 0.008, CASE_DEPTH / 2 + 0.002)
+			disposables.push(fillet.geometry)
+			group.add(fillet)
+
+			// Soft light pool on the back panel: without it a pinned note floats in a
+			// void and the pile has no depth behind it.
+			const glow = new THREE.Mesh(
+				new THREE.PlaneGeometry(shape.nicheWidth * 1.02, CASE_NICHE * 1.04),
+				glowMaterial
+			)
+			glow.position.set(x, floor + CASE_NICHE * 0.5, -CASE_DEPTH / 2 + CASE_BACK + 0.002)
+			disposables.push(glow.geometry)
+			group.add(glow)
+
+			const contact = new THREE.Mesh(
+				new THREE.PlaneGeometry(BOOK_W * 1.28, BOOK_D * 1.55),
+				shadowMaterial
+			)
+			contact.rotation.x = -Math.PI / 2
+			contact.position.set(x, floor + 0.0015, -0.03)
+			disposables.push(contact.geometry)
+			group.add(contact)
+
+			// Pile. Deterministic jitter: a stack of books, not a renderer demo.
+			let cursor = 0
+			const nodes: BookNode[] = []
+
+			shelf.books.forEach((book, index) => {
+				const geometry = new THREE.BoxGeometry(BOOK_W, book.thickness, BOOK_D)
+				// +z face is material index 4 and vertices 16..19.
+				const uv = geometry.attributes.uv as import('three').BufferAttribute
+				const u0 = category / ATLAS_COLS
+				const u1 = (category + 1) / ATLAS_COLS
+				const v1 = 1 - index / ATLAS_ROWS
+				const v0 = 1 - (index + 1) / ATLAS_ROWS
+				for (let i = 16; i < 20; i++) {
+					uv.setXY(i, u0 + uv.getX(i) * (u1 - u0), v0 + uv.getY(i) * (v1 - v0))
+				}
+				uv.needsUpdate = true
+				disposables.push(geometry)
+
+				// Each volume carries its own cloth: the covers take the book's
+				// colour, the spine takes the atlas cell painted for it.
+				const cover = new THREE.MeshStandardMaterial({
+					color: new THREE.Color(book.cloth).multiplyScalar(0.86),
+					roughness: 0.82
+				})
+				disposables.push(cover)
+
+				const mesh = new THREE.Mesh(geometry, [
+					materials.page,
+					materials.page,
+					cover,
+					cover,
+					materials.spine,
+					materials.page
+				])
+
+				const rest = {
+					x: x + (random() - 0.5) * 0.07,
+					y: floor + cursor + book.thickness / 2,
+					z: -0.03 + (random() - 0.5) * 0.045,
+					yaw: (index % 2 === 0 ? 1 : -1) * (0.03 + random() * 0.1)
+				}
+				cursor += book.thickness
+
+				mesh.position.set(rest.x, rest.y, rest.z)
+				mesh.quaternion.setFromEuler(new THREE.Euler(0, rest.yaw, 0))
+				mesh.visible = false
+				group.add(mesh)
+
+				// The book starts just under its niche's top board, so nothing ever
+				// crosses the case. The drop shortens as the pile below it grows,
+				// and so does the fall time (√distance, like gravity).
+				const headroom = floor + CASE_NICHE - rest.y - book.thickness / 2 - 0.06
+				const drop = Math.max(0.18, Math.min(MAX_DROP, headroom))
+
+				const node: BookNode = {
+					mesh,
+					category,
+					thickness: book.thickness,
+					rest,
+					drop,
+					fall: FALL_MS * Math.sqrt(drop / MAX_DROP),
+					at: 0
+				}
+				nodes.push(node)
+				targets.set(mesh, category)
+				targetList.push(mesh)
+			})
+
+			books.push(...nodes)
+			byCategory.set(category, nodes)
+
+			// Pencil, pen, paper, notes and a pinned doodle, at the ends of the
+			// shelf so they never sit in the pile's way when it collapses.
+			// `squeeze` keeps the props inside the narrower phone shelves.
+			addProps(category, x, floor, shape.nicheWidth / 1.55)
+		})
+
+		// The wall behind: one painted quad, no simulation, no extra request. It is
+		// what makes the hero read as a library instead of a floating cabinet.
+		const backdrop = canvasTexture(THREE, 2048, 1024)
+		paintBackdrop(backdrop.context, 2048, 1024)
+		textures.push(backdrop.texture)
+		const backdropMaterial = new THREE.MeshBasicMaterial({ map: backdrop.texture })
+		disposables.push(backdropMaterial)
+		const backdropGeometry = new THREE.PlaneGeometry(13, 7)
+		disposables.push(backdropGeometry)
+		const backdropMesh = new THREE.Mesh(backdropGeometry, backdropMaterial)
+		backdropMesh.position.set(0, shape.height * 0.32, -2.4)
+		group.add(backdropMesh)
+
+		return {
+			group,
+			books,
+			byCategory,
+			boxes,
+			targets,
+			targetList,
+			disposables,
+			textures,
+			layout: { width: shape.width, height: shape.height, centerY: shape.height / 2 }
+		}
+	}
+
+	/* ── Mount ────────────────────────────────────────────────────────────── */
+
+	async function mount(host: HTMLElement, button: HTMLButtonElement) {
+		const THREE: ThreeNS = await import('three')
+		const coarse = window.matchMedia(COARSE_POINTER).matches
+
+		let renderer: import('three').WebGLRenderer
+		try {
+			renderer = new THREE.WebGLRenderer({
+				antialias: true,
+				alpha: true,
+				powerPreference: 'high-performance'
+			})
+		} catch (error) {
+			console.warn('[shelf-hero] WebGL no disponible', error)
+			host.dataset.stage = 'unavailable'
+			return
+		}
+
+		renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, coarse ? 1.5 : 1.75))
+		renderer.setClearColor(0x000000, 0)
+		renderer.domElement.style.display = 'block'
+		host.appendChild(renderer.domElement)
+
+		const scene = new THREE.Scene()
+		const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 60)
+		const fovTan = Math.tan((camera.fov * Math.PI) / 360)
+
+		/* Materials: no HDRI, no shadow maps. Two directionals, a rim and a
+		   hemisphere light read as art direction instead of as a render. */
+		const atlas = canvasTexture(THREE, 2048, 1024)
+		paintSpines(atlas.context, 2048, 1024)
+
+		const wood = new THREE.MeshStandardMaterial({ color: 0x26201a, roughness: 0.88, metalness: 0.05 })
+		const edge = new THREE.MeshStandardMaterial({ color: 0x3b332b, roughness: 0.5, metalness: 0.16 })
+		const page = new THREE.MeshStandardMaterial({ color: 0xd9d3c4, roughness: 0.96 })
+		const spine = new THREE.MeshStandardMaterial({ map: atlas.texture, roughness: 0.76 })
+
+		const key = new THREE.DirectionalLight(0xfff4e6, 1.75)
+		key.position.set(-3.2, 4.4, 5.2)
+		const rim = new THREE.DirectionalLight(0xd8e4ff, 1.0)
+		rim.position.set(3.8, 2.2, -3.6)
+		const accentLight = new THREE.DirectionalLight(0xc70039, 0.55)
+		accentLight.position.set(-4.5, 0.4, -2.4)
+		const fill = new THREE.DirectionalLight(0xd8d2c8, 0.6)
+		fill.position.set(1.6, 0.4, 6)
+		scene.add(
+			key,
+			rim,
+			accentLight,
+			fill,
+			new THREE.HemisphereLight(0xfff2e2, 0x0a0a0e, 0.95)
+		)
+
+		/* State */
+		let built: Built | null = null
+		let narrow = window.matchMedia(NARROW_VIEW).matches
+		let visible = true
+		let frame = 0
+		let lastName = 0
+		let disposed = false
+
+		const states: ('stacked' | 'collapsed')[] = bookshelf.map(() => 'stacked')
+
+		/* Cannon, loaded behind the idle gate */
+		let cannon: CannonNS | null = null
+		let cannonLoading: Promise<CannonNS | null> | null = null
+
+		/**
+		 * Loads the engine behind the idle gate. A failed import is not cached as a
+		 * permanent verdict: the dev server can invalidate a pre-bundled dependency
+		 * mid-session (`504 Outdated Optimize Dep`), and without the reset every
+		 * later click would silently do nothing.
+		 */
+		const loadCannon = (): Promise<CannonNS | null> => {
+			if (cannon) return Promise.resolve(cannon)
+			if (cannonLoading) return cannonLoading
+			cannonLoading = import('cannon-es')
+				.then((module) => (module.default ?? module) as unknown as CannonNS)
+				.then((module) => {
+					cannon = module
+							return module
+				})
+				.catch((error) => {
+					console.warn('[shelf-hero] física no disponible', error)
+					cannonLoading = null
+					cannonFailures += 1
+					return null
+				})
+			return cannonLoading
+		}
+
+		let simulation: Simulation | null = null
+		/** Consecutive failed engine loads: a dead button is worse than no button. */
+		let cannonFailures = 0
+
+		/* ── Choreography ─────────────────────────────────────────────────── */
+
+		const schedule = (categories: number[], delay: number) => {
+			if (!built) return
+			const shelves = built.byCategory
+			const start = performance.now() + delay
+
+			// One shelf at a time inside a category: the next book may only start
+			// once the one below it has landed, or two books overlap in mid-air.
+			// Categories are offset instead, so the four piles grow together.
+			categories.forEach((category, order) => {
+				let cursor = start + order * 140
+				for (const book of shelves.get(category) ?? []) {
+					book.at = cursor
+					book.mesh.visible = false
+					book.mesh.position.set(book.rest.x, book.rest.y + book.drop, book.rest.z)
+					cursor += book.fall + 70
+				}
+			})
+		}
+
+		/** Returns true while any book is still on its way down. */
+		const spin = new THREE.Euler()
+
+		const advance = (time: number) => {
+			if (!built) return false
+			let busy = false
+
+			for (const book of built.books) {
+				if (!book.at) continue
+				const elapsed = time - book.at
+				if (elapsed < 0) {
+					busy = true
+					continue
+				}
+
+				book.mesh.visible = true
+				const { x, y, z, yaw } = book.rest
+
+				if (elapsed < book.fall) {
+					// easeInQuad: gravity, not ease-in-out.
+					const k = elapsed / book.fall
+					const lift = 0.03 + (book.drop - 0.03) * (1 - k * k)
+					book.mesh.position.set(x, y + lift, z)
+					book.mesh.quaternion.setFromEuler(spin.set(0, yaw + (1 - k) * 0.09, 0))
+					busy = true
+				} else if (elapsed < book.fall + TIMING.settle) {
+					const k = clamp01((elapsed - book.fall) / TIMING.settle)
+					book.mesh.position.set(x, y + 0.03 * (1 - easeOutCubic(k)), z)
+					book.mesh.quaternion.setFromEuler(spin.set(0, yaw, 0))
+					busy = true
+				} else {
+					book.mesh.position.set(x, y, z)
+					book.mesh.quaternion.setFromEuler(spin.set(0, yaw, 0))
+					book.at = 0
+				}
+			}
+
+			return busy
+		}
+
+		/* ── Simulation ───────────────────────────────────────────────────── */
+
+		const freeze = () => {
+			if (!simulation) return
+			for (const [book, body] of simulation.dynamics) {
+				book.mesh.position.set(body.position.x, body.position.y, body.position.z)
+				book.mesh.quaternion.set(body.quaternion.x, body.quaternion.y, body.quaternion.z, body.quaternion.w)
+				book.at = 0
+			}
+			simulation = null
+		}
+
+		/**
+		 * Books that are not part of the collapsing pile become static colliders,
+		 * or the collapse passes straight through the neighbouring shelves. The
+		 * pose comes from the mesh, so a pile that is still falling or already
+		 * knocked over collides where the visitor actually sees it.
+		 */
+		const rebuildStatics = (
+			CANNON_API: CannonNS,
+			world: import('cannon-es').World,
+			exclude: number,
+			dynamic: Map<BookNode, import('cannon-es').Body>
+		) => {
+			if (!built) return []
+			const bodies: import('cannon-es').Body[] = []
+			for (const book of built.books) {
+				if (book.category === exclude) continue
+				if (book.at) continue
+				if (dynamic.has(book)) continue
+				const body = new CANNON_API.Body({
+					mass: 0,
+					shape: new CANNON_API.Box(
+						new CANNON_API.Vec3(BOOK_W / 2, book.thickness / 2, BOOK_D / 2)
+					),
+					position: new CANNON_API.Vec3(
+						book.mesh.position.x,
+						book.mesh.position.y,
+						book.mesh.position.z
+					),
+					quaternion: new CANNON_API.Quaternion(
+						book.mesh.quaternion.x,
+						book.mesh.quaternion.y,
+						book.mesh.quaternion.z,
+						book.mesh.quaternion.w
+					)
+				})
+				world.addBody(body)
+				bodies.push(body)
+			}
+			return bodies
+		}
+
+		/**
+		 * One kick. A first click tips the pile across the shelf; every later click
+		 * pokes the same books again, which is what a visitor expects from something
+		 * that just fell over. Without this the shelf answered exactly once and then
+		 * went dead until «Reapilar».
+		 */
+		const kick = (
+			body: import('cannon-es').Body,
+			index: number,
+			origin: Point3 | null
+		) => {
+			if (origin) {
+				// Poke: hop the books away from where the pointer landed, softer than
+				// a full collapse so the pile jostles instead of being thrown out.
+				const dx = body.position.x - origin.x
+				const side = Math.abs(dx) < 0.02 ? (index % 2 === 0 ? 1 : -1) : Math.sign(dx)
+				body.velocity.set(
+					side * (0.9 + Math.random() * 0.9),
+					1.5 + Math.random() * 0.7,
+					0.35 + Math.random() * 0.4
+				)
+				body.angularVelocity.set(
+					(Math.random() - 0.5) * 7,
+					(Math.random() - 0.5) * 5,
+					(Math.random() - 0.5) * 7
+				)
+				return
+			}
+
+			// Explicit velocities, not impulses: Δv = impulse / mass is easy to get
+			// wrong, and these numbers are in world units per second. ~3 units/s
+			// sideways is a hard shove across a 1.55 shelf.
+			const side = index % 2 === 0 ? 1 : -1
+			body.velocity.set(
+				side * (2.4 + Math.random() * 0.9),
+				2.6 + Math.random() * 0.6,
+				0.5 + Math.random() * 0.4
+			)
+			// Lots of spin: the pile has to end up at odd angles, not just shifted
+			// sideways, which is all a box stack does without it.
+			body.angularVelocity.set(
+				(Math.random() - 0.5) * 12,
+				(Math.random() - 0.5) * 8,
+				(Math.random() - 0.5) * 12
+			)
+		}
+
+		/**
+		 * Builds (or reuses) the world and kicks one pile. Returns false when the
+		 * engine could not be loaded, so the caller can decide whether that kills
+		 * the interaction.
+		 */
+		const pump = async (category: number, origin: Point3 | null) => {
+			if (!built) return false
+
+			const CANNON = await loadCannon()
+			if (!CANNON || !built) return false
+
+			const pile = built.byCategory.get(category) ?? []
+			const world =
+				simulation?.world ?? new CANNON.World({ gravity: new CANNON.Vec3(0, -9.82, 0) })
+
+			if (!simulation) {
+				world.allowSleep = true
+				world.broadphase = new CANNON.SAPBroadphase(world)
+				world.defaultContactMaterial.friction = 0.42
+				world.defaultContactMaterial.restitution = 0.12
+
+				// Statics: the case itself, once per world.
+				for (const box of built.boxes) {
+					world.addBody(
+						new CANNON.Body({
+							mass: 0,
+							shape: new CANNON.Box(
+								new CANNON.Vec3(box.width / 2, box.height / 2, box.depth / 2)
+							),
+							position: new CANNON.Vec3(box.x, box.y, box.z)
+						})
+					)
+				}
+			}
+
+			const dynamics = simulation?.dynamics ?? new Map<BookNode, import('cannon-es').Body>()
+			const statics = rebuildStatics(CANNON, world, category, dynamics)
+			// Drop the statics of the previous kick before adding the new set: a book
+			// that just became dynamic must not keep a frozen ghost.
+			if (simulation) {
+				for (const body of simulation.statics) {
+					if (!statics.includes(body)) world.removeBody(body)
+				}
+			}
+
+			pile.forEach((book, index) => {
+				const live = dynamics.get(book)
+				if (live) {
+					// Already simulating (another shelf was knocked over mid-flight):
+					// re-kick instead of stacking a second body on the same book.
+					live.wakeUp()
+					kick(live, index, origin)
+					return
+				}
+
+				const body = new CANNON.Body({
+					mass: 0.35,
+					shape: new CANNON.Box(new CANNON.Vec3(BOOK_W / 2, book.thickness / 2, BOOK_D / 2)),
+					position: new CANNON.Vec3(
+						book.mesh.position.x,
+						book.mesh.position.y,
+						book.mesh.position.z
+					),
+					quaternion: new CANNON.Quaternion(
+						book.mesh.quaternion.x,
+						book.mesh.quaternion.y,
+						book.mesh.quaternion.z,
+						book.mesh.quaternion.w
+					)
+				})
+
+				body.linearDamping = 0.05
+				body.angularDamping = 0.16
+				body.allowSleep = true
+				body.sleepSpeedLimit = 0.14
+				body.sleepTimeLimit = 0.5
+
+				kick(body, index, origin)
+
+				world.addBody(body)
+				dynamics.set(book, body)
+			})
+
+			simulation = { world, dynamics, statics, startedAt: performance.now() }
+			requestFrame()
+			return true
+		}
+
+		const collapse = async (category: number) => {
+			if (!built || states[category] !== 'stacked') return
+			states[category] = 'collapsed'
+			updateAction()
+
+			const started = await pump(category, null)
+			if (started) return
+
+			// The engine can fail to fetch once (a dev server invalidating a
+			// pre-bundled dependency mid-session). Retry on the next click; only
+			// after three real failures retire an affordance that cannot deliver.
+			states[category] = 'stacked'
+			updateAction()
+			if (cannonFailures < 3) return
+			host.dataset.stage = 'no-physics'
+			host.style.cursor = ''
+			host.style.pointerEvents = 'none'
+			button.style.display = 'none'
+		}
+
+		const shove = async (category: number) => {
+			if (!built || states[category] !== 'collapsed') return
+			await pump(category, lastPick)
+		}
+
+		const restack = () => {
+			freeze()
+			const collapsed = states
+				.map((state, index) => (state === 'collapsed' ? index : -1))
+				.filter((index) => index >= 0)
+			if (!collapsed.length) return
+			for (const category of collapsed) states[category] = 'stacked'
+			schedule(collapsed, 120)
+			updateAction()
+			requestFrame()
+		}
+
+		/* ── Camera ───────────────────────────────────────────────────────── */
+
+		const fit = () => {
+			const width = host.clientWidth
+			const height = host.clientHeight
+			if (!width || !height || !built) return
+
+			renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, coarse ? 1.5 : 1.75))
+			renderer.setSize(width, height)
+
+			const aspect = width / height
+			camera.aspect = aspect
+
+			// Two lower bounds: the case must fill a fixed fraction of the hero's
+			// height (so the books sit above the display type), and the sides must
+			// never leave the frame. Whichever is stricter wins.
+			const target = narrow ? TARGET_HEIGHT.narrow : TARGET_HEIGHT.wide
+			const margin = narrow ? TOP_MARGIN.narrow : TOP_MARGIN.wide
+			const byHeight = built.layout.height / (2 * fovTan * target)
+			const byWidth = (built.layout.width * SIDE_MARGIN) / (2 * fovTan * aspect)
+			const distance = Math.max(byHeight, byWidth)
+
+			// Level camera, framed by offset: the piles end just above the headline,
+			// so the shelf boards read as emerging from behind the display type.
+			const visibleHeight = 2 * distance * fovTan
+			const focusY = built.layout.height - (0.5 - margin) * visibleHeight
+			camera.position.set(0, focusY + Math.sin(CAMERA_TILT) * distance, Math.cos(CAMERA_TILT) * distance)
+			camera.lookAt(0, focusY, 0)
+			camera.updateProjectionMatrix()
+
+			if (!frame) renderer.render(scene, camera)
+		}
+
+		/* ── Loop ─────────────────────────────────────────────────────────── */
+
+		const tick = (time: number) => {
+			frame = 0
+			if (disposed) return
+
+			const dt = lastName ? Math.min(0.1, (time - lastName) / 1000) : 1 / 60
+			lastName = time
+
+			let busy = advance(time)
+
+			if (simulation && cannon) {
+				const SLEEPING = cannon.Body.SLEEPING
+				simulation.world.step(1 / 60, dt, 3)
+				for (const [book, body] of simulation.dynamics) {
+					book.mesh.position.set(body.position.x, body.position.y, body.position.z)
+					book.mesh.quaternion.set(
+						body.quaternion.x,
+						body.quaternion.y,
+						body.quaternion.z,
+						body.quaternion.w
+					)
+				}
+
+				const asleep = [...simulation.dynamics.values()].every(
+					(body) => body.sleepState === SLEEPING
+				)
+				if (asleep || time - simulation.startedAt > PHYSICS_LIMIT) freeze()
+				else busy = true
+			}
+
+			renderer.render(scene, camera)
+
+			if (busy) frame = requestAnimationFrame(tick)
+			else lastName = 0
+		}
+
+		const requestFrame = () => {
+			if (!frame && visible && !disposed) frame = requestAnimationFrame(tick)
+		}
+
+		/* ── Picking ──────────────────────────────────────────────────────── */
+
+		const raycaster = new THREE.Raycaster()
+		const pointer = new THREE.Vector2()
+
+		/** Where the pointer last met a book: a poke is thrown away from that point. */
+		let lastPick: Point3 | null = null
+
+		const pick = (clientX: number, clientY: number): number | null => {
+			if (!built) return null
+			const rect = host.getBoundingClientRect()
+			if (!rect.width || !rect.height) return null
+
+			pointer.set(
+				((clientX - rect.left) / rect.width) * 2 - 1,
+				-((clientY - rect.top) / rect.height) * 2 + 1
+			)
+			raycaster.setFromCamera(pointer, camera)
+
+			const hits = raycaster.intersectObjects(built.targetList, false)
+			for (const hit of hits) {
+				const category = built.targets.get(hit.object)
+				if (category === undefined) continue
+				lastPick = hit.point.clone()
+				return category
+			}
+			return null
+		}
+
+		let cursorFrame = 0
+		const onPointerMove = (event: PointerEvent) => {
+			if (cursorFrame) return
+			cursorFrame = requestAnimationFrame(() => {
+				cursorFrame = 0
+				host.style.cursor = pick(event.clientX, event.clientY) === null ? '' : 'pointer'
+			})
+		}
+
+		const onPointerDown = (event: PointerEvent) => {
+			if (event.button !== 0) return
+			const category = pick(event.clientX, event.clientY)
+			if (category === null) return
+			if (states[category] === 'collapsed') void shove(category)
+			else void collapse(category)
+		}
+
+		/* ── Action button ────────────────────────────────────────────────── */
+
+		const label = button.querySelector<HTMLElement>('[data-shelf-action-label]')
+
+		const updateAction = () => {
+			const anyCollapsed = states.some((state) => state === 'collapsed')
+			button.setAttribute('aria-pressed', String(anyCollapsed))
+			if (label) label.textContent = anyCollapsed ? 'Reapilar' : 'Derribar los estantes'
+		}
+
+		const onAction = () => {
+			if (states.some((state) => state === 'collapsed')) {
+				restack()
+				return
+			}
+			states.forEach((_, category) => void collapse(category))
+		}
+
+		/* ── Build / rebuild ──────────────────────────────────────────────── */
+
+		const rebuild = () => {
+			freeze()
+			if (built) {
+				scene.remove(built.group)
+				for (const disposable of built.disposables) disposable.dispose()
+				for (const texture of built.textures) texture.dispose()
+				built = null
+			}
+
+			built = build(THREE, narrow, { wood, edge, page, spine })
+			scene.add(built.group)
+			states.forEach((_, index) => (states[index] = 'stacked'))
+			fit()
+			schedule(
+				bookshelf.map((_, index) => index),
+				TIMING.intro
+			)
+			updateAction()
+			requestFrame()
+		}
+
+		/* ── Wiring ───────────────────────────────────────────────────────── */
+
+		rebuild()
+		button.style.display = ''
+		updateAction()
+
+		host.addEventListener('pointerdown', onPointerDown)
+		host.addEventListener('pointermove', onPointerMove, { passive: true })
+		host.addEventListener('pointerleave', () => {
+			host.style.cursor = ''
+		})
+		button.addEventListener('click', onAction)
+
+		// The engine loads only when the hero is idle or the pointer shows intent,
+		// so a visitor who never touches the scene never downloads it.
+		const prefetch = () => void loadCannon()
+		const idle = (
+			window as unknown as {
+				requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number
+			}
+		).requestIdleCallback
+		if (idle) idle(prefetch, { timeout: 3000 })
+		else window.setTimeout(prefetch, 2200)
+		host.addEventListener('pointerenter', prefetch, { once: true })
+
+		const resizeObserver = new ResizeObserver(() => {
+			const next = window.matchMedia(NARROW_VIEW).matches
+			if (next !== narrow) {
+				narrow = next
+				rebuild()
+				return
+			}
+			fit()
+		})
+		resizeObserver.observe(host)
+
+		const intersection = new IntersectionObserver(
+			([entry]) => {
+				visible = entry.isIntersecting
+				if (visible) requestFrame()
+				else {
+					cancelAnimationFrame(frame)
+					frame = 0
+				}
+			},
+			{ threshold: 0 }
+		)
+		intersection.observe(host)
+
+		const onVisibility = () => {
+			if (document.hidden) {
+				cancelAnimationFrame(frame)
+				frame = 0
+			} else if (visible) requestFrame()
+		}
+		document.addEventListener('visibilitychange', onVisibility)
+
+		// Teardown for a client-side navigation that replaces the page.
+		document.addEventListener(
+			'astro:before-swap',
+			() => {
+				disposed = true
+				cancelAnimationFrame(frame)
+				cancelAnimationFrame(cursorFrame)
+				resizeObserver.disconnect()
+				intersection.disconnect()
+				document.removeEventListener('visibilitychange', onVisibility)
+				freeze()
+				scene.clear()
+				renderer.dispose()
+			},
+			{ once: true }
+		)
+	}
+
+	const host = document.querySelector<HTMLElement>('[data-shelf-stage]')
+	const button = document.querySelector<HTMLButtonElement>('[data-shelf-action]')
+
+	// One bail-out before anything expensive: reduced motion keeps the design
+	// that already exists, never a frozen frame of this one.
+	if (host && button && !window.matchMedia(REDUCED_MOTION).matches) {
+		const root = host.closest<HTMLElement>('[data-shelf-hero]')
+		if (root?.dataset.shelfInit !== 'true') {
+			if (root) root.dataset.shelfInit = 'true'
+			mount(host, button).catch((error) => {
+				console.warn('[shelf-hero] no se pudo montar la escena', error)
+				host.dataset.stage = 'unavailable'
+			})
+		}
+	}
+</script>

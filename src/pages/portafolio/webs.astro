@@ -1,0 +1,93 @@
+---
+/**
+ * /portafolio/webs — the full project list.
+ *
+ * Kept as the "Ver todos" destination from the home hero and /skills, and the
+ * last place that still used the old catch-all route with a hand-written slug
+ * list. It now shares the card and the filter implementation with /portafolio.
+ */
+import Layout from '@/layouts/Layout.astro'
+import SectionHeading from '@/components/ui/SectionHeading.astro'
+import ScrollReveals from '@/components/ui/ScrollReveals.astro'
+import WorkIndex from '@/components/sections/portfolio/WorkIndex.astro'
+import { getAllProjects } from '@src/lib/projects'
+
+const pageTitle = 'Todos los proyectos - Steve Moya Cepeda'
+const pageDescription =
+	'Índice completo de proyectos: web, aplicaciones, APIs y datos, con stack, rol y enlaces a demo y código.'
+
+const projects = await getAllProjects()
+const clientCount = new Set(
+	projects.map((project) => project.client ?? project.company).filter(Boolean)
+).size
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+	<div class="scroll-progress" aria-hidden="true"></div>
+	<ScrollReveals />
+
+	<div class="bg-[#0a0a0a]">
+		<!-- Compact header: this is a list, not a cover. A full-height hero here
+		     would push the first card below the fold on every screen. -->
+		<header class="border-b border-white/10 px-6 pb-12 pt-32 sm:px-10 lg:px-16">
+			<div class="mx-auto max-w-[1400px]">
+				<nav class="mb-8 text-[10px] font-bold uppercase tracking-[0.3em] text-white/35" aria-label="Ruta">
+					<a href="/portafolio" class="transition-colors hover:text-white">Portafolio</a>
+					<span aria-hidden="true"> / </span>
+					<span class="text-white/60">Proyectos</span>
+				</nav>
+
+				<div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+					<div>
+						<p class="mb-4 text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">
+							Índice completo
+						</p>
+						<h1
+							class="font-poppins text-[13vw] font-black uppercase leading-[0.85] tracking-tight text-white sm:text-[8vw] lg:text-[5.5vw]"
+						>
+							Todos los<br /><span class="text-shiny-accent">proyectos</span>
+						</h1>
+					</div>
+
+					<ul class="flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-white/10 pt-6 lg:border-0 lg:pt-0">
+						<li class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">
+							{projects.length} proyectos
+						</li>
+						<li class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">
+							{clientCount} clientes
+						</li>
+						<li>
+							<a
+								href="/gallery"
+								class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40 transition-colors hover:text-[#c70039]"
+							>
+								Archivo visual →
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</header>
+
+		<section class="px-6 py-16 sm:px-10 lg:px-16 lg:py-20" aria-labelledby="lista-proyectos">
+			<div class="mx-auto max-w-[1400px]">
+				<SectionHeading
+					scrub
+					eyebrow="Trabajo"
+					title="Lista completa"
+					id="lista-proyectos"
+					description="Todo lo construido, del más reciente al más antiguo en cada grupo: proyectos de cliente primero, repositorios después. Nueve por página, con filtros por tipo, estado y texto."
+				/>
+
+				<WorkIndex projects={projects} />
+			</div>
+		</section>
+	</div>
+</Layout>
+
+<script>
+	import { initTiltCards } from '@src/utils/tilt3d'
+
+	initTiltCards()
+	document.addEventListener('astro:after-swap', () => initTiltCards())
+</script>

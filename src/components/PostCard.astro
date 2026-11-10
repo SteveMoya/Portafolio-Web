@@ -10,7 +10,7 @@ const {
 ---
 
 <article
-	class={`group relative flex h-full overflow-hidden rounded-2xl border border-white/5 bg-black/20 backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:border-[#c70039]/40 hover:bg-black/40 hover:shadow-[0_12px_40px_rgba(199,0,57,0.18)] ${isFeatured ? 'flex-col md:flex-row md:col-span-2 shadow-2xl shadow-black/50' : 'flex-col shadow-lg shadow-black/20'}`}
+	class={`dotted-card group relative flex h-full overflow-hidden rounded-2xl border border-white/5 backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:border-[#c70039]/40 hover:shadow-[0_12px_40px_rgba(199,0,57,0.18)] ${isFeatured ? 'flex-col md:flex-row md:col-span-2 shadow-2xl shadow-black/50' : 'flex-col shadow-lg shadow-black/20'}`}
 >
 	<a class={`relative block overflow-hidden ${isFeatured ? 'w-full md:w-1/2 aspect-[16/9] md:aspect-auto' : 'w-full aspect-[16/9]'}`} href={`/blog/${id}/`} title={`Ver ${title}`}>
 		<Image

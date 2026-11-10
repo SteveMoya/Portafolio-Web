@@ -1,6 +1,17 @@
 ---
 import About from '@/components/About/About.astro'
 import Hero from '@components/Hero/Hero.astro'
+import StatsSection from '@components/sections/StatsSection.astro'
+import ExpertiseSection from '@components/sections/ExpertiseSection.astro'
+import ProjectsCTA from '@components/sections/ProjectsCTA.astro'
+import TechMarquee from '@components/sections/TechMarquee.astro'
+import ProjectGallery from '@components/sections/ProjectGallery.astro'
+import Certifications from '@components/sections/Certifications.astro'
+import GitHubHighlights from '@components/sections/GitHubHighlights.astro'
+import KnowledgeBox from '@components/sections/KnowledgeBox.astro'
+import GalleryTeaser from '@components/sections/GalleryTeaser.astro'
+import Historias from '@components/sections/Historias.astro'
+import FinalCTA from '@components/sections/FinalCTA.astro'
 
 import Layout from '@layouts/Layout.astro'
 
@@ -9,5 +20,18 @@ const ogImage = '/img/Steve-Moya.webp'
 
 <Layout image={ogImage}>
 	<Hero />
-	<About />
+	<div class="relative">
+		<About />
+		<StatsSection />
+	</div>
+	<ExpertiseSection />
+	<TechMarquee />
+	<ProjectsCTA />
+	<ProjectGallery />
+	<Certifications />
+	<GitHubHighlights />
+	<KnowledgeBox />
+	<GalleryTeaser />
+	<Historias />
+	<FinalCTA />
 </Layout>

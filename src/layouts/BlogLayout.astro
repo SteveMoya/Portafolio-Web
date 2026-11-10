@@ -96,9 +96,9 @@ const { title, description, pubDate, heroImage, tags, updateDate, summary } = As
 
 			<div>
 				{summary && (
-					<div class="mb-8 rounded-2xl border-l-4 border-[#c70039] bg-[#c70039]/[0.06] px-5 py-4 backdrop-blur-sm">
+					<div class="mb-8 rounded-2xl bg-[#c70039]/[0.06] px-5 py-4 ring-1 ring-[#c70039]/20 backdrop-blur-sm">
 						<div class="mb-2 flex items-center gap-2">
-							<span class="text-xs font-bold uppercase tracking-widest text-[#c70039]">TL;DR</span>
+							<span class="rounded-full bg-[#c70039]/15 px-2 py-0.5 text-xs font-bold uppercase tracking-widest text-[#c70039]">TL;DR</span>
 							<span class="h-px flex-1 bg-[#c70039]/30"></span>
 						</div>
 						<p class="text-sm leading-relaxed text-gray-300">{summary}</p>

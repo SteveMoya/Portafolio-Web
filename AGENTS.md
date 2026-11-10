@@ -7,16 +7,18 @@ Astro 7.1.1 personal portfolio + blog. Static site deployed to Vercel. Content i
 ## Commands
 
 
-| What                | Command        |
-| ------------------- | -------------- |
-| Dev with TinaCMS    | `pnpm dev`     |
-| Dev without TinaCMS | `pnpm start`   |
-| Build (production)  | `pnpm build`   |
-| Type check          | `pnpm check`   |
-| Preview build       | `pnpm preview` |
+| What                | Command      |
+| ------------------- | ------------ |
+| Dev with TinaCMS    | `bun dev`    |
+| Dev without TinaCMS | `bun start`  |
+| Build (production)  | `bun build`  |
+| Type check          | `bun check`  |
+| Preview build       | `bun preview`|
+| Lint                | `bun lint`   |
 
+This project uses **Bun** as its package manager (`bun.lock` is the tracked lockfile). `pnpm-lock.yaml` is gitignored and not canonical — regenerating it will drift from `bun.lock`.
 
-There are **no lint or test scripts** in package.json. ESLint is configured but has no npm script.
+There are **no test scripts** in package.json.
 
 ## Environment variables
 
@@ -82,6 +84,6 @@ TypeScript paths configured in `tsconfig.json`:
 - Pagefind for client-side search (post-build index)
 - Alpine.js used alongside Astro components for interactivity
 - React components used for MDX content and some interactive sections
-- Lock file (`pnpm-lock.yaml`) is gitignored — dependency resolution may vary per clone
+- Lock file is `bun.lock`, tracked in git for reproducible installs
 - Site language is `es-DO` (Spanish, Dominican Republic)
 

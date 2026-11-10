@@ -1,0 +1,98 @@
+---
+/**
+ * Script-only island for scroll choreography, shared by the top-level views.
+ *
+ * Arms `[data-reveal]` elements that start below the fold and resolves them
+ * with an IntersectionObserver (`.io-reveal` in global.css). The hidden state is
+ * never in the server markup: without JS — and above the fold — everything
+ * paints in its final state, so there is no flash of disappearing content.
+ *
+ * Stagger comes from the element's `--i` custom property in CSS, so a grid can
+ * cascade by index without any per-item JS.
+ */
+---
+
+<script>
+	const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+
+	let revealObserver: IntersectionObserver | null = null
+
+	const initReveals = () => {
+		const items = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'))
+		if (!items.length) return
+
+		const supported = 'IntersectionObserver' in window
+		const foldGuard = window.innerHeight * 0.92
+
+		items.forEach((item) => {
+			if (item.dataset.revealInit === 'true') return
+			item.dataset.revealInit = 'true'
+
+			if (!supported || motionQuery.matches || item.getBoundingClientRect().top < foldGuard) {
+				item.classList.add('is-in')
+				return
+			}
+
+			item.classList.add('io-armed')
+		})
+
+		if (!supported || motionQuery.matches) return
+
+		revealObserver?.disconnect()
+		revealObserver = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (!entry.isIntersecting) return
+					entry.target.classList.add('is-in')
+					revealObserver?.unobserve(entry.target)
+				})
+			},
+			{ rootMargin: '0px 0px -10% 0px', threshold: 0.05 }
+		)
+
+		document
+			.querySelectorAll<HTMLElement>('[data-reveal].io-armed:not(.is-in)')
+			.forEach((item) => revealObserver?.observe(item))
+	}
+
+	initReveals()
+	document.addEventListener('astro:page-load', initReveals)
+	document.addEventListener('astro:after-swap', initReveals)
+
+	/* Safety net for jumps: an anchor click or a programmatic scroll can move an
+	   element from below the fold to above it without ever intersecting, so the
+	   observer never fires. Anything that has been passed is resolved here. */
+	let passFrame = 0
+	let passBound = false
+
+	const resolvePassed = () => {
+		passFrame = 0
+		const pending = Array.from(
+			document.querySelectorAll<HTMLElement>('[data-reveal].io-armed:not(.is-in)')
+		)
+		if (!pending.length) return
+
+		const line = window.innerHeight * 0.95
+		pending.forEach((item) => {
+			if (item.getBoundingClientRect().top >= line) return
+			item.classList.add('is-in')
+			revealObserver?.unobserve(item)
+		})
+	}
+
+	const bindPass = () => {
+		if (passBound) return
+		passBound = true
+		window.addEventListener(
+			'scroll',
+			() => {
+				if (passFrame) return
+				passFrame = requestAnimationFrame(resolvePassed)
+			},
+			{ passive: true }
+		)
+	}
+
+	bindPass()
+	document.addEventListener('astro:page-load', resolvePassed)
+</script>

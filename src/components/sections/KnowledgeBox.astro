@@ -1,0 +1,662 @@
+---
+import BlockReveal from '@components/ui/BlockReveal.astro'
+
+interface KnowledgeTag {
+	label: string
+	// Scattered starting position, percent of `.kb-stage`.
+	startLeft: number
+	startTop: number
+	rotate: number
+	// Ambient drift timing (only active under `prefers-reduced-motion: no-preference`).
+	dur: number
+	delay: number
+	// Landing position inside the box mouth, where the tag shrinks/fades away
+	// as if it fell through the open top and disappeared inside the box.
+	landingLeft: number
+	landingTop: number
+}
+
+// Fixed, deterministic scatter + landing coordinates (percent of `.kb-stage`),
+// not Math.random(), so layout is reproducible across every render — same
+// convention as Certifications.astro's SCATTER_OFFSETS.
+//
+// Landing coordinates were re-derived for the rotateX(50deg) rotateY(135deg)
+// camera (see `.kb-box`'s own comment): with that camera + the shallow-wall
+// geometry, the floor face projects as a symmetric diamond centered at
+// roughly 50% left / 70.7% top of `.kb-stage`, spanning about ±18.7% left
+// and ±26.5% top from that center (measured live in the browser via
+// `getBoundingClientRect()` on `.kb-face--floor`), so every landing point
+// below sits well inside that diamond — comfortably clear of its four
+// corners/edges (which visually belong to the walls/rim, not the open
+// floor) — instead of the old asymmetric camera's parallelogram footprint.
+const tags: KnowledgeTag[] = [
+	{ label: 'Marketing Digital', startLeft: 10, startTop: 14, rotate: -6, dur: 7.2, delay: 0, landingLeft: 46, landingTop: 59 },
+	{ label: 'SEO', startLeft: 84, startTop: 10, rotate: 8, dur: 6.4, delay: -1.5, landingLeft: 54, landingTop: 60 },
+	{ label: 'IA', startLeft: 6, startTop: 46, rotate: 5, dur: 8.1, delay: -3, landingLeft: 43, landingTop: 63 },
+	{ label: 'Análisis de Datos', startLeft: 90, startTop: 40, rotate: -9, dur: 7.6, delay: -0.8, landingLeft: 57, landingTop: 62 },
+	{ label: 'React', startLeft: 16, startTop: 78, rotate: 7, dur: 6.9, delay: -2.2, landingLeft: 45, landingTop: 66 },
+	{ label: 'Astro', startLeft: 80, startTop: 78, rotate: -5, dur: 7.3, delay: -4, landingLeft: 55, landingTop: 65 },
+	{ label: 'TypeScript', startLeft: 32, startTop: 6, rotate: 4, dur: 6.6, delay: -1, landingLeft: 47, landingTop: 58 },
+	{ label: 'Google Ads', startLeft: 64, startTop: 4, rotate: -8, dur: 8.4, delay: -3.6, landingLeft: 53, landingTop: 58 },
+	{ label: 'Automatización', startLeft: 4, startTop: 64, rotate: -4, dur: 7.0, delay: -2.8, landingLeft: 44, landingTop: 64 },
+	{ label: 'WordPress', startLeft: 94, startTop: 62, rotate: 9, dur: 6.2, delay: -0.4, landingLeft: 56, landingTop: 64 },
+	{ label: 'Tailwind', startLeft: 24, startTop: 92, rotate: -7, dur: 7.9, delay: -3.2, landingLeft: 48, landingTop: 65 },
+	{ label: 'Machine Learning', startLeft: 72, startTop: 92, rotate: 6, dur: 6.8, delay: -1.8, landingLeft: 52, landingTop: 63 }
+]
+---
+
+<section
+	id="knowledge-box"
+	class="relative min-h-screen overflow-hidden bg-[#0a0a0a] px-6 py-20 sm:px-10 lg:px-16"
+	data-knowledge-box
+>
+	<div class="mx-auto max-w-[1400px]">
+		<div data-kb-header>
+			<p class="mb-6 text-xs font-bold uppercase tracking-[0.3em] text-white/40">Conocimiento acumulado</p>
+
+			<BlockReveal
+				text="Todo lo que entra en la caja"
+				as="h2"
+				class="max-w-2xl font-poppins text-3xl font-black uppercase tracking-tight text-white sm:text-4xl"
+				boxColor="#c70039"
+			/>
+		</div>
+
+		<div class="kb-stage relative mt-16" data-kb-stage>
+			<div class="kb-box-wrap" data-kb-box-wrap>
+				<div class="kb-box-shake" data-kb-box-shake>
+					<div class="kb-box" data-kb-box>
+						<div class="kb-face dotted-card kb-face--floor">
+							<span class="corner-tick corner-tick--tl" />
+							<span class="corner-tick corner-tick--br" />
+						</div>
+						<div class="kb-face dotted-card kb-face--back">
+							<span class="corner-tick corner-tick--tl" />
+							<span class="corner-tick corner-tick--br" />
+						</div>
+						<div class="kb-face dotted-card kb-face--left">
+							<span class="corner-tick corner-tick--tl" />
+							<span class="corner-tick corner-tick--br" />
+						</div>
+						<div class="kb-face dotted-card kb-face--right">
+							<span class="corner-tick corner-tick--tl" />
+							<span class="corner-tick corner-tick--br" />
+						</div>
+						<div class="kb-face dotted-card kb-face--front">
+							<span class="corner-tick corner-tick--tl" />
+							<span class="corner-tick corner-tick--br" />
+						</div>
+
+						<div class="kb-hinge kb-hinge--back">
+							<div class="kb-flap dotted-card" data-kb-flap="back">
+								<span class="corner-tick corner-tick--tl" />
+								<span class="corner-tick corner-tick--br" />
+							</div>
+						</div>
+						<div class="kb-hinge kb-hinge--front">
+							<div class="kb-flap dotted-card" data-kb-flap="front">
+								<span class="corner-tick corner-tick--tl" />
+								<span class="corner-tick corner-tick--br" />
+							</div>
+						</div>
+						<div class="kb-hinge kb-hinge--left">
+							<div class="kb-flap dotted-card" data-kb-flap="left">
+								<span class="corner-tick corner-tick--tl" />
+								<span class="corner-tick corner-tick--br" />
+							</div>
+						</div>
+						<div class="kb-hinge kb-hinge--right">
+							<div class="kb-flap dotted-card" data-kb-flap="right">
+								<span class="corner-tick corner-tick--tl" />
+								<span class="corner-tick corner-tick--br" />
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="kb-particles pointer-events-none absolute inset-0 overflow-visible" data-kb-particles>
+					{
+						Array.from({ length: 32 }).map((_, i) => (
+							<span
+								class={`kb-particle absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 ${
+									i % 3 === 0 ? 'kb-particle--gold' : i % 3 === 1 ? 'kb-particle--red' : 'kb-particle--white'
+								}`}
+								data-kb-particle
+							/>
+						))
+					}
+				</div>
+			</div>
+
+			{
+				tags.map((tag) => (
+					<div
+						class="kb-tag absolute"
+						data-kb-tag
+						style={`left:${tag.startLeft}%; top:${tag.startTop}%;`}
+						data-start-left={tag.startLeft}
+						data-start-top={tag.startTop}
+						data-landing-left={tag.landingLeft}
+						data-landing-top={tag.landingTop}
+					>
+						<span
+							class="kb-tag-pill pointer-events-none inline-block select-none whitespace-nowrap rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-white/60"
+							data-kb-tag-pill
+							style={`--dur:${tag.dur}s; --delay:${tag.delay}s; --rotate:${tag.rotate}deg;`}
+						>
+							{tag.label}
+						</span>
+					</div>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	.kb-stage {
+		min-height: 60vh;
+	}
+
+	@media (min-width: 640px) {
+		.kb-stage {
+			min-height: 70vh;
+		}
+	}
+
+	/* Box 3D assembly wrapper */
+	.kb-box-wrap {
+		--bw: clamp(340px, 36vw, 440px);
+		--bh: clamp(170px, 18vw, 205px);
+		--bd: clamp(230px, 24vw, 270px);
+		position: absolute;
+		left: 50%;
+		top: 58%;
+		width: var(--bw);
+		height: var(--bh);
+		transform: translate(-50%, -50%);
+		perspective: 1600px;
+		z-index: 10;
+	}
+
+	.kb-box-shake {
+		position: relative;
+		width: 100%;
+		height: 100%;
+		transform-style: preserve-3d;
+	}
+
+	.kb-box {
+		position: relative;
+		width: 100%;
+		height: 100%;
+		transform-style: preserve-3d;
+		/* Isometric 3/4 view looking down into the open box matching reference image */
+		transform: rotateX(-24deg) rotateY(32deg);
+	}
+
+	.kb-face {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		box-sizing: border-box;
+		border: 1.5px solid rgba(255, 255, 255, 0.35);
+	}
+
+	/* Floor: width x depth, seated at bottom of box */
+	.kb-face--floor {
+		width: var(--bw);
+		height: var(--bd);
+		transform: translate(-50%, -50%) translateY(calc(var(--bh) / 2)) rotateX(90deg);
+		background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.12) 0%, #0d0d12 80%);
+		border-color: rgba(255, 255, 255, 0.25);
+	}
+
+	/* Back wall */
+	.kb-face--back {
+		width: var(--bw);
+		height: var(--bh);
+		transform: translate(-50%, -50%) translateZ(calc(-1 * var(--bd) / 2));
+		background: linear-gradient(180deg, #22222c 0%, #121218 100%);
+		border-color: rgba(255, 255, 255, 0.3);
+	}
+
+	/* Left wall */
+	.kb-face--left {
+		width: var(--bd);
+		height: var(--bh);
+		transform: translate(-50%, -50%) translateX(calc(-1 * var(--bw) / 2)) rotateY(90deg);
+		background: linear-gradient(180deg, #262634 0%, #14141c 100%);
+		border-color: rgba(255, 255, 255, 0.3);
+	}
+
+	/* Right wall */
+	.kb-face--right {
+		width: var(--bd);
+		height: var(--bh);
+		transform: translate(-50%, -50%) translateX(calc(var(--bw) / 2)) rotateY(-90deg);
+		background: linear-gradient(180deg, #262634 0%, #14141c 100%);
+		border-color: rgba(255, 255, 255, 0.3);
+	}
+
+	/* Front wall: frosted translucent glass with luminous rim matching reference */
+	.kb-face--front {
+		width: var(--bw);
+		height: var(--bh);
+		transform: translate(-50%, -50%) translateZ(calc(var(--bd) / 2));
+		background: linear-gradient(180deg, rgba(160, 160, 175, 0.45) 0%, rgba(50, 50, 65, 0.3) 60%, rgba(20, 20, 28, 0.5) 100%);
+		backdrop-filter: blur(10px);
+		border: 1.5px solid rgba(255, 255, 255, 0.45);
+		border-top: 2.5px solid rgba(255, 255, 255, 0.85);
+		box-shadow: 0 -2px 12px rgba(255, 255, 255, 0.2), inset 0 2px 6px rgba(255, 255, 255, 0.35);
+	}
+
+	/* Hinges & Flaps */
+	.kb-hinge {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform-style: preserve-3d;
+	}
+
+	.kb-flap {
+		position: absolute;
+		box-sizing: border-box;
+		border: 1.5px solid rgba(255, 255, 255, 0.45);
+		background: linear-gradient(180deg, rgba(160, 160, 180, 0.55) 0%, rgba(60, 60, 75, 0.4) 100%);
+		backdrop-filter: blur(6px);
+		box-shadow: inset 0 1px 4px rgba(255, 255, 255, 0.35);
+	}
+
+	/* Left Flap: width = bd, height = bd * 0.48 (standard inner flap proportions), hinged at bottom, swings up and over top */
+	.kb-hinge--left {
+		width: var(--bd);
+		height: 0;
+		transform: translate(-50%, -50%) translateX(calc(-1 * var(--bw) / 2)) translateY(calc(-1 * var(--bh) / 2)) rotateY(-90deg);
+	}
+	.kb-hinge--left .kb-flap {
+		width: 100%;
+		height: calc(var(--bd) * 0.48);
+		bottom: 0;
+		left: 0;
+		transform-origin: bottom center;
+		transform: rotateX(-55deg);
+		border-bottom: 2px solid rgba(255, 255, 255, 0.65);
+		clip-path: polygon(7% 0%, 93% 0%, 100% 100%, 0% 100%);
+	}
+
+	/* Right Flap: width = bd, height = bd * 0.48, hinged at bottom, swings up and over top */
+	.kb-hinge--right {
+		width: var(--bd);
+		height: 0;
+		transform: translate(-50%, -50%) translateX(calc(var(--bw) / 2)) translateY(calc(-1 * var(--bh) / 2)) rotateY(90deg);
+	}
+	.kb-hinge--right .kb-flap {
+		width: 100%;
+		height: calc(var(--bd) * 0.48);
+		bottom: 0;
+		left: 0;
+		transform-origin: bottom center;
+		transform: rotateX(-55deg);
+		border-bottom: 2px solid rgba(255, 255, 255, 0.65);
+		clip-path: polygon(7% 0%, 93% 0%, 100% 100%, 0% 100%);
+	}
+
+	/* Back Flap: width = bw, height = bd * 0.495, raised 1.5px to fold cleanly over side flaps */
+	.kb-hinge--back {
+		width: var(--bw);
+		height: 0;
+		transform: translate(-50%, -50%) translateZ(calc(-1 * var(--bd) / 2)) translateY(calc(-1 * var(--bh) / 2 - 1.5px));
+	}
+	.kb-hinge--back .kb-flap {
+		width: 100%;
+		height: calc(var(--bd) * 0.495);
+		bottom: 0;
+		left: 0;
+		transform-origin: bottom center;
+		transform: rotateX(50deg);
+		border-bottom: 2px solid rgba(255, 255, 255, 0.65);
+		clip-path: polygon(2% 0%, 98% 0%, 100% 100%, 0% 100%);
+	}
+
+	/* Front Flap: width = bw, height = bd * 0.495, rests open at -50deg and folds over top to 90deg */
+	.kb-hinge--front {
+		width: var(--bw);
+		height: 0;
+		transform: translate(-50%, -50%) translateZ(calc(var(--bd) / 2)) translateY(calc(-1 * var(--bh) / 2 - 1.5px));
+	}
+	.kb-hinge--front .kb-flap {
+		width: 100%;
+		height: calc(var(--bd) * 0.495);
+		bottom: 0;
+		left: 0;
+		transform-origin: bottom center;
+		transform: rotateX(-50deg);
+		border-bottom: 2px solid rgba(255, 255, 255, 0.75);
+		clip-path: polygon(2% 0%, 98% 0%, 100% 100%, 0% 100%);
+	}
+
+	/* Particles */
+	.kb-particles {
+		z-index: 50;
+	}
+
+	.kb-particle {
+		border-radius: 9999px;
+		opacity: 0;
+		transform: scale(0);
+		pointer-events: none;
+	}
+
+	.kb-particle--white {
+		width: 8px;
+		height: 8px;
+		background: #ffffff;
+		box-shadow: 0 0 16px 5px rgba(255, 255, 255, 1), 0 0 28px 10px rgba(255, 255, 255, 0.7);
+	}
+
+	.kb-particle--gold {
+		width: 9px;
+		height: 9px;
+		background: #fbbf24;
+		box-shadow: 0 0 18px 6px rgba(251, 191, 36, 1), 0 0 32px 12px rgba(245, 158, 11, 0.8);
+	}
+
+	.kb-particle--red {
+		width: 7px;
+		height: 7px;
+		background: #f87171;
+		box-shadow: 0 0 16px 5px rgba(248, 113, 113, 1), 0 0 28px 10px rgba(239, 68, 68, 0.8);
+	}
+
+	/* Tags */
+	.kb-tag {
+		transform: translate(-50%, -50%);
+		z-index: 20;
+	}
+
+	.kb-tag-pill {
+		display: inline-block;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.kb-tag-pill {
+			animation: tag-drift var(--dur, 7s) ease-in-out infinite;
+			animation-delay: var(--delay, 0s);
+		}
+	}
+
+	@keyframes tag-drift {
+		0%,
+		100% {
+			transform: rotate(var(--rotate, 0deg)) translateY(0);
+		}
+		50% {
+			transform: rotate(var(--rotate, 0deg)) translateY(-12px);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.kb-tag-pill {
+			animation: none;
+		}
+
+		.kb-hinge--left .kb-flap,
+		.kb-hinge--right .kb-flap,
+		.kb-hinge--front .kb-flap {
+			transform: rotateX(90deg) !important;
+		}
+		.kb-hinge--back .kb-flap {
+			transform: rotateX(-90deg) !important;
+		}
+
+		.kb-tag,
+		.kb-particles {
+			display: none;
+		}
+	}
+</style>
+
+<script>
+	import gsap from 'gsap'
+	import ScrollTrigger from 'gsap/ScrollTrigger'
+	import { reducedMotion } from '@/lib/motion'
+
+	gsap.registerPlugin(ScrollTrigger)
+
+	function initKnowledgeBox(section: Element) {
+		const el = section as HTMLElement
+		if (el.dataset.knowledgeBoxInit === 'true') return
+		el.dataset.knowledgeBoxInit = 'true'
+
+		const header = el.querySelector<HTMLElement>('[data-kb-header]')
+		const stage = el.querySelector<HTMLElement>('[data-kb-stage]')
+		const boxWrap = el.querySelector<HTMLElement>('[data-kb-box-wrap]')
+		const boxShake = el.querySelector<HTMLElement>('[data-kb-box-shake]')
+		const box = el.querySelector<HTMLElement>('[data-kb-box]')
+		const tagWrappers = el.querySelectorAll<HTMLElement>('[data-kb-tag]')
+		const pills = el.querySelectorAll<HTMLElement>('[data-kb-tag-pill]')
+		const flapL = el.querySelector<HTMLElement>('[data-kb-flap="left"]')
+		const flapR = el.querySelector<HTMLElement>('[data-kb-flap="right"]')
+		const flapB = el.querySelector<HTMLElement>('[data-kb-flap="back"]')
+		const flapF = el.querySelector<HTMLElement>('[data-kb-flap="front"]')
+		const particles = el.querySelectorAll<HTMLElement>('[data-kb-particle]')
+		if (!stage || !box || !boxWrap || !boxShake || !tagWrappers.length) return
+
+		if (reducedMotion()) {
+			return
+		}
+
+		gsap.set(boxWrap, { xPercent: -50, yPercent: -50 })
+
+		// Animation timings:
+		const FLIGHT_DURATION = 0.85
+		const STAGGER = 0.15
+		const TAGS_START = 0.1
+
+		const lastTagStart = TAGS_START + (tagWrappers.length - 1) * STAGGER
+		const tagsCompleteTime = lastTagStart + FLIGHT_DURATION
+
+		// Package closing sequence:
+		// Step 1: Side flaps fold inward (finishes completely before top flaps begin)
+		const sideFlapsStart = tagsCompleteTime + 0.1
+		const sideFlapsDuration = 0.4
+		const sideFlapsEnd = sideFlapsStart + sideFlapsDuration
+
+		// Step 2: Back and front flaps fold down over the sides to seal the package flush
+		const frontBackFlapsStart = sideFlapsEnd + 0.08
+		const frontBackFlapsDuration = 0.45
+		const impactTime = frontBackFlapsStart + frontBackFlapsDuration
+		const shakeDuration = 0.35
+		const sealedHoldDuration = 0.35
+		const exitDuration = 0.7
+		const exitStart = impactTime + shakeDuration + sealedHoldDuration
+		const totalTimelineTime = exitStart + exitDuration
+
+		const tl = gsap.timeline({
+			scrollTrigger: {
+				trigger: el,
+				start: 'top top',
+				end: () => `+=${window.innerHeight * 2.8}`,
+				scrub: 0.8,
+				pin: true,
+				invalidateOnRefresh: true,
+				onUpdate(self) {
+					const currentTime = self.progress * totalTimelineTime
+					pills.forEach((pill, index) => {
+						const tagStart = TAGS_START + index * STAGGER
+						pill.style.animationPlayState = currentTime >= tagStart ? 'paused' : 'running'
+					})
+				}
+			}
+		})
+
+		// 1. Tags parabolic flight into the box
+		tagWrappers.forEach((tag, index) => {
+			const startLeft = parseFloat(tag.dataset.startLeft || '0')
+			const startTop = parseFloat(tag.dataset.startTop || '0')
+			const landingLeft = parseFloat(tag.dataset.landingLeft || '50')
+			const landingTop = parseFloat(tag.dataset.landingTop || '62')
+
+			const apexLeft = startLeft + (50 - startLeft) * 0.72
+			const apexTop = startTop > 38 ? Math.min(startTop - 32, 24) : Math.max(startTop - 8, 2)
+			const startTime = TAGS_START + index * STAGGER
+
+			tl.to(
+				tag,
+				{
+					keyframes: [
+						{
+							left: `${apexLeft}%`,
+							top: `${apexTop}%`,
+							scale: 1.08,
+							opacity: 1,
+							ease: 'power1.out',
+							duration: FLIGHT_DURATION * 0.45
+						},
+						{
+							left: `${landingLeft}%`,
+							top: `${landingTop}%`,
+							scale: 0.15,
+							opacity: 0,
+							ease: 'power2.in',
+							duration: FLIGHT_DURATION * 0.55
+						}
+					],
+					duration: FLIGHT_DURATION
+				},
+				startTime
+			)
+		})
+
+		// 2. Sequential Package Closing
+		// Step 2a: Left and right flaps fold inward to 90deg (flat horizontally)
+		if (flapL && flapR) {
+			tl.fromTo(
+				[flapL, flapR],
+				{ rotateX: -55 },
+				{
+					rotateX: 90,
+					duration: sideFlapsDuration,
+					ease: 'power2.inOut'
+				},
+				sideFlapsStart
+			)
+		}
+
+		// Step 2b: Back flap folds forward (to -90deg), front flap folds backward (to 90deg) over them
+		if (flapB && flapF) {
+			tl.fromTo(
+				flapB,
+				{ rotateX: 50 },
+				{
+					rotateX: -90,
+					duration: frontBackFlapsDuration,
+					ease: 'power2.inOut'
+				},
+				frontBackFlapsStart
+			)
+			tl.fromTo(
+				flapF,
+				{ rotateX: -50 },
+				{
+					rotateX: 90,
+					duration: frontBackFlapsDuration,
+					ease: 'power2.inOut'
+				},
+				frontBackFlapsStart
+			)
+		}
+
+		// 3. Impact Shake on Box (applied to dedicated wrapper so .kb-box 3D transform is never mutated by GSAP)
+		tl.to(
+			boxShake,
+			{
+				keyframes: [
+					{ x: -10, y: 4, rotateZ: -2, duration: 0.04 },
+					{ x: 10, y: -3, rotateZ: 2, duration: 0.04 },
+					{ x: -7, y: 2, rotateZ: -1.4, duration: 0.04 },
+					{ x: 7, y: -2, rotateZ: 1.4, duration: 0.04 },
+					{ x: -3, y: 1, rotateZ: -0.6, duration: 0.04 },
+					{ x: 3, y: -1, rotateZ: 0.6, duration: 0.04 },
+					{ x: 0, y: 0, rotateZ: 0, duration: 0.05 }
+				],
+				ease: 'power1.out',
+				duration: shakeDuration
+			},
+			impactTime
+		)
+
+		// 4. Particle Burst from the impact
+		particles.forEach((particle, i) => {
+			const angle = (Math.PI * 2 * i) / particles.length + (Math.random() * 0.25 - 0.125)
+			const dist = 120 + Math.random() * 200
+			const targetX = Math.cos(angle) * dist
+			const targetY = -85 + Math.sin(angle) * dist * 0.7 - 60 // bursts upwards from seam
+			const targetScale = 0.7 + Math.random() * 1.3
+
+			tl.fromTo(
+				particle,
+				{
+					x: 0,
+					y: -85, // seam of top rim
+					scale: 0.3,
+					opacity: 1
+				},
+				{
+					x: targetX,
+					y: targetY,
+					scale: targetScale,
+					opacity: 0,
+					ease: 'power3.out',
+					duration: 0.65
+				},
+				impactTime
+			)
+		})
+
+		// 5. Rest / Hold sealed state
+		tl.to(
+			{},
+			{
+				duration: sealedHoldDuration
+			},
+			impactTime + shakeDuration
+		)
+
+		// 6. Exit Animation for KnowledgeBox section
+		if (header) {
+			tl.to(
+				header,
+				{
+					opacity: 0,
+					y: -35,
+					duration: exitDuration * 0.7,
+					ease: 'power2.in'
+				},
+				exitStart
+			)
+		}
+
+		tl.to(
+			boxWrap,
+			{
+				keyframes: [
+					{ y: -14, duration: exitDuration * 0.28, ease: 'power1.out' },
+					{ y: 110, opacity: 0, duration: exitDuration * 0.72, ease: 'power2.in' }
+				]
+			},
+			exitStart
+		)
+
+		ScrollTrigger.sort()
+		ScrollTrigger.refresh()
+	}
+
+	function initAllKnowledgeBoxes() {
+		document.querySelectorAll('[data-knowledge-box]').forEach(initKnowledgeBox)
+	}
+
+	initAllKnowledgeBoxes()
+	document.addEventListener('astro:after-swap', initAllKnowledgeBoxes)
+</script>

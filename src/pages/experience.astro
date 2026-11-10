@@ -1,0 +1,584 @@
+---
+import { Icon } from 'astro-icon/components'
+import Layout from '@/layouts/Layout.astro'
+import PageHero from '@/components/ui/PageHero.astro'
+import SectionHeading from '@/components/ui/SectionHeading.astro'
+import BlockReveal from '@/components/ui/BlockReveal.astro'
+import SectionRail from '@/components/ui/SectionRail.astro'
+import ScrollReveals from '@/components/ui/ScrollReveals.astro'
+import CountUp from '@/components/ui/CountUp.astro'
+import ExpandableExperienceCard from '@/components/sections/ExpandableExperienceCard'
+import GearTrainHero from '@/components/sections/experience/GearTrainHero.astro'
+import { experiences } from '@/data/experiences'
+import type { Experience } from '@/data/experiences'
+import { education } from '@/data/education'
+import { certifications } from '@/data/certifications'
+
+const pageTitle = 'Experiencia'
+const pageDescription =
+	'Trayectoria profesional: roles, responsabilidades y el stack técnico acumulado entre marketing digital, desarrollo web y análisis de datos.'
+
+// Newest first: the timeline reads top-down, so the current role opens the list.
+const sortedExperiences = [...experiences].sort(
+	(a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+)
+
+const techCount = new Set(experiences.flatMap((exp) => exp.skills)).size
+const ongoingCount = experiences.filter((exp) => exp.isOngoing).length
+
+const TYPE_ORDER = ['full-time', 'part-time', 'contract', 'freelance', 'internship'] as const
+
+const TYPE_LABELS: Record<(typeof TYPE_ORDER)[number], string> = {
+	'full-time': 'Tiempo completo',
+	'part-time': 'Medio tiempo',
+	contract: 'Contrato',
+	freelance: 'Freelance',
+	internship: 'Pasantía'
+}
+
+const filters = [
+	{ key: 'all', label: 'Todos', count: experiences.length },
+	...TYPE_ORDER.map((type) => ({
+		key: type,
+		label: TYPE_LABELS[type],
+		count: experiences.filter((exp) => exp.type === type).length
+	}))
+]
+
+// Pill classes live in one place: the markup renders the initial state and the
+// inline script re-applies exactly the same strings when the filter changes.
+const FILTER_BASE =
+	'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] transition-colors duration-300'
+const FILTER_IDLE =
+	'border-white/10 bg-white/5 text-white/60 hover:border-white/25 hover:text-white'
+const FILTER_ACTIVE = 'border-[#c70039] bg-[#c70039] text-white'
+const FILTER_DISABLED = 'cursor-not-allowed opacity-40'
+
+const stats = [
+	{ label: 'Puestos', value: experiences.length },
+	{ label: 'Tecnologías', value: techCount },
+	{ label: 'Roles en curso', value: ongoingCount }
+]
+
+// Company strip: the names are the only real company identity we can render
+// (the logo paths in the data 404), so the strip is text-only and decorative.
+const companyNames = experiences.map((exp) => exp.company)
+// Duplicated once: .marquee-track slides by -50%, so two identical halves loop
+// seamlessly.
+const marqueeItems = [...companyNames, ...companyNames]
+
+const monthLabel = (iso: string) =>
+	new Date(iso).toLocaleDateString('es-DO', { month: 'short', year: 'numeric' })
+
+// One block per start year, newest first. Sorted input means the year order is
+// already descending and every group keeps the card order of the timeline.
+const yearGroups = sortedExperiences.reduce<{ year: string; items: Experience[] }[]>(
+	(groups, exp) => {
+		const year = exp.startDate.slice(0, 4)
+		const existing = groups.find((group) => group.year === year)
+		if (existing) existing.items.push(exp)
+		else groups.push({ year, items: [exp] })
+		return groups
+	},
+	[]
+)
+
+// Range is derived from the entries in the group, so it never contradicts the
+// dates printed on the cards.
+const groupRange = (items: Experience[]) => {
+	const earliest = items[items.length - 1]
+	const latest = items[0]
+	const isOpen = items.some((item) => item.isOngoing)
+	const end = isOpen ? 'Actual' : latest.endDate ? monthLabel(latest.endDate) : 'Actual'
+	return `${monthLabel(earliest.startDate)} — ${end}`
+}
+
+// In-page index: three anchors, built from what actually renders.
+const railSections = [
+	{ id: 'cronologia', label: 'Cronología', index: '01' },
+	{ id: 'numeros', label: 'Números', index: '02' },
+	{ id: 'seguir', label: 'Continuar', index: '03' }
+]
+
+const crossLinks = [
+	{
+		href: '/education',
+		icon: 'mdi:school-outline',
+		eyebrow: 'Formación',
+		title: 'Educación',
+		description:
+			'Títulos, certificaciones y cursos que sostienen cada etapa de esta línea de tiempo.',
+		meta: `${education.length} registros`
+	},
+	{
+		href: '/skills',
+		icon: 'mdi:code-braces',
+		eyebrow: 'Herramientas',
+		title: 'Habilidades',
+		description: 'El stack completo, agrupado por disciplina y cruzado con los roles donde se usó.',
+		meta: `${techCount} tecnologías · ${certifications.length} certificaciones`
+	}
+]
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+	<!-- Reading progress: 2px, scroll-driven, no JS. -->
+	<div class="scroll-progress" aria-hidden="true"></div>
+
+	<!-- Arms the `[data-reveal]` elements of this page (no markup of its own). -->
+	<ScrollReveals />
+	<!-- Counts the stats up once, when they enter the viewport. -->
+	<CountUp />
+
+	<PageHero
+		eyebrow="Trayectoria"
+		lines={['Experience', '& Career']}
+		accentIndex={1}
+		align="center"
+		background="gears"
+		height="tall"
+		motion="scroll"
+		subtitle="Tres etapas, tres formas de trabajar: mantenimiento web y campañas en un centro de contacto, producto freelance de punta a punta y modelos de datos aplicados a decisiones de negocio."
+		meta={[
+			`${experiences.length} puestos`,
+			`${techCount} tecnologías`,
+			`${ongoingCount} roles en curso`
+		]}
+	>
+		<GearTrainHero slot="background" />
+	</PageHero>
+
+	<!-- In-page index, shared with the other top-level views. -->
+	<SectionRail sections={railSections} label="Secciones de la página de experiencia" />
+
+	<!--
+		Company strip: a marquee of the real employer/project names. Decorative
+		duplication is hidden from assistive tech; the sr-only list below carries
+		the same information once.
+	-->
+	<section class="relative border-y border-white/10 bg-[#0a0a0a] py-10 sm:py-12">
+		<h2 class="sr-only">Empresas y proyectos donde trabajé</h2>
+		<ul class="sr-only">
+			{companyNames.map((name) => <li>{name}</li>)}
+		</ul>
+
+		<div class="marquee" style="--marquee-duration: 32s" aria-hidden="true">
+			<div class="marquee-track items-center gap-10">
+				{
+					marqueeItems.map((name) => (
+						<span class="flex shrink-0 items-center gap-10 font-poppins text-2xl font-black uppercase tracking-tight text-white/25 transition-colors duration-300 hover:text-white/60">
+							{name}
+							<span class="h-1 w-1 rounded-full bg-[#c70039]" />
+						</span>
+					))
+				}
+			</div>
+		</div>
+
+		<!-- Quote line: frames the timeline as a changelog, not a résumé dump. -->
+		<p
+			class="mx-auto mt-8 max-w-3xl px-6 text-center font-mono text-[11px] uppercase leading-relaxed tracking-[0.25em] text-white/40 sm:mt-10 sm:text-xs"
+		>
+			«Un changelog de oficios: cada entrada registra qué cambió, con qué herramientas y qué
+			responsabilidades trajo.»
+		</p>
+	</section>
+
+	<!-- Timeline -->
+	<section id="cronologia" class="relative scroll-mt-28 px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+		<div class="mx-auto max-w-[1400px]">
+			<SectionHeading
+				scrub
+				eyebrow="Cronología"
+				title="Experiencia profesional"
+				description="De la campaña al código: cada etapa con sus responsabilidades concretas y las herramientas que usé para sacarlas adelante."
+			/>
+
+			<!--
+				Filter bar: purely progressive enhancement. Every card ships visible and
+				server-rendered, so with JS disabled the page still shows the full list.
+			-->
+			<div class="reveal mb-10" data-exp-filter>
+				<p class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">
+					Filtrar por tipo
+				</p>
+
+				<div class="mt-3 flex flex-wrap items-center gap-2 sm:gap-3">
+					{
+						filters.map((filter) => {
+							const isActive = filter.key === 'all'
+							const isDisabled = filter.count === 0
+
+							return (
+								<button
+									type="button"
+									data-filter={filter.key}
+									aria-pressed={isActive ? 'true' : 'false'}
+									disabled={isDisabled}
+									class:list={[
+										FILTER_BASE,
+										isActive ? FILTER_ACTIVE : FILTER_IDLE,
+										isDisabled && FILTER_DISABLED
+									]}
+								>
+									{filter.label}
+									<span class="text-[10px] font-bold tabular-nums opacity-70">
+										{String(filter.count).padStart(2, '0')}
+									</span>
+								</button>
+							)
+						})
+					}
+				</div>
+			</div>
+
+			<!-- Live feedback for the filter: the visible list changes silently, so
+			     the count is announced once the change settles. -->
+			<p class="sr-only" data-exp-live aria-live="polite" aria-atomic="true"></p>
+			<!--
+				Year spine: one sticky label per start year, cards hanging off a
+				hairline that draws itself as the group crosses the viewport. The
+				label is decorative; the sr-only h3 carries the semantic heading.
+			-->
+			<div class="space-y-14 md:space-y-20">
+				{
+					yearGroups.map((group) => (
+						<section
+							data-year-group
+							class="relative grid grid-cols-1 gap-5 md:grid-cols-[8rem_1fr] md:gap-10 lg:grid-cols-[10rem_1fr]"
+							aria-labelledby={`year-${group.year}`}
+						>
+							<div class="sticky top-[calc(var(--nav-h)+3rem)] self-start">
+								<span
+									data-year
+									data-active="false"
+									aria-hidden="true"
+									class="block font-poppins text-5xl font-black leading-none tracking-tight text-white/10 transition-colors duration-300 lg:text-6xl"
+								>
+									{group.year}
+								</span>
+								<h3 id={`year-${group.year}`} class="sr-only">
+									{`Año ${group.year}: ${group.items.map((item) => item.company).join(', ')}`}
+								</h3>
+								<p class="mt-3 text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">
+									{groupRange(group.items)}
+								</p>
+							</div>
+
+							<ol class="relative space-y-3 pl-5 before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-white/10 md:space-y-4 md:pl-8">
+								{/* Drawn line: fills as the group enters, same primitive as the
+								    academic timeline. */}
+								<span
+									class="pointer-events-none absolute inset-y-0 left-0 w-px"
+									aria-hidden="true"
+								>
+									<span class="spine-draw"></span>
+								</span>
+
+								{group.items.map((exp) => {
+									const index = sortedExperiences.indexOf(exp)
+									return (
+										<li
+											data-exp-card
+											data-exp-id={exp.id}
+											data-exp-type={exp.type}
+											data-reveal
+											style={`--i:${index}`}
+											class="io-reveal"
+										>
+											<ExpandableExperienceCard client:visible exp={exp} index={index} />
+										</li>
+									)
+								})}
+							</ol>
+						</section>
+					))
+				}
+			</div>
+
+			<!-- Empty state for a filter that matches nothing -->
+			<p
+				data-exp-empty
+				class="mt-8 hidden rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-sm text-white/60"
+			>
+				No hay puestos de ese tipo. Probá con otro filtro.
+			</p>
+		</div>
+	</section>
+
+	<!-- Stats -->
+	<section id="numeros" class="relative scroll-mt-28 px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+		<div class="mx-auto max-w-[1400px]">
+			<div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+				{
+					stats.map((stat, index) => (
+						<div
+							data-reveal
+							style={`--i:${index}`}
+							class="io-reveal dotted-card relative rounded-2xl border border-white/10 p-6 sm:p-8"
+						>
+							<span class="corner-tick corner-tick--tl" aria-hidden="true" />
+							<span class="corner-tick corner-tick--br" aria-hidden="true" />
+
+							<p
+								data-count-to={stat.value}
+								data-count-pad="2"
+								class="font-poppins text-4xl font-black leading-none tabular-nums tracking-tight text-[#c70039] sm:text-5xl"
+							>
+								{String(stat.value).padStart(2, '0')}
+							</p>
+							<p class="mt-3 text-[10px] font-bold uppercase tracking-[0.3em] text-white/60">
+								{stat.label}
+							</p>
+						</div>
+					))
+				}
+			</div>
+		</div>
+	</section>
+
+	<!-- Cross-links: the two pages that continue this story -->
+	<section id="seguir" class="relative scroll-mt-28 border-t border-white/10 px-6 py-16 sm:px-10 lg:px-16 lg:py-20">
+		<div class="mx-auto max-w-[1400px]">
+			<p class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">
+				Continuar leyendo
+			</p>
+
+			<div class="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2">
+				{
+					crossLinks.map((link, index) => (
+						<a
+							href={link.href}
+							data-reveal
+							style={`--i:${index}`}
+							class="io-reveal hover-lift group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 transition-colors duration-200 hover:border-[#c70039]/40 sm:p-8"
+						>
+							<span class="corner-tick corner-tick--br" aria-hidden="true" />
+
+							<div class="flex items-start justify-between gap-6">
+								<div>
+									<p class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">
+										{link.eyebrow}
+									</p>
+									<p class="mt-3 font-poppins text-2xl font-black uppercase leading-none tracking-tight text-white transition-colors duration-300 group-hover:text-[#c70039] sm:text-3xl">
+										{link.title}
+									</p>
+								</div>
+
+								<span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-[#c70039] transition-colors duration-300 group-hover:border-[#c70039]/40">
+									<Icon name={link.icon} class="h-5 w-5" />
+								</span>
+							</div>
+
+							<p class="mt-5 max-w-sm text-sm leading-relaxed text-white/60">{link.description}</p>
+
+							<p class="mt-6 flex items-center gap-3 border-t border-white/10 pt-4 text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">
+								{link.meta}
+								<span class="ml-auto text-[#c70039] transition-transform duration-200 group-hover:translate-x-1">
+									→
+								</span>
+							</p>
+						</a>
+					))
+				}
+			</div>
+		</div>
+	</section>
+
+	<!-- Closing CTA: same visual language as FinalCTA without importing it -->
+	<section
+		class="relative overflow-hidden border-t border-white/10 px-6 py-24 sm:px-10 lg:px-16 lg:py-32"
+	>
+		<div
+			class="pointer-events-none absolute inset-0 z-0"
+			aria-hidden="true"
+			style="background: radial-gradient(ellipse 70% 60% at 50% 110%, rgba(199,0,57,0.12), transparent 65%);"
+		>
+		</div>
+
+		<div class="relative z-10 mx-auto flex max-w-[1400px] flex-col items-center gap-8 text-center">
+			<p class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">Siguiente paso</p>
+
+			<BlockReveal
+				as="h2"
+				class="max-w-3xl font-poppins text-4xl font-black uppercase leading-[0.95] tracking-tight text-white sm:text-6xl lg:text-7xl"
+				boxColor="#c70039"
+				triggerStart="top 98%"
+				duration={0.3}
+				stagger={0.09}
+				lines={['Sumá tu equipo', 'a esta lista']}
+			/>
+
+			<p class="max-w-md text-sm leading-relaxed text-white/60 sm:text-base">
+				¿Buscás a alguien que cubra marketing, desarrollo y datos en un mismo rol? Contame qué
+				necesitás y vemos cómo encaja.
+			</p>
+
+			<div class="mt-2 flex flex-col items-center gap-4 sm:flex-row">
+				<a
+					href="/contact"
+					aria-label="Ir a la página de contacto"
+					class="group inline-flex items-center gap-3 rounded-full bg-[#c70039] px-8 py-4 text-sm font-black uppercase tracking-widest text-white transition duration-200 hover:scale-105 hover:bg-[#b11141] hover:shadow-[0_0_40px_rgba(199,0,57,0.35)]"
+				>
+					<Icon name="mdi:email-outline" class="h-5 w-5" />
+					Hablemos
+				</a>
+
+				<a
+					href="/about"
+					aria-label="Ver currículum completo"
+					class="group inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-8 py-4 text-sm font-black uppercase tracking-widest text-white/80 transition duration-200 hover:border-[#c70039]/50 hover:bg-white/10 hover:text-white"
+				>
+					<Icon name="mdi:account-details-outline" class="h-5 w-5" />
+					Ver currículum
+				</a>
+			</div>
+		</div>
+	</section>
+</Layout>
+
+<style>
+	/* The inline filter script toggles this class on the server-rendered list
+	   items; declaring it here keeps the behaviour independent of Tailwind's
+	   on-demand utility generation. */
+	[data-exp-card].hidden {
+		display: none;
+	}
+
+	[data-year-group].hidden {
+		display: none;
+	}
+
+	/* Active year: the observer flips data-active on the label that owns the
+	   band currently crossing the viewport. Colour only, so it needs no motion
+	   fallback beyond not transitioning. */
+	[data-year][data-active='true'] {
+		color: #c70039;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		[data-year] {
+			transition: none;
+		}
+	}
+</style>
+
+<script>
+	const FILTER_BASE =
+		'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] transition-colors duration-300'
+	const FILTER_IDLE =
+		'border-white/10 bg-white/5 text-white/60 hover:border-white/25 hover:text-white'
+	const FILTER_ACTIVE = 'border-[#c70039] bg-[#c70039] text-white'
+	const FILTER_DISABLED = 'cursor-not-allowed opacity-40'
+
+	const initExperienceFilter = () => {
+		if (typeof window === 'undefined') return
+
+		const root = document.querySelector('[data-exp-filter]')
+		if (!root || root.getAttribute('data-exp-filter-ready') === 'true') return
+		root.setAttribute('data-exp-filter-ready', 'true')
+
+		const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-filter]'))
+		const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-exp-card]'))
+		const groups = Array.from(document.querySelectorAll<HTMLElement>('[data-year-group]'))
+		const empty = document.querySelector<HTMLElement>('[data-exp-empty]')
+		const live = document.querySelector<HTMLElement>('[data-exp-live]')
+		let announceTimer = 0
+
+		const applyFilter = (value: string) => {
+			buttons.forEach((button) => {
+				const isActive = button.getAttribute('data-filter') === value
+				const stateClass = isActive ? FILTER_ACTIVE : FILTER_IDLE
+				const disabledClass = button.disabled ? ` ${FILTER_DISABLED}` : ''
+
+				button.setAttribute('aria-pressed', String(isActive))
+				button.className = `${FILTER_BASE} ${stateClass}${disabledClass}`
+			})
+
+			let visible = 0
+
+			cards.forEach((card) => {
+				const matches = value === 'all' || card.getAttribute('data-exp-type') === value
+				card.classList.toggle('hidden', !matches)
+				if (matches) visible += 1
+			})
+
+			// A year whose cards are all filtered out would leave an orphan spine
+			// and a label with nothing under it, so collapse the whole block.
+			groups.forEach((group) => {
+				const hasVisibleCard = group.querySelector('[data-exp-card]:not(.hidden)') !== null
+				group.classList.toggle('hidden', !hasVisibleCard)
+			})
+
+			if (empty) empty.classList.toggle('hidden', visible !== 0)
+
+			// One announcement per settled change, so the result of the filter is
+			// not silent for screen-reader users.
+			if (live) {
+				window.clearTimeout(announceTimer)
+				announceTimer = window.setTimeout(() => {
+					live.textContent = `${visible} ${visible === 1 ? 'puesto' : 'puestos'}`
+				}, 350)
+			}
+		}
+
+		buttons.forEach((button) => {
+			button.addEventListener('click', () => {
+				applyFilter(button.getAttribute('data-filter') ?? 'all')
+			})
+		})
+	}
+
+	// Active-year highlight. Kept separate from the filter so either can fail
+	// without taking the other down.
+	let yearObserver: IntersectionObserver | null = null
+
+	const initYearHighlight = () => {
+		if (typeof window === 'undefined' || !('IntersectionObserver' in window)) return
+
+		const groups = Array.from(document.querySelectorAll<HTMLElement>('[data-year-group]'))
+		if (!groups.length) return
+
+		yearObserver?.disconnect()
+
+		const inBand = new Set<HTMLElement>()
+
+		const sync = () => {
+			// Document order decides the winner when two blocks share the band.
+			const active = groups.find((group) => inBand.has(group)) ?? null
+
+			groups.forEach((group) => {
+				const label = group.querySelector<HTMLElement>('[data-year]')
+				if (label) label.setAttribute('data-active', String(group === active))
+			})
+		}
+
+		yearObserver = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					const target = entry.target as HTMLElement
+					if (entry.isIntersecting) inBand.add(target)
+					else inBand.delete(target)
+				})
+				sync()
+			},
+			// A narrow band across the middle of the viewport: the block that
+			// crosses it owns the accent colour.
+			{ rootMargin: '-20% 0px -55% 0px', threshold: 0 }
+		)
+
+		groups.forEach((group) => yearObserver?.observe(group))
+		sync()
+	}
+
+	initExperienceFilter()
+	initYearHighlight()
+	document.addEventListener('astro:page-load', () => {
+		initExperienceFilter()
+		initYearHighlight()
+	})
+	document.addEventListener('astro:after-swap', () => {
+		initExperienceFilter()
+		initYearHighlight()
+	})
+</script>

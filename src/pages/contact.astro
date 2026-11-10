@@ -1,0 +1,1008 @@
+---
+import { siteConfig } from '@src/data/config'
+import Layout from '@src/layouts/Layout.astro'
+import Header from '@components/Header.astro'
+import Input from '@components/ui/Input.astro'
+import Button from '@components/ui/Button.astro'
+import { Icon } from 'astro-icon/components'
+import socialLinks from '@src/data/socialLinks.json'
+import ContactScene3D from '@components/contact/ContactScene3D.astro'
+import ScrollReveal from '@components/ui/ScrollReveal.astro'
+
+const { author } = siteConfig
+
+const connectLinks = socialLinks.links.filter((link) => link.url.startsWith('http') || link.url.startsWith('mailto'))
+
+const projectTypes = [
+	{ id: 'web', label: 'Sitio Web / Landing', phaseRef: 'dev' },
+	{ id: 'saas', label: 'Aplicación Web / SaaS', phaseRef: 'dev' },
+	{ id: 'ecommerce', label: 'E-Commerce', phaseRef: 'dev' },
+	{ id: 'seo', label: 'Auditoría SEO & Performance', phaseRef: 'seo' },
+	{ id: 'uiux', label: 'Diseño UI/UX', phaseRef: 'design' },
+	{ id: 'consulting', label: 'Estrategia & Consultoría', phaseRef: 'brief' }
+]
+
+const faqs = [
+	{
+		question: '¿Qué servicios ofrecés?',
+		answer:
+			'Desarrollo web (front y back), marketing digital, SEO y análisis de datos. Puedo encargarme de un proyecto completo o sumarme a un equipo que ya tiene algo en marcha.'
+	},
+	{
+		question: '¿Con qué tecnologías trabajás?',
+		answer:
+			'Principalmente JavaScript/TypeScript, Astro, React y Node.js, además de WordPress para proyectos que lo requieren. También manejo SEO técnico, Google Analytics/Ads y Cloudflare.'
+	},
+	{
+		question: '¿Cómo es tu proceso de trabajo?',
+		answer:
+			'Arrancamos con una charla para entender el objetivo y el alcance, sigo con una propuesta y estimación de tiempos, y avanzo en etapas cortas con entregas visibles para que puedas ir revisando el progreso.'
+	},
+	{
+		question: '¿Cuánto tiempo toma un proyecto?',
+		answer:
+			'Depende del alcance: una landing puede estar lista en una o dos semanas, mientras que un producto más completo puede tomar varios meses. Te doy un estimado concreto apenas conozco los detalles.'
+	},
+	{
+		question: '¿Trabajás con clientes de otros países?',
+		answer:
+			'Sí, trabajo de forma remota con clientes de cualquier zona horaria. Coordinamos las reuniones y entregas por videollamada, email o la herramienta que prefieras.'
+	},
+	{
+		question: '¿Cómo me pongo en contacto?',
+		answer: 'Lo más directo es el formulario de acá arriba, o escribirme por cualquiera de mis redes sociales. Te respondo a la brevedad.'
+	}
+]
+---
+
+<Layout title={`${author} | Contacto`} description="Hablemos de tu próximo proyecto. Escribime por redes o completá el formulario y te respondo a la brevedad.">
+	<Header
+		title="Hablemos"
+		titleCaption="de tu proyecto"
+		description="¿Tenés una idea en mente? Contame los detalles y"
+		descriptionCaption="lo llevamos adelante juntos."
+	/>
+
+	{/* Main Contact Section - Split Layout */}
+	<section class="relative w-full bg-[#0a0a0a] px-6 pb-24 sm:px-10 lg:px-16">
+		<div class="mx-auto max-w-7xl">
+			<div class="grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-14">
+				{/* Left Column - 3D Interactive Observatory */}
+				<div class="lg:sticky lg:top-24 lg:h-fit">
+					<ContactScene3D />
+				</div>
+
+				{/* Right Column - Form & Channels */}
+				<div class="flex flex-col gap-10">
+					{/* Direct Channels Section */}
+					<div class="social-section c-reveal" style="--reveal-delay: 0ms">
+						<div class="mb-4">
+							<h3 class="text-xl font-bold text-white tracking-tight">Canales directos</h3>
+						</div>
+
+						{/* Social Networks Carousel with Fade */}
+						<div class="carousel-fade relative w-full overflow-hidden rounded-xl border border-white/10 bg-[#0a0a0a]/50 p-4">
+							<div id="social-carousel-track" class="flex gap-4 will-change-transform" data-marquee-repeat="3" style="width: max-content;">
+								{
+									[...connectLinks, ...connectLinks, ...connectLinks].map((link) => (
+										<div class="flex-shrink-0" style="width: 240px;">
+											<a
+												href={link.url}
+												target={link.url.startsWith('http') ? '_blank' : '_self'}
+												rel={link.url.startsWith('http') ? 'noopener noreferrer' : ''}
+												aria-label={`${link.title}${link.handle ? ` — ${link.handle}` : ''}`}
+												class="connect-card group flex h-full flex-col rounded-2xl border border-white/10 bg-white/5 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#c70039]/60 hover:shadow-lg"
+											>
+												<div class="flex items-center gap-3">
+													<span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-[#c70039] transition-colors duration-300 group-hover:border-[#c70039]/50">
+														<Icon name={link.icon} class="h-5 w-5" />
+													</span>
+													<span class="flex min-w-0 flex-col">
+														<span class="truncate text-sm font-bold text-white">{link.title}</span>
+														{link.handle && <span class="truncate text-xs text-white/60">{link.handle}</span>}
+													</span>
+												</div>
+
+												<div class="mt-4 flex items-center justify-between border-t border-white/10 pt-3">
+													<span class="text-xs font-semibold tracking-wide text-white/60 transition-colors duration-300 group-hover:text-[#c70039]">
+														Conectar
+													</span>
+													<Icon
+														name="mdi:arrow-top-right"
+														class="h-4 w-4 text-white/50 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[#c70039]"
+													/>
+												</div>
+											</a>
+										</div>
+									))
+								}
+							</div>
+						</div>
+					</div>
+
+					{/* Contact Form Section */}
+					<div
+						id="contact-form-section"
+						class="contact-section c-reveal rounded-2xl border border-white/10 bg-white/[0.02] p-6 sm:p-8 backdrop-blur-sm"
+						style="--reveal-delay: 90ms"
+					>
+						<div class="c-reveal mb-6" style="--reveal-delay: 150ms">
+							<ScrollReveal
+								as="h3"
+								text="Hablemos"
+								class="form-title text-2xl font-bold tracking-tight text-white"
+								stagger={0.06}
+								blur={3}
+								rotate={4}
+							/>
+							<p class="mt-1 max-w-md text-sm leading-relaxed text-white/70">
+								¿Tienes una idea o alguna necesidad específica? Llena el formulario y trabajemos juntos
+								construyendo algo extraordinario.
+							</p>
+						</div>
+
+						{/* Interactive Project Scope Chips */}
+						<div class="c-reveal mb-6" style="--reveal-delay: 210ms">
+							<p id="project-type-label" class="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/70">
+								Tipo de proyecto o servicio
+							</p>
+							<div class="flex flex-wrap gap-2" id="project-chips-container" role="group" aria-labelledby="project-type-label">
+								{
+									projectTypes.map((pt) => (
+										<button
+											type="button"
+											data-project-id={pt.id}
+											data-phase-ref={pt.phaseRef}
+											data-project-label={pt.label}
+											class="project-chip rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/80 transition-all duration-200 hover:border-white/30 hover:bg-white/10 hover:text-white"
+										>
+											{pt.label}
+										</button>
+									))
+								}
+							</div>
+						</div>
+
+						<form id="contact-form" novalidate class="space-y-5">
+							<div class="grid gap-4 sm:grid-cols-2">
+								<div class="field-group c-reveal" style="--reveal-delay: 270ms">
+									<label for="nombre" class="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/70">Nombre *</label>
+									<Input id="nombre" name="nombre" type="text" required placeholder="Tu nombre o empresa" class="m-0 w-full border border-white/10 focus:border-[#c70039] focus:ring-1 focus:ring-[#c70039]" />
+									<p data-error-for="nombre" class="mt-1.5 hidden text-xs font-medium text-[#ff6b7a]" role="alert">Ingresá tu nombre.</p>
+								</div>
+
+								<div class="field-group c-reveal" style="--reveal-delay: 330ms">
+									<label for="email" class="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/70">Email *</label>
+									<Input id="email" name="email" type="email" required placeholder="tu@email.com" class="m-0 w-full border border-white/10 focus:border-[#c70039] focus:ring-1 focus:ring-[#c70039]" />
+									<p data-error-for="email" class="mt-1.5 hidden text-xs font-medium text-[#ff6b7a]" role="alert">Ingresá un email válido.</p>
+								</div>
+							</div>
+
+							<div class="field-group c-reveal" style="--reveal-delay: 390ms">
+								<label for="asunto" class="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/70">Asunto *</label>
+								<Input id="asunto" name="asunto" type="text" required placeholder="Ej: Nuevo sitio web / Rediseño de plataforma" class="m-0 w-full border border-white/10 focus:border-[#c70039] focus:ring-1 focus:ring-[#c70039]" />
+								<p data-error-for="asunto" class="mt-1.5 hidden text-xs font-medium text-[#ff6b7a]" role="alert">Contame de qué se trata el proyecto.</p>
+							</div>
+
+							<div class="field-group c-reveal" style="--reveal-delay: 450ms">
+								<label for="descripcion" class="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/70">Descripción del proyecto *</label>
+								<Input id="descripcion" name="descripcion" type="textarea" required placeholder="Describí los requerimientos principales, tiempos estimados y cualquier detalle clave..." class="m-0 w-full border border-white/10 focus:border-[#c70039] focus:ring-1 focus:ring-[#c70039]" />
+								<p data-error-for="descripcion" class="mt-1.5 hidden text-xs font-medium text-[#ff6b7a]" role="alert">Escribí algunos detalles sobre lo que necesitás.</p>
+							</div>
+
+							{/* Form Submission CTA Area */}
+							<div class="c-reveal pt-2" style="--reveal-delay: 510ms">
+								<div class="flex flex-col gap-3">
+									<div class="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
+										<Button
+											id="btn-submit-form"
+											type="submit"
+											variant="primary"
+											icon="mdi:send"
+											iconposition="right"
+											text="Enviar mensaje directo"
+											disabled={true}
+											class="m-0 w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-white/10 px-7 py-3.5 text-base font-semibold text-white/40 cursor-not-allowed border border-white/10 pointer-events-none"
+										/>
+
+										<div class="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-xs text-white/70">
+											<Icon name="mdi:information-outline" class="h-4 w-4 shrink-0 text-[#e84c5f]" />
+											<span>Envío en desarrollo · Contactá por redes o WhatsApp</span>
+										</div>
+									</div>
+								</div>
+
+								{/* Live Status Feedback Banner (flattened, no nested card box) */}
+								<div id="form-feedback-card" class="mt-4 hidden border-t border-white/10 pt-4 transition-all">
+									<div class="flex items-start gap-3">
+										<Icon id="feedback-icon" name="mdi:check-circle" class="h-5 w-5 shrink-0 text-emerald-400 mt-0.5" />
+										<div class="flex-1">
+											<p id="form-status-message" class="text-sm font-medium text-white"></p>
+											
+											{/* Quick alternative channels if mailto fails */}
+											<div class="mt-3 flex flex-wrap gap-2.5" id="feedback-actions">
+												<a
+													id="btn-whatsapp-direct"
+													href="https://wa.me/18497511849"
+													target="_blank"
+													rel="noopener noreferrer"
+													class="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-300 transition-colors hover:bg-emerald-500/20"
+												>
+													<Icon name="mdi:whatsapp" class="h-4 w-4" />
+													<span>Abrir por WhatsApp (+1 849 751-1849)</span>
+												</a>
+
+												<button
+													id="btn-copy-summary"
+													type="button"
+													class="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+												>
+													<Icon name="mdi:content-copy" class="h-4 w-4 text-[#c70039]" />
+													<span id="copy-summary-text">Copiar mensaje</span>
+												</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	{/* FAQ Section - Full Width */}
+	<section class="relative w-full bg-gradient-to-b from-[#0a0a0a] to-[#050505] px-6 py-24 sm:px-10 lg:px-16">
+		<div class="mx-auto max-w-4xl">
+			<div class="c-reveal mb-12 text-center">
+				<h2 class="text-3xl font-bold text-white sm:text-4xl tracking-tight">Preguntas frecuentes</h2>
+			</div>
+
+			<div class="space-y-3">
+				{
+					faqs.map((faq, index) => (
+						<div class="c-reveal" style={`--reveal-delay: ${index * 70}ms`}>
+							<details class="group rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm transition-all duration-300 hover:border-white/20 hover:bg-white/[0.07] open:border-[#c70039]/30 open:bg-white/8">
+								<summary class="flex cursor-pointer list-none items-start justify-between gap-4 px-5 py-4 text-base font-semibold text-white select-none hover:text-[#c70039] transition-colors duration-300">
+									<span>{faq.question}</span>
+									<svg
+										class="mt-0.5 h-5 w-5 shrink-0 text-white/40 transition-all duration-300 group-open:rotate-180 group-open:text-[#c70039]"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+									>
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+									</svg>
+								</summary>
+								<div class="border-t border-white/10 px-5 pb-4 pt-4">
+									<p class="text-sm leading-relaxed text-white/70">{faq.answer}</p>
+								</div>
+							</details>
+						</div>
+					))
+				}
+			</div>
+		</div>
+	</section>
+
+	{/* Progressive enhancement: keep every block visible when JS is unavailable */}
+	<noscript>
+		<style>
+			.c-reveal {
+				opacity: 1 !important;
+				animation: none !important;
+			}
+			.form-title::after {
+				width: 3.75rem;
+			}
+		</style>
+	</noscript>
+</Layout>
+
+<style>
+	@keyframes fade-in-up {
+		from {
+			opacity: 0;
+			transform: translateY(16px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	/* FAQ Accordion Animations */
+	@keyframes faq-expand {
+		from {
+			opacity: 0;
+			max-height: 0;
+			overflow: hidden;
+		}
+		to {
+			opacity: 1;
+			max-height: 500px;
+			overflow: hidden;
+		}
+	}
+
+	@keyframes faq-collapse {
+		from {
+			opacity: 1;
+			max-height: 500px;
+			overflow: hidden;
+		}
+		to {
+			opacity: 0;
+			max-height: 0;
+			overflow: hidden;
+		}
+	}
+
+	details[open] summary ~ * {
+		animation: faq-expand 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	}
+
+	details:not([open]) summary ~ * {
+		animation: faq-collapse 0.3s cubic-bezier(0.7, 0, 0.84, 0) forwards;
+	}
+
+	details summary {
+		transition: color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	details summary svg {
+		transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	details[open] summary svg {
+		transform: rotate(180deg);
+	}
+
+	/* ── Scroll microinteraction: staggered reveal ── */
+	@keyframes reveal-up {
+		from {
+			opacity: 0;
+			transform: translateY(28px) scale(0.985);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+		}
+	}
+
+	.c-reveal {
+		opacity: 0;
+	}
+
+	.c-reveal.is-revealed {
+		animation: reveal-up 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+		animation-delay: var(--reveal-delay, 0ms);
+	}
+
+	/* Accent rule that draws itself once the form header enters the viewport */
+	.form-title {
+		position: relative;
+		padding-bottom: 0.55rem;
+	}
+
+	.form-title::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		bottom: 0;
+		width: 0;
+		height: 2px;
+		border-radius: 9999px;
+		background: linear-gradient(90deg, #c70039, rgba(199, 0, 57, 0));
+		transition: width 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+	}
+
+	.c-reveal.is-revealed .form-title::after {
+		width: 3.75rem;
+	}
+
+	/* Carousel Fade Styles */
+	.carousel-fade {
+		mask-image: linear-gradient(to right, transparent, #000 15%, #000 85%, transparent);
+		-webkit-mask-image: linear-gradient(to right, transparent, #000 15%, #000 85%, transparent);
+		transition:
+			border-color 0.35s ease,
+			background-color 0.35s ease,
+			box-shadow 0.45s ease;
+	}
+
+	.carousel-fade:hover {
+		border-color: rgba(255, 255, 255, 0.2);
+		background-color: rgba(255, 255, 255, 0.05);
+		box-shadow: 0 30px 70px -60px rgba(199, 0, 57, 0.8);
+	}
+
+	@keyframes links-in {
+		from {
+			opacity: 0;
+			transform: scale(0.95);
+		}
+		to {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+
+	.connect-card {
+		animation: links-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+	}
+
+	@keyframes pulse-border {
+		0%, 100% {
+			border-color: rgba(255, 255, 255, 0.1);
+		}
+		50% {
+			border-color: rgba(199, 0, 57, 0.6);
+		}
+	}
+
+	.pulse-highlight {
+		animation: pulse-border 1.5s ease-in-out 2;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		details[open] summary ~ *,
+		details:not([open]) summary ~ *,
+		details[open],
+		.connect-card {
+			animation: none;
+		}
+
+		details summary svg {
+			transition: none;
+		}
+
+		details[open] summary svg {
+			transform: none;
+		}
+	}
+</style>
+
+<style is:global>
+	/* ── Microinteractions: form surface (hover) ── */
+	#contact-form-section {
+		transition:
+			border-color 0.35s ease,
+			background-color 0.35s ease,
+			box-shadow 0.45s ease;
+	}
+
+	#contact-form-section:hover {
+		border-color: rgba(199, 0, 57, 0.35);
+		background-color: rgba(255, 255, 255, 0.04);
+		box-shadow:
+			0 40px 90px -60px rgba(199, 0, 57, 0.9),
+			inset 0 1px 0 rgba(255, 255, 255, 0.06);
+	}
+
+	/* ── Microinteractions: fields (hover + focus/active) ── */
+	.field-group {
+		position: relative;
+	}
+
+	.field-group > label {
+		transition:
+			color 0.22s ease,
+			letter-spacing 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	/* Accent tick that slides in before the label on focus */
+	.field-group > label::before {
+		content: '';
+		display: inline-block;
+		width: 0;
+		height: 2px;
+		margin-right: 0;
+		vertical-align: middle;
+		border-radius: 9999px;
+		background: #c70039;
+		transition:
+			width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+			margin-right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.field-group:hover > label {
+		color: rgba(255, 255, 255, 0.92);
+	}
+
+	.field-group:focus-within > label {
+		color: #ff6b7a;
+	}
+
+	.field-group:focus-within > label::before {
+		width: 0.875rem;
+		margin-right: 0.5rem;
+	}
+
+	#contact-form input,
+	#contact-form textarea {
+		caret-color: #c70039;
+		transition:
+			border-color 0.22s ease,
+			background-color 0.22s ease,
+			box-shadow 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+			transform 0.22s ease;
+	}
+
+	#contact-form input::placeholder,
+	#contact-form textarea::placeholder {
+		color: rgba(255, 255, 255, 0.32);
+		transition: color 0.22s ease;
+	}
+
+	#contact-form input:hover,
+	#contact-form textarea:hover {
+		border-color: rgba(255, 255, 255, 0.28);
+		background-color: rgba(255, 255, 255, 0.045);
+	}
+
+	#contact-form input:focus,
+	#contact-form textarea:focus {
+		border-color: rgba(199, 0, 57, 0.85);
+		background-color: rgba(199, 0, 57, 0.06);
+		box-shadow:
+			0 0 0 3px rgba(199, 0, 57, 0.16),
+			0 14px 34px -24px rgba(199, 0, 57, 0.95);
+		transform: translateY(-1px);
+	}
+
+	#contact-form input:focus::placeholder,
+	#contact-form textarea:focus::placeholder {
+		color: rgba(255, 255, 255, 0.2);
+	}
+
+	/* Invalid field: shake once when the error message appears */
+	@keyframes field-shake {
+		0%,
+		100% {
+			transform: translateX(0);
+		}
+		22% {
+			transform: translateX(-5px);
+		}
+		45% {
+			transform: translateX(4px);
+		}
+		68% {
+			transform: translateX(-2px);
+		}
+	}
+
+	#contact-form input.is-invalid,
+	#contact-form textarea.is-invalid {
+		border-color: rgba(255, 107, 122, 0.75);
+		animation: field-shake 0.42s ease-in-out;
+	}
+
+	/* ── Microinteractions: press (active) on controls ── */
+	.project-chip {
+		transition:
+			transform 0.18s ease,
+			border-color 0.2s ease,
+			background-color 0.2s ease,
+			color 0.2s ease,
+			box-shadow 0.25s ease;
+	}
+
+	.project-chip:hover {
+		transform: translateY(-2px);
+	}
+
+	.project-chip:active {
+		transform: scale(0.95);
+	}
+
+	#contact-form button[type='submit'] {
+		transition:
+			transform 0.16s ease,
+			box-shadow 0.3s ease,
+			filter 0.3s ease;
+	}
+
+	#contact-form button[type='submit']:not(:disabled):hover {
+		transform: translateY(-1px);
+		box-shadow: 0 18px 40px -22px rgba(199, 0, 57, 0.95);
+	}
+
+	#contact-form button[type='submit']:not(:disabled):active {
+		transform: scale(0.975);
+		box-shadow: 0 8px 18px -14px rgba(199, 0, 57, 0.9);
+	}
+
+	#btn-copy-summary:active,
+	#btn-whatsapp-direct:active {
+		transform: scale(0.97);
+	}
+
+	#btn-copy-summary,
+	#btn-whatsapp-direct {
+		transition:
+			transform 0.16s ease,
+			background-color 0.2s ease,
+			color 0.2s ease;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.c-reveal,
+		.c-reveal.is-revealed {
+			opacity: 1 !important;
+			animation: none !important;
+		}
+
+		.form-title::after {
+			width: 3.75rem;
+			transition: none;
+		}
+
+		.project-chip:hover,
+		.project-chip:active,
+		#contact-form input:focus,
+		#contact-form textarea:focus,
+		#contact-form button[type='submit']:not(:disabled):hover,
+		#contact-form button[type='submit']:not(:disabled):active,
+		#btn-copy-summary:active,
+		#btn-whatsapp-direct:active {
+			transform: none;
+		}
+
+		#contact-form input.is-invalid,
+		#contact-form textarea.is-invalid {
+			animation: none;
+		}
+	}
+</style>
+
+<script>
+	// Contact Form & 3D Synchronization
+	const CONTACT_EMAIL = 'steve@stevemoya.me'
+	const WHATSAPP_PHONE = '18497511849'
+	const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+	let stopCarouselScroll: (() => void) | null = null
+	let stopRevealObserver: (() => void) | null = null
+
+	function initContactPage() {
+		if (stopCarouselScroll) {
+			stopCarouselScroll()
+			stopCarouselScroll = null
+		}
+
+		if (stopRevealObserver) {
+			stopRevealObserver()
+			stopRevealObserver = null
+		}
+
+		const form = document.getElementById('contact-form') as HTMLFormElement | null
+		const formSection = document.getElementById('contact-form-section')
+		const feedbackCard = document.getElementById('form-feedback-card')
+		const feedbackIcon = document.getElementById('feedback-icon')
+		const statusMessage = document.getElementById('form-status-message')
+		const whatsappBtn = document.getElementById('btn-whatsapp-direct') as HTMLAnchorElement | null
+		const copySummaryBtn = document.getElementById('btn-copy-summary') as HTMLButtonElement | null
+		const copySummaryText = document.getElementById('copy-summary-text')
+		const asuntoInput = document.getElementById('asunto') as HTMLInputElement | null
+		const nombreInput = document.getElementById('nombre') as HTMLInputElement | null
+		const descripcionInput = document.getElementById('descripcion') as HTMLTextAreaElement | null
+		const projectChips = document.querySelectorAll<HTMLButtonElement>('.project-chip')
+
+		if (!form && !document.getElementById('social-carousel-track')) return
+
+		let activeSelectedProjectType = ''
+		let lastFormattedMessage = ''
+
+		// Scroll microinteraction: staggered reveal as each block enters the viewport
+		const revealTargets = Array.from(document.querySelectorAll<HTMLElement>('.c-reveal'))
+
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			revealTargets.forEach((el) => el.classList.add('is-revealed'))
+		} else if (revealTargets.length) {
+			const revealObserver = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((entry) => {
+						if (!entry.isIntersecting) return
+						entry.target.classList.add('is-revealed')
+						revealObserver.unobserve(entry.target)
+					})
+				},
+				{ threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+			)
+
+			revealTargets.forEach((el) => {
+				// Blocks already on screen animate right away, keeping their stagger
+				if (el.getBoundingClientRect().top < window.innerHeight * 0.9) {
+					el.classList.add('is-revealed')
+					return
+				}
+				revealObserver.observe(el)
+			})
+
+			stopRevealObserver = () => revealObserver.disconnect()
+		}
+
+	// Project Type Chip selection
+	projectChips.forEach((chip) => {
+		chip.addEventListener('click', () => {
+			const label = chip.dataset.projectLabel || ''
+			const isCurrent = activeSelectedProjectType === label
+
+			projectChips.forEach((c) => {
+				c.classList.remove('border-[#c70039]', 'bg-[#c70039]/20', 'text-white', 'shadow-[0_0_12px_rgba(199,0,57,0.3)]')
+				c.classList.add('border-white/10', 'bg-white/5', 'text-white/80')
+			})
+
+			if (!isCurrent) {
+				activeSelectedProjectType = label
+				chip.classList.remove('border-white/10', 'bg-white/5', 'text-white/80')
+				chip.classList.add('border-[#c70039]', 'bg-[#c70039]/20', 'text-white', 'shadow-[0_0_12px_rgba(199,0,57,0.3)]')
+
+				if (asuntoInput) {
+					asuntoInput.value = `Proyecto: ${label}`
+				}
+			} else {
+				activeSelectedProjectType = ''
+			}
+		})
+	})
+
+	// Listen for 3D Phase Selection events
+	window.addEventListener('steve:phase-selected', (e: Event) => {
+		const customEvent = e as CustomEvent<{ phaseId: string; phaseTitle: string; phaseNum: string }>
+		const { phaseId } = customEvent.detail
+
+		// Find matching chip
+		projectChips.forEach((chip) => {
+			if (chip.dataset.phaseRef === phaseId) {
+				chip.classList.add('border-[#c70039]/50')
+				setTimeout(() => chip.classList.remove('border-[#c70039]/50'), 1200)
+			}
+		})
+	})
+
+	// Listen for CTA apply from 3D component
+	window.addEventListener('steve:apply-phase-cta', (e: Event) => {
+		const customEvent = e as CustomEvent<{ phase: { id: string; title: string; num: string } }>
+		const { phase } = customEvent.detail
+
+		if (asuntoInput) {
+			asuntoInput.value = `Propuesta: Fase ${phase.num} · ${phase.title}`
+		}
+
+		// Scroll to form smoothly
+		formSection?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+		formSection?.classList.add('pulse-highlight')
+		setTimeout(() => formSection?.classList.remove('pulse-highlight'), 3000)
+
+		if (nombreInput && !nombreInput.value) {
+			nombreInput.focus()
+		} else if (descripcionInput) {
+			descripcionInput.focus()
+		}
+	})
+
+	const setError = (field: string, show: boolean) => {
+		const message = form?.querySelector<HTMLElement>(`[data-error-for="${field}"]`)
+		message?.classList.toggle('hidden', !show)
+
+		const input = form?.querySelector<HTMLInputElement | HTMLTextAreaElement>(`#${field}`)
+		if (!input) return
+
+		input.classList.remove('is-invalid')
+
+		if (show) {
+			// Force a reflow so the shake runs again on every failed submit
+			void input.offsetWidth
+			input.classList.add('is-invalid')
+		}
+	}
+
+	// Clear a field's error as soon as the user starts fixing it
+	form?.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea').forEach((field) => {
+		field.addEventListener('input', () => {
+			if (!field.classList.contains('is-invalid') || !field.id) return
+			setError(field.id, false)
+		})
+	})
+
+	const showFeedback = (message: string, tone: 'success' | 'error', formattedBody: string = '', subject: string = '') => {
+		if (!feedbackCard || !statusMessage) return
+
+		feedbackCard.classList.remove('hidden')
+		statusMessage.textContent = message
+
+		if (tone === 'success') {
+			feedbackCard.classList.remove('border-[#c70039]/50', 'bg-[#c70039]/10')
+			feedbackCard.classList.add('border-emerald-500/30', 'bg-emerald-500/10')
+			feedbackIcon?.classList.remove('text-[#c70039]')
+			feedbackIcon?.classList.add('text-emerald-400')
+
+			// Configure WhatsApp fallback button
+			if (whatsappBtn && formattedBody) {
+				const waText = `Hola Steve! Te contacto desde tu portafolio sobre *${subject}*:\n\n${formattedBody}`
+				whatsappBtn.href = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(waText)}`
+			}
+		} else {
+			feedbackCard.classList.remove('border-emerald-500/30', 'bg-emerald-500/10')
+			feedbackCard.classList.add('border-[#c70039]/50', 'bg-[#c70039]/10')
+			feedbackIcon?.classList.remove('text-emerald-400')
+			feedbackIcon?.classList.add('text-[#c70039]')
+		}
+	}
+
+	const submitBtn = document.getElementById('btn-submit-form') as HTMLButtonElement | null
+
+	// Form Submission Handler
+	form?.addEventListener('submit', (event) => {
+		event.preventDefault()
+
+		if (submitBtn?.disabled) {
+			showFeedback(
+				'El envío directo mediante formulario está temporalmente en desarrollo. Podés contactarme directamente por WhatsApp o redes sociales.',
+				'error'
+			)
+			return
+		}
+
+		const data = new FormData(form)
+		const nombre = String(data.get('nombre') || '').trim()
+		const email = String(data.get('email') || '').trim()
+		const asunto = String(data.get('asunto') || '').trim()
+		const descripcion = String(data.get('descripcion') || '').trim()
+
+		const nombreValid = nombre.length > 0
+		const emailValid = EMAIL_RE.test(email)
+		const asuntoValid = asunto.length > 0
+		const descripcionValid = descripcion.length > 0
+
+		setError('nombre', !nombreValid)
+		setError('email', !emailValid)
+		setError('asunto', !asuntoValid)
+		setError('descripcion', !descripcionValid)
+
+		if (!nombreValid || !emailValid || !asuntoValid || !descripcionValid) {
+			showFeedback('Revisá los campos obligatorios marcados antes de continuar.', 'error')
+			return
+		}
+
+		lastFormattedMessage = `De: ${nombre} (${email})\nTipo: ${activeSelectedProjectType || 'General'}\nAsunto: ${asunto}\n\nDetalles del proyecto:\n${descripcion}`
+
+		const mailto = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(lastFormattedMessage)}`
+		window.location.href = mailto
+
+		showFeedback(
+			'Se preparó tu cliente de correo con los datos. Si preferís respuesta más rápida, también podés enviarlo directo por WhatsApp o copiar el texto:',
+			'success',
+			lastFormattedMessage,
+			asunto
+		)
+	})
+
+	// Copy summary button
+	copySummaryBtn?.addEventListener('click', async () => {
+		if (!lastFormattedMessage) {
+			const nombre = nombreInput?.value || ''
+			const email = (form?.querySelector('#email') as HTMLInputElement)?.value || ''
+			const asunto = asuntoInput?.value || ''
+			const desc = descripcionInput?.value || ''
+			lastFormattedMessage = `De: ${nombre} (${email})\nAsunto: ${asunto}\n\n${desc}`
+		}
+
+		try {
+			await navigator.clipboard.writeText(lastFormattedMessage)
+			if (copySummaryText) {
+				const originalText = copySummaryText.textContent
+				copySummaryText.textContent = '¡Copiado!'
+				setTimeout(() => {
+					copySummaryText.textContent = originalText
+				}, 2000)
+			}
+		} catch (err) {
+			console.error('Error al copiar:', err)
+		}
+	})
+
+	// Social Cards Marquee — always moving, pauses on hover / keyboard focus
+	const carouselTrack = document.getElementById('social-carousel-track')
+	if (carouselTrack) {
+		const hoverZone = carouselTrack.closest('.social-section') ?? carouselTrack.closest('.carousel-fade')
+		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+
+		const cards = Array.from(carouselTrack.children) as HTMLElement[]
+		const repeat = Number(carouselTrack.dataset.marqueeRepeat) || 1
+		const originalCount = cards.length > repeat ? cards.length / repeat : 0
+		const firstCard = cards[0]
+		const cycleCard = originalCount > 0 ? cards[originalCount] : undefined
+		const cycleWidth = firstCard && cycleCard ? cycleCard.offsetLeft - firstCard.offsetLeft : 0
+
+		const SPEED = 40 // px per second
+		let position = 0
+		let frameId: number | null = null
+		let lastTime = 0
+		let isPaused = false
+
+		const render = () => {
+			carouselTrack.style.transform = `translate3d(-${position}px, 0, 0)`
+		}
+
+		const tick = (time: number) => {
+			if (!lastTime) lastTime = time
+			const delta = Math.min((time - lastTime) / 1000, 0.1)
+			lastTime = time
+
+			if (cycleWidth > 0) {
+				position = (position + SPEED * delta) % cycleWidth
+				render()
+			}
+
+			frameId = requestAnimationFrame(tick)
+		}
+
+		const startMarquee = () => {
+			if (frameId !== null || cycleWidth <= 0 || reduceMotion.matches) return
+			lastTime = 0
+			frameId = requestAnimationFrame(tick)
+		}
+
+		const stopMarquee = () => {
+			if (frameId !== null) cancelAnimationFrame(frameId)
+			frameId = null
+			lastTime = 0
+		}
+
+		const setPaused = (paused: boolean) => {
+			if (isPaused === paused) return
+			isPaused = paused
+			if (paused) stopMarquee()
+			else startMarquee()
+		}
+
+		stopCarouselScroll = () => {
+			isPaused = false
+			stopMarquee()
+		}
+
+		render()
+		startMarquee()
+
+		if (hoverZone) {
+			hoverZone.addEventListener('mouseenter', () => setPaused(true))
+			hoverZone.addEventListener('mouseleave', () => setPaused(false))
+			hoverZone.addEventListener('focusin', () => setPaused(true))
+			hoverZone.addEventListener('focusout', (event) => {
+				const next = (event as FocusEvent).relatedTarget
+				if (next instanceof Node && hoverZone.contains(next)) return
+				setPaused(false)
+			})
+		}
+	}
+}
+
+initContactPage()
+document.addEventListener('astro:page-load', initContactPage)
+document.addEventListener('astro:after-swap', initContactPage)
+document.addEventListener('astro:before-swap', () => {
+	if (stopCarouselScroll) {
+		stopCarouselScroll()
+		stopCarouselScroll = null
+	}
+	if (stopRevealObserver) {
+		stopRevealObserver()
+		stopRevealObserver = null
+	}
+})
+window.addEventListener('beforeunload', () => {
+	if (stopCarouselScroll) {
+		stopCarouselScroll()
+		stopCarouselScroll = null
+	}
+	if (stopRevealObserver) {
+		stopRevealObserver()
+		stopRevealObserver = null
+	}
+})
+</script>

@@ -123,7 +123,7 @@ type Language =
   | "Bengali"
   | string;
 
-interface Projects {
+export interface Projects {
   name: string;
   isActive: boolean;
   description: string;
@@ -142,4 +142,4 @@ interface References {
   reference: string;
 }
 
-type Highlight = Array<String>;
+type Highlight = Array<string>;

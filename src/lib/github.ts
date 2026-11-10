@@ -14,6 +14,10 @@ export interface GitHubRepo {
 	homepage?: string | null
 	pushed_at: string
 	archived?: boolean
+	stargazers_count: number
+	forks_count: number
+	language: string | null
+	topics?: string[]
 }
 
 interface GitHubLanguage {
@@ -35,6 +39,9 @@ export async function getRepoLanguages(repo: string): Promise<GitHubLanguage[]> 
 				}
 			}
 		)
+		if (!response.ok) {
+			throw new Error(`GitHub API respondió ${response.status} al pedir los lenguajes de ${repo}`)
+		}
 		const languages = await response.json()
 		return Object.entries(languages).map(([lang, size]) => ({
 			name: lang,
@@ -88,6 +95,9 @@ export async function fetchFirstImageFromReadme(repo: string): Promise<string | 
 				}
 			}
 		)
+		if (!response.ok) {
+			return null
+		}
 		const data = await response.json()
 
 		if (!data.download_url) {
@@ -123,38 +133,76 @@ function extractReadmeImages(readmeContent: string, repo: string): string[] {
 	return images
 }
 
-export async function getRepos(): Promise<GitHubRepo[]> {
-	try {
-		if (process.env.NODE_ENV === 'development') {
-			const repos = reposMock as GitHubRepo[]
-			return repos
-		}
-		const response = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos`, {
-			headers: {
-				Authorization: `token ${GITHUB_TOKEN}`
-			}
-		})
-		const repos = (await response.json()) as GitHubRepo[]
+// Memoizes the in-flight/resolved repos request so multiple consumers on the
+// same render (StatsSection, GitHubHighlights, etc.) share a single fetch
+// instead of triggering duplicate GitHub API calls.
+let reposCache: Promise<GitHubRepo[]> | null = null
 
-		const reposWithDetails = await Promise.all(
-			repos.map(async (repo: GitHubRepo) => {
-				const [languages, firstImage] = await Promise.all([
-					getRepoLanguages(repo.name),
-					fetchFirstImageFromReadme(repo.name)
-				])
-				return {
-					...repo,
-					languages,
-					firstImage
+export async function getRepos(): Promise<GitHubRepo[]> {
+	if (reposCache) return reposCache
+
+	reposCache = (async () => {
+		try {
+			if (process.env.NODE_ENV === 'development') {
+				const repos = reposMock as GitHubRepo[]
+				return repos
+			}
+			const response = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos`, {
+				headers: {
+					Authorization: `token ${GITHUB_TOKEN}`
 				}
 			})
-		)
+			if (!response.ok) {
+				throw new Error(`GitHub API respondió ${response.status} al pedir los repositorios`)
+			}
+			const repos = (await response.json()) as GitHubRepo[]
 
-		return reposWithDetails
-	} catch (error) {
-		console.error('Error al buscar los repositorios', error)
-		return []
-	}
+			const reposWithDetails = await Promise.all(
+				repos.map(async (repo: GitHubRepo) => {
+					const [languages, firstImage] = await Promise.all([
+						getRepoLanguages(repo.name),
+						fetchFirstImageFromReadme(repo.name)
+					])
+					return {
+						...repo,
+						languages,
+						firstImage
+					}
+				})
+			)
+
+			return reposWithDetails
+		} catch (error) {
+			console.error('Error al buscar los repositorios', error)
+			return []
+		}
+	})()
+
+	return reposCache
+}
+
+/**
+ * Returns the top `limit` repos to showcase, sorted by relevance:
+ * stargazers desc → forks desc → pushed_at desc → name asc. The full
+ * four-key tiebreak keeps ordering stable even when every repo reports
+ * zero stars/forks (e.g. local dev mock data).
+ */
+export async function getHighlightRepos(limit = 3): Promise<GitHubRepo[]> {
+	const repos = await getRepos()
+
+	const eligibleRepos = repos.filter((repo) => !repo.archived && !EXCLUDED_REPOS.includes(repo.name))
+
+	const sortedRepos = [...eligibleRepos].sort((a, b) => {
+		if (b.stargazers_count !== a.stargazers_count) return b.stargazers_count - a.stargazers_count
+		if (b.forks_count !== a.forks_count) return b.forks_count - a.forks_count
+
+		const pushedDiff = new Date(b.pushed_at).getTime() - new Date(a.pushed_at).getTime()
+		if (pushedDiff !== 0) return pushedDiff
+
+		return a.name.localeCompare(b.name)
+	})
+
+	return sortedRepos.slice(0, limit)
 }
 
 export async function getGithubProjects(): Promise<Project[]> {

@@ -84,6 +84,8 @@ export type Query = {
   document: DocumentNode;
   post: Post;
   postConnection: PostConnection;
+  project: Project;
+  projectConnection: ProjectConnection;
 };
 
 
@@ -122,8 +124,24 @@ export type QueryPostConnectionArgs = {
   filter?: InputMaybe<PostFilter>;
 };
 
+
+export type QueryProjectArgs = {
+  relativePath?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryProjectConnectionArgs = {
+  before?: InputMaybe<Scalars['String']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Float']['input']>;
+  last?: InputMaybe<Scalars['Float']['input']>;
+  sort?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<ProjectFilter>;
+};
+
 export type DocumentFilter = {
   post?: InputMaybe<PostFilter>;
+  project?: InputMaybe<ProjectFilter>;
 };
 
 export type DocumentConnectionEdges = {
@@ -163,7 +181,7 @@ export type CollectionDocumentsArgs = {
   folder?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type DocumentNode = Post | Folder;
+export type DocumentNode = Post | Project | Folder;
 
 export type Post = Node & Document & {
   __typename?: 'Post';
@@ -264,6 +282,75 @@ export type PostConnection = Connection & {
   edges?: Maybe<Array<Maybe<PostConnectionEdges>>>;
 };
 
+export type Project = Node & Document & {
+  __typename?: 'Project';
+  title: Scalars['String']['output'];
+  description: Scalars['String']['output'];
+  image?: Maybe<Scalars['String']['output']>;
+  imageUrl?: Maybe<Scalars['String']['output']>;
+  demo?: Maybe<Scalars['String']['output']>;
+  repository?: Maybe<Scalars['String']['output']>;
+  technologies?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  draft?: Maybe<Scalars['Boolean']['output']>;
+  featured?: Maybe<Scalars['Boolean']['output']>;
+  order?: Maybe<Scalars['Float']['output']>;
+  date: Scalars['String']['output'];
+  company?: Maybe<Scalars['String']['output']>;
+  client?: Maybe<Scalars['String']['output']>;
+  role?: Maybe<Scalars['String']['output']>;
+  status?: Maybe<Scalars['String']['output']>;
+  private?: Maybe<Scalars['Boolean']['output']>;
+  category?: Maybe<Scalars['String']['output']>;
+  badges?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  id: Scalars['ID']['output'];
+  _sys: SystemInfo;
+  _values: Scalars['JSON']['output'];
+};
+
+export type NumberFilter = {
+  lt?: InputMaybe<Scalars['Float']['input']>;
+  lte?: InputMaybe<Scalars['Float']['input']>;
+  gte?: InputMaybe<Scalars['Float']['input']>;
+  gt?: InputMaybe<Scalars['Float']['input']>;
+  eq?: InputMaybe<Scalars['Float']['input']>;
+  exists?: InputMaybe<Scalars['Boolean']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
+};
+
+export type ProjectFilter = {
+  title?: InputMaybe<StringFilter>;
+  description?: InputMaybe<StringFilter>;
+  image?: InputMaybe<ImageFilter>;
+  imageUrl?: InputMaybe<StringFilter>;
+  demo?: InputMaybe<StringFilter>;
+  repository?: InputMaybe<StringFilter>;
+  technologies?: InputMaybe<StringFilter>;
+  draft?: InputMaybe<BooleanFilter>;
+  featured?: InputMaybe<BooleanFilter>;
+  order?: InputMaybe<NumberFilter>;
+  date?: InputMaybe<DatetimeFilter>;
+  company?: InputMaybe<StringFilter>;
+  client?: InputMaybe<StringFilter>;
+  role?: InputMaybe<StringFilter>;
+  status?: InputMaybe<StringFilter>;
+  private?: InputMaybe<BooleanFilter>;
+  category?: InputMaybe<StringFilter>;
+  badges?: InputMaybe<StringFilter>;
+};
+
+export type ProjectConnectionEdges = {
+  __typename?: 'ProjectConnectionEdges';
+  cursor: Scalars['String']['output'];
+  node?: Maybe<Project>;
+};
+
+export type ProjectConnection = Connection & {
+  __typename?: 'ProjectConnection';
+  pageInfo: PageInfo;
+  totalCount: Scalars['Float']['output'];
+  edges?: Maybe<Array<Maybe<ProjectConnectionEdges>>>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   addPendingDocument: DocumentNode;
@@ -273,6 +360,8 @@ export type Mutation = {
   createFolder: DocumentNode;
   updatePost: Post;
   createPost: Post;
+  updateProject: Project;
+  createProject: Project;
 };
 
 
@@ -320,13 +409,27 @@ export type MutationCreatePostArgs = {
   params: PostMutation;
 };
 
+
+export type MutationUpdateProjectArgs = {
+  relativePath: Scalars['String']['input'];
+  params: ProjectMutation;
+};
+
+
+export type MutationCreateProjectArgs = {
+  relativePath: Scalars['String']['input'];
+  params: ProjectMutation;
+};
+
 export type DocumentUpdateMutation = {
   post?: InputMaybe<PostMutation>;
+  project?: InputMaybe<ProjectMutation>;
   relativePath?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type DocumentMutation = {
   post?: InputMaybe<PostMutation>;
+  project?: InputMaybe<ProjectMutation>;
 };
 
 export type PostMutation = {
@@ -341,7 +444,30 @@ export type PostMutation = {
   SButton?: InputMaybe<Scalars['JSON']['input']>;
 };
 
+export type ProjectMutation = {
+  title?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  image?: InputMaybe<Scalars['String']['input']>;
+  imageUrl?: InputMaybe<Scalars['String']['input']>;
+  demo?: InputMaybe<Scalars['String']['input']>;
+  repository?: InputMaybe<Scalars['String']['input']>;
+  technologies?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  draft?: InputMaybe<Scalars['Boolean']['input']>;
+  featured?: InputMaybe<Scalars['Boolean']['input']>;
+  order?: InputMaybe<Scalars['Float']['input']>;
+  date?: InputMaybe<Scalars['String']['input']>;
+  company?: InputMaybe<Scalars['String']['input']>;
+  client?: InputMaybe<Scalars['String']['input']>;
+  role?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
+  private?: InputMaybe<Scalars['Boolean']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  badges?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
 export type PostPartsFragment = { __typename: 'Post', title: string, description: string, heroImage: string, draft?: boolean | null, category: string, pubDate: string, updateDate?: string | null, tags: Array<string>, SButton?: any | null };
+
+export type ProjectPartsFragment = { __typename: 'Project', title: string, description: string, image?: string | null, imageUrl?: string | null, demo?: string | null, repository?: string | null, technologies?: Array<string | null> | null, draft?: boolean | null, featured?: boolean | null, order?: number | null, date: string, company?: string | null, client?: string | null, role?: string | null, status?: string | null, private?: boolean | null, category?: string | null, badges?: Array<string | null> | null };
 
 export type PostQueryVariables = Exact<{
   relativePath: Scalars['String']['input'];
@@ -362,6 +488,25 @@ export type PostConnectionQueryVariables = Exact<{
 
 export type PostConnectionQuery = { __typename?: 'Query', postConnection: { __typename?: 'PostConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'PostConnectionEdges', cursor: string, node?: { __typename: 'Post', id: string, title: string, description: string, heroImage: string, draft?: boolean | null, category: string, pubDate: string, updateDate?: string | null, tags: Array<string>, SButton?: any | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
 
+export type ProjectQueryVariables = Exact<{
+  relativePath: Scalars['String']['input'];
+}>;
+
+
+export type ProjectQuery = { __typename?: 'Query', project: { __typename: 'Project', id: string, title: string, description: string, image?: string | null, imageUrl?: string | null, demo?: string | null, repository?: string | null, technologies?: Array<string | null> | null, draft?: boolean | null, featured?: boolean | null, order?: number | null, date: string, company?: string | null, client?: string | null, role?: string | null, status?: string | null, private?: boolean | null, category?: string | null, badges?: Array<string | null> | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
+
+export type ProjectConnectionQueryVariables = Exact<{
+  before?: InputMaybe<Scalars['String']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Float']['input']>;
+  last?: InputMaybe<Scalars['Float']['input']>;
+  sort?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<ProjectFilter>;
+}>;
+
+
+export type ProjectConnectionQuery = { __typename?: 'Query', projectConnection: { __typename?: 'ProjectConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'ProjectConnectionEdges', cursor: string, node?: { __typename: 'Project', id: string, title: string, description: string, image?: string | null, imageUrl?: string | null, demo?: string | null, repository?: string | null, technologies?: Array<string | null> | null, draft?: boolean | null, featured?: boolean | null, order?: number | null, date: string, company?: string | null, client?: string | null, role?: string | null, status?: string | null, private?: boolean | null, category?: string | null, badges?: Array<string | null> | null, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
+
 export const PostPartsFragmentDoc = gql`
     fragment PostParts on Post {
   __typename
@@ -374,6 +519,29 @@ export const PostPartsFragmentDoc = gql`
   updateDate
   tags
   SButton
+}
+    `;
+export const ProjectPartsFragmentDoc = gql`
+    fragment ProjectParts on Project {
+  __typename
+  title
+  description
+  image
+  imageUrl
+  demo
+  repository
+  technologies
+  draft
+  featured
+  order
+  date
+  company
+  client
+  role
+  status
+  private
+  category
+  badges
 }
     `;
 export const PostDocument = gql`
@@ -433,6 +601,63 @@ export const PostConnectionDocument = gql`
   }
 }
     ${PostPartsFragmentDoc}`;
+export const ProjectDocument = gql`
+    query project($relativePath: String!) {
+  project(relativePath: $relativePath) {
+    ... on Document {
+      _sys {
+        filename
+        basename
+        hasReferences
+        breadcrumbs
+        path
+        relativePath
+        extension
+      }
+      id
+    }
+    ...ProjectParts
+  }
+}
+    ${ProjectPartsFragmentDoc}`;
+export const ProjectConnectionDocument = gql`
+    query projectConnection($before: String, $after: String, $first: Float, $last: Float, $sort: String, $filter: ProjectFilter) {
+  projectConnection(
+    before: $before
+    after: $after
+    first: $first
+    last: $last
+    sort: $sort
+    filter: $filter
+  ) {
+    pageInfo {
+      hasPreviousPage
+      hasNextPage
+      startCursor
+      endCursor
+    }
+    totalCount
+    edges {
+      cursor
+      node {
+        ... on Document {
+          _sys {
+            filename
+            basename
+            hasReferences
+            breadcrumbs
+            path
+            relativePath
+            extension
+          }
+          id
+        }
+        ...ProjectParts
+      }
+    }
+  }
+}
+    ${ProjectPartsFragmentDoc}`;
 export type Requester<C= {}> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R>
   export function getSdk<C>(requester: Requester<C>) {
     return {
@@ -441,6 +666,12 @@ export type Requester<C= {}> = <R, V>(doc: DocumentNode, vars?: V, options?: C) 
       },
     postConnection(variables?: PostConnectionQueryVariables, options?: C): Promise<{data: PostConnectionQuery, errors?: { message: string, locations: { line: number, column: number }[], path: string[] }[], variables: PostConnectionQueryVariables, query: string}> {
         return requester<{data: PostConnectionQuery, errors?: { message: string, locations: { line: number, column: number }[], path: string[] }[], variables: PostConnectionQueryVariables, query: string}, PostConnectionQueryVariables>(PostConnectionDocument, variables, options);
+      },
+    project(variables: ProjectQueryVariables, options?: C): Promise<{data: ProjectQuery, errors?: { message: string, locations: { line: number, column: number }[], path: string[] }[], variables: ProjectQueryVariables, query: string}> {
+        return requester<{data: ProjectQuery, errors?: { message: string, locations: { line: number, column: number }[], path: string[] }[], variables: ProjectQueryVariables, query: string}, ProjectQueryVariables>(ProjectDocument, variables, options);
+      },
+    projectConnection(variables?: ProjectConnectionQueryVariables, options?: C): Promise<{data: ProjectConnectionQuery, errors?: { message: string, locations: { line: number, column: number }[], path: string[] }[], variables: ProjectConnectionQueryVariables, query: string}> {
+        return requester<{data: ProjectConnectionQuery, errors?: { message: string, locations: { line: number, column: number }[], path: string[] }[], variables: ProjectConnectionQueryVariables, query: string}, ProjectConnectionQueryVariables>(ProjectConnectionDocument, variables, options);
       }
     };
   }

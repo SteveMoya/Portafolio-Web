@@ -2,14 +2,17 @@
 import Git from "@/icons/git.astro";
 import Arrow from "@/icons/Arrow.astro";
 import Section from "@/components/SectionPrint.astro";
+import type { Projects as ProjectEntry } from "@/cv";
 
 import { projects } from "@cv";
+
+const typedProjects = projects as ProjectEntry[];
 ---
 
 <Section className={`${Astro.props.className} section-animate`} title="Projects">
 	<div class="grid grid-cols-1 gap-3 md:grid-cols-2 print:flex print:flex-col">
 		{
-			projects.map(({ url, description, highlights, name, isActive, github }) => {
+			typedProjects.map(({ url, description, highlights, name, isActive, github }) => {
 				return (
 					<div role="contentinfo" class="grid-span-1 ring-skin-muted relative flex flex-col rounded-md bg-skin-button-muted/50 p-5 shadow-sm ring-1">
 						<div class="flex items-center justify-between space-x-[10px]">

@@ -1,0 +1,149 @@
+---
+import { Icon } from 'astro-icon/components'
+import BentoSvgBackground from './BentoSvgBackground.astro'
+
+interface Props {
+	title: string
+	description: string
+	href: string
+	icon: string
+	variant?: 'hero' | 'compact' | 'stack'
+	theme:
+		| 'rocket'
+		| 'timeline'
+		| 'code'
+		| 'education'
+		| 'identity'
+		| 'gallery'
+		| 'document'
+		| 'chat'
+		| 'post'
+		| 'archive'
+		| 'palette'
+		| 'marketing'
+		| 'tags'
+		| 'productivity'
+		| 'rss'
+	badge?: string
+	external?: boolean
+}
+
+const {
+	title,
+	description,
+	href,
+	icon,
+	variant = 'compact',
+	theme,
+	badge,
+	external = false
+} = Astro.props
+---
+
+<a
+	href={href}
+	target={external ? '_blank' : undefined}
+	rel={external ? 'noopener noreferrer' : undefined}
+	class={`group relative overflow-hidden transition-all duration-300 ${
+		variant === 'hero'
+			? 'flex h-[150px] min-h-[150px] max-h-[150px] flex-col justify-between rounded-2xl border border-white/[0.08] bg-[#121215]/80 p-4 hover:border-white/20 hover:bg-[#16161a] hover:shadow-xl hover:shadow-black/50'
+			: variant === 'stack'
+				? 'flex h-[68px] min-h-[68px] max-h-[68px] flex-1 items-center justify-between gap-3 rounded-xl border border-white/[0.08] bg-[#121215]/80 px-3.5 py-2.5 hover:border-white/20 hover:bg-[#16161a] hover:shadow-lg'
+				: 'flex h-[92px] min-h-[92px] max-h-[92px] flex-col justify-between rounded-xl border border-white/[0.08] bg-[#121215]/80 p-3 hover:border-white/20 hover:bg-[#16161a] hover:shadow-lg'
+	}`}
+>
+	<BentoSvgBackground theme={theme} variant={variant} />
+
+	{
+		variant === 'hero' && (
+			<>
+				<div class="relative z-10 flex items-center justify-between">
+					<div class="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/[0.06] text-white/80 transition-all duration-300 group-hover:scale-110 group-hover:border-[#c70039]/40 group-hover:bg-[#c70039]/15 group-hover:text-white">
+						<Icon name={icon} class="h-5 w-5" />
+					</div>
+					{badge && (
+						<span class="inline-flex items-center gap-1 rounded-full border border-[#c70039]/40 bg-[#c70039]/20 px-2 py-0.5 text-[10px] font-bold tracking-wider text-[#c70039] shadow-sm backdrop-blur-sm">
+							<span class="h-1.5 w-1.5 rounded-full bg-[#c70039] animate-pulse" />
+							{badge}
+						</span>
+					)}
+				</div>
+				<div class="relative z-10 min-w-0">
+					<span class="flex items-center gap-1 truncate text-[15px] font-semibold tracking-tight text-white transition-colors duration-200 group-hover:text-white">
+						{title}
+						{external && (
+							<Icon name="mdi:arrow-top-right" class="h-3.5 w-3.5 text-white/30 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-white" />
+						)}
+					</span>
+					<span class="card-desc mt-0.5 text-xs text-white/50 transition-colors duration-200 group-hover:text-white/75">
+						{description}
+					</span>
+				</div>
+			</>
+		)
+	}
+
+	{
+		variant === 'compact' && (
+			<>
+				<div class="relative z-10 flex items-start justify-between">
+					<span class="text-[13px] font-semibold tracking-tight text-white transition-colors duration-200 group-hover:text-white">
+						{title}
+					</span>
+					<Icon
+						name={icon}
+						class="h-4 w-4 text-white/40 transition-all duration-300 group-hover:scale-110 group-hover:text-[#c70039]"
+					/>
+				</div>
+				<div class="relative z-10 min-w-0">
+					<span class="card-desc-compact text-[11px] text-white/45 transition-colors duration-200 group-hover:text-white/70">
+						{description}
+					</span>
+				</div>
+			</>
+		)
+	}
+
+	{
+		variant === 'stack' && (
+			<>
+				<div class="relative z-10 min-w-0 flex-1">
+					<span class="flex items-center gap-1 truncate text-[13px] font-semibold tracking-tight text-white transition-colors duration-200 group-hover:text-white">
+						{title}
+						{external && (
+							<Icon name="mdi:arrow-top-right" class="h-3 w-3 shrink-0 text-white/30 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-white" />
+						)}
+					</span>
+					<span class="block truncate text-[11px] text-white/45 transition-colors duration-200 group-hover:text-white/70">
+						{description}
+					</span>
+				</div>
+				<div class="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/5 bg-white/[0.04] text-white/50 transition-all duration-300 group-hover:scale-105 group-hover:border-[#c70039]/30 group-hover:bg-[#c70039]/15 group-hover:text-[#c70039]">
+					<Icon name={icon} class="h-4 w-4" />
+				</div>
+			</>
+		)
+	}
+</a>
+
+<style>
+	.card-desc {
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		line-height: 1.35;
+		max-height: 2.7em;
+	}
+
+	.card-desc-compact {
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		line-height: 1.25;
+		max-height: 2.5em;
+	}
+</style>

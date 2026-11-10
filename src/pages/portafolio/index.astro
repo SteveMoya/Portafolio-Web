@@ -1,0 +1,376 @@
+---
+/**
+ * /portafolio — the work hub.
+ *
+ * Two registers, two views: this page is the *work* (projects with client, role
+ * and stack), and /gallery is the *visual archive* (photos and loose pieces).
+ * Before this split the hub linked to /portafolio/diseno and /portafolio/fotografia,
+ * two legacy galleries rendering the same collections as /gallery with a worse UI;
+ * those routes now 301 to /gallery (see astro.config.mjs).
+ *
+ * Covers are never hardcoded Cloudinary public ids: the featured block uses the
+ * project's own cover and the archive tiles use the newest asset of each
+ * collection, so a rename in the CMS cannot leave an image empty.
+ */
+import Layout from '@/layouts/Layout.astro'
+import PageHero from '@/components/ui/PageHero.astro'
+import SectionHeading from '@/components/ui/SectionHeading.astro'
+import SectionRail from '@/components/ui/SectionRail.astro'
+import ScrollReveals from '@/components/ui/ScrollReveals.astro'
+import WorkIndex from '@/components/sections/portfolio/WorkIndex.astro'
+import FlatFileHero from '@/components/sections/portfolio/FlatFileHero.astro'
+import { getAllProjects } from '@src/lib/projects'
+import { getCollection } from 'astro:content'
+import { formatDate } from '@src/utils'
+import { CATEGORY_LABELS, categoryOf } from '@src/utils/projectCategories'
+
+const pageTitle = 'Portafolio - Steve Moya Cepeda'
+const pageDescription =
+	'Proyectos de producto, web y datos: qué se construyó, con qué stack y para quién. El archivo visual vive en /gallery.'
+
+const allProjects = await getAllProjects()
+
+// The featured block must be a project that actually has a cover: an empty
+// cover in the largest element of the page is the worst place to fail.
+const featured =
+	allProjects.find((project) => project.featured && project.image) ??
+	allProjects.find((project) => project.image) ??
+	allProjects[0]
+
+const indexProjects = featured
+	? allProjects.filter((project) => project !== featured)
+	: allProjects
+
+const clientCount = new Set(
+	allProjects.map((project) => project.client ?? project.company).filter(Boolean)
+).size
+
+// Visual archive: same collections /gallery renders, counted here instead of
+// duplicated. The tiles point there.
+const fotografia = await getCollection('fotografia')
+const diseno = await getCollection('diseno')
+
+// Structural type on purpose: both Cloudinary collections expose `data` as
+// `any`, and the helper only needs the upload date and the cover URL.
+type ArchiveAsset = { data: { uploaded_at?: string | null; secure_url?: string } }
+
+const newestAsset = (assets: ArchiveAsset[]) =>
+	[...assets].sort(
+		(a, b) => new Date(b.data.uploaded_at ?? 0).getTime() - new Date(a.data.uploaded_at ?? 0).getTime()
+	)[0]
+
+const archiveTiles = [
+	{
+		label: 'Fotografía',
+		description: 'Sesiones, calle y documental. El archivo completo, filtrable.',
+		count: fotografia.length,
+		cover: newestAsset(fotografia)?.data.secure_url,
+		href: '/gallery'
+	},
+	{
+		label: 'Diseño gráfico',
+		description: 'Piezas, composición y experimentación visual.',
+		count: diseno.length,
+		cover: newestAsset(diseno)?.data.secure_url,
+		href: '/gallery'
+	}
+].filter((tile) => tile.count > 0)
+
+const archiveCount = fotografia.length + diseno.length
+
+const heroDrawers = [
+	{ label: 'Proyectos', count: allProjects.length },
+	{ label: 'Clientes', count: clientCount },
+	{ label: 'Archivo', count: archiveCount },
+	// Only tracked engagements count as "en curso": a GitHub repository is a
+	// project, but its `active` status means "not archived", not "work in progress".
+	{
+		label: 'En curso',
+		count: allProjects.filter((p) => p.source === 'content' && p.status === 'active').length
+	}
+]
+
+const railSections = [
+	{ id: 'casos', label: 'Caso destacado', index: '01' },
+	{ id: 'indice', label: 'Índice', index: '02' },
+	...(archiveTiles.length > 0 ? [{ id: 'archivo', label: 'Archivo', index: '03' }] : [])
+]
+
+const featuredTech = featured?.technologies.slice(0, 6) ?? []
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+	<!-- Reading progress: 2px, scroll-driven, no JS. -->
+	<div class="scroll-progress" aria-hidden="true"></div>
+
+	<ScrollReveals />
+
+	<div class="bg-[#0a0a0a]">
+		<PageHero
+			eyebrow="Portafolio"
+			lines={['Selección', 'De Trabajo']}
+			accentIndex={1}
+			align="start"
+			background="flatfile"
+			motion="scroll"
+			subtitle="Proyectos de producto, web y datos: qué se construyó, con qué stack y para quién. La fotografía y el diseño gráfico viven en el archivo visual, a un clic de aquí."
+			meta={[
+				`${allProjects.length} proyectos`,
+				`${clientCount} clientes`,
+				`${archiveCount} obras de archivo`
+			]}
+		>
+			<FlatFileHero slot="background" drawers={heroDrawers} />
+		</PageHero>
+
+		<SectionRail sections={railSections} label="Secciones del portafolio" />
+
+		{
+			featured && (
+				<section
+					id="casos"
+					class="scroll-mt-28 px-6 py-20 sm:px-10 lg:px-16 lg:py-24"
+					aria-labelledby="caso-destacado-title"
+				>
+					<div class="mx-auto max-w-[1400px]">
+						<SectionHeading
+							scrub
+							eyebrow="Caso destacado"
+							title={featured.title}
+							id="caso-destacado-title"
+						/>
+
+						<div class="grid items-center gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
+							<!-- Cover in a device frame: the same card anatomy as the index,
+							     one size up. -->
+							<a
+								href={featured.demo ?? featured.repository ?? '#indice'}
+								target={featured.demo || featured.repository ? '_blank' : undefined}
+								rel={featured.demo || featured.repository ? 'noopener noreferrer' : undefined}
+								data-reveal
+								class="dotted-card group relative block overflow-hidden rounded-2xl border border-white/10 bg-[#0a0a0a] shadow-[0_30px_80px_-30px_rgba(0,0,0,0.9)] transition-colors duration-300 hover:border-[#c70039]/60"
+								aria-label={`Abrir ${featured.title}`}
+							>
+								<span class="corner-tick corner-tick--tl" aria-hidden="true" />
+								<span class="corner-tick corner-tick--tr" aria-hidden="true" />
+								<span class="corner-tick corner-tick--bl" aria-hidden="true" />
+								<span class="corner-tick corner-tick--br" aria-hidden="true" />
+
+								<div class="flex items-center justify-between border-b border-white/10 bg-[#0d0d11] px-4 py-2.5">
+									<div class="flex items-center gap-1.5" aria-hidden="true">
+										<span class="h-2 w-2 rounded-full bg-white/20" />
+										<span class="h-2 w-2 rounded-full bg-white/20" />
+										<span class="h-2 w-2 rounded-full bg-white/20" />
+									</div>
+									<span class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">
+										{CATEGORY_LABELS[categoryOf(featured)] ?? featured.category}
+									</span>
+								</div>
+
+								<div
+									class="relative flex w-full items-center justify-center overflow-hidden bg-[#0b0b0d] p-6 sm:p-10"
+								>
+									<div
+										class="pointer-events-none absolute inset-0"
+										style="background: radial-gradient(ellipse 60% 60% at 50% 40%, rgba(199,0,57,0.14), transparent 70%);"
+										aria-hidden="true"
+									>
+									</div>
+									<img
+										src={featured.image}
+										alt={`Portada de ${featured.title}`}
+										class="relative h-auto w-auto max-h-[420px] max-w-full rounded-md object-contain shadow-[0_20px_60px_-20px_rgba(0,0,0,0.9)] transition-transform duration-[900ms] ease-out group-hover:scale-[1.02]"
+										loading="eager"
+										fetchpriority="high"
+										decoding="async"
+									/>
+								</div>
+							</a>
+
+							<div data-reveal style="--i:1">
+								<div class="mb-5 flex flex-wrap items-center gap-3">
+									<span class="inline-flex items-center gap-2 rounded-full border border-[#c70039]/50 bg-[#c70039]/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.28em] text-white">
+										<span class="h-1.5 w-1.5 rounded-full bg-[#c70039]" aria-hidden="true" />
+										{featured.status === 'active' ? 'En curso' : 'Entregado'}
+									</span>
+									<span class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">
+										{formatDate(featured.updatedAt)}
+									</span>
+								</div>
+
+								<p class="text-base leading-relaxed text-white/70 sm:text-lg">
+									{featured.description}
+								</p>
+
+								<dl class="mt-8 grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-white/10 bg-white/10 sm:grid-cols-3">
+									<div class="bg-[#0a0a0a] p-4">
+										<dt class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/35">Cliente</dt>
+										<dd class="mt-1.5 text-sm text-white/80">
+											{featured.client ?? featured.company ?? 'Proyecto propio'}
+										</dd>
+									</div>
+									<div class="bg-[#0a0a0a] p-4">
+										<dt class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/35">Rol</dt>
+										<dd class="mt-1.5 text-sm text-white/80">{featured.role ?? 'Desarrollo completo'}</dd>
+									</div>
+									<div class="bg-[#0a0a0a] p-4">
+										<dt class="text-[10px] font-bold uppercase tracking-[0.3em] text-white/35">Stack</dt>
+										<dd class="mt-1.5 text-sm text-white/80">
+											{featured.technologies.length} tecnologías
+										</dd>
+									</div>
+								</dl>
+
+								<ul class="mt-6 flex flex-wrap gap-2">
+									{featuredTech.map((tech) => (
+										<li class="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-[11px] text-white/60">
+											{tech.name}
+										</li>
+									))}
+								</ul>
+
+								<div class="mt-8 flex flex-wrap items-center gap-3">
+									{featured.demo && (
+										<a
+											href={featured.demo}
+											target="_blank"
+											rel="noopener noreferrer"
+											class="inline-flex items-center gap-2 rounded-lg border border-[#c70039] bg-[#c70039] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.2em] text-white transition-all duration-300 hover:shadow-[0_0_25px_rgba(199,0,57,0.5)] active:scale-[0.98]"
+										>
+											Abrir sitio <span aria-hidden="true">→</span>
+										</a>
+									)}
+									<a
+										href="#indice"
+										class="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.2em] text-white/80 transition-colors duration-200 hover:border-white/30 hover:text-white"
+									>
+										Ver todos los proyectos
+									</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+			)
+		}
+
+		<!-- Project index: one shared implementation with /portafolio/webs. -->
+		<section
+			id="indice"
+			class="scroll-mt-28 border-t border-white/10 px-6 py-20 sm:px-10 lg:px-16 lg:py-24"
+			aria-labelledby="indice-title"
+		>
+			<div class="mx-auto max-w-[1400px]">
+				<SectionHeading
+					scrub
+					eyebrow="Índice"
+					title="Los proyectos"
+					id="indice-title"
+					description="Cada tarjeta abre su demo o su código. Filtrá por tipo, estado o texto, y recorré el índice de nueve en nueve."
+				/>
+
+				<WorkIndex projects={indexProjects} />
+			</div>
+		</section>
+
+		<!-- Bridge to the visual archive. Two tiles, not two duplicated galleries. -->
+		{
+			archiveTiles.length > 0 && (
+				<section
+					id="archivo"
+					class="scroll-mt-28 border-t border-white/10 px-6 py-20 sm:px-10 lg:px-16 lg:py-24"
+					aria-labelledby="archivo-title"
+				>
+					<div class="mx-auto max-w-[1400px]">
+						<SectionHeading
+							scrub
+							eyebrow="Archivo"
+							title="Fotografía y diseño"
+							id="archivo-title"
+							description="El trabajo visual vive en la galería: un archivo abierto, ordenado y filtrable. Acá solo la puerta."
+						/>
+
+						<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+							{archiveTiles.map((tile, index) => (
+								<a
+									href={tile.href}
+									data-reveal
+									style={`--i:${index}`}
+									class="group relative block aspect-[16/10] overflow-hidden rounded-2xl border border-white/10 bg-[#0a0a0a] transition-colors duration-300 hover:border-[#c70039]/60"
+								>
+									{tile.cover && (
+										<img
+											src={tile.cover}
+											alt={`Última pieza de ${tile.label}`}
+											class="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-105"
+											loading="lazy"
+											decoding="async"
+										/>
+									)}
+									<div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+
+									<div class="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-6 sm:p-8">
+										<div>
+											<p class="mb-1 text-[10px] font-bold uppercase tracking-[0.3em] text-[#c70039]">
+												{tile.count} obras
+											</p>
+											<h3 class="font-poppins text-2xl font-black uppercase tracking-tight text-white sm:text-3xl">
+												{tile.label}
+											</h3>
+											<p class="mt-1 max-w-sm text-sm leading-relaxed text-white/60">
+												{tile.description}
+											</p>
+										</div>
+										<span
+											aria-hidden="true"
+											class="mb-1 shrink-0 text-2xl text-white/50 transition-all duration-300 group-hover:translate-x-1 group-hover:text-[#c70039]"
+										>
+											→
+										</span>
+									</div>
+								</a>
+							))}
+						</div>
+
+						<a
+							href="/blog/category/marketing/1"
+							class="mt-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-white/50 transition-colors duration-200 hover:text-[#c70039]"
+						>
+							Casos de marketing en el blog
+							<span aria-hidden="true">→</span>
+						</a>
+					</div>
+				</section>
+			)
+		}
+
+		<!-- Closing CTA: same rhythm the other views end with. -->
+		<section class="border-t border-white/10 px-6 py-20 sm:px-10 lg:px-16 lg:py-28">
+			<div class="mx-auto flex max-w-[1400px] flex-col items-start justify-between gap-8 sm:flex-row sm:items-end">
+				<div>
+					<p class="mb-4 text-[10px] font-bold uppercase tracking-[0.3em] text-white/40">
+						Siguiente paso
+					</p>
+					<h2 class="font-poppins text-4xl font-black uppercase leading-[0.9] tracking-tight text-white sm:text-5xl lg:text-6xl">
+						¿Tenés un<br /><span class="text-shiny-accent">proyecto</span> en mente?
+					</h2>
+				</div>
+				<a
+					href="/contact"
+					class="inline-flex items-center gap-2 rounded-lg border border-[#c70039] bg-[#c70039] px-6 py-3 text-xs font-bold uppercase tracking-[0.2em] text-white transition-all duration-300 hover:shadow-[0_0_25px_rgba(199,0,57,0.5)] active:scale-[0.98]"
+				>
+					Hablemos <span aria-hidden="true">→</span>
+				</a>
+			</div>
+		</section>
+	</div>
+</Layout>
+
+<script>
+	import { initTiltCards } from '@src/utils/tilt3d'
+
+	// The filter behaviour lives inside WorkIndex.astro: one implementation for
+	// this page and the full project list.
+	initTiltCards()
+	document.addEventListener('astro:after-swap', () => initTiltCards())
+</script>

@@ -1,0 +1,694 @@
+---
+import { Icon } from 'astro-icon/components'
+
+const phases = [
+	{
+		id: 'brief',
+		num: '01',
+		title: 'Brief & Estrategia',
+		shortTitle: 'Brief',
+		tagline: 'Definición de objetivos, audiencia y hoja de ruta',
+		deliverables: ['Auditoría técnica y de negocio', 'Alcance y estimación de tiempos', 'Benchmark competitivo'],
+		color: '#c70039'
+	},
+	{
+		id: 'design',
+		num: '02',
+		title: 'Diseño & UI/UX',
+		shortTitle: 'UI/UX',
+		tagline: 'Arquitectura de información y prototipado de alta fidelidad',
+		deliverables: ['Wireframes interactivos', 'Sistema de diseño y tokens', 'Optimización de flujos de usuario'],
+		color: '#e84c5f'
+	},
+	{
+		id: 'dev',
+		num: '03',
+		title: 'Desarrollo Full-Stack',
+		shortTitle: 'Dev',
+		tagline: 'Ingeniería moderna con Astro, React, TypeScript y Tailwind',
+		deliverables: ['Arquitectura modular y escalable', 'Integración de CMS y APIs', 'Animaciones fluidas a 60 FPS'],
+		color: '#ff6b7a'
+	},
+	{
+		id: 'seo',
+		num: '04',
+		title: 'SEO & Performance',
+		shortTitle: 'SEO',
+		tagline: 'Velocidad extrema, accesibilidad y posicionamiento orgánico',
+		deliverables: ['Lighthouse score 95-100', 'Estructura semántica Schema.org', 'Indexación y CDN global'],
+		color: '#ff8a95'
+	},
+	{
+		id: 'launch',
+		num: '05',
+		title: 'Lanzamiento & Escala',
+		shortTitle: 'Deploy',
+		tagline: 'Puesta en producción y soporte evolutivo continuo',
+		deliverables: ['Despliegue automatizado CI/CD', 'Monitoreo de conversión', 'Mantenimiento continuo'],
+		color: '#ffa8b0'
+	}
+]
+---
+
+<div class="relative w-full overflow-hidden rounded-2xl border border-white/10 bg-[#0d0d0d]/90 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:border-white/20">
+	{/* Top Telemetry / Status Bar */}
+	<div class="flex items-center justify-between border-b border-white/10 bg-white/[0.02] px-5 py-3">
+		<div class="flex items-center gap-2">
+			<span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+			<span class="text-xs font-medium tracking-wide text-white/80">Disponible para proyectos</span>
+		</div>
+
+		<div class="flex items-center gap-2">
+			<button
+				id="btn-rotate-toggle"
+				type="button"
+				class="flex items-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-white/70 transition-colors hover:border-[#c70039]/40 hover:bg-white/10 hover:text-white"
+				title="Pausar o reanudar rotación 3D"
+				aria-label="Pausar o reanudar rotación 3D"
+			>
+				<Icon name="mdi:rotate-3d" class="h-3.5 w-3.5 text-[#c70039]" />
+				<span id="rotate-label">Pausar</span>
+			</button>
+
+			<button
+				id="btn-reset-view"
+				type="button"
+				class="flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2 py-1 text-xs text-white/70 transition-colors hover:border-[#c70039]/40 hover:bg-white/10 hover:text-white"
+				title="Restablecer ángulo de cámara"
+				aria-label="Restablecer cámara 3D"
+			>
+				<Icon name="mdi:refresh" class="h-3.5 w-3.5 text-white/60" />
+			</button>
+		</div>
+	</div>
+
+	{/* 3D WebGL Canvas Viewport */}
+	<div class="relative h-[340px] sm:h-[400px] w-full cursor-grab active:cursor-grabbing select-none" id="webgl-stage">
+		<canvas id="three-canvas" class="h-full w-full block"></canvas>
+
+		{/* Instruction overlay badge */}
+		<div class="pointer-events-none absolute left-4 top-4 flex items-center gap-2 rounded-full border border-white/10 bg-black/70 px-3 py-1 text-xs text-white/70 backdrop-blur-md">
+			<Icon name="mdi:cursor-move" class="h-3.5 w-3.5 text-[#c70039]" />
+			<span>Arrastrá para rotar · Clic en un nodo</span>
+		</div>
+
+		{/* 3D Hover Tooltip */}
+		<div
+			id="node-tooltip"
+			class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 transition-opacity duration-200 z-20 rounded-lg border border-[#c70039]/50 bg-black/90 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-md shadow-xl"
+		>
+			<span id="node-tooltip-text">Fase 1</span>
+		</div>
+	</div>
+
+	{/* Phase Selector & Interactive HUD */}
+	<div class="border-t border-white/10 bg-[#080808]/90 p-5">
+		{/* Phase Tabs */}
+		<div class="flex items-center justify-between gap-1.5 overflow-x-auto pb-2 scrollbar-none" role="tablist" aria-label="Fases del proyecto">
+			{
+				phases.map((phase, idx) => (
+					<button
+						type="button"
+						role="tab"
+						data-phase-index={idx}
+						data-phase-id={phase.id}
+						aria-selected={idx === 0 ? 'true' : 'false'}
+						class={`phase-tab group flex flex-1 items-center justify-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-all duration-200 whitespace-nowrap ${
+							idx === 0
+								? 'border-[#c70039] bg-[#c70039]/20 text-white shadow-sm'
+								: 'border-white/10 bg-white/[0.03] text-white/70 hover:border-white/25 hover:text-white'
+						}`}
+					>
+						<span class="text-xs font-bold text-[#c70039] group-hover:text-white transition-colors">{phase.num}</span>
+						<span>{phase.shortTitle}</span>
+					</button>
+				))
+			}
+		</div>
+
+		{/* Active Phase Info Section (flattened, no nested card) */}
+		<div id="phase-card" class="mt-4 pt-3 border-t border-white/10 transition-all">
+			<div class="flex items-start justify-between gap-3">
+				<div>
+					<span id="phase-badge" class="inline-block rounded border border-[#c70039]/40 bg-[#c70039]/10 px-2 py-0.5 text-xs font-semibold tracking-wider text-[#e84c5f]">
+						FASE 01
+					</span>
+					<h3 id="phase-title" class="mt-1 text-base font-bold text-white">
+						{phases[0].title}
+					</h3>
+					<p id="phase-desc" class="mt-0.5 text-xs leading-relaxed text-white/75">
+						{phases[0].tagline}
+					</p>
+				</div>
+			</div>
+
+			<div class="mt-3 border-t border-white/10 pt-3">
+				<p class="text-xs font-semibold uppercase tracking-wider text-white/60 mb-2">Entregables clave:</p>
+				<ul id="phase-deliverables" class="space-y-1.5 text-xs text-white/80">
+					{phases[0].deliverables.map((item) => (
+						<li class="flex items-center gap-2">
+							<span class="h-1.5 w-1.5 rounded-full bg-[#c70039]"></span>
+							<span>{item}</span>
+						</li>
+					))}
+				</ul>
+			</div>
+
+			{/* Interactive CTA to populate and focus contact form */}
+			<button
+				id="btn-apply-phase"
+				type="button"
+				class="mt-4 flex w-full items-center justify-center gap-2 rounded-lg border border-[#c70039]/50 bg-[#c70039]/25 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition-all duration-300 hover:border-[#c70039] hover:bg-[#c70039] active:scale-[0.99]"
+			>
+				<Icon name="mdi:sparkles" class="h-4 w-4 text-[#ff6b7a]" />
+				<span>Incluir esta fase en mi propuesta</span>
+				<Icon name="mdi:arrow-down" class="h-3.5 w-3.5 opacity-70" />
+			</button>
+		</div>
+	</div>
+</div>
+
+<script>
+	import * as THREE from 'three'
+
+	const phasesData = [
+		{
+			id: 'brief',
+			num: '01',
+			title: 'Brief & Estrategia',
+			shortTitle: 'Brief',
+			tagline: 'Definición de objetivos, audiencia y hoja de ruta',
+			deliverables: ['Auditoría técnica y de negocio', 'Alcance y estimación de tiempos', 'Benchmark competitivo'],
+			color: 0xc70039
+		},
+		{
+			id: 'design',
+			num: '02',
+			title: 'Diseño & UI/UX',
+			shortTitle: 'UI/UX',
+			tagline: 'Arquitectura de información y prototipado de alta fidelidad',
+			deliverables: ['Wireframes interactivos', 'Sistema de diseño y tokens', 'Optimización de flujos de usuario'],
+			color: 0xe84c5f
+		},
+		{
+			id: 'dev',
+			num: '03',
+			title: 'Desarrollo Full-Stack',
+			shortTitle: 'Dev',
+			tagline: 'Ingeniería moderna con Astro, React, TypeScript y Tailwind',
+			deliverables: ['Arquitectura modular y escalable', 'Integración de CMS y APIs', 'Animaciones fluidas a 60 FPS'],
+			color: 0xff6b7a
+		},
+		{
+			id: 'seo',
+			num: '04',
+			title: 'SEO & Performance',
+			shortTitle: 'SEO',
+			tagline: 'Velocidad extrema, accesibilidad y posicionamiento orgánico',
+			deliverables: ['Lighthouse score 95-100', 'Estructura semántica Schema.org', 'Indexación y CDN global'],
+			color: 0xff8a95
+		},
+		{
+			id: 'launch',
+			num: '05',
+			title: 'Lanzamiento & Escala',
+			shortTitle: 'Deploy',
+			tagline: 'Puesta en producción y soporte evolutivo continuo',
+			deliverables: ['Despliegue automatizado CI/CD', 'Monitoreo de conversión', 'Mantenimiento continuo'],
+			color: 0xffa8b0
+		}
+	]
+
+	let cleanupContact3D: (() => void) | null = null
+
+	function setupContact3D() {
+		if (cleanupContact3D) {
+			cleanupContact3D()
+			cleanupContact3D = null
+		}
+
+		const canvas = document.getElementById('three-canvas') as HTMLCanvasElement | null
+		const stage = document.getElementById('webgl-stage') as HTMLElement | null
+		if (!canvas || !stage) return
+
+		const tooltip = document.getElementById('node-tooltip')
+		const tooltipText = document.getElementById('node-tooltip-text')
+		const rotateToggle = document.getElementById('btn-rotate-toggle')
+		const rotateLabel = document.getElementById('rotate-label')
+		const resetViewBtn = document.getElementById('btn-reset-view')
+		const applyPhaseBtn = document.getElementById('btn-apply-phase')
+
+		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+		let isAutoRotating = !prefersReducedMotion
+
+		// Scene, Camera, Renderer
+		const scene = new THREE.Scene()
+		const camera = new THREE.PerspectiveCamera(45, stage.clientWidth / stage.clientHeight, 0.1, 100)
+		camera.position.set(0, 0, 8.5)
+
+		const renderer = new THREE.WebGLRenderer({
+			canvas,
+			alpha: true,
+			antialias: true,
+			powerPreference: 'high-performance'
+		})
+		renderer.setSize(stage.clientWidth, stage.clientHeight)
+		renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
+		// Lights
+		const ambientLight = new THREE.AmbientLight(0xffffff, 0.7)
+		scene.add(ambientLight)
+
+		const pointLight = new THREE.PointLight(0xc70039, 4, 20)
+		pointLight.position.set(2, 3, 4)
+		scene.add(pointLight)
+
+		const secondaryLight = new THREE.PointLight(0xff6b7a, 2, 15)
+		secondaryLight.position.set(-3, -2, -2)
+		scene.add(secondaryLight)
+
+		// Root pivot for the entire 3D constellation
+		const rootGroup = new THREE.Group()
+		scene.add(rootGroup)
+
+		// Outer Geodesic Icosahedron Wireframe
+		const icoGeo = new THREE.IcosahedronGeometry(2.2, 1)
+		const wireGeo = new THREE.WireframeGeometry(icoGeo)
+		const wireMat = new THREE.LineBasicMaterial({
+			color: 0xc70039,
+			transparent: true,
+			opacity: 0.45
+		})
+		const wireMesh = new THREE.LineSegments(wireGeo, wireMat)
+		rootGroup.add(wireMesh)
+
+		// Inner Solid Crystalline Core
+		const coreGeo = new THREE.OctahedronGeometry(1.1, 0)
+		const coreMat = new THREE.MeshStandardMaterial({
+			color: 0x141414,
+			emissive: 0xc70039,
+			emissiveIntensity: 0.35,
+			roughness: 0.2,
+			metalness: 0.9,
+			wireframe: false
+		})
+		const coreMesh = new THREE.Mesh(coreGeo, coreMat)
+		rootGroup.add(coreMesh)
+
+		// Inner Core Wireframe Accent
+		const innerWireMat = new THREE.LineBasicMaterial({
+			color: 0xff6b7a,
+			transparent: true,
+			opacity: 0.6
+		})
+		const innerWireMesh = new THREE.LineSegments(new THREE.WireframeGeometry(coreGeo), innerWireMat)
+		coreMesh.add(innerWireMesh)
+
+		// Orbit Ring
+		const orbitRadius = 3.2
+		const orbitPts: THREE.Vector3[] = []
+		const segments = 64
+		for (let i = 0; i <= segments; i++) {
+			const theta = (i / segments) * Math.PI * 2
+			orbitPts.push(new THREE.Vector3(Math.cos(theta) * orbitRadius, 0, Math.sin(theta) * orbitRadius))
+		}
+		const orbitGeo = new THREE.BufferGeometry().setFromPoints(orbitPts)
+		const orbitMat = new THREE.LineBasicMaterial({
+			color: 0xffffff,
+			transparent: true,
+			opacity: 0.12
+		})
+		const orbitLine = new THREE.Line(orbitGeo, orbitMat)
+		orbitLine.rotation.x = Math.PI * 0.2
+		rootGroup.add(orbitLine)
+
+		// Orbiting Phase Nodes
+		const nodeGroup = new THREE.Group()
+		rootGroup.add(nodeGroup)
+
+		const nodeMeshes: THREE.Mesh[] = []
+		const nodeHitTargets: THREE.Mesh[] = []
+
+		phasesData.forEach((phase, index) => {
+			const angle = (index / phasesData.length) * Math.PI * 2
+			const x = Math.cos(angle) * orbitRadius
+			const z = Math.sin(angle) * orbitRadius
+			const y = Math.sin(angle * 2) * 0.6
+
+			// Visual sphere
+			const nodeGeo = new THREE.SphereGeometry(0.24, 16, 16)
+			const nodeMat = new THREE.MeshStandardMaterial({
+				color: phase.color,
+				emissive: phase.color,
+				emissiveIntensity: index === 0 ? 0.9 : 0.4,
+				roughness: 0.2,
+				metalness: 0.8
+			})
+			const nodeMesh = new THREE.Mesh(nodeGeo, nodeMat)
+			nodeMesh.position.set(x, y, z)
+			nodeMesh.userData = { index, phase }
+			nodeGroup.add(nodeMesh)
+			nodeMeshes.push(nodeMesh)
+
+			// Invisible slightly larger hit sphere for easier raycasting
+			const hitGeo = new THREE.SphereGeometry(0.48, 8, 8)
+			const hitMat = new THREE.MeshBasicMaterial({ visible: false })
+			const hitMesh = new THREE.Mesh(hitGeo, hitMat)
+			hitMesh.position.set(x, y, z)
+			hitMesh.userData = { index, phase }
+			nodeGroup.add(hitMesh)
+			nodeHitTargets.push(hitMesh)
+
+			// Glow ring around node
+			const haloGeo = new THREE.RingGeometry(0.32, 0.38, 24)
+			const haloMat = new THREE.MeshBasicMaterial({
+				color: phase.color,
+				side: THREE.DoubleSide,
+				transparent: true,
+				opacity: index === 0 ? 0.8 : 0.25
+			})
+			const halo = new THREE.Mesh(haloGeo, haloMat)
+			halo.userData = { isHalo: true }
+			nodeMesh.add(halo)
+		})
+
+		// Background Particle Field
+		const particleCount = 140
+		const particleGeo = new THREE.BufferGeometry()
+		const particlePositions = new Float32Array(particleCount * 3)
+
+		for (let i = 0; i < particleCount * 3; i += 3) {
+			particlePositions[i] = (Math.random() - 0.5) * 16
+			particlePositions[i + 1] = (Math.random() - 0.5) * 14
+			particlePositions[i + 2] = (Math.random() - 0.5) * 12
+		}
+
+		particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3))
+		const particleMat = new THREE.PointsMaterial({
+			color: 0xffffff,
+			size: 0.05,
+			transparent: true,
+			opacity: 0.35
+		})
+		const particles = new THREE.Points(particleGeo, particleMat)
+		scene.add(particles)
+
+		// Interaction & Gyroscope State
+		let activePhaseIndex = 0
+		let targetRotationX = 0.2
+		let targetRotationY = 0
+		let currentRotationX = 0.2
+		let currentRotationY = 0
+
+		let isDragging = false
+		let previousMousePosition = { x: 0, y: 0 }
+		const raycaster = new THREE.Raycaster()
+		const mouse = new THREE.Vector2(-999, -999)
+
+		// UI update helper
+		const updateActivePhaseUI = (index: number) => {
+			activePhaseIndex = index
+			const phase = phasesData[index]
+
+			// Highlight active node in 3D
+			nodeMeshes.forEach((mesh, idx) => {
+				const mat = mesh.material as THREE.MeshStandardMaterial
+				const halo = mesh.children.find((c) => c.userData.isHalo) as THREE.Mesh | undefined
+				const haloMat = halo?.material as THREE.MeshBasicMaterial | undefined
+
+				if (idx === index) {
+					mat.emissiveIntensity = 1.0
+					mesh.scale.set(1.3, 1.3, 1.3)
+					if (haloMat) haloMat.opacity = 0.9
+				} else {
+					mat.emissiveIntensity = 0.35
+					mesh.scale.set(1, 1, 1)
+					if (haloMat) haloMat.opacity = 0.2
+				}
+			})
+
+			// Update tabs
+			const tabs = document.querySelectorAll<HTMLButtonElement>('.phase-tab')
+			tabs.forEach((tab) => {
+				const tabIdx = Number(tab.dataset.phaseIndex)
+				if (tabIdx === index) {
+					tab.setAttribute('aria-selected', 'true')
+					tab.classList.add('border-[#c70039]', 'bg-[#c70039]/20', 'text-white', 'shadow-sm')
+					tab.classList.remove('border-white/10', 'bg-white/[0.03]', 'text-white/70')
+				} else {
+					tab.setAttribute('aria-selected', 'false')
+					tab.classList.remove('border-[#c70039]', 'bg-[#c70039]/20', 'text-white', 'shadow-sm')
+					tab.classList.add('border-white/10', 'bg-white/[0.03]', 'text-white/70')
+				}
+			})
+
+			// Update phase card content
+			const badge = document.getElementById('phase-badge')
+			const title = document.getElementById('phase-title')
+			const desc = document.getElementById('phase-desc')
+			const deliverables = document.getElementById('phase-deliverables')
+
+			if (badge) badge.textContent = `FASE ${phase.num}`
+			if (title) title.textContent = phase.title
+			if (desc) desc.textContent = phase.tagline
+			if (deliverables) {
+				deliverables.innerHTML = phase.deliverables
+					.map((item) => `<li class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-[#c70039]"></span><span>${item}</span></li>`)
+					.join('')
+			}
+
+			// Dispatch custom event for contact form integration
+			window.dispatchEvent(
+				new CustomEvent('steve:phase-selected', {
+					detail: {
+						phaseId: phase.id,
+						phaseTitle: phase.title,
+						phaseNum: phase.num
+					}
+				})
+			)
+		}
+
+		// Tab buttons click
+		document.querySelectorAll<HTMLButtonElement>('.phase-tab').forEach((tab) => {
+			tab.addEventListener('click', () => {
+				const idx = Number(tab.dataset.phaseIndex)
+				updateActivePhaseUI(idx)
+
+				// Gently rotate towards the selected node angle
+				const targetAngle = -(idx / phasesData.length) * Math.PI * 2
+				targetRotationY = targetAngle
+			})
+		})
+
+		// Apply Phase CTA button
+		applyPhaseBtn?.addEventListener('click', () => {
+			const phase = phasesData[activePhaseIndex]
+			window.dispatchEvent(
+				new CustomEvent('steve:apply-phase-cta', {
+					detail: { phase }
+				})
+			)
+		})
+
+		// Rotate toggle button
+		rotateToggle?.addEventListener('click', () => {
+			isAutoRotating = !isAutoRotating
+			if (rotateLabel) rotateLabel.textContent = isAutoRotating ? 'Pausar' : 'Rotar'
+		})
+
+		// Reset view button
+		resetViewBtn?.addEventListener('click', () => {
+			targetRotationX = 0.2
+			targetRotationY = 0
+			currentRotationX = 0.2
+			currentRotationY = 0
+			camera.position.set(0, 0, 8.5)
+		})
+
+		// Pointer & Mouse Interaction
+		const getCanvasCoordinates = (e: MouseEvent | Touch) => {
+			const rect = canvas.getBoundingClientRect()
+			return {
+				x: ((e.clientX - rect.left) / rect.width) * 2 - 1,
+				y: -((e.clientY - rect.top) / rect.height) * 2 + 1,
+				clientX: e.clientX,
+				clientY: e.clientY
+			}
+		}
+
+		stage.addEventListener('mousedown', (e) => {
+			isDragging = true
+			previousMousePosition = { x: e.clientX, y: e.clientY }
+		})
+
+		const onMouseUp = () => {
+			isDragging = false
+		}
+		window.addEventListener('mouseup', onMouseUp)
+
+		stage.addEventListener('mousemove', (e) => {
+			const coords = getCanvasCoordinates(e)
+			mouse.x = coords.x
+			mouse.y = coords.y
+
+			if (isDragging) {
+				const deltaX = e.clientX - previousMousePosition.x
+				const deltaY = e.clientY - previousMousePosition.y
+				targetRotationY += deltaX * 0.008
+				targetRotationX += deltaY * 0.008
+				previousMousePosition = { x: e.clientX, y: e.clientY }
+			} else {
+				// Parallax tilt when not dragging
+				targetRotationX = 0.2 + mouse.y * 0.15
+			}
+
+			// Raycasting against hit targets
+			raycaster.setFromCamera(mouse, camera)
+			const intersects = raycaster.intersectObjects(nodeHitTargets)
+
+			if (intersects.length > 0) {
+				const target = intersects[0].object
+				const phaseIndex = target.userData.index as number
+				const phase = phasesData[phaseIndex]
+
+				stage.style.cursor = 'pointer'
+				if (tooltip && tooltipText) {
+					tooltipText.textContent = `${phase.num} · ${phase.shortTitle}`
+					tooltip.style.left = `${e.clientX - stage.getBoundingClientRect().left}px`
+					tooltip.style.top = `${e.clientY - stage.getBoundingClientRect().top - 36}px`
+					tooltip.classList.remove('opacity-0')
+				}
+			} else {
+				stage.style.cursor = isDragging ? 'grabbing' : 'grab'
+				if (tooltip) {
+					tooltip.classList.add('opacity-0')
+				}
+			}
+		})
+
+		stage.addEventListener('click', () => {
+			raycaster.setFromCamera(mouse, camera)
+			const intersects = raycaster.intersectObjects(nodeHitTargets)
+			if (intersects.length > 0) {
+				const phaseIndex = intersects[0].object.userData.index as number
+				updateActivePhaseUI(phaseIndex)
+			}
+		})
+
+		// Touch Support for mobile
+		stage.addEventListener(
+			'touchstart',
+			(e) => {
+				if (e.touches.length === 1) {
+					isDragging = true
+					previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+				}
+			},
+			{ passive: true }
+		)
+
+		stage.addEventListener(
+			'touchmove',
+			(e) => {
+				if (isDragging && e.touches.length === 1) {
+					const deltaX = e.touches[0].clientX - previousMousePosition.x
+					const deltaY = e.touches[0].clientY - previousMousePosition.y
+					targetRotationY += deltaX * 0.008
+					targetRotationX += deltaY * 0.008
+					previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+				}
+			},
+			{ passive: true }
+		)
+
+		stage.addEventListener('touchend', () => {
+			isDragging = false
+		})
+
+		// Resize Observer for robust responsive layout
+		const resizeObserver = new ResizeObserver(() => {
+			const width = stage.clientWidth
+			const height = stage.clientHeight
+			if (width === 0 || height === 0) return
+
+			camera.aspect = width / height
+			camera.updateProjectionMatrix()
+			renderer.setSize(width, height)
+		})
+		resizeObserver.observe(stage)
+
+		// Animation Loop
+		let animId: number
+		let lastTime = performance.now()
+		const startTime = performance.now()
+
+		const animate = () => {
+			animId = requestAnimationFrame(animate)
+			const now = performance.now()
+			const delta = Math.min((now - lastTime) / 1000, 0.1)
+			const elapsed = (now - startTime) / 1000
+			lastTime = now
+
+			// Auto rotation
+			if (isAutoRotating && !isDragging) {
+				targetRotationY += delta * 0.25
+			}
+
+			// Smooth damping (lerp)
+			currentRotationX += (targetRotationX - currentRotationX) * 0.08
+			currentRotationY += (targetRotationY - currentRotationY) * 0.08
+
+			rootGroup.rotation.x = currentRotationX
+			rootGroup.rotation.y = currentRotationY
+
+			// Core pulsating breath
+			const breath = 1 + Math.sin(elapsed * 2) * 0.05
+			coreMesh.scale.set(breath, breath, breath)
+			coreMesh.rotation.x += delta * 0.2
+			coreMesh.rotation.y += delta * 0.3
+
+			// Wireframe subtle drift
+			wireMesh.rotation.z += delta * 0.05
+
+			// Particle gentle oscillation
+			particles.rotation.y = elapsed * 0.03
+
+			// Keep node halos facing camera
+			nodeMeshes.forEach((mesh) => {
+				const halo = mesh.children.find((c) => c.userData.isHalo)
+				if (halo) {
+					halo.quaternion.copy(camera.quaternion)
+				}
+			})
+
+			renderer.render(scene, camera)
+		}
+
+		animate()
+
+		cleanupContact3D = () => {
+			cancelAnimationFrame(animId)
+			resizeObserver.disconnect()
+			window.removeEventListener('mouseup', onMouseUp)
+			renderer.dispose()
+			scene.clear()
+		}
+	}
+
+	setupContact3D()
+	document.addEventListener('astro:page-load', setupContact3D)
+	document.addEventListener('astro:after-swap', setupContact3D)
+	document.addEventListener('astro:before-swap', () => {
+		if (cleanupContact3D) {
+			cleanupContact3D()
+			cleanupContact3D = null
+		}
+	})
+	window.addEventListener('beforeunload', () => {
+		if (cleanupContact3D) {
+			cleanupContact3D()
+			cleanupContact3D = null
+		}
+	})
+</script>

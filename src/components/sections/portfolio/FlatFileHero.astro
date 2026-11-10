@@ -1,0 +1,114 @@
+---
+/**
+ * Flat file / plan chest — the signature object of /portafolio.
+ *
+ * A portfolio is literally a flat case for carrying sheets, so the hero shows
+ * the piece of furniture the site is named after: a chest of drawers, each one
+ * labelled with what it holds. Purely decorative and CSS-only (no canvas, no
+ * physics): the copy is the hero, this is the room around it.
+ *
+ * One metaphor per view: /education owns the shelf, /experience the gear train,
+ * /skills the visor, /gallery the light table. None of them is a chest of drawers.
+ */
+interface Props {
+	drawers: { label: string; count: number | string }[]
+	/** Heading engraved on the cabinet. */
+	plate?: string
+}
+
+const { drawers, plate = 'Planero' } = Astro.props
+---
+
+<div class="pointer-events-none absolute inset-0 hidden overflow-hidden lg:block" aria-hidden="true">
+	<div
+		class="absolute inset-y-0 right-0 flex w-[46%] max-w-[720px] items-center justify-end pr-10 xl:pr-16"
+		style="perspective: 1400px;"
+	>
+		<div
+			class="flatfile relative w-full max-w-[440px]"
+			style="transform: rotateY(-16deg) rotateX(4deg); transform-style: preserve-3d;"
+		>
+			<!-- Cabinet carcass -->
+			<div class="relative rounded-xl border border-white/10 bg-gradient-to-b from-[#121214] via-[#0c0c0e] to-[#08080a] p-4 shadow-[0_40px_120px_-40px_rgba(0,0,0,0.9)]">
+				<!-- Engraved plate -->
+				<div class="mb-4 flex items-center justify-between border-b border-white/10 pb-3">
+					<span class="text-[9px] font-bold uppercase tracking-[0.4em] text-white/35">
+						{plate}
+					</span>
+					<span class="h-1 w-8 rounded-full bg-[#c70039]/60"></span>
+				</div>
+
+				<!-- Drawers: a slot, a label, a handle -->
+				<ul class="space-y-2.5">
+					{
+						drawers.map((drawer, index) => (
+							<li
+								class="flatfile-drawer group/drawer relative flex items-center justify-between gap-4 rounded-md border border-white/10 bg-gradient-to-b from-[#15151a] to-[#0d0d10] px-4 py-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
+								style={`--i:${index}`}
+							>
+								<span class="flex items-baseline gap-2.5">
+									<span class="font-mono text-[9px] tracking-[0.1em] text-white/25">
+										{String(index + 1).padStart(2, '0')}
+									</span>
+									<span class="text-[10px] font-bold uppercase tracking-[0.28em] text-white/45">
+										{drawer.label}
+									</span>
+								</span>
+
+								<span class="flex items-center gap-3">
+									<span class="font-poppins text-sm font-black tabular-nums text-white/60">
+										{drawer.count}
+									</span>
+									<span class="h-1 w-9 rounded-full bg-white/15 transition-colors duration-300 group-hover/drawer:bg-[#c70039]/70"></span>
+								</span>
+
+								<!-- The sheet resting inside, visible as a sliver at the top edge -->
+								<span class="absolute inset-x-3 -top-[3px] h-[3px] rounded-t-sm bg-white/[0.07]"></span>
+							</li>
+						))
+					}
+				</ul>
+
+				<!-- Base rail -->
+				<div class="mt-4 h-1.5 rounded-b-sm bg-black/60"></div>
+			</div>
+
+			<!-- Floor shadow -->
+			<div class="mx-auto mt-3 h-6 w-4/5 rounded-[100%] bg-black/70 blur-xl"></div>
+		</div>
+	</div>
+
+	<!-- Accent wash behind the cabinet, keeps it from floating in pure black -->
+	<div
+		class="absolute right-0 top-1/2 h-[420px] w-[420px] -translate-y-1/2 rounded-full blur-[120px]"
+		style="background: radial-gradient(circle, rgba(199,0,57,0.16), transparent 70%);"
+	>
+	</div>
+</div>
+
+<style>
+	@media (prefers-reduced-motion: no-preference) {
+		.flatfile {
+			animation: flatfile-in 900ms cubic-bezier(0.22, 1, 0.36, 1) 150ms both;
+		}
+
+		.flatfile-drawer {
+			animation: flatfile-drawer-in 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+			animation-delay: calc(320ms + var(--i) * 90ms);
+		}
+
+		@keyframes flatfile-in {
+			from {
+				opacity: 0;
+				transform: rotateY(-26deg) rotateX(10deg) translateY(24px);
+			}
+		}
+
+		@keyframes flatfile-drawer-in {
+			from {
+				opacity: 0;
+				transform: translateX(18px);
+			}
+		}
+	}
+</style>

@@ -79,13 +79,13 @@ p, li, div, span {
   }
 
   /* Ocultar elementos decorativos del timeline */
-  .before\\:-ml-6,
-  .before\\:w-px,
-  .before\\:absolute,
-  .before\\:bg-skin-muted,
-  .before\\:opacity-30,
-  .before\\:h-full,
-  .before\\:mt-2,
+  .before\:-ml-6,
+  .before\:w-px,
+  .before\:absolute,
+  .before\:bg-skin-muted,
+  .before\:opacity-30,
+  .before\:h-full,
+  .before\:mt-2,
   .absolute.w-2.h-2.bg-skin-hue.rounded-full {
     display: none !important;
   }
@@ -163,7 +163,7 @@ p, li, div, span {
 
   /* Bordes y líneas visibles */
   .bg-skin-muted,
-  .before\\:bg-skin-muted::before {
+  .before\:bg-skin-muted::before {
     background-color: #d0d0d0 !important;
   }
 
@@ -189,5 +189,49 @@ p, li, div, span {
   h3 {
     page-break-after: avoid;
     break-after: avoid;
+  }
+}
+
+/* Blueprint-style card: dotted grid texture + red corner tick marks (screen only) */
+.dotted-card {
+  background-color: #0a0a0a;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0.5px, transparent 0.5px);
+  background-size: 16px 16px;
+}
+
+.corner-tick {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #c70039;
+}
+
+.corner-tick--tl {
+  top: -3px;
+  left: -3px;
+}
+
+.corner-tick--tr {
+  top: -3px;
+  right: -3px;
+}
+
+.corner-tick--bl {
+  bottom: -3px;
+  left: -3px;
+}
+
+.corner-tick--br {
+  bottom: -3px;
+  right: -3px;
+}
+
+@media print {
+  .dotted-card {
+    background: none !important;
+  }
+
+  .corner-tick {
+    display: none !important;
   }
 }
