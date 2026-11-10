@@ -63,10 +63,11 @@ Verifica que cada archivo exista, que `assets` sea un array, que no haya
 
 1. Verifica que ninguna variable de Cloudinary esté definida en el job.
 2. Valida los snapshots con `bun run snapshot:cloudinary --check`.
-3. Corre `bun run check` (typecheck de Astro).
-4. Corre `bun run build`.
+3. Genera los tipos de Astro con `bunx astro sync` (sin red: usa los snapshots).
+4. Corre `bun run check` (typecheck de Astro).
+5. Corre `bun run build`.
 
-Si el build vuelve a depender de la Admin API, el paso 4 falla y el PR no puede
+Si el build vuelve a depender de la Admin API, el paso 5 falla y el PR no puede
 mergearse en verde. Esa es la prueba viva de la reproducibilidad.
 
 ## Límites conocidos
