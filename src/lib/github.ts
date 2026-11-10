@@ -147,6 +147,10 @@ export async function getRepos(): Promise<GitHubRepo[]> {
 				const repos = reposMock as GitHubRepo[]
 				return repos
 			}
+			if (!GITHUB_TOKEN) {
+				console.warn('GITHUB_TOKEN no está configurado: este build omite los repositorios de GitHub.')
+				return []
+			}
 			const response = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos`, {
 				headers: {
 					Authorization: `token ${GITHUB_TOKEN}`
