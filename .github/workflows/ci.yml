@@ -57,6 +57,12 @@ jobs:
       - name: Validar snapshots de Cloudinary
         run: bun run snapshot:cloudinary --check
 
+      # `astro-check` no genera `.astro/env.d.ts`: sin un sync previo, los
+      # imports de `astro:env/server` aparecen como inexistentes y el typecheck
+      # falla en un clone limpio. `astro sync` usa los snapshots, no la red.
+      - name: Generar tipos de Astro
+        run: bunx astro sync
+
       - name: Typecheck
         run: bun run check
 
