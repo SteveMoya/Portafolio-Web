@@ -431,7 +431,9 @@ export default function CleanFilmGrid({ images, columns = 3 }: CleanFilmGridProp
 						{/* Grid View */}
 						{viewMode === 'grid' && (
 							<div className="space-y-12">
-								<div className="columns-1 gap-3 space-y-3 md:columns-2 lg:columns-3">
+								<div
+									className={`columns-1 gap-3 space-y-3 md:columns-2 ${columns === 4 ? 'lg:columns-4' : 'lg:columns-3'}`}
+								>
 									{visibleItems.map((item, index) => (
 										<motion.button
 											key={item.id}
