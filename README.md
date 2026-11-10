@@ -1,6 +1,8 @@
 # Portafolio Personal 🚀
 
-![stevemoya me_](https://github.com/SteveMoya/Portafolio/assets/114698709/f4dd59b4-0153-444b-920f-698cfea4f566)
+<p align="center">
+  <img src="public/logo.svg" alt="Steve Moya" width="120" />
+</p>
 
 ## 🌐 Sitio en Vivo
 
