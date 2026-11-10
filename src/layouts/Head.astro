@@ -22,8 +22,12 @@ const {
 	articleUpdateDate
 } = Astro.props
 
+// `site` comes from astro.config; fall back to the request origin instead of a
+// hardcoded host so a moved or parked domain can never leak into the markup.
+const siteOrigin = (Astro.site ?? new URL(Astro.url.origin)).origin
+
 // Ensure absolute URL for OG Images
-const ogImageUrl = new URL(image, Astro.site || 'https://stevemoya.me').toString()
+const ogImageUrl = new URL(image, siteOrigin).toString()
 
 // Dynamic Schema.org JSON-LD
 const schema = {
@@ -40,12 +44,12 @@ const schema = {
 				author: {
 					"@type": "Person",
 					name: siteConfig.author,
-					url: Astro.site || 'https://stevemoya.me'
+					url: siteOrigin
 				}
 		  }
 		: {
 				name: siteConfig.author,
-				url: Astro.site || 'https://stevemoya.me',
+				url: siteOrigin,
 				jobTitle: "Marketer & Desarrollador Web",
 				description: siteConfig.description,
 				image: ogImageUrl

@@ -5,7 +5,8 @@ import FormattedDate from './ui/FormattedDate.astro'
 const {
 	data: { title, description, pubDate, heroImage, category },
 	id,
-	isFeatured = false
+	isFeatured = false,
+	priority = false
 } = Astro.props
 ---
 
@@ -20,6 +21,9 @@ const {
 			format="webp"
 			class="h-full w-full object-cover object-center transition-transform duration-700 ease-in-out group-hover:scale-105"
 			alt={`Imagen de ${title}`}
+			loading={priority ? 'eager' : 'lazy'}
+			fetchpriority={priority ? 'high' : 'auto'}
+			decoding="async"
 		/>
 		
 		{/* Gradiente inferior para mejorar legibilidad sobre la imagen */}
