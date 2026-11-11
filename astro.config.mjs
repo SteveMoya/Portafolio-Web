@@ -12,9 +12,17 @@ import metaTags from "astro-meta-tags";
 import pageInsight from "astro-page-insight";
 import react from "@astrojs/react";
 
+// Canonical host for canonical tags, sitemap, RSS and robots.txt.
+// `stevemoya.me` is unpaid and parked at the registrar: its nameservers point
+// to parking, so every canonical and sitemap URL published while it is dead
+// points at a host that does not resolve. Until the domain is back, publish
+// the Vercel production alias. Set SITE_URL (any build environment) once the
+// domain serves the site again -- no code change needed.
+const site = process.env.SITE_URL ?? 'https://portafolio-web-steve-moya-cepedas-projects.vercel.app'
+
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://stevemoya.me',
+  site,
   integrations: [
     mdx(),
     sitemap(),

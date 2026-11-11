@@ -14,6 +14,12 @@ export interface Props {
 	 * when the reveal should begin the moment the element becomes visible.
 	 */
 	triggerStart?: string
+	/**
+	 * Hides the revealed text from assistive technology. Use when the same
+	 * sentence is already announced elsewhere (e.g. the page h1) and this
+	 * instance is purely visual.
+	 */
+	ariaHidden?: boolean
 }
 
 const {
@@ -25,7 +31,8 @@ const {
 	duration = 0.45,
 	stagger = 0.2,
 	delay = 0,
-	triggerStart = 'top 88%'
+	triggerStart = 'top 88%',
+	ariaHidden = false
 } = Astro.props as Props
 
 // Parse lines either from array or split by newline if text string provided
@@ -41,6 +48,7 @@ const lines: string[] | null =
 
 <Tag
 	class:list={['block-reveal-container', className]}
+	aria-hidden={ariaHidden ? 'true' : undefined}
 	data-block-reveal
 	data-box-color={boxColor}
 	data-duration={duration}

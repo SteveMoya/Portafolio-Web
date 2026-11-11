@@ -67,6 +67,7 @@ const socialLinks = {
 					<span class="text-shiny">IA</span>
 					<Icon name="mdi:robot-outline" class="icon-bob mx-[0.05em] h-[0.7em] w-[0.7em] shrink-0 text-[#c70039]" style="animation-delay: 0s; animation-duration: 2.8s" />
 					<span class="text-shiny">Datos</span>
+					<span class="sr-only">, desarrollo web y marketing digital</span>
 				</BlockReveal>
 			</div>
 
@@ -78,7 +79,9 @@ const socialLinks = {
 			</div>
 		</div>
 
-		<!-- Line 2: DESARROLLO [icon] WEB (Pyramid Middle) -->
+		<!-- Line 2: DESARROLLO [icon] WEB (Pyramid Middle) — the reveal is decorative:
+		     the h1 above already carries the full sentence. The social link stays
+		     outside the hidden element so it remains focusable and announced. -->
 		<div class="relative flex items-center justify-center">
 			<div class="relative">
 				<a
@@ -93,7 +96,8 @@ const socialLinks = {
 					<Icon name="mdi:linkedin" class="h-7 w-7" />
 				</a>
 				<BlockReveal
-					as="h1"
+					as="div"
+					ariaHidden
 					class="flex items-center whitespace-nowrap font-poppins text-[7.8vw] font-black uppercase leading-[0.85] tracking-tighter sm:text-[8vw] lg:text-[6.2vw]"
 					boxColor="#c70039"
 					delay={0.3}
@@ -105,7 +109,7 @@ const socialLinks = {
 			</div>
 		</div>
 
-		<!-- Line 3: MARKETING [icon] DIGITAL (Pyramid Base) -->
+		<!-- Line 3: MARKETING [icon] DIGITAL (Pyramid Base) — decorative, same as line 2 -->
 		<div class="relative flex items-center justify-center">
 			<div class="relative">
 				<a
@@ -120,7 +124,8 @@ const socialLinks = {
 					<Icon name="mdi:instagram" class="h-7 w-7" />
 				</a>
 				<BlockReveal
-					as="h1"
+					as="div"
+					ariaHidden
 					class="flex items-center whitespace-nowrap font-poppins text-[7.8vw] font-black uppercase leading-[0.85] tracking-tighter sm:text-[8vw] lg:text-[6.2vw]"
 					boxColor="#c70039"
 					delay={0.5}
