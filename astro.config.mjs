@@ -6,7 +6,6 @@ import icon from "astro-icon";
 import pagefind from "astro-pagefind";
 import devtoolbarTailwind from "astro-devtoolbar-tailwind";
 
-import vercel from "@astrojs/vercel";
 import metaTags from "astro-meta-tags";
 
 import pageInsight from "astro-page-insight";
@@ -16,9 +15,9 @@ import react from "@astrojs/react";
 // `stevemoya.me` is unpaid and parked at the registrar: its nameservers point
 // to parking, so every canonical and sitemap URL published while it is dead
 // points at a host that does not resolve. Until the domain is back, publish
-// the Vercel production alias. Set SITE_URL (any build environment) once the
+// the workers.dev URL. Set SITE_URL (any build environment) once the
 // domain serves the site again -- no code change needed.
-const site = process.env.SITE_URL ?? 'https://portafolio-web-steve-moya-cepedas-projects.vercel.app'
+const site = process.env.SITE_URL ?? 'https://portafolio-web.workers.dev'
 
 // https://astro.build/config
 export default defineConfig({
@@ -36,19 +35,11 @@ export default defineConfig({
   ],
 
   output: "static",
-  adapter: vercel(),
   prefetch: true,
+  // Los enlaces internos no llevan barra final; canonical y sitemap deben coincidir.
+  trailingSlash: 'never',
 
-  // /portafolio/diseno and /portafolio/fotografia rendered the same Cloudinary
-  // collections as /gallery with the legacy Gallery.astro; the visual archive
-  // has exactly one view now. /portafolio/marketing was declared in the old
-  // catch-all route but never had a render branch (it shipped an empty page);
-  // the case studies it promised live in the blog category.
-  redirects: {
-    '/portafolio/diseno': '/gallery',
-    '/portafolio/fotografia': '/gallery',
-    '/portafolio/marketing': '/blog/category/marketing/1',
-  },
+  // Redirects 301: ver public/_redirects (Cloudflare Workers Static Assets).
 
   vite: {
     css: {
@@ -60,7 +51,7 @@ export default defineConfig({
 
   // Todas las variables externas son opcionales: el sitio degrada a contenido
   // local (snapshot de Cloudinary y repos de GitHub omitidos) en vez de romper
-  // el build. Vercel las sigue inyectando, así que producción no cambia.
+  // el build. Cloudflare las inyecta como variables de build.
   env: {
     schema: {
       GITHUB_USERNAME: envField.string({ context: "server", access: "public", optional: true }),
