@@ -2,7 +2,7 @@
 
 ## What this is
 
-Astro 7.1.1 personal portfolio + blog. Static site deployed to Vercel. Content is MDX blog posts and Cloudinary-hosted images. TinaCMS available for editing blog posts in dev mode.
+Astro 7.1.1 personal portfolio + blog. Static site deployed to Cloudflare Workers (Static Assets, built by Workers Builds; config in `wrangler.jsonc`, redirects/headers in `public/_redirects` and `public/_headers`). Content is MDX blog posts and Cloudinary-hosted images. TinaCMS available for editing blog posts in dev mode.
 
 ## Commands
 

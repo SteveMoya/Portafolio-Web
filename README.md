@@ -24,7 +24,7 @@ Portafolio personal y CV interactivo desarrollado con Astro. Presenta mi experie
 - 🎯 **SEO optimizado** - Meta tags, sitemap y RSS feed
 - 🎭 **Temas personalizables** - Sistema de colores basado en CSS variables
 - 📊 **CMS integrado** - Gestión de contenido con TinaCMS
-- 🚀 **Deploy automático** - Configurado para Vercel
+- 🚀 **Deploy automático** - Configurado para Cloudflare Workers
 
 ## 🛠️ Tecnologías
 
@@ -42,7 +42,7 @@ Portafolio personal y CV interactivo desarrollado con Astro. Presenta mi experie
 ![TinaCMS](https://img.shields.io/badge/TinaCMS-EC4815?style=for-the-badge&logo=tinacms&logoColor=white)
 
 ### Herramientas
-![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+![Cloudflare](https://img.shields.io/badge/Cloudflare-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)
 ![PNPM](https://img.shields.io/badge/pnpm-F69220?style=for-the-badge&logo=pnpm&logoColor=white)
 
 ## 📁 Estructura del Proyecto
@@ -171,12 +171,13 @@ Accede al CMS en desarrollo: `http://localhost:4321/admin`
 
 ## 🌐 Deploy
 
-El proyecto está configurado para Vercel:
+El proyecto se despliega en Cloudflare Workers (Static Assets) con Workers Builds:
 
-1. Conecta tu repositorio a Vercel
-2. Configura el comando de build: `pnpm build`
-3. Directorio de salida: `dist`
-4. ✅ ¡Deploy automático en cada push!
+1. Workers & Pages → Create → Import a repository
+2. Nombre del Worker: `portafolio-web` (debe coincidir con `wrangler.jsonc`)
+3. Build command: `bun run build` · Deploy command: `npx wrangler deploy`
+4. Variables de build: `NODE_VERSION=22`, `SITE_URL`, y opcionalmente `GITHUB_USERNAME` / `GITHUB_TOKEN`
+5. ✅ Deploy automático en cada push a `main`
 
 ## ⌨️ Atajos de Teclado
 
