@@ -1,9 +1,31 @@
 ---
 import Layout from '@src/layouts/Layout.astro'
+import { Icon } from 'astro-icon/components'
+
+const floating = [
+	{ icon: 'mdi:alert-circle-outline', x: 8, y: 18, size: 2.5, delay: 0, dur: 9 },
+	{ icon: 'mdi:bug-outline', x: 86, y: 14, size: 2.2, delay: -3, dur: 11 },
+	{ icon: 'mdi:link-variant-off', x: 14, y: 72, size: 2.4, delay: -5, dur: 10 },
+	{ icon: 'mdi:close-octagon-outline', x: 90, y: 68, size: 2.6, delay: -2, dur: 12 },
+	{ icon: 'mdi:wifi-off', x: 50, y: 88, size: 2, delay: -6, dur: 8 },
+	{ icon: 'mdi:file-question-outline', x: 72, y: 36, size: 1.8, delay: -4, dur: 13 },
+	{ icon: 'mdi:alert-outline', x: 28, y: 38, size: 1.8, delay: -7, dur: 9.5 }
+]
 ---
 
 <Layout title="404 — Página no encontrada | Steve Moya" description="Esta página no existe o se movió a otro lugar.">
-  <main class="flex min-h-[80vh] flex-col items-center justify-center px-6 text-center">
+  <main class="relative flex min-h-[80vh] flex-col items-center justify-center overflow-hidden px-6 text-center">
+    <!-- Dynamic background: wavy dot grid (canvas) + floating error icons -->
+    <canvas id="nf-bg" class="pointer-events-none absolute inset-0 -z-10 h-full w-full" aria-hidden="true"></canvas>
+    <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+      {floating.map((f) => (
+        <span class="nf-float absolute text-[#c70039]/30" style={`left:${f.x}%;top:${f.y}%;animation-delay:${f.delay}s;animation-duration:${f.dur}s`}>
+          <Icon name={f.icon} style={`width:${f.size}rem;height:${f.size}rem`} />
+        </span>
+      ))}
+    </div>
+
+    <Icon name="mdi:alert-octagon-outline" class="nf-pulse mb-4 h-14 w-14 text-[#c70039]" aria-hidden="true" />
 
     <!-- Animated 404 number -->
     <div class="relative mb-8 select-none">
@@ -76,3 +98,80 @@ import Layout from '@src/layouts/Layout.astro'
     </button>
   </main>
 </Layout>
+
+<style>
+	.nf-float {
+		animation: nf-drift 10s ease-in-out infinite;
+	}
+	.nf-pulse {
+		animation: nf-pulse 2.4s ease-in-out infinite;
+		filter: drop-shadow(0 0 14px rgba(199, 0, 57, 0.6));
+	}
+	@keyframes nf-drift {
+		0%, 100% { transform: translate(0, 0) rotate(-6deg); }
+		50% { transform: translate(14px, -26px) rotate(8deg); }
+	}
+	@keyframes nf-pulse {
+		0%, 100% { transform: scale(1); opacity: 0.85; }
+		50% { transform: scale(1.12); opacity: 1; }
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.nf-float, .nf-pulse { animation: none; }
+	}
+</style>
+
+<script>
+	const canvas = document.getElementById('nf-bg') as HTMLCanvasElement | null
+	const ctx = canvas?.getContext('2d')
+	if (canvas && ctx) {
+		const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
+		const GAP = 34
+		let w = 0, h = 0, dpr = 1, raf = 0
+		const mouse = { x: -9999, y: -9999 }
+
+		const resize = () => {
+			dpr = Math.min(devicePixelRatio || 1, 2)
+			w = canvas.clientWidth
+			h = canvas.clientHeight
+			canvas.width = w * dpr
+			canvas.height = h * dpr
+			ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+		}
+
+		const draw = (t: number) => {
+			ctx.clearRect(0, 0, w, h)
+			const time = t / 1000
+			for (let x = GAP / 2; x < w; x += GAP) {
+				for (let y = GAP / 2; y < h; y += GAP) {
+					const wave = Math.sin(x * 0.012 + time * 1.2) + Math.cos(y * 0.014 - time * 0.9)
+					const dx = x - mouse.x
+					const dy = y - mouse.y
+					const near = Math.max(0, 1 - Math.hypot(dx, dy) / 160)
+					const r = 1.1 + (wave + 2) * 0.45 + near * 2.6
+					const a = 0.1 + (wave + 2) * 0.06 + near * 0.6
+					// Occasional "glitch" dots flicker in the error color
+					const glitch = Math.sin(x * 12.9898 + y * 78.233 + Math.floor(time * 2)) > 0.985
+					ctx.fillStyle = glitch || near > 0.05 ? `rgba(199,0,57,${Math.min(a + 0.2, 1)})` : `rgba(245,245,245,${a * 0.5})`
+					ctx.beginPath()
+					ctx.arc(x, y + wave * 3, r, 0, Math.PI * 2)
+					ctx.fill()
+				}
+			}
+			if (!reduced) raf = requestAnimationFrame(draw)
+		}
+
+		resize()
+		addEventListener('resize', () => { resize(); if (reduced) draw(0) })
+		addEventListener('pointermove', (e) => {
+			const r = canvas.getBoundingClientRect()
+			mouse.x = e.clientX - r.left
+			mouse.y = e.clientY - r.top
+		})
+		document.addEventListener('visibilitychange', () => {
+			if (reduced) return
+			cancelAnimationFrame(raf)
+			if (!document.hidden) raf = requestAnimationFrame(draw)
+		})
+		raf = requestAnimationFrame(draw)
+	}
+</script>
