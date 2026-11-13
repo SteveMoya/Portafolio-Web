@@ -1,0 +1,73 @@
+---
+import Layout from '@src/layouts/Layout.astro'
+import { Icon } from 'astro-icon/components'
+import ErrorBackground from '@components/ui/ErrorBackground.astro'
+
+const floating = [
+	{ icon: 'mdi:server-off', x: 9, y: 20, size: 2.6, delay: 0, dur: 10 },
+	{ icon: 'mdi:database-alert-outline', x: 85, y: 16, size: 2.3, delay: -3, dur: 11 },
+	{ icon: 'mdi:lightning-bolt-outline', x: 13, y: 70, size: 2.4, delay: -5, dur: 9 },
+	{ icon: 'mdi:cog-off-outline', x: 90, y: 66, size: 2.6, delay: -2, dur: 12 },
+	{ icon: 'mdi:fire-alert', x: 50, y: 88, size: 2.1, delay: -6, dur: 8.5 },
+	{ icon: 'mdi:alert-decagram-outline', x: 72, y: 38, size: 1.8, delay: -4, dur: 13 },
+	{ icon: 'mdi:bug-outline', x: 27, y: 36, size: 1.8, delay: -7, dur: 9.5 }
+]
+---
+
+<Layout title="500 — Error del servidor | Steve Moya" description="Algo salió mal de nuestro lado. Intenta de nuevo en un momento.">
+  <main class="relative flex min-h-[80vh] flex-col items-center justify-center overflow-hidden px-6 text-center" style="--nf-accent: 245, 158, 11">
+    <ErrorBackground items={floating} accent="245,158,11" />
+
+    <Icon name="mdi:server-network-off" class="nf-pulse mb-4 h-14 w-14 text-amber-500" aria-hidden="true" />
+
+    <div class="relative mb-8 select-none">
+      <span
+        class="text-[clamp(6rem,18vw,12rem)] font-black leading-none tracking-tight"
+        style="
+          background: linear-gradient(135deg, #ffffff 0%, #f59e0b 50%, #c70039 100%);
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          filter: drop-shadow(0 0 60px rgba(245, 158, 11, 0.3));
+        "
+      >500</span>
+      <div class="pointer-events-none absolute inset-0 -z-10 m-auto h-full w-3/4 rounded-full bg-amber-500 opacity-10 blur-[80px]"></div>
+    </div>
+
+    <div class="mb-8 flex items-center gap-4">
+      <div class="h-px w-16 bg-gradient-to-r from-transparent to-amber-500/60"></div>
+      <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+      <div class="h-px w-16 bg-gradient-to-l from-transparent to-amber-500/60"></div>
+    </div>
+
+    <h1 class="mb-4 text-2xl font-bold text-white/90 sm:text-3xl">Algo falló en el servidor</h1>
+    <p class="mb-10 max-w-md text-base leading-relaxed text-gray-400">
+      No es tu culpa: ocurrió un error inesperado de nuestro lado.<br />
+      Intenta de nuevo en unos segundos o vuelve al inicio.
+    </p>
+
+    <div class="flex flex-wrap items-center justify-center gap-4">
+      <button
+        onclick="location.reload()"
+        class="flex cursor-pointer items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-5 py-3 text-sm font-semibold text-amber-500 transition-all duration-300 hover:-translate-y-0.5 hover:border-amber-500/60 hover:bg-amber-500/20 hover:shadow-lg"
+      >
+        <Icon name="mdi:refresh" class="h-4 w-4" />
+        Reintentar
+      </button>
+      <a
+        href="/"
+        class="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-white/80 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.06] hover:text-white hover:shadow-lg"
+      >
+        <Icon name="mdi:home-outline" class="h-4 w-4" />
+        Inicio
+      </a>
+      <a
+        href="/contact"
+        class="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-white/80 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.06] hover:text-white hover:shadow-lg"
+      >
+        <Icon name="mdi:email-outline" class="h-4 w-4" />
+        Reportar el problema
+      </a>
+    </div>
+  </main>
+</Layout>
