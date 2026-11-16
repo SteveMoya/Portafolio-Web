@@ -1,3 +1,8 @@
 /portafolio/diseno /gallery 301
 /portafolio/fotografia /gallery 301
 /portafolio/marketing /blog/category/marketing/1 301
+
+# Slugs corregidos (antes perdían las letras con acento)
+/blog/anlisis-came /blog/analisis-came 301
+/blog/anlisis-foda /blog/analisis-foda 301
+/blog/la-vaca-prpura /blog/la-vaca-purpura 301

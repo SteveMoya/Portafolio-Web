@@ -59,6 +59,13 @@ var config_default = defineConfig({
         label: "Mis Blogs",
         path: "src/content/blog",
         format: "mdx",
+        ui: {
+          // Nombres de archivo (= slug de la URL) solo ASCII: sin esto Tina elimina á, é, ñ...
+          // ("Análisis" -> "Anlisis"). Se transliteran antes de limpiar.
+          filename: {
+            slugify: (values) => (values?.title ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")
+          }
+        },
         fields: [
           {
             type: "string",
