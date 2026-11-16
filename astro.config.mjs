@@ -19,10 +19,23 @@ import react from "@astrojs/react";
 // domain serves the site again -- no code change needed.
 const site = process.env.SITE_URL ?? 'https://portafolio-web.workers.dev'
 
+// Dev-only: en producción Cloudflare redirige `/ruta/` a `/ruta` (`html_handling:
+// "drop-trailing-slash"` en wrangler.jsonc). El dev server no lo hace y mostraría
+// el 404 de trailingSlash, así que allí se acepta ambas formas. El build sigue en 'never'.
+const lenientTrailingSlashInDev = {
+  name: 'lenient-trailing-slash-dev',
+  hooks: {
+    'astro:config:setup': ({ command, updateConfig }) => {
+      if (command === 'dev') updateConfig({ trailingSlash: 'ignore' })
+    }
+  }
+}
+
 // https://astro.build/config
 export default defineConfig({
   site,
   integrations: [
+    lenientTrailingSlashInDev,
     mdx(),
     sitemap(),
     tailwind(),

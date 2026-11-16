@@ -2,6 +2,24 @@
 import Layout from '@src/layouts/Layout.astro'
 import { Icon } from 'astro-icon/components'
 import ErrorBackground from '@components/ui/ErrorBackground.astro'
+import { getPosts } from '@src/utils'
+
+// Rutas conocidas para sugerir alternativas según la URL pedida (se resuelve en el cliente).
+const posts = await getPosts()
+const routes = [
+	{ path: '/', title: 'Inicio' },
+	{ path: '/blog', title: 'Blog' },
+	{ path: '/portafolio', title: 'Portafolio' },
+	{ path: '/portafolio/webs', title: 'Portafolio: Webs' },
+	{ path: '/about', title: 'Sobre mí' },
+	{ path: '/contact', title: 'Contacto' },
+	{ path: '/education', title: 'Educación' },
+	{ path: '/experience', title: 'Experiencia' },
+	{ path: '/skills', title: 'Habilidades' },
+	{ path: '/gallery', title: 'Galería' },
+	{ path: '/links', title: 'Enlaces' },
+	...posts.map((p) => ({ path: `/blog/${p.id}`, title: p.data.title }))
+]
 
 const floating = [
 	{ icon: 'mdi:alert-circle-outline', x: 8, y: 18, size: 2.5, delay: 0, dur: 9 },
@@ -82,6 +100,15 @@ const floating = [
       </a>
     </div>
 
+    <!-- Suggestions based on the requested URL -->
+    <section id="nf-suggest" hidden class="mt-10 w-full max-w-md text-left">
+      <p class="mb-2 text-sm text-gray-400">
+        ¿Quisiste ir a alguna de estas?
+      </p>
+      <ul id="nf-suggest-list" class="flex flex-col gap-2"></ul>
+    </section>
+    <script id="nf-routes" type="application/json" set:html={JSON.stringify(routes)} />
+
     <!-- Back link -->
     <button
       onclick="history.back()"
@@ -114,6 +141,57 @@ const floating = [
 </style>
 
 <script>
+	// Sugerencias: coincidencia exacta sin barra final, o por similitud (bigramas) con rutas conocidas
+	{
+		type Route = { path: string; title: string }
+		const routes: Route[] = JSON.parse(document.getElementById('nf-routes')?.textContent ?? '[]')
+		const norm = (s: string) =>
+			s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9/]+/g, '-')
+		const bigrams = (s: string) => {
+			const set = new Set<string>()
+			for (let i = 0; i < s.length - 1; i++) set.add(s.slice(i, i + 2))
+			return set
+		}
+		const similarity = (a: string, b: string) => {
+			if (a === b) return 1
+			const A = bigrams(a)
+			const B = bigrams(b)
+			if (!A.size || !B.size) return 0
+			let common = 0
+			A.forEach((g) => B.has(g) && common++)
+			return (2 * common) / (A.size + B.size)
+		}
+
+		const requested = norm(location.pathname.replace(/\/+$/, '') || '/')
+		const scored = routes
+			.map((r) => ({ r, score: similarity(requested, norm(r.path)) }))
+			.filter((x) => x.score >= 0.4)
+			.sort((a, b) => b.score - a.score)
+			.slice(0, 3)
+
+		const box = document.getElementById('nf-suggest')
+		const list = document.getElementById('nf-suggest-list')
+		if (box && list && scored.length) {
+			for (const { r } of scored) {
+				const li = document.createElement('li')
+				const a = document.createElement('a')
+				a.href = r.path
+				a.className =
+					'flex flex-col rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 transition-all duration-300 hover:border-[#c70039]/40 hover:bg-[#c70039]/10'
+				const t = document.createElement('span')
+				t.className = 'text-sm font-semibold text-white/90'
+				t.textContent = r.title
+				const p = document.createElement('span')
+				p.className = 'text-xs text-gray-500'
+				p.textContent = r.path
+				a.append(t, p)
+				li.append(a)
+				list.append(li)
+			}
+			box.hidden = false
+		}
+	}
+
 	const canvas = document.getElementById('nf-bg') as HTMLCanvasElement | null
 	const ctx = canvas?.getContext('2d')
 	if (canvas && ctx) {
