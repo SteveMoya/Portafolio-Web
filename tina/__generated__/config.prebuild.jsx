@@ -35,7 +35,7 @@ var PROJECT_BADGES = [
 
 // tina/config.ts
 import { defineConfig } from "tinacms";
-var branch = process.env.HEAD || process.env.VERCEL_GIT_COMMIT_REF || "main";
+var branch = process.env.HEAD || process.env.WORKERS_CI_BRANCH || "main";
 var config_default = defineConfig({
   branch,
   clientId: null,
