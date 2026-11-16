@@ -8,6 +8,7 @@ import Hero from "@/components/sections/Hero.astro";
 import Projects from "@/components/sections/Projects.astro";
 import Skills from "@/components/sections/Skills.astro";
 import KeyboardManager from "@/components/KeyboardManager.astro";
+import { Icon } from "astro-icon/components";
 
 import { basics, projects } from "@cv";
 const { name, label } = basics;
@@ -15,6 +16,16 @@ const { name, label } = basics;
 
 <PrintLayout title={`${name} Portafolio - ${label}`}>
 	<main class="relative grid max-w-7xl items-start gap-6 p-8 max-sm:py-16 md:grid-cols-6 md:p-16 xl:gap-8 print:max-w-none print:grid-cols-6 print:gap-x-8 print:gap-y-2">
+		<div class="flex justify-end md:col-span-6 print:hidden">
+			<button
+				type="button"
+				id="download-cv"
+				class="inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-medium text-white/80 transition-colors hover:border-[#c70039] hover:text-white"
+			>
+				<Icon name="mdi:download" class="size-4" />
+				Descargar CV
+			</button>
+		</div>
 		<div class="dotted-card relative space-y-6 self-start rounded-2xl border border-white/10 p-6 md:col-span-2 print:col-span-2 print:space-y-2 print:rounded-none print:border-none print:bg-transparent print:p-0">
 			<Hero />
 			<AboutSection />
@@ -44,6 +55,7 @@ const { name, label } = basics;
 		// /about?print=1 (CV link in navbar) opens the print dialog with the up-to-date CV.
 		// astro:page-load fires on first load and after ClientRouter navigations.
 		document.addEventListener('astro:page-load', () => {
+			document.getElementById('download-cv')?.addEventListener('click', () => window.print())
 			const url = new URL(location.href)
 			if (!url.searchParams.has('print')) return
 			url.searchParams.delete('print')
