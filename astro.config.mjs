@@ -12,12 +12,8 @@ import pageInsight from "astro-page-insight";
 import react from "@astrojs/react";
 
 // Canonical host for canonical tags, sitemap, RSS and robots.txt.
-// `stevemoya.me` is unpaid and parked at the registrar: its nameservers point
-// to parking, so every canonical and sitemap URL published while it is dead
-// points at a host that does not resolve. Until the domain is back, publish
-// the workers.dev URL. Set SITE_URL (any build environment) once the
-// domain serves the site again -- no code change needed.
-const site = process.env.SITE_URL ?? 'https://portafolio-web.workers.dev'
+// Override with SITE_URL (any build environment) for previews or staging.
+const site = process.env.SITE_URL ?? 'https://stevemoya.me'
 
 // Dev-only: en producción Cloudflare redirige `/ruta/` a `/ruta` (`html_handling:
 // "drop-trailing-slash"` en wrangler.jsonc). El dev server no lo hace y mostraría
