@@ -67,7 +67,14 @@ p, li, div, span {
     background-color: white !important;
   }
   
+  /* No mostrar snapshots de la transición de ClientRouter al imprimir */
+  :root::view-transition {
+    display: none !important;
+  }
+
   /* Ocultar navbar, botones flotantes y elementos decorativos */
+  body > header,
+  header.no-print,
   nav, 
   .fixed,
   [class*="TwSizeIndicator"],
@@ -78,14 +85,8 @@ p, li, div, span {
     display: none !important;
   }
 
-  /* Ocultar elementos decorativos del timeline */
-  .before\:-ml-6,
-  .before\:w-px,
-  .before\:absolute,
-  .before\:bg-skin-muted,
-  .before\:opacity-30,
-  .before\:h-full,
-  .before\:mt-2,
+  /* Timeline: la línea vertical es un ::before y ya se oculta con print:before:hidden.
+     No ocultar por clase .before\:* — esas clases están en el propio contenedor del contenido. */
   .absolute.w-2.h-2.bg-skin-hue.rounded-full {
     display: none !important;
   }

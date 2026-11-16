@@ -40,6 +40,17 @@ const { name, label } = basics;
 	</main>
 
 	<KeyboardManager />
+	<script>
+		// /about?print=1 (CV link in navbar) opens the print dialog with the up-to-date CV.
+		// astro:page-load fires on first load and after ClientRouter navigations.
+		document.addEventListener('astro:page-load', () => {
+			const url = new URL(location.href)
+			if (!url.searchParams.has('print')) return
+			url.searchParams.delete('print')
+			history.replaceState(history.state, '', url)
+			setTimeout(() => window.print(), 300)
+		})
+	</script>
 </PrintLayout>
 
 <style>

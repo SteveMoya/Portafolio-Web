@@ -189,9 +189,8 @@ const isActive = (path: string) => {
 								theme="document"
 								icon="mdi:file-document-outline"
 								title="Currículum"
-								description="Ver o descargar CV en PDF"
-								href="/CV.-Steve-Moya-Cepeda.pdf"
-								external={true}
+								description="Ver o guardar CV en PDF"
+								href="/about?print=1"
 							/>
 							<BentoCard
 								variant="stack"
@@ -316,13 +315,21 @@ const isActive = (path: string) => {
 
 		<!-- Right Side: Search & Mobile Menu -->
 		<div class="flex items-center space-x-4">
-			<!-- Search Component with ⌘K badge -->
-			<div class="flex items-center gap-2">
-				<Search />
-				<kbd class="hidden md:inline-flex items-center gap-1 rounded border border-white/10 bg-white/[0.04] px-1.5 py-0.5 text-[10px] font-medium text-white/35 select-none">
-					<span>⌘</span><span>K</span>
-				</kbd>
-			</div>
+			<Search />
+			{
+				/* Command palette (KeyboardManager) only exists on /about */
+				Astro.url.pathname.startsWith('/about') && (
+					<button
+						type="button"
+						id="open-command-palette"
+						aria-label="Abrir paleta de comandos"
+						class="hidden cursor-pointer select-none items-center gap-1 rounded border border-white/10 bg-white/[0.04] px-1.5 py-0.5 text-[10px] font-medium text-white/35 transition-colors hover:text-white/70 md:inline-flex"
+					>
+						<span id="command-palette-mod">Ctrl</span>
+						<span>K</span>
+					</button>
+				)
+			}
 
 			<!-- Mobile Menu Button -->
 			<button
@@ -493,4 +500,27 @@ const isActive = (path: string) => {
 	}
 
 	customElements.define('nav-dropdown', NavDropdown)
+</script>
+
+<script>
+	// Re-run after every ClientRouter swap: the button only exists on /about
+	document.addEventListener('astro:page-load', () => {
+		const paletteButton = document.getElementById('open-command-palette')
+		if (!paletteButton) return
+		const isMac = /mac|iphone|ipad/i.test(navigator.platform)
+		const mod = document.getElementById('command-palette-mod')
+		if (mod && isMac) mod.textContent = '⌘'
+		paletteButton.addEventListener('click', () => {
+			document.dispatchEvent(
+				new KeyboardEvent('keydown', {
+					key: 'k',
+					code: 'KeyK',
+					keyCode: 75,
+					which: 75,
+					ctrlKey: !isMac,
+					metaKey: isMac
+				})
+			)
+		})
+	})
 </script>

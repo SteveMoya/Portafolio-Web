@@ -89,7 +89,8 @@ const profilesInfo = profiles.map(({ network, url }) => {
 
 	function initHotKeyPad() {
 		const hotkeypadElement = document.getElementById("hotkeypad");
-		if (!hotkeypadElement) return;
+		if (!hotkeypadElement || hotkeypadElement.dataset.ready) return;
+		hotkeypadElement.dataset.ready = "true";
 
 		const hotkeypad = new HotKeyPad();
 		const info = hotkeypad.instance.getAttribute("data-info") ?? "[]";
@@ -141,12 +142,10 @@ const profilesInfo = profiles.map(({ network, url }) => {
 		});
 	}
 
-	// Ensure DOM is ready before initialising HotKeyPad
-	if (document.readyState === "loading") {
-		document.addEventListener("DOMContentLoaded", initHotKeyPad);
-	} else {
-		initHotKeyPad();
-	}
+	// astro:page-load fires on first load and after every ClientRouter navigation.
+	// This module script runs only once, so a plain DOMContentLoaded init would leave
+	// the palette dead after navigating away from /about and back.
+	document.addEventListener("astro:page-load", initHotKeyPad);
 </script>
 
 <style>
@@ -195,6 +194,14 @@ const profilesInfo = profiles.map(({ network, url }) => {
 		animation: linear 0.3s fadeIn;
 		animation-timeline: --revealing;
 		animation-range: entry 100% cover 10%;
+	}
+
+	/* Scoped styles above override Tailwind's print:hidden, so hide explicitly */
+	@media print {
+		footer,
+		.footer-button {
+			display: none !important;
+		}
 	}
 
 	kbd {
