@@ -14,7 +14,7 @@ export default function ChatbotWidget() {
 	const [messages, setMessages] = useState<Message[]>([
 		{
 			id: '1',
-			text: '¡Hola! 👋 Soy un asistente de IA. ¿En qué puedo ayudarte?',
+			text: '🚧 Esta funcionalidad está actualmente en desarrollo. Pronto podrás conversar con el asistente de IA.',
 			sender: 'bot',
 			timestamp: new Date(),
 		},
@@ -56,35 +56,39 @@ export default function ChatbotWidget() {
 	};
 
 	return (
-		<div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">
+		<div className="fixed bottom-8 right-7 z-50 flex flex-col items-end gap-4 print:hidden">
 			<AnimatePresence>
 				{isOpen && (
 					<motion.div
-						initial={{ opacity: 0, scale: 0.8, y: 20 }}
+						initial={{ opacity: 0, scale: 0.9, y: 20 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
-						exit={{ opacity: 0, scale: 0.8, y: 20 }}
-						transition={{ duration: 0.3, ease: 'easeOut' }}
-						className="w-full max-w-sm bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col h-96"
+						exit={{ opacity: 0, scale: 0.9, y: 20 }}
+						transition={{ duration: 0.25, ease: 'easeOut' }}
+						className="flex h-96 w-[calc(100vw-3rem)] max-w-sm origin-bottom-right flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0a0a0a] font-poppins text-[whitesmoke] shadow-2xl shadow-black/60"
+						role="dialog"
+						aria-label="Asistente IA"
 					>
 						{/* Header */}
-						<div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 rounded-t-2xl flex items-center justify-between">
+						<div className="flex items-center justify-between border-b border-white/10 border-t-2 border-t-[#c70039] bg-white/[0.03] px-4 py-3">
 							<div>
-								<h3 className="font-bold text-white">Asistente IA</h3>
-								<p className="text-xs text-blue-100">
-									Conectado • Responde en tiempo real
+								<h3 className="text-sm font-black uppercase tracking-tight text-white">
+									Asistente IA
+								</h3>
+								<p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">
+									En desarrollo
 								</p>
 							</div>
 							<button
 								onClick={() => setIsOpen(false)}
-								className="text-white hover:bg-white/20 p-1 rounded-lg transition-colors"
+								className="rounded-full p-1.5 text-white/60 transition-colors duration-300 hover:bg-white/10 hover:text-[#c70039]"
 								aria-label="Cerrar chat"
 							>
-								<X size={20} />
+								<X size={18} />
 							</button>
 						</div>
 
 						{/* Messages */}
-						<div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-900/50">
+						<div className="flex-1 space-y-4 overflow-y-auto p-4">
 							{messages.map((message) => (
 								<motion.div
 									key={message.id}
@@ -92,26 +96,20 @@ export default function ChatbotWidget() {
 									animate={{ opacity: 1, y: 0 }}
 									transition={{ duration: 0.3 }}
 									className={`flex ${
-										message.sender === 'user'
-											? 'justify-end'
-											: 'justify-start'
+										message.sender === 'user' ? 'justify-end' : 'justify-start'
 									}`}
 								>
 									<div
-										className={`max-w-xs px-4 py-2 rounded-lg ${
+										className={`max-w-[85%] rounded-2xl px-4 py-2 ${
 											message.sender === 'user'
-												? 'bg-blue-600 text-white rounded-br-none'
-												: 'bg-slate-800 text-slate-100 rounded-bl-none border border-slate-700'
+												? 'rounded-br-sm bg-[#c70039] text-white'
+												: 'rounded-bl-sm border border-white/10 bg-white/[0.04] text-white/90'
 										}`}
 									>
-										<p className="text-sm leading-relaxed">
-											{message.text}
-										</p>
+										<p className="text-sm leading-relaxed">{message.text}</p>
 										<p
-											className={`text-xs mt-1 ${
-												message.sender === 'user'
-													? 'text-blue-200'
-													: 'text-slate-500'
+											className={`mt-1 text-[10px] ${
+												message.sender === 'user' ? 'text-white/70' : 'text-white/40'
 											}`}
 										>
 											{message.timestamp.toLocaleTimeString('es-DO', {
@@ -125,11 +123,11 @@ export default function ChatbotWidget() {
 
 							{isLoading && (
 								<div className="flex justify-start">
-									<div className="bg-slate-800 text-slate-100 px-4 py-3 rounded-lg border border-slate-700">
+									<div className="rounded-2xl rounded-bl-sm border border-white/10 bg-white/[0.04] px-4 py-3">
 										<div className="flex gap-2">
-											<div className="w-2 h-2 bg-slate-500 rounded-full animate-pulse"></div>
-											<div className="w-2 h-2 bg-slate-500 rounded-full animate-pulse delay-100"></div>
-											<div className="w-2 h-2 bg-slate-500 rounded-full animate-pulse delay-200"></div>
+											<div className="h-2 w-2 animate-pulse rounded-full bg-white/40"></div>
+											<div className="h-2 w-2 animate-pulse rounded-full bg-white/40 delay-100"></div>
+											<div className="h-2 w-2 animate-pulse rounded-full bg-white/40 delay-200"></div>
 										</div>
 									</div>
 								</div>
@@ -137,24 +135,24 @@ export default function ChatbotWidget() {
 						</div>
 
 						{/* Input */}
-						<div className="border-t border-slate-700 p-4 bg-slate-900/80 rounded-b-2xl">
+						<div className="border-t border-white/10 bg-white/[0.03] p-3">
 							<div className="flex gap-2">
 								<input
 									type="text"
 									value={input}
 									onChange={(e) => setInput(e.target.value)}
 									onKeyDown={handleKeyDown}
-									placeholder="Escribe un mensaje..."
-									className="flex-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-									disabled={isLoading}
+									placeholder="Próximamente..."
+									className="flex-1 rounded-full border border-white/10 bg-[#0a0a0a] px-4 py-2 text-sm text-white placeholder-white/30 transition-colors focus:border-[#c70039] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+									disabled
 								/>
 								<button
 									onClick={handleSend}
-									disabled={isLoading || !input.trim()}
-									className="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-700 disabled:cursor-not-allowed text-white p-2 rounded-lg transition-colors"
+									disabled
+									className="flex h-9 w-9 items-center justify-center rounded-full bg-[#c70039] text-white transition-colors duration-300 hover:bg-[#b11141] disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/30"
 									aria-label="Enviar mensaje"
 								>
-									<Send size={18} />
+									<Send size={16} />
 								</button>
 							</div>
 						</div>
@@ -167,27 +165,16 @@ export default function ChatbotWidget() {
 				onClick={() => setIsOpen(!isOpen)}
 				whileHover={{ scale: 1.1 }}
 				whileTap={{ scale: 0.95 }}
-				animate={{
-					boxShadow: isOpen
-						? '0 0 30px rgba(168, 85, 247, 0.6)'
-						: '0 0 20px rgba(59, 130, 246, 0.4)',
-				}}
-				className={`w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-colors duration-300 ${
+				className={`flex h-12 w-12 items-center justify-center rounded-full text-white shadow-lg shadow-black/50 transition-colors duration-300 ${
 					isOpen
-						? 'bg-purple-600 hover:bg-purple-700'
-						: 'bg-blue-600 hover:bg-blue-700'
-				} text-white`}
+						? 'border border-white/20 bg-[#0a0a0a] hover:border-[#c70039] hover:text-[#c70039]'
+						: 'bg-[#c70039] hover:bg-[#b11141]'
+				}`}
 				aria-label={isOpen ? 'Cerrar chat' : 'Abrir chat'}
+				aria-expanded={isOpen}
 			>
-				<motion.div
-					animate={{ rotate: isOpen ? 90 : 0 }}
-					transition={{ duration: 0.3 }}
-				>
-					{isOpen ? (
-						<X size={24} />
-					) : (
-						<MessageCircle size={24} />
-					)}
+				<motion.div animate={{ rotate: isOpen ? 90 : 0 }} transition={{ duration: 0.3 }}>
+					{isOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
 				</motion.div>
 			</motion.button>
 		</div>
