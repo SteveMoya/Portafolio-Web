@@ -13,7 +13,7 @@
       "postalCode": "10102",
       "city": "Santo Domingo",
       "countryCode": "DO",
-      "region": "Dominican Republic"
+      "region": "República Dominicana"
     },
     "profiles": [
       {
@@ -31,31 +31,31 @@
   "work": [
     {
       "name": "International Contact Center (ICC)",
-      "position": "Junior WebMaster - Marketing Department",
-      "location_type": "On-site",
-      "location": "Santo Domingo, Dominican Republic",
+      "position": "Webmaster Junior - Departamento de Marketing",
+      "location_type": "Presencial",
+      "location": "Santo Domingo, República Dominicana",
       "url": "https://icontactcenter.com/",
       "startDate": "2025-09-09",
       "endDate": null,
       "phone": "+1(809) 290-9136",
-      "summary": "Create and manage effective digital campaigns for our clients. Analyze campaign performance and adjust strategies as needed to maximize results.",
+      "summary": "Creo y gestiono campañas digitales efectivas para nuestros clientes. Analizo el rendimiento de las campañas y ajusto las estrategias según sea necesario para maximizar los resultados.",
       "highlights": [
-        "Attend Advertising Strategy Follow-up Meetings",
-        "Manage supplier requests and inventory",
-        "Conduct market and competitor analysis to identify growth opportunities",
-        "Assist in Monthly and Quarterly Reports and Budgets"
+        "Asistir a reuniones de seguimiento de la estrategia publicitaria",
+        "Gestionar solicitudes de proveedores e inventario",
+        "Realizar análisis de mercado y de la competencia para identificar oportunidades de crecimiento",
+        "Apoyar en los reportes y presupuestos mensuales y trimestrales"
       ],
       "responsibilities": [
-        "Manage Backups for our clients' websites.",
-        "Update and maintain our clients' websites using WordPress and other content management platforms.",
-        "Perform Website Deployments.",
-        "Design and develop attractive and functional websites for our clients using technologies such as HTML, CSS, JavaScript, Tailwind, TypeScript, Node, and PHP.",
-        "Optimize websites to improve performance, loading speed, and user experience, using tools such as Semrush, Google Analytics, cPanel, WordPress, and Cloudflare.",
-        "Optimize databases, images, and other resources to improve website performance."
+        "Gestionar los respaldos de los sitios web de nuestros clientes.",
+        "Actualizar y mantener los sitios web de nuestros clientes con WordPress y otras plataformas de gestión de contenido.",
+        "Realizar despliegues de sitios web.",
+        "Diseñar y desarrollar sitios web atractivos y funcionales para nuestros clientes con tecnologías como HTML, CSS, JavaScript, Tailwind, TypeScript, Node y PHP.",
+        "Optimizar sitios web para mejorar el rendimiento, la velocidad de carga y la experiencia de usuario, con herramientas como Semrush, Google Analytics, cPanel, WordPress y Cloudflare.",
+        "Optimizar bases de datos, imágenes y otros recursos para mejorar el rendimiento de los sitios web."
       ],
       "achievements": [
-        "Automation of web project performance reports.",
-        "Automation of Website Backup Generation."
+        "Automatización de los reportes de rendimiento de proyectos web.",
+        "Automatización de la generación de respaldos de sitios web."
       ],
       "skills": [
         "SEO",
@@ -67,7 +67,7 @@
         "TypeScript",
         "Node",
         "PHP",
-        "Web Development",
+        "Desarrollo Web",
         "Frontend",
         "Backend",
         "Semrush",
@@ -79,45 +79,45 @@
     },
     {
       "name": "Planeta Azul S.A.",
-      "position": "Marketing Department Intern",
-      "location_type": "On-site",
-      "location": "Santo Domingo, Dominican Republic",
+      "position": "Pasante del Departamento de Marketing",
+      "location_type": "Presencial",
+      "location": "Santo Domingo, República Dominicana",
       "url": "https://planetaazulrd.com/",
       "startDate": "2025-04-01",
       "endDate": "2025-08-01",
       "phone": "+1(829) 762-2225",
-      "summary": "Create and manage effective digital campaigns for our clients. Analyze campaign performance and adjust strategies as needed to maximize results.",
+      "summary": "Creo y gestiono campañas digitales efectivas para nuestros clientes. Analizo el rendimiento de las campañas y ajusto las estrategias según sea necesario para maximizar los resultados.",
       "highlights": [
-        "Attend Advertising Strategy Follow-up Meetings",
-        "Manage supplier requests and inventory",
-        "Conduct market and competitor analysis to identify growth opportunities",
-        "Assist in Monthly and Quarterly Reports and Budgets"
+        "Asistir a reuniones de seguimiento de la estrategia publicitaria",
+        "Gestionar solicitudes de proveedores e inventario",
+        "Realizar análisis de mercado y de la competencia para identificar oportunidades de crecimiento",
+        "Apoyar en los reportes y presupuestos mensuales y trimestrales"
       ],
       "responsibilities": [
-        "Develop digital marketing strategies for our clients.",
-        "Manage advertising campaigns with suppliers.",
-        "Analyze campaign performance and make adjustments to improve results."
+        "Desarrollar estrategias de marketing digital para nuestros clientes.",
+        "Gestionar campañas publicitarias con proveedores.",
+        "Analizar el rendimiento de las campañas y hacer ajustes para mejorar los resultados."
       ],
       "achievements": [
-        "Successfully managed overdue supplier orders, keeping them up to date with the accounting cycle.",
-        "Successfully created a Market Share report of the company's products against competitors.",
-        "Automation of Monthly Market Share Reports.",
-        "Promotional products inventory assessment.",
-        "Assistance in sponsoring sports and cultural events to increase brand visibility."
+        "Gestioné con éxito órdenes vencidas de proveedores, manteniéndolas al día con el ciclo contable.",
+        "Creé con éxito un reporte de participación de mercado de los productos de la empresa frente a la competencia.",
+        "Automatización de los reportes mensuales de participación de mercado.",
+        "Evaluación del inventario de productos promocionales.",
+        "Apoyo en el patrocinio de eventos deportivos y culturales para aumentar la visibilidad de la marca."
       ],
       "skills": [
         "Google Ads",
         "Facebook Ads",
         "SEO",
-        "Data Analysis",
+        "Análisis de Datos",
         "Microsoft Office",
         "Canva",
         "SAP",
-        "Digital Marketing",
-        "Purchase Orders",
-        "Inventory",
-        "Market Share",
-        "Marketing Strategies"
+        "Marketing Digital",
+        "Órdenes de Compra",
+        "Inventario",
+        "Participación de Mercado",
+        "Estrategias de Marketing"
       ]
     }
   ],
@@ -126,8 +126,8 @@
     {
       "institution": "Universidad Autónoma de Santo Domingo (UASD)",
       "url": "https://uasd.edu.do",
-      "area": "Bachelor's Degree in Marketing",
-      "studyType": "Bachelor",
+      "area": "Licenciatura en Mercadeo",
+      "studyType": "Licenciatura",
       "startDate": "2020-09-01",
       "endDate": null,
       "score": "",
@@ -136,37 +136,37 @@
   ],
   "certificates": [
     {
-      "name": "Digitize your business step by step with Google tools",
+      "name": "Digitaliza tu negocio paso a paso con las herramientas de Google",
       "date": "2022-08-24",
       "issuer": "Google Activate",
       "url": ""
     },
     {
-      "name": "Fundamentals of Digital Marketing",
+      "name": "Fundamentos de Marketing Digital",
       "date": "2022-09-11",
       "issuer": "Google Activate",
       "url": ""
     },
     {
-      "name": "Protect Your Business: Cybersecurity in Remote Work",
+      "name": "Protege tu negocio: ciberseguridad en el trabajo remoto",
       "date": "2022-08-25",
       "issuer": "Google Activate",
       "url": ""
     },
     {
-      "name": "Digital Skills for Professionals",
+      "name": "Habilidades digitales para profesionales",
       "date": "2022-09-11",
       "issuer": "Google Activate",
       "url": ""
     },
     {
-      "name": "Inbound Certificate",
+      "name": "Certificado Inbound",
       "date": "2023-03-19",
       "issuer": "HubSpot Academy",
       "url": ""
     },
     {
-      "name": "Responsive Web Design",
+      "name": "Diseño Web Adaptable (Responsive)",
       "date": "2026-09-06",
       "issuer": "freeCodeCamp",
       "url": ""
@@ -175,128 +175,128 @@
   "skills": [
     {
       "name": "Figma",
-      "level": "Beginner",
+      "level": "Principiante",
       "keywords": [
-        "Design",
+        "Diseño",
         "UI"
       ]
     },
     {
       "name": "GitHub",
-      "level": "Intermediate",
+      "level": "Intermedio",
       "keywords": [
-        "Version Control",
-        "Collaboration",
-        "Source Code"
+        "Control de versiones",
+        "Colaboración",
+        "Código fuente"
       ]
     },
     {
       "name": "HTML",
-      "level": "Intermediate",
+      "level": "Intermedio",
       "keywords": [
-        "Web Development",
+        "Desarrollo Web",
         "Frontend"
       ]
     },
     {
       "name": "CSS",
-      "level": "Intermediate",
+      "level": "Intermedio",
       "keywords": [
-        "Web Development",
+        "Desarrollo Web",
         "Frontend",
-        "Responsive Design"
+        "Diseño adaptable"
       ]
     },
     {
       "name": "JavaScript",
-      "level": "Intermediate",
+      "level": "Intermedio",
       "keywords": [
-        "Web Development",
+        "Desarrollo Web",
         "Fullstack"
       ]
     },
     {
       "name": "Tailwind",
-      "level": "Intermediate",
+      "level": "Intermedio",
       "keywords": [
-        "Web Development",
+        "Desarrollo Web",
         "Frontend",
-        "CSS Framework",
-        "Responsive Design"
+        "Framework CSS",
+        "Diseño adaptable"
       ]
     },
     {
       "name": "TypeScript",
-      "level": "Intermediate",
+      "level": "Intermedio",
       "keywords": [
-        "Web Development",
+        "Desarrollo Web",
         "Frontend",
         "Backend",
-        "JavaScript Superset"
+        "Superconjunto de JavaScript"
       ]
     },
     {
       "name": "Node",
-      "level": "Intermediate",
+      "level": "Intermedio",
       "keywords": [
-        "Web Development",
+        "Desarrollo Web",
         "Backend",
         "JavaScript",
-        "Server"
+        "Servidor"
       ]
     },
     {
       "name": "GitHub",
-      "level": "Intermediate",
+      "level": "Intermedio",
       "keywords": [
-        "Version Control",
-        "Collaboration",
-        "Source Code",
+        "Control de versiones",
+        "Colaboración",
+        "Código fuente",
         "Git"
       ]
     },
     {
       "name": "Next.js",
-      "level": "Beginner",
+      "level": "Principiante",
       "keywords": [
-        "Web Development",
+        "Desarrollo Web",
         "Frontend",
-        "React Framework",
+        "Framework de React",
         "SSR",
-        "Static Generation"
+        "Generación estática"
       ]
     },
     {
       "name": "Astro.js",
-      "level": "Advanced",
+      "level": "Avanzado",
       "keywords": [
-        "Web Development",
+        "Desarrollo Web",
         "Backend",
-        "TypeScript Runtime"
+        "Runtime de TypeScript"
       ]
     },
     {
       "name": "React",
-      "level": "Intermediate",
+      "level": "Intermedio",
       "keywords": [
-        "Web Development",
+        "Desarrollo Web",
         "Frontend",
-        "JavaScript Library",
+        "Librería de JavaScript",
         "UI"
       ]
     },
     {
       "name": "Canva",
-      "level": "Intermediate",
+      "level": "Intermedio",
       "keywords": [
-        "Graphic Design",
-        "Content Creation",
+        "Diseño gráfico",
+        "Creación de contenido",
         "Marketing"
       ]
     },
     {
       "name": "Microsoft Office",
-      "level": "Intermediate",
+      "level": "Intermedio",
       "keywords": [
         "Word",
         "Excel",
@@ -305,7 +305,7 @@
     },
     {
       "name": "Adobe Creative Cloud",
-      "level": "Beginner",
+      "level": "Principiante",
       "keywords": [
         "Photoshop",
         "Illustrator",
@@ -314,36 +314,36 @@
     },
     {
       "name": "Google Ads",
-      "level": "Intermediate",
+      "level": "Intermedio",
       "keywords": [
         "PPC",
         "SEM",
-        "Online Advertising"
+        "Publicidad en línea"
       ]
     },
     {
       "name": "SEO",
-      "level": "Intermediate",
+      "level": "Intermedio",
       "keywords": [
-        "Search Engine Optimization",
-        "Organic Traffic",
-        "Keyword Research"
+        "Optimización para motores de búsqueda",
+        "Tráfico orgánico",
+        "Investigación de palabras clave"
       ]
     }
   ],
   "languages": [
     {
-      "language": "English",
-      "fluency": "Intermediate"
+      "language": "Inglés",
+      "fluency": "Intermedio"
     },
     {
-      "language": "Spanish",
-      "fluency": "Native Speaker"
+      "language": "Español",
+      "fluency": "Nativo"
     }
   ],
   "interests": [
     {
-      "name": "Technology",
+      "name": "Tecnología",
       "keywords": [
         "AI",
         "Blockchain"

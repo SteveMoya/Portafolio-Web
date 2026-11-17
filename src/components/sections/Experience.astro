@@ -48,11 +48,11 @@ const SKILLS_ICONS: Record<string, any> = {
   SEO,
 }
 ---
-<Section className={`${Astro.props.className} section-animate`} title="Experience">
+<Section className={`${Astro.props.className} section-animate`} title="Experiencia">
   <ul class="flex flex-col">
     {work.map(({ name, startDate, endDate, position, summary, responsibilities, achievements, url, skills, location, location_type }) => {
       const startYear = new Date(startDate).getFullYear()
-      const endYear = endDate != null ? new Date(endDate).getFullYear() : "Present"
+      const endYear = endDate != null ? new Date(endDate).getFullYear() : "Actualidad"
 
       return (
         <li class="relative print:py-2" style="page-break-inside: avoid; break-inside: avoid;">
@@ -127,7 +127,7 @@ const SKILLS_ICONS: Record<string, any> = {
                 </div>
                 
                 <button @click="expanded = ! expanded" class="print:hidden group/more w-fit cursor-pointer items-center justify-center gap-1.5 text-xs underline text-skin-muted transition-all hover:text-skin-base flex">
-                  <span x-text="expanded ? 'Show less' : 'Show more'">Show more</span>
+                  <span x-text="expanded ? 'Ver menos' : 'Ver más'">Ver más</span>
                   <svg class="w-4 h-4 group-hover/more:translate-y-0.5 duration-200 ease-out" :class="{ 'rotate-180': expanded }" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </button>
 

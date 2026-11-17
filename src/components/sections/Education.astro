@@ -5,12 +5,12 @@ import { education } from "@cv";
 import { certificates } from "@cv";
 ---
 
-<Section className={Astro.props.className} title="Education">
+<Section className={Astro.props.className} title="Educación">
 	<ul class="space-y-4 py-3 print:space-y-1">
 		{
 			education.map(({ institution, startDate, endDate, area, url }) => {
 				const startYear = new Date(startDate).getFullYear();
-				const endYear = endDate != null ? new Date(endDate).getFullYear() : "Actual";
+				const endYear = endDate != null ? new Date(endDate).getFullYear() : "Actualidad";
 				const years = `${startYear} - ${endYear}`;
 
 				return (
@@ -38,7 +38,7 @@ import { certificates } from "@cv";
 	{
 		certificates.length > 0 && (
 			<>
-				<h4>Certificates</h4>
+				<h4>Certificaciones</h4>
 				<ul class="space-y-4 py-3 print:space-y-1">
 					{certificates.map(({ name, date, issuer, url }) => {
 						const certificateYear = new Date(date).getFullYear();

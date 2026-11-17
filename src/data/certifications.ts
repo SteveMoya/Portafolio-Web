@@ -17,12 +17,12 @@ export interface Certification {
  * a generic icon.
  */
 const ICON_BY_NAME: Record<string, string> = {
-	'Digitize your business step by step with Google tools': 'mdi:google',
-	'Fundamentals of Digital Marketing': 'mdi:bullhorn-outline',
-	'Protect Your Business: Cybersecurity in Remote Work': 'mdi:shield-lock-outline',
-	'Digital Skills for Professionals': 'mdi:laptop',
-	'Inbound Certificate': 'mdi:chart-line',
-	'Responsive Web Design': 'mdi:responsive'
+	'Digitaliza tu negocio paso a paso con las herramientas de Google': 'mdi:google',
+	'Fundamentos de Marketing Digital': 'mdi:bullhorn-outline',
+	'Protege tu negocio: ciberseguridad en el trabajo remoto': 'mdi:shield-lock-outline',
+	'Habilidades digitales para profesionales': 'mdi:laptop',
+	'Certificado Inbound': 'mdi:chart-line',
+	'Diseño Web Adaptable (Responsive)': 'mdi:responsive'
 }
 
 const FALLBACK_ICON = 'mdi:certificate-outline'

@@ -9,7 +9,7 @@ import { projects } from "@cv";
 const typedProjects = projects as ProjectEntry[];
 ---
 
-<Section className={`${Astro.props.className} section-animate`} title="Projects">
+<Section className={`${Astro.props.className} section-animate`} title="Proyectos">
 	<div class="grid grid-cols-1 gap-3 md:grid-cols-2 print:flex print:flex-col">
 		{
 			typedProjects.map(({ url, description, highlights, name, isActive, github }) => {
@@ -35,7 +35,7 @@ const typedProjects = projects as ProjectEntry[];
 							</div>
 
 							{github && (
-								<a href={github} title="View slug repository on GitHub" target="_blank" rel="noopener" class="opacity-75 transition-opacity duration-100 hover:opacity-100">
+								<a href={github} title="Ver repositorio en GitHub" target="_blank" rel="noopener" class="opacity-75 transition-opacity duration-100 hover:opacity-100">
 									<Git />
 								</a>
 							)}
