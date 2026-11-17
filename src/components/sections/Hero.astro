@@ -30,7 +30,7 @@ const SOCIAL_ICONS: SocialIcon = {
 				{city}, {region}
 			</div> 
 			<div class="flex flex-col gap-2">
-				<h3 class="text-lg font-semibold">Contact</h3>
+				<h3 class="text-lg font-semibold">Contacto</h3>
 				<ul class="flex flex-col gap-2">
 					{
 						email && (
@@ -53,7 +53,7 @@ const SOCIAL_ICONS: SocialIcon = {
 						)
 					}
 				</ul>
-				<h3 class="text-lg font-semibold mt-4">Social Networks</h3>
+				<h3 class="text-lg font-semibold mt-4">Redes sociales</h3>
 				<ul class="flex flex-col gap-2">
 					{
 						profiles.map(({ network, url, username }) => {
@@ -71,9 +71,9 @@ const SOCIAL_ICONS: SocialIcon = {
 				</ul>
 			</div>
 		</div>
-		<figure class="print:hidden w-fit relative">
-			<img class="shadow-lg shadow-skin-hues" src={image} alt={name} />
-			<div class="pointer-events-none absolute -inset-2">
+		<figure class="w-fit relative">
+			<img class="shadow-lg shadow-skin-hues print:shadow-none" src={image} alt={name} loading="eager" />
+			<div class="pointer-events-none absolute -inset-2 print:hidden">
 				<div class="absolute -inset-y-8 right-0 w-px bg-skin-hue/50" style="-webkit-mask-image: linear-gradient(to top, transparent, white 4rem, white calc(100% - 4rem), transparent); mask-image: linear-gradient(to top, transparent, white 4rem, white calc(100% - 4rem), transparent);"></div>
 				<div class="absolute -inset-y-8 left-0 w-px bg-skin-hue/50" style="-webkit-mask-image: linear-gradient(to top, transparent, white 4rem, white calc(100% - 4rem), transparent); mask-image: linear-gradient(to top, transparent, white 4rem, white calc(100% - 4rem), transparent);"></div>
 				<div class="absolute -inset-x-8 bottom-0 h-px bg-skin-hue/50" style="-webkit-mask-image: linear-gradient(to left, transparent, white 4rem, white calc(100% - 4rem), transparent); mask-image: linear-gradient(to left, transparent, white 4rem, white calc(100% - 4rem), transparent);"></div>
@@ -95,6 +95,12 @@ const SOCIAL_ICONS: SocialIcon = {
 		.info {
 			gap: 0;
 			padding-right: 0;
+		}
+
+		img {
+			width: 6rem;
+			print-color-adjust: exact;
+			-webkit-print-color-adjust: exact;
 		}
 	}
 
