@@ -1,0 +1,82 @@
+---
+import Layout from '@src/layouts/Layout.astro'
+import Header from '@components/Header.astro'
+
+const updated = '25 de noviembre de 2026'
+const contact = 'contacto@stevemoya.com'
+---
+
+<Layout
+	title="Steve Moya | Política de privacidad"
+	description="Política de privacidad de Caída Cósmica Publisher, la herramienta personal con la que Steve Moya publica contenido en sus propias cuentas."
+>
+	<Header title="Política de" titleCaption="privacidad" description="Herramienta de publicación" descriptionCaption="Caída Cósmica Publisher" />
+
+	<section class="relative w-full bg-[#0a0a0a] px-6 pb-24 sm:px-10 lg:px-16">
+		<article
+			class="prose prose-lg prose-invert mx-auto max-w-3xl prose-p:leading-relaxed prose-p:text-gray-300 prose-li:text-gray-300 prose-headings:font-bold prose-headings:text-white prose-a:text-[#c70039] prose-a:no-underline hover:prose-a:underline"
+		>
+			<p><strong>Última actualización:</strong> {updated}</p>
+
+			<h2>Qué es Caída Cósmica Publisher</h2>
+			<p>
+				Caída Cósmica Publisher es una herramienta personal de Steve Moya. Sirve para subir y programar los videos y clips del canal{' '}
+				<strong>Caída Cósmica</strong> en las cuentas que pertenecen al propio Steve Moya: YouTube, Facebook, Instagram, X y TikTok. No es un
+				servicio abierto al público ni lo usan otras personas.
+			</p>
+
+			<h2>A qué datos accede</h2>
+			<ul>
+				<li>
+					<strong>YouTube (Google):</strong> solo los permisos <code>youtube.upload</code> (subir videos y miniaturas a su propio canal) y{' '}
+					<code>youtube.readonly</code> (comprobar a qué canal está conectada la herramienta).
+				</li>
+				<li>
+					<strong>Facebook, Instagram, X y TikTok:</strong> solo los permisos necesarios para publicar en las cuentas del propietario, sin
+					leer datos de otras personas.
+				</li>
+			</ul>
+
+			<h2>Qué se guarda y dónde</h2>
+			<ul>
+				<li>
+					Las credenciales de acceso (tokens) se guardan únicamente en el equipo del propietario, en un archivo con permisos restringidos y
+					fuera de cualquier repositorio.
+				</li>
+				<li>No se recopilan, venden, comparten ni transfieren datos de otros usuarios.</li>
+				<li>No hay analítica de seguimiento, publicidad ni perfiles asociados a esta herramienta.</li>
+			</ul>
+
+			<h2>Uso de datos de las APIs de Google</h2>
+			<p>
+				El uso de la información obtenida de las APIs de Google cumple con la{' '}
+				<a href="https://developers.google.com/terms/api-services-user-data-policy" rel="noopener noreferrer" target="_blank"
+					>Política de datos de usuario de los Servicios de API de Google</a
+				>, incluidos los requisitos de uso limitado. Al usar la integración con YouTube, también se aceptan los{' '}
+				<a href="https://www.youtube.com/t/terms" rel="noopener noreferrer" target="_blank">Términos del servicio de YouTube</a> y la{' '}
+				<a href="https://policies.google.com/privacy" rel="noopener noreferrer" target="_blank">Política de privacidad de Google</a>.
+			</p>
+
+			<h2>Cómo revocar el acceso</h2>
+			<ul>
+				<li>
+					Google: <a href="https://myaccount.google.com/permissions" rel="noopener noreferrer" target="_blank">myaccount.google.com/permissions</a
+					>.
+				</li>
+				<li>Facebook e Instagram: Configuración → Apps y sitios web, y quitar «Caída Cósmica Publisher».</li>
+				<li>X: Configuración → Seguridad y acceso a la cuenta → Aplicaciones y sesiones.</li>
+				<li>TikTok: Configuración y privacidad → Seguridad y permisos → Permisos de apps.</li>
+			</ul>
+
+			<h2>Eliminación de datos</h2>
+			<p>
+				Para pedir que se eliminen los datos asociados a la herramienta (por ejemplo, un token guardado), escribe a{' '}
+				<a href={`mailto:${contact}`}>{contact}</a>. Se atenderá a la brevedad. Revocar el acceso desde la plataforma correspondiente
+				invalida el token de inmediato.
+			</p>
+
+			<h2>Contacto</h2>
+			<p>Steve Moya · <a href={`mailto:${contact}`}>{contact}</a> · <a href="https://stevemoya.me">stevemoya.me</a></p>
+		</article>
+	</section>
+</Layout>
