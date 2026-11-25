@@ -1,0 +1,72 @@
+---
+import Layout from '@src/layouts/Layout.astro'
+import Header from '@components/Header.astro'
+
+const updated = '25 de noviembre de 2026'
+const contact = 'contacto@stevemoya.com'
+---
+
+<Layout
+	title="Steve Moya | Términos del servicio"
+	description="Términos del servicio de Caída Cósmica Publisher, la herramienta personal con la que Steve Moya publica contenido en sus propias cuentas."
+>
+	<Header title="Términos del" titleCaption="servicio" description="Herramienta de publicación" descriptionCaption="Caída Cósmica Publisher" />
+
+	<section class="relative w-full bg-[#0a0a0a] px-6 pb-24 sm:px-10 lg:px-16">
+		<article
+			class="prose prose-lg prose-invert mx-auto max-w-3xl prose-p:leading-relaxed prose-p:text-gray-300 prose-li:text-gray-300 prose-headings:font-bold prose-headings:text-white prose-a:text-[#c70039] prose-a:no-underline hover:prose-a:underline"
+		>
+			<p><strong>Última actualización:</strong> {updated}</p>
+
+			<h2>Qué es Caída Cósmica Publisher</h2>
+			<p>
+				Caída Cósmica Publisher es una herramienta personal de Steve Moya para preparar, subir y programar los videos y clips del canal{' '}
+				<strong>Caída Cósmica</strong> en cuentas que pertenecen al propio Steve Moya: YouTube, Facebook, Instagram, X y TikTok. No es un
+				servicio abierto al público, no tiene registro de usuarios y no se ofrece a terceros.
+			</p>
+
+			<h2>Quién puede usarla</h2>
+			<p>
+				Solo su propietario. Cada publicación se prepara y se aprueba de forma manual antes de enviarse. La herramienta no publica en cuentas
+				ajenas ni en nombre de otras personas.
+			</p>
+
+			<h2>Plataformas de terceros</h2>
+			<p>
+				La herramienta se conecta a las plataformas mediante sus interfaces oficiales (APIs). El uso de cada plataforma sigue sujeto a sus
+				propios términos y políticas, entre ellos los
+				<a href="https://www.youtube.com/t/terms" rel="noopener noreferrer" target="_blank">Términos del servicio de YouTube</a>, los
+				<a href="https://www.facebook.com/terms" rel="noopener noreferrer" target="_blank">Términos de Meta</a> y los
+				<a href="https://www.tiktok.com/legal/page/global/terms-of-service/es" rel="noopener noreferrer" target="_blank"
+					>Términos del servicio de TikTok</a
+				>. En el caso de TikTok, la herramienta envía los videos al borrador de la cuenta del propietario, quien revisa y publica desde la
+				propia aplicación de TikTok.
+			</p>
+
+			<h2>Contenido</h2>
+			<p>
+				El contenido publicado con la herramienta es responsabilidad de su propietario. Parte del contenido (por ejemplo, la voz de los
+				videos) se genera con inteligencia artificial y se declara como tal cuando la plataforma lo permite.
+			</p>
+
+			<h2>Disponibilidad y garantías</h2>
+			<p>
+				La herramienta se ofrece tal cual, sin garantía de disponibilidad ni de resultados. Las plataformas pueden cambiar sus interfaces,
+				límites o requisitos en cualquier momento, y eso puede interrumpir o modificar el funcionamiento de la herramienta.
+			</p>
+
+			<h2>Datos personales</h2>
+			<p>
+				El tratamiento de los datos se describe en la <a href="/privacidad">Política de privacidad</a>.
+			</p>
+
+			<h2>Cambios en estos términos</h2>
+			<p>
+				Estos términos pueden actualizarse. La fecha de la última actualización aparece al inicio de esta página.
+			</p>
+
+			<h2>Contacto</h2>
+			<p>Steve Moya · <a href={`mailto:${contact}`}>{contact}</a> · <a href="https://stevemoya.me">stevemoya.me</a></p>
+		</article>
+	</section>
+</Layout>
