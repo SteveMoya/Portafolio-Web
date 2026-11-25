@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="robots" content="noindex, nofollow" />
+	<title>Caída Cósmica Publisher | Redirección de inicio de sesión</title>
+	<style>
+		body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #0a0a0a; color: #d1d5db; font-family: system-ui, sans-serif; text-align: center; padding: 1.5rem; }
+		a { color: #c70039; }
+	</style>
+</head>
+<body>
+	<main>
+		<p id="msg">Completando el inicio de sesión…</p>
+		<p><a href="/">Volver a stevemoya.me</a></p>
+	</main>
+	<script>
+		// Redirect target for the personal publishing tool: forwards the one-time authorization
+		// response to the owner's own computer (loopback). Nothing is stored or sent anywhere else.
+		(function () {
+			var src = new URLSearchParams(location.search);
+			var out = new URLSearchParams();
+			['code', 'state', 'scopes', 'error', 'error_description'].forEach(function (k) {
+				if (src.has(k)) out.set(k, src.get(k));
+			});
+			if (!out.has('code') && !out.has('error')) {
+				document.getElementById('msg').textContent = 'Esta página solo se usa al conectar la herramienta de publicación.';
+				return;
+			}
+			location.replace('http://127.0.0.1:8767/callback?' + out.toString());
+		})();
+	</script>
+</body>
+</html>
